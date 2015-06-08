@@ -1,0 +1,133 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh-CN">
+    <head>
+        <meta charset="utf-8" />
+        <title>三点十分</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <!-- 兼容 双核浏览器 -->
+        <meta name="renderer" content="webkit" />
+        <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" >
+        <link rel="shortcut icon" href="{{MEDIA_URL}}img/favicon.ico" />
+        <link rel="stylesheet" type="text/css" href="{{MEDIA_URL}}css/font-awesome/css/font-awesome.min.css" />
+        <style type="text/css">
+        body{
+            font-family: "Helvetica Neue",Helvetica,"Lucida Grande","Luxi Sans",Arial,"Hiragino Sans GB",STHeiti,"Microsoft YaHei","Wenquanyi Micro Hei","WenQuanYi Micro Hei Mono","WenQuanYi Zen Hei","WenQuanYi Zen Hei Mono",LiGothicMed;
+            background-color: #DFDFDF;
+
+        }
+
+        *{
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box;
+        }
+
+        body,html{
+            padding: 0;
+            margin: 0;
+            height: 100%;
+            width: 100%;
+        }
+
+        .container{
+            width: 100%;
+            height: 100%;
+        }
+
+        .text1{
+            font-size: 25px;
+            font-weight: bold;
+            color: #ffffff;
+            position: absolute;
+            left: 70px;
+            top: 35px;
+        }
+
+        .text2{
+            font-size: 16px;
+            padding-top: 10px;
+        }
+
+        .text3{
+            padding-top: 5px;
+            font-size: 16px;
+            padding-right: 10px;
+        }
+
+        .text4{
+            font-size: 95px;
+            color: #6EC586;
+            text-shadow: 1px 1px 6px;
+            padding-top: 50px;
+            text-align: center;
+        }
+
+        .back{
+            margin-top: 25px;
+        }
+
+        .link{
+            font-size: 16px;
+            color: #EF8A55;
+            text-decoration: none;
+            padding-right: 10px;
+        }
+        .link:hover{
+            text-decoration: underline;
+        }
+
+        .pt-15{
+            padding-top: 15px;
+        }
+        .pr-10{
+            padding-right: 10px;
+        }
+
+        .logo{
+            width: 60px;
+            position: absolute;
+            left: 0px;
+            top: 25px;
+        }
+
+        .text-center{
+            text-align: center;
+        }
+
+        .header{
+            background-color: #e57e31;
+            height: 100px;
+            width: 100%;
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header text-center">
+                <div style="position: relative; margin: 0 auto; width: 180px;">
+                    <img class="logo" src="{{MEDIA_URL}}img/logo_white_1.png">
+                    <span class="text1">三点十分</span>
+                </div>
+            </div>
+            <div style="height: 100%; padding-top: 100px;">
+                <div class="text-center" style="padding-top: 40px; color: #696969;">{{success_msg|default:"成功"}}</div>
+                {% if timeinterval %}
+                <div class="text-center" style="padding-top: 40px; color: #696969;">{{timeinterval}} 秒后页面即将跳转</div>
+                {% endif %}
+                <div class="text4">
+                    <i class="fa fa-check"></i>
+                </div>
+            </div>
+        </div>
+        {% if timeinterval %}
+        <script type="text/javascript">
+        window.setInterval(function(){
+            window.location.href = "{{next_url}}";
+        }, {{timeinterval}} * 1000);
+        </script>
+        {% endif %}
+    </body>
+</html>

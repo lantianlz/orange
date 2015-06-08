@@ -1,0 +1,602 @@
+{% extends "pc/base/base_admin.html" %}
+{% load custom_tags %}
+{% load custom_filters %}
+{% block title %}图表统计{% endblock %}
+
+{% block base_css %}
+<link rel="stylesheet" type="text/css" href="{{MEDIA_URL}}css/animate/animate.min.css" />
+<style type="text/css">
+body{
+    background-color: #f2f3f8;
+    overflow: hidden;
+}
+
+.bgc-e66a5d{
+    background-color: #e66a5d;
+}
+
+.bdr-1{
+    border-right: solid 1px #2D2D2D;
+}
+
+.bdl-1{
+    border-left: solid 1px #2D2D2D;
+}
+
+.card{
+    transition: all 0.5s;
+    cursor: pointer;
+}
+
+.card.active{
+    background-color: #e66a5d;
+}
+
+.card:hover{
+    background-color: #e66a5d;
+}
+</style>
+{% endblock %}
+
+{% block base_js %}
+<script type="text/javascript" src="{{MEDIA_URL}}js/jquery/countUp.js"></script>
+<script type="text/javascript" src="{{MEDIA_URL}}js/jquery/jquery.easing.1.3.min.js"></script>
+<script type="text/javascript" src="{{MEDIA_URL}}js/echarts/echarts.js"></script>
+<script type="text/javascript">
+
+require.config({
+    paths: {
+        echarts: '{{MEDIA_URL}}js/echarts'
+    }
+});
+
+require(
+    [
+        "echarts", 
+        "echarts/chart/line", 
+        "echarts/chart/bar"
+    ],
+    function(ec){
+        echarts = ec;
+        
+        // registerCountChart();
+        // todayRegisterCountChart();
+        // todayOrderCountChart();
+        // todayBalanceChart();
+    }
+);
+
+var echarts,
+
+    calculatePercent = function(length){
+        if(length <= 90){
+            return 0;
+        } else if(90 < length && length <= 180){
+            return 25;
+        } else if(180 < length && length <= 270){
+            return 50;
+        } else if(270 < length && length <= 360){
+            return 75;
+        }
+    },
+
+    registerCountChart = function(xData, yData){
+        var main = echarts.init(document.getElementById('register-count-chart'));
+
+        main.setOption({
+            title: {
+                text: '总用户数'
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'line',
+                    lineStyle: {
+                      color: '#ddd',
+                      width: 1,
+                      type: 'solid'
+                    }
+                },
+                formatter: '{b}<br />{a}: {c} '
+            },
+            legend: {
+                data:['用户数']
+            },
+            toolbox: {
+                show: false
+            },
+            dataZoom : {
+                show : true,
+                realtime : true,
+                start : calculatePercent(xData.length),
+                end : 100,
+                handleColor: 'rgba(230, 106, 93, 0.8)',
+                fillerColor: 'rgba(230, 106, 93, 0.2)'
+            },
+            calculable: false,
+            xAxis: [{
+                type: 'category',
+                boundaryGap: false,
+                data: xData,
+                splitLine: {
+                    show: true,
+                    lineStyle: {
+                        color: ['#e2e2e2'],
+                        width: 1,
+                        type: 'solid'
+                    }
+                },
+                axisLine: {
+                    show: true,
+                    lineStyle: {
+                        color: '#888',
+                        width: 2,
+                        type: 'solid'
+                    }
+                }
+            }],
+            yAxis: [{
+                type : 'value',
+                splitLine: {
+                    show: true,
+                    lineStyle: {
+                        color: ['#e2e2e2'],
+                        width: 1,
+                        type: 'solid'
+                    }
+                },
+                axisLine: {
+                    show: true,
+                    lineStyle: {
+                        color: '#888',
+                        width: 2,
+                        type: 'solid'
+                    }
+                }
+            }],
+            color: ['#e66a5d'],
+            series : [{
+                name:'用户数',
+                type:'line',
+                smooth: true,
+                itemStyle: {
+                    normal: {
+                        areaStyle: {
+                            type: 'default'
+                        }
+                    }
+                },
+                data: yData
+            }]
+        });
+    },
+
+    todayRegisterCountChart = function(xData, yData){
+        var main = echarts.init(document.getElementById('today-register-count-chart'));
+        
+        main.setOption({
+            title: {
+                text: '今日新增用户数'
+            },
+            tooltip : {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'line',
+                    lineStyle : {
+                      color: '#ddd',
+                      width: 1,
+                      type: 'solid'
+                    }
+                },
+                formatter: '今日 {b} 点<br />{a}: {c} '
+            },
+            legend: {
+                data:['用户数']
+            },
+            toolbox: {
+                show : false
+            },
+            calculable : false,
+            xAxis : [{
+                type: 'category',
+                boundaryGap: false,
+                data: xData,
+                splitLine: {
+                    show: true,
+                    lineStyle: {
+                        color: ['#e2e2e2'],
+                        width: 1,
+                        type: 'solid'
+                    }
+                },
+                axisLine: {
+                    show: true,
+                    lineStyle: {
+                        color: '#888',
+                        width: 2,
+                        type: 'solid'
+                    }
+                }
+            }],
+            yAxis: [{
+                type : 'value',
+                splitLine: {
+                    show: true,
+                    lineStyle: {
+                        color: ['#e2e2e2'],
+                        width: 1,
+                        type: 'solid'
+                    }
+                },
+                axisLine: {
+                    show: true,
+                    lineStyle: {
+                        color: '#888',
+                        width: 2,
+                        type: 'solid'
+                    }
+                }
+            }],
+            color: ['#e66a5d'],
+            series: [{
+                name: '用户数',
+                type: 'line',
+                smooth: true,
+                itemStyle: {
+                    normal: {
+                        areaStyle: {
+                            type: 'default'
+                        }
+                    }
+                },
+                data: yData
+            }]
+        });
+    },
+
+    todayOrderCountChart = function(xData, yData){
+        var main = echarts.init(document.getElementById('today-order-count-chart'));
+        
+        main.setOption({
+            title: {
+                text: '今日订单数'
+            },
+            tooltip : {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'line',
+                    lineStyle : {
+                      color: '#ddd',
+                      width: 1,
+                      type: 'solid'
+                    }
+                },
+                formatter: '今日 {b} 点<br />{a}: {c} '
+            },
+            legend: {
+                data:['订单数']
+            },
+            toolbox: {
+                show : false
+            },
+            calculable : false,
+            xAxis : [{
+                type: 'category',
+                boundaryGap: true,
+                data: xData,
+                axisLine: {
+                    show: true,
+                    lineStyle: {
+                        color: '#888',
+                        width: 2,
+                        type: 'solid'
+                    }
+                },
+                splitLine: {
+                    show: false,
+                    lineStyle: {
+                        color: ['#e2e2e2'],
+                        width: 1,
+                        type: 'solid'
+                    }
+                }
+            }],
+            yAxis : [{
+                type : 'value',
+                axisLine: {
+                    show: true,
+                    lineStyle: {
+                        color: '#888',
+                        width: 2,
+                        type: 'solid'
+                    }
+                },
+                splitLine: {
+                    show: true,
+                    lineStyle: {
+                        color: ['#e2e2e2'],
+                        width: 1,
+                        type: 'solid'
+                    }
+                }
+            }],
+            color: ['#e66a5d'],
+            series : [{
+                name: '订单数',
+                type: 'bar',
+                data: yData
+            }]
+        });
+    },
+
+    todayBalanceChart = function(xData, yData){
+        var main = echarts.init(document.getElementById('today-balance-chart'));
+        
+        main.setOption({
+            title: {
+                text: '今日订单总金额'
+            },
+            tooltip : {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'line',
+                    lineStyle : {
+                      color: '#ddd',
+                      width: 1,
+                      type: 'solid'
+                    }
+                },
+                formatter: '今日 {b} 点<br />{a}: {c} '
+            },
+            legend: {
+                data:['订单金额(元)']
+            },
+            toolbox: {
+                show : false
+            },
+            calculable : false,
+            xAxis : [{
+                type: 'category',
+                boundaryGap: true,
+                data: xData,
+                axisLine: {
+                    show: true,
+                    lineStyle: {
+                        color: '#888',
+                        width: 2,
+                        type: 'solid'
+                    }
+                },
+                splitLine: {
+                    show: false,
+                    lineStyle: {
+                        color: ['#e2e2e2'],
+                        width: 1,
+                        type: 'solid'
+                    }
+                }
+            }],
+            yAxis : [{
+                type : 'value',
+                axisLine: {
+                    show: true,
+                    lineStyle: {
+                        color: '#888',
+                        width: 2,
+                        type: 'solid'
+                    }
+                },
+                splitLine: {
+                    show: true,
+                    lineStyle: {
+                        color: ['#e2e2e2'],
+                        width: 1,
+                        type: 'solid'
+                    }
+                }
+            }],
+            color: ['#e66a5d'],
+            series : [{
+                name: '订单金额(元)',
+                type: 'bar',
+                data: yData
+            }]
+        });
+    };
+
+$(document).ready(function(){
+    
+    var sheepVoice = $('#sheep-voice')[0],
+        moneyVoice = $('#money-voice')[0],
+        register = "",
+        registerCount = new countUp("register-count", 0),
+        todayRegister = "",
+        todayRegisterCount = new countUp("today-register-count", 0),
+        todayOrder = "",
+        todayOrderCount = new countUp("today-order-count", 0),
+        todayBalance = "",
+        todayBalanceCount = new countUp("today-balance", 0),
+        // 自动切换图表
+        autoChangeCard = function(){
+            var index = 0, cards = $('.card');
+
+            $.each(cards, function(i){
+                if(cards.eq(i).hasClass('active')){
+                    index = (cards.length <= (i+1)) ? 0 : (i+1);
+                }
+            });
+
+            cards.eq(index).click();
+        },
+        playVoice = function(personCount, orderCount){
+            // 如果人数有变化
+            if(personCount !== register){
+                sheepVoice.play();
+                return;
+            }
+
+            // 如果钱有变化
+            if(orderCount !== todayOrder){
+                moneyVoice.play();
+            }
+        },
+        ajaxRefreshData = function(){
+            ajaxSend(
+                "/admin/statistics/get_chart_data", 
+                {}, 
+                function(data){
+                    
+                    // 播放声音
+                    playVoice(data['register_count'], data['today_order_count']);
+
+                    // 绘制图表
+                    refreshRegisterData(data['register_count'], data['register_count_chart_data']);
+                    refreshTodayRegisterData(data['today_register_count'], data['today_register_count_chart_data']);
+                    refreshTodayOrderData(data['today_order_count'], data['today_order_count_chart_data']);
+                    refreshTodayBalanceData(data['today_balance'], data['today_balance_chart_data']);
+                }
+            );
+        },
+        // 设置总注册用户数
+        refreshRegisterData = function(count, chartData){
+
+            if(register !== count){
+                // 控制图表
+                registerCountChart(chartData[0], chartData[1]);
+
+                // 控制数字
+                registerCount.reset();
+                registerCount.startVal = register;
+                registerCount.endVal = count;
+                registerCount.start();
+
+                register = count;
+            }
+
+        },
+        // 设置今日注册用户数
+        refreshTodayRegisterData = function(count, chartData){
+            
+            if(todayRegister !== count){
+                // 控制图表
+                todayRegisterCountChart(chartData[0], chartData[1]);
+
+                // 控制数字
+                todayRegisterCount.reset();
+                todayRegisterCount.startVal = todayRegister;
+                todayRegisterCount.endVal = count;
+                todayRegisterCount.start();
+
+                todayRegister = count;
+            }
+
+        },
+        // 设置今日订单数
+        refreshTodayOrderData = function(count, chartData){
+            
+            if(todayOrder !== count){
+                // 控制图表
+                todayOrderCountChart(chartData[0], chartData[1]);
+
+                // 控制数字
+                todayOrderCount.reset();
+                todayOrderCount.startVal = todayOrder;
+                todayOrderCount.endVal = count;
+                todayOrderCount.start();
+
+                todayOrder = count;
+            }
+
+        },
+        // 设置今日订单总额
+        refreshTodayBalanceData = function(count, chartData){
+            
+            if(todayBalance !== count){
+                // 控制图表
+                todayBalanceChart(chartData[0], chartData[1]);
+
+                // 控制数字
+                todayBalanceCount.reset();
+                todayBalanceCount.startVal = todayBalance;
+                todayBalanceCount.endVal = count;
+                todayBalanceCount.start();
+
+                todayBalance = count;
+            }
+
+        };
+
+
+    // 点击卡片
+    $('.card').bind('click', function(){
+        $('.card').removeClass('active');
+        $(this).addClass('active');
+
+        // 将当前显示的图表移除
+        var visibleChart = $('.charts>div').filter(function(i){return $(this).css('opacity') != "0"});
+        visibleChart.removeClass("rollIn").addClass("rollOut");
+        // 动画完毕之后设置透明度为0
+        visibleChart.one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function(){
+            visibleChart.css({'opacity': 0, 'z-index': 99}).removeClass("rollOut");
+        });
+
+        // 将对应的图表显示出来
+        $('#' + $(this).data('chart')).css({'opacity': 1, 'z-index': 100}).addClass("rollIn");
+    });
+
+    // 每隔 33 秒自动切换图表
+    window.setInterval(autoChangeCard, 33000);
+    // 每隔 60 秒获取一次数据
+    window.setInterval(ajaxRefreshData, 60*1000);
+
+    // 第一次加载数据
+    window.setTimeout(ajaxRefreshData, 1000);
+    
+});
+
+</script>
+{% endblock %}
+{% block header %}{% endblock %}
+
+{% block container %}
+<audio src="{{MEDIA_URL}}media/money.wav" id="money-voice"></audio>
+<audio src="{{MEDIA_URL}}media/sheep.wav" id="sheep-voice"></audio>
+
+<div class="pt-45">
+    <div class="row pr charts">
+        <div id="register-count-chart" class="pa col-md-12 min-h400 animated z100" style="left:0; top:0; "></div>
+        <div id="today-register-count-chart" class="pa col-md-12 min-h400 animated" style="left:0; top:0; opacity: 0"></div>
+        <div id="today-order-count-chart" class="pa col-md-12 min-h400 animated" style="left:0; top:0; opacity: 0"></div>
+        <div id="today-balance-chart" class="pa col-md-12 min-h400 animated" style="left:0; top:0; opacity: 0"></div>
+    </div>
+</div>
+{% endblock container %}
+
+
+{% block footer %}
+<div class="pa w h200" style="left:0; bottom: 0; background-color: #1d2326;">
+    <div class="container">
+        <div class="row co5 text-center pl-80">
+            <div class="col-md-4 pt-45 h200 bdr-1 card active" data-chart="register-count-chart">
+                <div class="f16 pb-5">总用户数</div>
+                <div class="f60" id="register-count">0</div>
+            </div>
+            <div class="col-md-2 pt-45 h200 bdr-1 card" data-chart="today-register-count-chart">
+                <div class="f16 pb-5">今日新增用户数</div>
+                <div class="f60" id="today-register-count">0</div>
+            </div>
+            <div class="col-md-2 pt-45 h200 bdr-1 card" data-chart="today-order-count-chart">
+                <div class="f16 pb-5">今日订单数</div>
+                <div class="f60" id="today-order-count">0</div>
+            </div>
+            <div class="col-md-3 pt-45 h200 card pl-0 pr-0" data-chart="today-balance-chart">
+                <div class="f16 pb-5">今日订单总金额</div>
+                <div>
+                    <i class="fa fa-rmb f55"></i>
+                    <span class="f60" id="today-balance">0</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,388 @@
+{% extends "pc/admin/home.html" %}
+{% load custom_tags %}
+{% load custom_filters %}
+{% block title %}城市管理{% endblock %}
+
+{% block css %}
+<style type="text/css">
+
+</style>
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript">
+$(document).ready(function(){
+    // models
+    var City = Backbone.Model.extend({
+
+        // 默认值
+        defaults: {
+            'num': ''
+        }
+
+    });
+
+    // collections
+    var Citys = Backbone.Collection.extend({
+        model: City,
+
+        _modelMaps: {
+            'num': 'num',
+            'cityId': 'city_id',
+            'cityName': 'city_name',
+            'provinceId': 'province_id',
+            'provinceName': 'province_name',
+            'isShow': 'is_show',
+            'pinyin': 'pinyin',
+            'pinyinAbbr': 'pinyin_abbr',
+            'sort': 'sort_num',
+            'note': 'note'
+        },
+
+        // 查询
+        search: function(name, isShow, sortByProvince, pageIndex){
+            var me = this;
+
+            ajaxSend(
+                "/admin/city/city/search", 
+                {'name': name||'', 'is_show': isShow||0, 'sort_by_province': sortByProvince||0, 'page_index': pageIndex||1}, 
+                function(data){
+                    me.pageIndex = pageIndex||1;
+                    me.pageCount = data.page_count;
+                    me.name = name||'';
+                    me.isShow = isShow||0;
+                    me.sortByProvince = sortByProvince||0;
+
+                    me.reset($.Global.Utils.dictMapParse(data.data, me._modelMaps));
+                }
+            );
+        },
+
+        // 获取一个提问的model
+        getOne: function(cityId, callback){
+            var me = this;
+
+            ajaxSend(
+                "/admin/city/city/get_city_by_id", 
+                {'city_id': cityId},
+                function(data){
+                    if(callback){
+                        callback($.Global.Utils.dictMap(data, me._modelMaps));
+                    }
+                }
+            );
+        },
+
+        //
+        modifyCity: function(data, callback){
+            var me = this, postData = {};
+
+            // 转换
+            _.map(data, function(i){postData[i.name] = i.value});
+
+            ajaxSend(
+                "/admin/city/city/modify_city", 
+                postData,
+                function(data){
+                    if(callback){
+                        callback(data);
+                    }
+                }
+            );
+        }
+
+    });
+
+    // listView
+    var ListView = Backbone.View.extend({
+        el: '#city_list',
+
+        pagination: new $.Global.Pagination.PaginationView(),
+
+        template: _.template($('#city_template').html()),
+
+        initialize: function(){
+            this.listenTo(this.collection, 'reset', this.render);
+        },
+
+        events: {
+            'click .search': 'search',
+            'click .pointer': 'modifyCity'
+        },
+
+        // 渲染函数
+        render: function(){
+            var data = this.collection.toJSON();
+
+            this.showPanel();
+
+            this.$('tbody').html(this.template({'citys': data}));
+
+            this.pagination.render(
+                this.collection.pageIndex||1, 
+                this.collection.pageCount, 
+                'search/' + this.collection.name + '/' + this.collection.isShow + '/' + this.collection.sortByProvince
+            );
+        },
+
+        // 显示面板
+        showPanel: function(){
+            $('.qx-nav-pills a[href="#city_list"]').tab('show');
+        },
+
+        search: function(){
+            var isShow = this.$('.is-show').val(),
+                name = this.$('.key-word').val(),
+                sortByProvince = this.$('.sort-by-province').attr('checked') ? 1 : 0;
+
+            router.navigate(String.format('/search/{0}/{1}/{2}/1', name, isShow, sortByProvince), {trigger: true});
+        },
+
+        modifyCity: function(sender){
+            var target = $(sender.currentTarget),
+                cityId = target.data('city_id');
+
+            router.navigate('/modify/' + cityId, {trigger: true});
+        }
+    });
+
+    // modifyView
+    var ModifyView = Backbone.View.extend({
+        
+        el: '#modify_city',
+
+        template: _.template($('#modify_city_template').html()),
+
+        events: {
+            'click .save': 'save'
+        },
+
+        // 显示面板
+        showPanel: function(){
+            $('.qx-nav-pills a[href="#modify_city"]').tab('show');
+        },
+
+        // 渲染
+        render: function(data){
+            this.$el.html(this.template(data));
+        },
+
+        // 显示提问信息
+        modifyCity: function(cityId){
+            var me = this;
+
+            this.collection.getOne(cityId, function(data){
+                if(data){
+                    me.render(data);
+                    me.showPanel();
+                } else {
+                    setTimeout(function(){history.go(-1);}, 3000);
+                    $.Global.Notice.ErrorTopNotice("没有找到对应的城市!");
+                }
+            });
+        },
+
+        // 保存
+        save: function(){
+            var cityId = this.$('form').data('city_id'),
+                me = this;
+
+            me.collection.modifyCity(this.$('form').serializeArray(), function(data){
+                if(data.errcode === 0){
+                    $.Global.Notice.SuccessTopNotice('操作成功!');
+                    router.navigate('modify/' + cityId, {'trigger': true});
+                } else {
+                    $.Global.Notice.ErrorTopNotice(data.errmsg);
+                }
+            })
+        }
+
+
+    });
+
+    
+    // router
+    var Router = Backbone.Router.extend({
+
+        routes: {
+            "":                             "search",
+            "modify/:cityId":         "modify",
+            "search/(:name)/(:isShow)/(:sortByProvince)/:pageIndex":    "search",
+        },
+
+        // 查询
+        search: function(name, isShow, sortByProvince, pageIndex){
+            citys.search(name||'', isShow||'-1', sortByProvince||0, pageIndex||1);
+        },
+
+        // 显示修改界面
+        modify: function(cityId){
+            modifyView.modifyCity(cityId);
+        }
+
+    });
+    
+    // 初始化
+    var citys = new Citys(),
+        listView = new ListView({'collection': citys}),
+        modifyView = new ModifyView({'collection': citys}),
+        router = new Router();
+ 
+    Backbone.history.start();
+
+});
+
+</script>
+{% endblock %}
+
+{% block right %}
+<ul class="nav nav-pills pt-15 qx-nav-pills">
+    <li class="active">
+        <a href="#city_list" class="black-blue" data-toggle="pill">城市列表</a>
+    </li>
+    <li>
+        <a href="#modify_city" class="black-blue" data-toggle="pill">修改城市信息</a>
+    </li>
+</ul>
+
+<div class="tab-content">
+    <!-- 客户经理列表 -->
+    <div class="tab-pane fade pt-15 in active" id="city_list">
+        <form action="." onsubmit="javascript: return false;">
+            <div class="pl-0 pr-0 pb-10 col-md-2">
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" class="sort-by-province" name="sort_by_province" value="1">
+                        按省份排序
+                    </label>
+                </div>
+            </div>
+            <div class="pl-0 pr-5 pb-10 col-md-2">
+                <select class="form-control input-sm is-show">
+                    <option value="-1">全部城市</option>
+                    <option value="0">未开放</option>
+                    <option value="1">已经开放</option>
+                </select>
+            </div>
+            <div class="pl-0 pb-10 col-md-3">
+                <div class="input-group input-group-sm">
+                    <input type="text" class="form-control border-radius-0 key-word" placeholder="输入城市名称..." />
+                    <span class="input-group-btn">
+                        <button class="btn btn-default search" type="submit">查询</button>
+                    </span>
+                </div>
+            </div>
+        </form>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>城市名称</th>
+                    <th>所属省份</th>
+                    <th>拼音</th>
+                    <th>拼音简写</th>
+                    <th>排序</th>
+                    <th>是否开放</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+            </tbody>
+        </table>
+
+        <div class="text-center">
+            <ul class="pagination pagination-sm qx-pagination">
+                
+            </ul>
+        </div>
+    </div>
+
+    <!-- 修改客户经理信息 -->
+    <div class="tab-pane fade" id="modify_city">
+        
+    </div>
+</div>
+
+<!-- 客户经理列表 -->
+<script type="text/template" id="city_template">
+    <% _.each(citys, function(city){ %>
+        <tr class="pointer" data-city_id="<%= city.cityId %>">
+            <td><%= city.num %></td>
+            <td><%= city.cityName %></td>
+            <td><%= city.provinceName %></td>
+            <td><%= city.pinyin %></td>
+            <td><%= city.pinyinAbbr %></td>
+            <td><%= city.sort %></td>
+            <td>
+                <% if(!city.isShow){ %>
+                <span class="fa fa-times co2" title="未开放"></span>
+                <% } else { %>
+                <span class="fa fa-check co6" title="已开放"></span>
+                <% } %>
+            </td>
+        </tr>
+    <% }) %>
+</script>
+
+<!-- 修改问题模板 -->
+<script type="text/template" id="modify_city_template">
+    <form class="form-horizontal" data-city_id="<%= cityId %>" role="form" method="post" action="">
+        <input type="hidden" name="city_id" value="<%= cityId %>" />
+        <div class="form-group pt-20 pb-20 mb-0 bottom-border bdc-eee">
+            <label class="col-sm-2 control-label">城市名称</label>
+            <div class="col-sm-6">
+                <input type="text" class="form-control" name="name" value='<%= cityName %>'>
+            </div>
+        </div>
+        <div class="form-group pt-20 pb-20 mb-0 bottom-border bdc-eee">
+            <label class="col-sm-2 control-label">所属省份</label>
+            <div class="col-sm-3">
+                <p class="form-control-static"><%= provinceName %></p>
+            </div>
+        </div>
+        <div class="form-group pt-20 pb-20 mb-0 bottom-border bdc-eee">
+            <label class="col-sm-2 control-label">拼音</label>
+            <div class="col-sm-3">
+                <input type="text" class="form-control" name="pinyin" value='<%= pinyin %>'>
+            </div>
+        </div>
+        <div class="form-group pt-20 pb-20 mb-0 bottom-border bdc-eee">
+            <label class="col-sm-2 control-label">拼音简写</label>
+            <div class="col-sm-3">
+                <input type="text" class="form-control" name="pinyin_abbr" value='<%= pinyinAbbr %>'>
+            </div>
+        </div>
+        <div class="form-group pt-20 pb-20 mb-0 bottom-border bdc-eee">
+            <label class="col-sm-2 control-label">排序</label>
+            <div class="col-sm-2">
+                <input type="text" class="form-control" name="sort" value='<%= sort %>'>
+            </div>
+        </div>
+        <div class="form-group pt-20 pb-20 mb-0 bottom-border bdc-eee">
+            <label class="col-sm-2 control-label">状态</label>
+            <div class="col-sm-2">
+                <div class="radio">
+                    <label>
+                        <input type="radio" name="is_show" value="1" <% if(isShow=="1"){ %>checked="checked"<% } %> >
+                        开放
+                    </label>
+                </div>
+                <div class="radio">
+                    <label>
+                        <input type="radio" name="is_show" value="0" <% if(isShow=="0"){ %>checked="checked"<% } %> >
+                        未开放
+                    </label>
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-group pt-20 pb-20 mb-0 bottom-border bdc-eee">
+            <div class="col-sm-12">
+                <button type="button" class="btn btn-primary save">提交你的修改</button>
+                <button type="button" class="btn btn-danger ml-15 remove none">删除此友情链接</button>
+            </div>
+        </div>
+    </form>
+</script>
+
+{% endblock right %}

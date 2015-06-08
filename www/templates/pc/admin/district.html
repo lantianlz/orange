@@ -1,0 +1,385 @@
+{% extends "pc/admin/home.html" %}
+{% load custom_tags %}
+{% load custom_filters %}
+{% block title %}区管理{% endblock %}
+
+{% block css %}
+<style type="text/css">
+
+</style>
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript">
+$(document).ready(function(){
+    // models
+    var District = Backbone.Model.extend({
+
+        // 默认值
+        defaults: {
+            'num': ''
+        }
+
+    });
+
+    // collections
+    var Districts = Backbone.Collection.extend({
+        model: District,
+
+        _modelMaps: {
+            'num': 'num',
+            'districtId': 'district_id',
+            'districtName': 'district_name',
+            'cityId': 'city_id',
+            'cityName': 'city_name',
+            'isShow': 'is_show',
+            'pinyin': 'pinyin',
+            'pinyinAbbr': 'pinyin_abbr',
+            'cityPinyinAbbr': 'city_pinyin_abbr',
+            'sort': 'sort_num',
+        },
+
+        // 查询
+        search: function(name, cityName, isShow, pageIndex){
+            var me = this;
+
+            ajaxSend(
+                "/admin/city/district/search", 
+                {'name': name||'', 'city_name': cityName||'', 'is_show': isShow||0, 'page_index': pageIndex||1}, 
+                function(data){
+                    me.pageIndex = pageIndex||1;
+                    me.pageCount = data.page_count;
+                    me.name = name||'';
+                    me.cityName = cityName||'';
+                    me.isShow = isShow||0;
+
+                    me.reset($.Global.Utils.dictMapParse(data.data, me._modelMaps));
+                }
+            );
+        },
+
+        // 获取一个提问的model
+        getOne: function(districtId, callback){
+            var me = this;
+
+            ajaxSend(
+                "/admin/city/district/get_district_by_id", 
+                {'district_id': districtId},
+                function(data){
+                    if(callback){
+                        callback($.Global.Utils.dictMap(data, me._modelMaps));
+                    }
+                }
+            );
+        },
+
+        //
+        modifyDistrict: function(data, callback){
+            var me = this, postData = {};
+
+            // 转换
+            _.map(data, function(i){postData[i.name] = i.value});
+
+            ajaxSend(
+                "/admin/city/district/modify_district", 
+                postData,
+                function(data){
+                    if(callback){
+                        callback(data);
+                    }
+                }
+            );
+        }
+
+    });
+
+    // listView
+    var ListView = Backbone.View.extend({
+        el: '#district_list',
+
+        pagination: new $.Global.Pagination.PaginationView(),
+
+        template: _.template($('#district_template').html()),
+
+        initialize: function(){
+            this.listenTo(this.collection, 'reset', this.render);
+        },
+
+        events: {
+            'click .search': 'search',
+            'click .pointer': 'modifyDistrict'
+        },
+
+        // 渲染函数
+        render: function(){
+            var data = this.collection.toJSON();
+
+            this.showPanel();
+
+            this.$('tbody').html(this.template({'districts': data}));
+
+            this.pagination.render(
+                this.collection.pageIndex||1, 
+                this.collection.pageCount, 
+                'search/' + this.collection.name + '/' + this.collection.cityName + '/' + this.collection.isShow
+            );
+        },
+
+        // 显示面板
+        showPanel: function(){
+            $('.qx-nav-pills a[href="#district_list"]').tab('show');
+        },
+
+        search: function(){
+            var isShow = this.$('.is-show').val(),
+                name = this.$('.key-word').val(),
+                cityName = this.$('.key-word-city').val();
+
+            router.navigate(String.format('/search/{0}/{1}/{2}/1', name, cityName, isShow), {trigger: true});
+        },
+
+        modifyDistrict: function(sender){
+            var target = $(sender.currentTarget),
+                districtId = target.data('district_id');
+
+            router.navigate('/modify/' + districtId, {trigger: true});
+        }
+
+    });
+
+    // modifyView
+    var ModifyView = Backbone.View.extend({
+        
+        el: '#modify_district',
+
+        template: _.template($('#modify_district_template').html()),
+
+        events: {
+            'click .save': 'save'
+        },
+
+        // 显示面板
+        showPanel: function(){
+            $('.qx-nav-pills a[href="#modify_district"]').tab('show');
+        },
+
+        // 渲染
+        render: function(data){
+            this.$el.html(this.template(data));
+        },
+
+        // 显示提问信息
+        modifyDistrict: function(districtId){
+            var me = this;
+
+            this.collection.getOne(districtId, function(data){
+                if(data){
+                    me.render(data);
+                    me.showPanel();
+                } else {
+                    setTimeout(function(){history.go(-1);}, 3000);
+                    $.Global.Notice.ErrorTopNotice("没有找到对应的区");
+                }
+            });
+        },
+
+        // 保存
+        save: function(){
+            var districtId = this.$('form').data('district_id'),
+                me = this;
+
+            me.collection.modifyDistrict(this.$('form').serializeArray(), function(data){
+                if(data.errcode === 0){
+                    $.Global.Notice.SuccessTopNotice('操作成功!');
+                    router.navigate('modify/' + districtId, {'trigger': true});
+                } else {
+                    $.Global.Notice.ErrorTopNotice(data.errmsg);
+                }
+            })
+        }
+
+    });
+
+    
+    // router
+    var Router = Backbone.Router.extend({
+
+        routes: {
+            "":                             "search",
+            "modify/:districtId":         "modify",
+            "search/(:name)/(:cityName)/(:isShow)/:pageIndex":    "search",
+        },
+
+        // 查询
+        search: function(name, cityName, isShow, pageIndex){
+            districts.search(name||'', cityName||'', isShow||'-1', pageIndex||1);
+        },
+
+        // 显示修改界面
+        modify: function(districtId){
+            modifyView.modifyDistrict(districtId);
+        }
+
+    });
+    
+    // 初始化
+    var districts = new Districts(),
+        listView = new ListView({'collection': districts}),
+        modifyView = new ModifyView({'collection': districts}),
+        router = new Router();
+ 
+    Backbone.history.start();
+
+});
+
+</script>
+{% endblock %}
+
+{% block right %}
+<ul class="nav nav-pills pt-15 qx-nav-pills">
+    <li class="active">
+        <a href="#district_list" class="black-blue" data-toggle="pill">区列表</a>
+    </li>
+    <li>
+        <a href="#modify_district" class="black-blue" data-toggle="pill">修改区信息</a>
+    </li>
+</ul>
+
+<div class="tab-content">
+    <!-- 客户经理列表 -->
+    <div class="tab-pane fade pt-15 in active" id="district_list">
+        <form action="." onsubmit="javascript: return false;">
+            <div class="pl-0 pr-5 pb-10 col-md-2">
+                <select class="form-control input-sm is-show">
+                    <option value="-1">全部区</option>
+                    <option value="0">未开放</option>
+                    <option value="1">已经开放</option>
+                </select>
+            </div>
+            <div class="pl-0 pr-0 pb-10 col-md-2">
+                <div class="input-group input-group-sm">
+                    <input type="text" class="form-control key-word-city" placeholder="输入城市名称">
+                </div>
+            </div>
+            <div class="pl-0 pb-10 col-md-3">
+                <div class="input-group input-group-sm">
+                    <input type="text" class="form-control border-radius-0 key-word" placeholder="输入区名称..." />
+                    <span class="input-group-btn">
+                        <button class="btn btn-default search" type="submit">查询</button>
+                    </span>
+                </div>
+            </div>
+        </form>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>区名称</th>
+                    <th>所属城市</th>
+                    <th>拼音</th>
+                    <th>拼音简写</th>
+                    <th>排序</th>
+                    <th>状态</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+            </tbody>
+        </table>
+
+        <div class="text-center">
+            <ul class="pagination pagination-sm qx-pagination">
+                
+            </ul>
+        </div>
+    </div>
+
+    <!-- 修改客户经理信息 -->
+    <div class="tab-pane fade" id="modify_district">
+        
+    </div>
+</div>
+
+<!-- 客户经理列表 -->
+<script type="text/template" id="district_template">
+    <% _.each(districts, function(district){ %>
+        <tr class="pointer" data-district_id="<%= district.districtId %>">
+            <td><%= district.num %></td>
+            <td><%= district.districtName %></td>
+            <td><%= district.cityName %></td>
+            <td><%= district.pinyin %></td>
+            <td><%= district.pinyinAbbr %></td>
+            <td><%= district.sort %></td>
+            <td>
+                <% if(!district.isShow){ %>
+                <span class="fa fa-times co2" title="未开放"></span>
+                <% } else { %>
+                <span class="fa fa-check co6" title="已开放"></span>
+                <% } %>
+            </td>
+        </tr>
+    <% }) %>
+</script>
+
+<!-- 修改问题模板 -->
+<script type="text/template" id="modify_district_template">
+    <form class="form-horizontal" data-district_id="<%= districtId %>" role="form" method="post" action="">
+        <input type="hidden" name="district_id" value="<%= districtId %>" />
+        <div class="form-group pt-20 pb-20 mb-0 bottom-border bdc-eee">
+            <label class="col-sm-2 control-label">区名称</label>
+            <div class="col-sm-6">
+                <input type="text" class="form-control" name="name" value='<%= districtName %>'>
+            </div>
+        </div>
+        <div class="form-group pt-20 pb-20 mb-0 bottom-border bdc-eee">
+            <label class="col-sm-2 control-label">所属城市</label>
+            <div class="col-sm-3">
+                <p class="form-control-static"><%= cityName %></p>
+            </div>
+        </div>
+        <div class="form-group pt-20 pb-20 mb-0 bottom-border bdc-eee">
+            <label class="col-sm-2 control-label">拼音</label>
+            <div class="col-sm-3">
+                <input type="text" class="form-control" name="pinyin" value='<%= pinyin %>'>
+            </div>
+        </div>
+        <div class="form-group pt-20 pb-20 mb-0 bottom-border bdc-eee">
+            <label class="col-sm-2 control-label">拼音简写</label>
+            <div class="col-sm-3">
+                <input type="text" class="form-control" name="pinyin_abbr" value='<%= pinyinAbbr %>'>
+            </div>
+        </div>
+        <div class="form-group pt-20 pb-20 mb-0 bottom-border bdc-eee">
+            <label class="col-sm-2 control-label">排序</label>
+            <div class="col-sm-2">
+                <input type="text" class="form-control" name="sort" value='<%= sort %>'>
+            </div>
+        </div>
+        <div class="form-group pt-20 pb-20 mb-0 bottom-border bdc-eee">
+            <label class="col-sm-2 control-label">状态</label>
+            <div class="col-sm-2">
+                <div class="radio">
+                    <label>
+                        <input type="radio" name="is_show" value="1" <% if(isShow=="1"){ %>checked="checked"<% } %> >
+                        开放
+                    </label>
+                </div>
+                <div class="radio">
+                    <label>
+                        <input type="radio" name="is_show" value="0" <% if(isShow=="0"){ %>checked="checked"<% } %> >
+                        未开放
+                    </label>
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-group pt-20 pb-20 mb-0 bottom-border bdc-eee">
+            <div class="col-sm-12">
+                <button type="button" class="btn btn-primary save">提交你的修改</button>
+                <button type="button" class="btn btn-danger ml-15 remove none">删除此友情链接</button>
+            </div>
+        </div>
+    </form>
+</script>
+
+{% endblock right %}

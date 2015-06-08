@@ -1,0 +1,22 @@
+<div class="pagebar text-center">
+	<ul class="pagination pagination-sm">
+
+		<li title="上一页" {% if page == 1 %}class="disabled"{% endif %}>
+			<a {% if page != 1 %}href="{{pre_url}}"{% endif %}>&laquo;</a>
+		</li>
+		{% for p in page_items_with_url %}
+		{% if p.0 == page %}
+        	<li class="active"><a>{{p.0}}</a></li>
+        {% else %}
+	        {% if p.0 == '...' %}
+        		<li class="disabled"><a href="javascript:void(0);">{{p.0}}</a></li>
+	        {% else %}
+	        	<li><a href="{{p.1}}">{{p.0}}</a></li>
+	        {% endif %}
+        {% endif %}
+		{% endfor %}
+		<li title="下一页" {% if page >= total_page %}class="disabled"{% endif %}>
+			<a {% if page < total_page%}href="{{next_url}}"{% endif %}>&raquo;</a>
+		</li>
+	</ul>
+</div>

@@ -1,0 +1,638 @@
+{% extends "pc/admin/home.html" %}
+{% load custom_tags %}
+{% load custom_filters %}
+{% block title %}用户管理{% endblock %}
+
+{% block css %}
+<style type="text/css">
+
+</style>
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript">
+$(document).ready(function(){
+    var User = Backbone.Model.extend({
+        defaults: {
+
+        }
+    });
+
+    var Users = Backbone.Collection.extend({
+        model: User,
+
+        _modelMaps: {
+            'num': 'num',
+            'userId': 'user_id',
+            'userAvatar': 'user_avatar',
+            'userAvatar300': 'user_avatar_300',
+            'userNick': 'user_nick',
+            'userDesc': 'user_des',
+            'userEmail': 'user_email',
+            'userGender': 'user_gender',
+            'birthday': 'birthday',
+            'isAdmin': 'is_admin',
+            'isManager': 'is_manager',
+            'lastActive': 'last_active',
+            'state': 'state',
+            'ip': 'ip',
+            'source': 'source',
+            'registerDate': 'register_date'
+        },
+
+        search: function(email, userNick, pageIndex){
+            var me = this;
+
+            ajaxSend(
+                "/admin/user/user/search", 
+                {'email': email||'', 'user_nick': userNick||'', 'page_index': pageIndex||1}, 
+                function(data){
+                    
+                    me.pageIndex = pageIndex;
+                    me.pageCount = data.page_count;
+                    me.userNick = userNick||'';
+                    me.email = email||'';
+
+                    me.reset($.Global.Utils.dictMapParse(data.data, me._modelMaps));
+                }
+            );
+        },
+
+        getOne: function(userId, callback){
+            var me = this;
+
+            ajaxSend(
+                "/admin/user/user/get_user_by_id", 
+                {'user_id': userId},
+                function(data){
+                    if(callback){
+                        callback($.Global.Utils.dictMap(data, me._modelMaps));
+                    }
+                }
+            );
+        },
+
+        // 删除
+        removeUser: function(userId, callback){
+            var me = this;
+
+            ajaxSend(
+                "/admin/user/user/remove_user", 
+                {'user_id': userId},
+                function(data){
+                    if(callback){
+                        callback(data);
+                    }
+                }
+            );
+        },
+
+        //
+        modifyUser: function(data, callback){
+            var me = this;
+
+            ajaxSend(
+                "/admin/user/user/modify_user?" + data, 
+                {},
+                function(data){
+                    if(callback){
+                        callback(data);
+                    }
+                }
+            );
+        },
+
+        addUser: function(data, callback){
+
+            ajaxSend(
+                "/admin/user/user/add_user", 
+                data,
+                function(response){
+                    if(callback){
+                        callback(response);
+                    }
+                }
+            );
+        },
+
+        changePwd: function(userId, pwd, callback){
+            ajaxSend(
+                "/admin/user/user/change_pwd", 
+                {"user_id": userId, "pwd": pwd},
+                function(response){
+                    if(callback){
+                        callback(response);
+                    }
+                }
+            );
+        }
+        
+    });
+    
+    var ListView = Backbone.View.extend({
+        el: '#user_list',
+
+        template: _.template($('#user_list_template').html()),
+
+        pagination: new $.Global.Pagination.PaginationView(),
+
+        events: {
+            'click .search-user': 'searchUser',
+            'click .modify-user': 'modifyUser'
+        },
+
+        initialize: function(){
+            this.listenTo(this.collection, 'reset', this.render);
+        },
+
+        render: function(){
+            var data = this.collection.toJSON();
+            
+            this.showPanel();
+            this.$('tbody').html(this.template({'users': data}));
+            this.pagination.render(
+                this.collection.pageIndex||1, 
+                this.collection.pageCount, 
+                'search/' + this.collection.email + '/' + this.collection.userNick
+            );
+        },
+
+        // 显示面板
+        showPanel: function(){
+            $('.qx-nav-pills a[href="#user_list"]').tab('show');
+        },
+
+        searchUser: function(){
+            var userNick = this.$('.key-word').val(),
+                email = this.$('.email').val();
+
+            router.navigate(String.format('/search/{0}/{1}/1', email, userNick), {trigger: true});
+        },
+
+        modifyUser: function(sender){
+            var target = $(sender.currentTarget),
+                userId = target.data('user_id');
+
+            router.navigate('/modify/' + userId, {trigger: true});
+        }
+        
+    });
+    
+
+    var ModifyView = Backbone.View.extend({
+        
+        el: '#modify_user',
+
+        template: _.template($('#modify_user_template').html()),
+
+        events: {
+            'click .save': 'save',
+            'click .remove': 'remove'
+        },
+
+        // 显示面板
+        showPanel: function(){
+            $('.qx-nav-pills a[href="#modify_user"]').tab('show');
+        },
+
+        // 渲染
+        render: function(data){
+            this.$el.html(this.template(data));
+
+            this.initDate();
+        },
+
+        initDate: function(){
+            $('#birthday_modify').datetimepicker({
+                format: 'yyyy-mm-dd',
+                language: 'zh-CN',
+                minView: 2,
+                autoclose: true
+            });
+        },
+
+        // 显示提问信息
+        modifyUser: function(userId){
+            var me = this;
+
+            this.collection.getOne(userId, function(data){
+
+                if(data){
+                    me.render(data);
+                    me.showPanel();
+                } else {
+                    setTimeout(function(){history.go(-1);}, 3000);
+                    $.Global.Notice.ErrorTopNotice('没有找到对应的用户!');
+                }
+            });
+        },
+
+        // 保存
+        save: function(){
+            var userId = this.$('form').data('user_id'),
+                me = this;
+
+            me.collection.modifyUser(this.$('form').serialize(), function(data){
+                if(data.errcode === 0){
+                    $.Global.Notice.SuccessTopNotice('操作成功');
+                    router.navigate('modify/' + userId, {'trigger': true});
+                } else {
+                    $.Global.Notice.ErrorTopNotice(data.errmsg);
+                }
+            })
+        }
+
+    });
+
+    
+    var AddView = Backbone.View.extend({
+        el: 'body',
+
+        template: _.template($('#add_user_template').html()),
+
+        showPanel: function(){
+            var me = this;
+
+            me.render();
+        },
+
+        render: function(){
+            var me = this;
+
+            $('#add_user_modal').remove();
+            
+            $('body').append(this.template());
+
+            // 绑定事件
+            $('#add_user_modal .cancel').bind('click', function(){
+                history.go(-1);
+            });
+            $('#add_user_modal .ok').bind('click', function(){
+                me.addUser();
+            });
+            
+            $('#add_user_modal').modal({'show': true, 'backdrop': 'static'});
+
+        },
+
+        addUser: function(){
+            var me = this;
+            
+            if(!$('#add_user_modal form').valid()){
+                return;
+            }
+
+            users.addUser($.Global.Utils.formToDict($('#add_user_modal form')), function(data){
+                if(data.errcode == "0"){
+                    router.navigate('modify/' + data.errmsg, {trigger: true});
+                    $('#add_user_modal').modal('hide');
+                    $.Global.Notice.SuccessTopNotice("操作成功");
+                } else {
+                    $.Global.Notice.ErrorTopNotice(data.errmsg);
+                }
+            })
+        }
+
+    });
+
+
+    var ChangePwdView = Backbone.View.extend({
+        el: 'body',
+
+        template: _.template($('#change_pwd_template').html()),
+
+        userId: "",
+
+        showPanel: function(userId){
+            var me = this;
+            me.userId = userId;
+
+            me.render();
+        },
+
+        render: function(){
+            var me = this;
+
+            $('#change_pwd_modal').remove();
+            
+            $('body').append(this.template());
+
+            // 绑定事件
+            $('#change_pwd_modal .cancel').bind('click', function(){
+                history.go(-1);
+            });
+            $('#change_pwd_modal .ok').bind('click', function(){
+                me.changePwd();
+            });
+            
+            $('#change_pwd_modal').modal({'show': true, 'backdrop': 'static'});
+
+        },
+
+        changePwd: function(){
+            var me = this;
+            
+            if(!$('#change_pwd_modal form').valid()){
+                return;
+            }
+
+            users.changePwd(me.userId, $('#change_pwd_modal .pwd').val(), function(data){
+                if(data.errcode == "0"){
+                    $('#change_pwd_modal').modal('hide');
+                    $.Global.Notice.SuccessTopNotice("操作成功");
+                    router.navigate('modify/' + me.userId, {'trigger': true});
+                } else {
+                    $.Global.Notice.ErrorTopNotice(data.errmsg);
+                }
+            })
+        }
+
+    });
+
+
+    var Router = Backbone.Router.extend({
+        routes: {
+            "":                              "search",
+            "search/(:email)/(:userNick)/:pageIndex": "search",
+            "modify/:userId":                "modify",
+            "add":                   "add",
+            "changePwd/:userId":             "changePwd"
+        },
+
+        // 获取推荐用户
+        search: function(email, userNick, pageIndex){
+            users.search(email||'', userNick||'', pageIndex||1);
+        },
+
+        modify: function(userId){
+            modifyView.modifyUser(userId);
+        },
+
+        add: function(){
+            addView.showPanel();
+        },
+
+        changePwd: function(userId){
+            changePwdView.showPanel(userId);
+        }
+
+    });
+
+    var users = new Users(),
+        listView = new ListView({collection: users}),
+        modifyView = new ModifyView({collection: users}),
+        addView = new AddView(),
+        changePwdView = new ChangePwdView(),
+        router = new Router();
+
+    Backbone.history.start();
+});
+
+</script>
+{% endblock %}
+
+{% block right %}
+<ul class="nav nav-pills pt-15 qx-nav-pills">
+    <li class="active">
+        <a href="#user_list" class="black-blue" data-toggle="pill">用户列表</a>
+    </li>
+    <li>
+        <a href="#modify_user" class="black-blue" data-toggle="pill">修改用户信息</a>
+    </li>
+    <li class="pull-right">
+        <a href="#add" class="black-blue">添加用户</a>
+    </li>
+</ul>
+
+<div class="tab-content">
+    <!-- 用户列表 -->
+    <div class="tab-pane fade pt-15 in active" id="user_list">
+        <form action="." onsubmit="javascript: return false;">
+            <div class="pl-0 pb-10 col-md-4">
+                <input type="text" class="form-control email input-sm" placeholder="输入用户邮箱..." />
+            </div>
+            <div class="pl-0 pb-10 col-md-3">
+                <div class="input-group input-group-sm">
+                    <input type="text" class="form-control border-radius-0 key-word" placeholder="输入用户呢称..." />
+                    <span class="input-group-btn">
+                        <button class="btn btn-default search-user" type="submit">查询</button>
+                    </span>
+                </div>
+            </div>
+        </form>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>头像</th>
+                    <th>用户名称</th>
+                    <th>邮箱</th>
+                    <th>来源</th>
+                    <th>是否管理员</th>
+                    <th>注册时间</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+            </tbody>
+        </table>
+
+        <div class="text-center">
+            <ul class="pagination pagination-sm qx-pagination">
+                
+            </ul>
+        </div>
+    </div>
+
+    <!-- 修改用户信息 -->
+    <div class="tab-pane fade pt-15" id="modify_user">
+        
+    </div>
+</div>
+
+<script type="text/template" id="user_list_template">
+<% _.each(users, function(user){ %>
+    <tr>
+        <td><%= user.num %></td>
+        <td>
+            <a target="_blank" href="/p/<%= user.userId %>">
+                <img src="<%= user.userAvatar %>" class="avatar-35 avatar-circle" >
+            </a>
+        </td>
+        <td class="pointer modify-user" data-user_id="<%= user.userId %>"><%= user.userNick %></td>
+        <td>
+            <%= user.userEmail %>
+        </td>
+        <td>
+            <%= user.source %>
+        </td>
+        <td>
+            <% if (user.isAdmin) { %>
+                <a href="/admin/permission#modifyUserPermission/<%= user.userId %>" title="修改管理员权限">
+                    <span class="fa fa-check co6 f18"></span>
+                </a>
+            <% } else if(!user.isAdmin && user.state) { %>
+                <a href="/admin/permission#addAdmin/<%= user.userId %>" title="设置管理员"><span class="fa fa-check co3 pointer f18"></span></a>
+            <% } %>
+        </td>
+        <td>
+            <%= user.registerDate %>
+        </td>
+    </tr>
+<% }) %>
+</script>
+
+<script type="text/template" id="modify_user_template">
+<form class="form-horizontal" data-user_id='<%= userId %>' role="form" method="post" action="">
+    <input type="hidden" name="user_id" value="<%= userId %>" />
+    <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
+        <label class="col-sm-2 control-label">用户头像</label>
+        <div class="col-sm-5">
+            <img class="avatar-circle" src="<%= userAvatar300 %>">
+        </div>
+    </div>
+    <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
+        <label class="col-sm-2 control-label">用户呢称</label>
+        <div class="col-sm-5">
+            <input type="text" class="form-control" name='nick' value='<%= userNick %>'>
+        </div>
+    </div>
+    <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
+        <label class="col-sm-2 control-label">用户邮箱</label>
+        <div class="col-sm-5">
+            <p class="form-control-static"><%= userEmail %></p>
+        </div>
+    </div>
+    <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
+        <label class="col-sm-2 control-label">用户性别</label>
+        <div class="col-sm-2">
+            <select name="gender" class="form-control">
+                <option value="0" <% if(userGender == 0){ %> selected <% } %> >未设置</option>
+                <option value="1" <% if(userGender == 1){ %> selected <% } %> >男</option>
+                <option value="2" <% if(userGender == 2){ %> selected <% } %> >女</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
+        <label class="col-sm-2 control-label">出生日期</label>
+        <div class="col-sm-2">
+            <input type="text" class="form-control" readonly name='birthday' id="birthday_modify" value='<%= birthday %>'>
+        </div>
+    </div>
+    <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
+        <label class="col-sm-2 control-label">个人简介</label>
+        <div class="col-sm-6">
+            <textarea name="des" rows="6" class="form-control" placeholder=""><%= userDesc %></textarea>
+        </div>
+    </div>
+    <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
+        <label class="col-sm-2 control-label">上次活跃时间</label>
+        <div class="col-sm-6">
+            <p class="form-control-static"><%= lastActive %></p>
+        </div>
+    </div>
+    <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
+        <label class="col-sm-2 control-label">注册ip</label>
+        <div class="col-sm-6">
+            <p class="form-control-static"><%= ip %></p>
+        </div>
+    </div>
+    <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
+        <label class="col-sm-2 control-label">注册日期</label>
+        <div class="col-sm-6">
+            <p class="form-control-static"><%= registerDate %></p>
+        </div>
+    </div>
+    <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
+        <label class="col-sm-2 control-label">用户状态</label>
+        <div class="col-sm-2">
+            <select name="state" class="form-control">
+                {% for state in states %}
+                <option value="{{state.value}}" <% if(state == {{state.value}}){ %> selected <% } %> >{{state.name}}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
+        <div class="col-sm-12">
+            <button type="button" class="btn btn-primary save">提交你的修改</button>
+
+            <a href="#changePwd/<%= userId %>" class="btn btn-orange change-pwd ml-25">修改用户密码</a>
+        </div>
+    </div>
+</form>
+</script>
+
+<script type="text/template" id="add_user_template">
+<div class="modal fade" id="add_user_modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header pb-5">
+                <!-- <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button> -->
+                <h4 class="modal-title">添加用户</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" role="form" method="post" action="">
+                    <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
+                        <label class="col-sm-2 control-label">用户呢称</label>
+                        <div class="col-sm-5">
+                            <input type="text" class="form-control" name='nick' value=''>
+                        </div>
+                    </div>
+                    <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
+                        <label class="col-sm-2 control-label">用户邮箱</label>
+                        <div class="col-sm-5">
+                            <input type="text" class="form-control" name='email' value=''>
+                        </div>
+                    </div>
+                    <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
+                        <label class="col-sm-2 control-label">密码</label>
+                        <div class="col-sm-5">
+                            <input type="text" class="form-control" name='password' value=''>
+                        </div>
+                    </div>
+                    <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
+                        <label class="col-sm-2 control-label">确认密码</label>
+                        <div class="col-sm-5">
+                            <input type="text" class="form-control" name='re_password' value=''>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default cancel" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary ok">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+</script>
+
+
+<script type="text/template" id="change_pwd_template">
+<div class="modal fade" id="change_pwd_modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header pb-5">
+                <!-- <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button> -->
+                <h4 class="modal-title">修改用户密码</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" role="form" method="post" action="">
+                    <div class="form-group pt-20 pb-20 mb-0">
+                        <label class="col-sm-2 control-label">密码</label>
+                        <div class="col-sm-5">
+                            <input type="text" class="form-control pwd" name='password' value=''>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default cancel" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary ok">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+</script>
+{% endblock right %}

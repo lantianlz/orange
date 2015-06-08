@@ -1,0 +1,111 @@
+{% extends "pc/admin/home.html" %}
+{% load custom_tags %}
+{% load custom_filters %}
+{% block title %}缓存管理{% endblock %}
+
+{% block css %}
+<style type="text/css">
+</style>
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript">
+$(document).ready(function(){
+
+    $('.key-name').bind('blur', function(){
+
+        ajaxSend(
+            "/admin/tools/caches/get_cache", 
+            $.Global.Utils.formToDict('form'),
+            function(data){
+                if(data.errcode == 0){
+                    $('.key-value').val(data.errmsg[0]);
+                    $('.key-expire').val(data.errmsg[1]);
+                } else {
+                    $.Global.Notice.ErrorTopNotice(data.errmsg);
+                }
+            }
+        );
+    });
+
+    $('.save').bind('click', function(){
+
+        ajaxSend(
+            "/admin/tools/caches/modify_cache" , 
+            $.Global.Utils.formToDict('form'),
+            function(data){
+                $.Global.Notice.InfoTopNotice(data.errmsg);
+            }
+        );
+
+    });
+
+    $('.remove').bind('click', function(){
+
+        if(confirm('确认要删除此缓存?')){
+            ajaxSend( 
+                "/admin/tools/caches/remove_cache", 
+                $.Global.Utils.formToDict('form'),
+                function(data){
+                    $.Global.Notice.InfoTopNotice(data.errmsg);
+                }
+            );
+        }
+
+    });
+});
+
+</script>
+{% endblock %}
+
+{% block right %}
+<div>
+    <form class="form-horizontal" role="form" method="post" action="">
+        <div class="form-group pt-20 pb-20 mb-0 bottom-border bdc-eee">
+            <label class="col-sm-2 control-label">缓存数据库</label>
+            <div class="col-sm-9">
+                {% for index in indexes %}
+                <div class="radio">
+                    <label>
+                        <input type="radio" name="index" value="{{index.value}}" {% if index.value == "CACHE_STATIC" %}checked{% endif %} />
+                        {{index.name}}
+                    </label>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="form-group pt-20 pb-20 mb-0 bottom-border bdc-eee">
+            <label class="col-sm-2 control-label">缓存key描述</label>
+            <div class="col-sm-9">
+                {% for desc in descs %}
+                <p class="form-control-static">{{desc.value}}： {{desc.name}}</p>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="form-group pt-20 pb-20 mb-0 bottom-border bdc-eee">
+            <label class="col-sm-2 control-label">缓存key</label>
+            <div class="col-sm-6">
+                <input type="text" class="form-control key-name" name="key_name" value=''>
+            </div>
+        </div>
+        <div class="form-group pt-20 pb-20 mb-0 bottom-border bdc-eee">
+            <label class="col-sm-2 control-label">缓存值</label>
+            <div class="col-sm-6">
+                <input type="text" class="form-control key-value" name="key_value" value=''>
+            </div>
+        </div>
+        <div class="form-group pt-20 pb-20 mb-0 bottom-border bdc-eee">
+            <label class="col-sm-2 control-label">失效时间</label>
+            <div class="col-sm-6">
+                <input type="text" class="form-control key-expire" name="key_expire" value='3600'>
+            </div>
+        </div>
+        <div class="form-group pt-20 pb-20 mb-0 bottom-border bdc-eee">
+            <div class="col-sm-12">
+                <button type="button" class="btn btn-primary save">提交你的修改</button>
+                <button type="button" class="btn btn-danger ml-15 remove">删除此缓存</button>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock right %}

@@ -1,0 +1,43 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh-CN">
+    <head>
+        <meta charset="utf-8" />
+        <title>{% block title_all %}{% block title %}{% endblock title %}{% block title_tail %} - 三点十分{% endblock title_tail %}{% endblock title_all %}</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+        <meta name="renderer" content="webkit" />
+        <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" >
+        <meta name="keywords" content="{% block keywords %}三点十分 下午茶 企业下午茶 服务专家{% endblock keywords %}" />
+        <meta name="description" content="{% block description %}三点十分，下午茶点服务专家{% endblock description %}" />
+        <link rel="shortcut icon" href="{{MEDIA_URL}}img/favicon.ico" />
+
+        <link rel="stylesheet" type="text/css" href="{{MEDIA_URL}}css/bootstrap/bootstrap.min.css" />
+        <link rel="stylesheet" type="text/css" href="{{MEDIA_URL}}css/font-awesome/css/font-awesome.min.css" />
+        <link rel="stylesheet" type="text/css" href="{{MEDIA_URL}}css/site.css?v={{MEDIA_VERSION}}" />
+        <link rel="stylesheet" type="text/css" href="{{MEDIA_URL}}css/bootstrap/bootstrap-datetimepicker.min.css" />
+        {% block base_css %}{% endblock %}
+        <script type="text/javascript" src="{{MEDIA_URL}}js/jquery/jquery-1.7.min.js"></script>
+        <script type="text/javascript" src="{{MEDIA_URL}}js/bootstrap/bootstrap.min.js"></script>
+    </head>
+
+    <body>
+        {% block body %}
+    	<div class="container">
+    	   {% block base_container %}{% endblock %}
+    	</div>
+	   {% endblock body %}
+        <script type="text/javascript" src="{{MEDIA_URL}}js/jquery/jquery.placeholder.js"></script>
+    	<script type="text/javascript" src="{{MEDIA_URL}}js/common.js?v={{MEDIA_VERSION}}"></script>
+        <script type="text/javascript" src="{{MEDIA_URL}}js/site.js?v={{MEDIA_VERSION}}"></script>
+    	<script type="text/javascript">
+            var MEDIA_URL = '{{MEDIA_URL|default:''}}',
+                MAIN_DOMAIN = '{{MAIN_DOMAIN|default:''}}',
+                CURRENT_USER_ID = "{{request.user.id|default:''}}",
+                ERROR_MSG = '{{error_msg|default:''}}',
+                SUCCESS_MSG = '{{success_msg|default:''}}',
+                INFO_MSG = '{{info_msg|default:''}}',
+                WARNING_MSG = '{{warning_msg|default:''}}';
+        </script>
+        {% block base_js %}{% endblock %}
+        {% include "_tongji.html" %}
+    </body>
+</html>

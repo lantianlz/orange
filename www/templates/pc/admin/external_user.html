@@ -1,0 +1,221 @@
+{% extends "pc/admin/home.html" %}
+{% load custom_tags %}
+{% load custom_filters %}
+{% block title %}站外登陆信息统计{% endblock %}
+
+{% block css %}
+<style type="text/css">
+
+</style>
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript">
+$(document).ready(function(){
+    // models
+    var External = Backbone.Model.extend({
+
+        // 默认值
+        defaults: {
+            'num': ''
+        }
+
+    });
+
+    // collections
+    var Externals = Backbone.Collection.extend({
+        model: External,
+
+        _modelMaps: {
+            'num': 'num',
+            'externalId': 'external_id',
+            'userId': 'user_id',
+            'userNick': 'user_nick',
+            'source': 'source',
+            'accessToken': 'access_token',
+            'refreshToken': 'refresh_token',
+            'externalUserId': 'external_user_id',
+            'unionId': 'union_id',
+            'appId': 'app_id',
+            'nick': 'nick',
+            'userUrl': 'user_url',
+            'expireTime': 'expire_time',
+            'createTime': 'create_time',
+            'updateTime': 'update_time',
+            'state': 'state'
+        },
+
+        // 查询
+        search: function(sDate, eDate, nick, pageIndex){
+            var me = this;
+
+            ajaxSend(
+                "/admin/user/external/search", 
+                {'s_date': sDate||'', 'e_date': eDate||'', 'nick': nick, 'page_index': pageIndex}, 
+                function(data){
+                    me.pageIndex = pageIndex||1;
+                    me.pageCount = data.page_count;
+                    me.sDate = sDate;
+                    me.eDate = eDate;
+                    me.nick = nick;
+
+                    me.reset($.Global.Utils.dictMapParse(data.data, me._modelMaps));
+                }
+            );
+        }
+        
+    });
+
+    // listView
+    var ListView = Backbone.View.extend({
+        el: '#external_list',
+
+        pagination: new $.Global.Pagination.PaginationView(),
+
+        template: _.template($('#external_template').html()),
+
+        initialize: function(){
+            this.listenTo(this.collection, 'reset', this.render);
+        },
+
+        events: {
+            'click .search': 'search'
+        },
+
+        // 渲染函数
+        render: function(){
+            var data = this.collection.toJSON();
+
+            this.showPanel();
+
+            this.$('tbody').html(this.template({'externals': data}));
+
+            this.pagination.render(
+                this.collection.pageIndex||1, 
+                this.collection.pageCount, 
+                'search/' + this.collection.sDate + '/' + this.collection.eDate + '/' + this.collection.nick
+            );
+
+            $('.s-date').datetimepicker({
+                format: 'yyyy-mm-dd',
+                language: 'zh-CN',
+                minView: 2,
+                autoclose: true
+            });
+
+            $('.e-date').datetimepicker({
+                format: 'yyyy-mm-dd',
+                language: 'zh-CN',
+                minView: 2,
+                autoclose: true
+            });
+        },
+
+        // 显示面板
+        showPanel: function(){
+            $('.qx-nav-pills a[href="#external_list"]').tab('show');
+        },
+
+        search: function(){
+            var sDate = this.$('.s-date').val(),
+                eDate = this.$('.e-date').val(),
+                nick = this.$('.nick').val();
+
+            router.navigate(String.format('/search/{0}/{1}/{2}/1', sDate, eDate, nick), {trigger: true});
+        }
+
+    });
+
+
+    // router
+    var Router = Backbone.Router.extend({
+
+        routes: {
+            "":                     "search",
+            "search/(:sDate)/(:eDate)/(:nick)/:pageIndex":    "search",
+        },
+
+        // 查询
+        search: function(sDate, eDate, nick, pageIndex){
+            externals.search(sDate||'', eDate||'', nick||'', pageIndex||1);
+        }
+
+    });
+    
+    // 初始化
+    var externals = new Externals(),
+        listView = new ListView({'collection': externals}),
+        router = new Router();
+ 
+    Backbone.history.start();
+
+});
+
+</script>
+{% endblock %}
+
+{% block right %}
+<ul class="nav nav-pills pt-15 qx-nav-pills">
+    <li class="active">
+        <a href="#external_list" class="black-blue" data-toggle="pill">站外登陆信息记录</a>
+    </li>
+</ul>
+
+<div class="tab-content">
+    <!-- 客户经理列表 -->
+    <div class="tab-pane fade pt-15 in active" id="external_list">
+        <form action="." onsubmit="javascript: return false;">
+            <div class="pl-0 pb-10 col-md-2 none">
+                <input type="text" class="form-control s-date input-sm" readonly placeholder="开始日期" value="{{today}}">
+            </div>
+            <div class="pl-0 pb-10 col-md-2 none">
+                <input type="text" class="form-control e-date input-sm" readonly placeholder="结束日期" value="{{today}}">
+            </div>
+            <div class="pl-0 pb-10 col-md-2">
+                <input type="text" class="form-control input-sm nick" placeholder="用户呢称" value="">
+            </div>
+            <div class="pl-0 pb-10 col-md-1">
+                <button class="btn btn-default btn-sm search" type="submit">查询</button>
+            </div>
+        </form>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>用户昵称</th>
+                    <th>来源</th>
+                    <th>登录时间</th>
+                    <th>app_id</th>
+                    <th>union_id</th>
+                    <th>外部用户id</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+            </tbody>
+        </table>
+
+        <div class="text-center">
+            <ul class="pagination pagination-sm qx-pagination">
+                
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- 客户经理列表 -->
+<script type="text/template" id="external_template">
+    <% _.each(externals, function(external){ %>
+        <tr class="" data-external_id="<%= external.externalId %>">
+            <td><%= external.num %></td>
+            <td><%= external.userNick %></td>
+            <td><%= external.source %></td>
+            <td><%= external.createTime %></td>
+            <td><%= external.appId %></td>
+            <td><%= external.unionId %></td>
+            <td><%= external.externalUserId %></td>
+        </tr>
+    <% }) %>
+</script>
+
+{% endblock right %}

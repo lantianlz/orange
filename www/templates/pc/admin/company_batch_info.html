@@ -1,0 +1,116 @@
+{% extends "pc/admin/home.html" %}
+{% load custom_tags %}
+{% load custom_filters %}
+{% block title %}批量修改洗车行信息{% endblock %}
+
+{% block css %}
+<style type="text/css">
+
+</style>
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript">
+$(document).ready(function(){
+    $.Global.TextboxList.create('#company', {
+        max: 1,
+        placeholder: '选择所属公司',
+        url: '/admin/company/company/get_companys_by_name',
+        param: 'company_name',
+        loadPlaceholder: '正在加载...'
+    });
+
+    createEditor('#img_add', "car_wash");
+
+    $('.save').bind('click', function(){
+
+        if(!confirm('此操作将统一修改公司旗下所有的洗车行的信息, 确认要批量修改吗？')){
+            return;
+        }
+
+        g_ajax_processing_obj_id = $('.save').setUUID().attr('id');
+        ajaxSend(
+            "/admin/company/batch_info/save_info", 
+            $.Global.Utils.formToDict($('.info-form')),
+            function(data){
+                if(data.errcode == "0"){
+                    $.Global.Notice.WarningTopNotice(data.errmsg);
+                } else {
+                    $.Global.Notice.ErrorTopNotice(data.errmsg);
+                }
+            }
+        )
+
+        
+    });
+});
+
+</script>
+{% endblock %}
+
+{% block right %}
+<ul class="nav nav-pills pt-15 qx-nav-pills">
+    <li class="active">
+        <a href="#price_list" class="black-blue" data-toggle="pill">批量修改洗车行信息</a>
+    </li>
+</ul>
+
+<div class="tab-content">
+    <!-- 客户经理列表 -->
+    <div class="tab-pane fade pt-15 in active">
+        <form class="form-horizontal info-form" role="form" method="post" action="">
+            <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
+                <label class="col-sm-2 control-label">公司</label>
+                <div class="col-sm-6">
+                    <input type="text" class="form-control" id="company" required name="company_id" value=''>
+                </div>
+            </div>
+            <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
+                <label class="col-sm-2 control-label">营业时间</label>
+                <div class="col-sm-3">
+                    <input type="text" class="form-control" name="business_hours" maxlength="50" value=''>
+                </div>
+            </div>
+            <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
+                <label class="col-sm-2 control-label">最低售价</label>
+                <div class="col-sm-3">
+                    <input type="text" class="form-control" name="lowest_sale_price" value=''>
+                </div>
+            </div>
+            <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
+                <label class="col-sm-2 control-label">最低原价</label>
+                <div class="col-sm-3">
+                    <input type="text" class="form-control" name="lowest_origin_price" value=''>
+                </div>
+            </div>
+            <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
+                <label class="col-sm-2 control-label">轮播图</label>
+                <div class="col-sm-10">
+                    <textarea style="height: 200px;" class="form-control" id="img_add" name="imgs"></textarea>
+                    <p class="help-block">建议尺寸为：640 X 320</p>
+                </div>
+            </div>
+            <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
+                <label class="col-sm-2 control-label">简介</label>
+                <div class="col-sm-10">
+                    <textarea style="height: 200px;" class="form-control" name="des"></textarea>
+                </div>
+            </div>
+            <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
+                <label class="col-sm-2 control-label">温馨提示</label>
+                <div class="col-sm-10">
+                    <textarea style="height: 200px;" class="form-control" name="note"></textarea>
+                </div>
+            </div>
+            <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
+                <div class="col-sm-12">
+                    <button type="button" class="btn btn-primary save">批量修改</button>
+                    <!-- <button type="button" class="btn btn-danger remove ml-25">删除此服务价格</button> -->
+                </div>
+            </div>
+        </form>
+    </div>
+
+</div>
+
+{% endblock right %}

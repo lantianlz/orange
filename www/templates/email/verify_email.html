@@ -1,0 +1,17 @@
+{% extends "email/base_email.html" %}
+{% block email_body %}
+
+<p class="part">
+    为保证您帐号的安全，我们将验证您的邮箱。请点击下方的链接：
+    <br/>
+    <br/>
+    <a href="{{verify_url}}">验证邮箱</a>
+    <br/>
+    <br/>
+    如果上方链接无法点击，请手动将下方的文本复制到浏览器中。
+    <br/>
+    <br/>
+    {{verify_url}}
+</p>
+
+{% endblock %}

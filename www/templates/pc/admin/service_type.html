@@ -1,0 +1,478 @@
+{% extends "pc/admin/home.html" %}
+{% load custom_tags %}
+{% load custom_filters %}
+{% block title %}洗车服务类型管理{% endblock %}
+
+{% block css %}
+<style type="text/css">
+
+</style>
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript">
+$(document).ready(function(){
+    // models
+    var Type = Backbone.Model.extend({
+
+        // 默认值
+        defaults: {
+            'num': ''
+        }
+
+    });
+
+    // collections
+    var Types = Backbone.Collection.extend({
+        model: Type,
+
+        _modelMaps: {
+            'num': 'num',
+            'typeId': 'type_id',
+            'name': 'name',
+            'groupId': 'group_id',
+            'sortNum': 'sort_num',
+            'state': 'state'
+        },
+
+        // 查询
+        search: function(pageIndex){
+            var me = this;
+
+            ajaxSend(
+                "/admin/car_wash/service_type/search", 
+                {'page_index': pageIndex||1}, 
+                function(data){
+                    me.pageIndex = pageIndex||1;
+                    me.pageCount = data.page_count;
+
+                    me.reset($.Global.Utils.dictMapParse(data.data, me._modelMaps));
+                }
+            );
+        },
+
+        // 获取一个提问的model
+        getOne: function(typeId, callback){
+            var me = this;
+
+            ajaxSend(
+                "/admin/car_wash/service_type/get_service_type_by_id", 
+                {'type_id': typeId},
+                function(data){
+                    if(callback){
+                        callback($.Global.Utils.dictMap(data, me._modelMaps));
+                    }
+                }
+            );
+        },
+
+        //
+        modifyType: function(data, callback){
+
+            ajaxSend(
+                "/admin/car_wash/service_type/modify_service_type", 
+                data,
+                function(response){
+                    if(callback){
+                        callback(response);
+                    }
+                }
+            );
+        },
+
+        addType: function(data, callback){
+
+            ajaxSend(
+                "/admin/car_wash/service_type/add_service_type", 
+                data,
+                function(response){
+                    if(callback){
+                        callback(response);
+                    }
+                }
+            );
+        }
+
+    });
+
+    // listView
+    var ListView = Backbone.View.extend({
+        el: '#type_list',
+
+        pagination: new $.Global.Pagination.PaginationView(),
+
+        template: _.template($('#type_template').html()),
+
+        initialize: function(){
+            this.listenTo(this.collection, 'reset', this.render);
+        },
+
+        events: {
+            'click .search': 'search',
+            'click .pointer': 'modifyType'
+        },
+
+        // 渲染函数
+        render: function(){
+            var data = this.collection.toJSON();
+
+            this.showPanel();
+
+            this.$('tbody').html(this.template({'types': data}));
+
+            this.pagination.render(
+                this.collection.pageIndex||1, 
+                this.collection.pageCount, 
+                'search'
+            );
+        },
+
+        // 显示面板
+        showPanel: function(){
+            $('.qx-nav-pills a[href="#type_list"]').tab('show');
+        },
+
+        search: function(){
+
+            router.navigate(String.format('/search/1'), {trigger: true});
+        },
+
+        modifyType: function(sender){
+            var target = $(sender.currentTarget),
+                typeId = target.data('type_id');
+
+            router.navigate('/modify/' + typeId, {trigger: true});
+        }
+    });
+
+    // modifyView
+    var ModifyView = Backbone.View.extend({
+        
+        el: '#modify_type',
+
+        template: _.template($('#modify_type_template').html()),
+
+        events: {
+            'click .save': 'save'
+        },
+
+        // 显示面板
+        showPanel: function(){
+            $('.qx-nav-pills a[href="#modify_type"]').tab('show');
+        },
+
+        // 渲染
+        render: function(data){
+            this.$el.html(this.template(data));
+        },
+
+        // 显示提问信息
+        modifyType: function(typeId){
+            var me = this;
+
+            this.collection.getOne(typeId, function(data){
+                if(data){
+                    me.render(data);
+                    me.showPanel();
+                } else {
+                    setTimeout(function(){history.go(-1);}, 3000);
+                    $.Global.Notice.ErrorTopNotice("没有找到对应的服务类型!");
+                }
+            });
+        },
+
+        // 保存
+        save: function(){
+            var typeId = this.$('form').data('type_id'),
+                me = this;
+
+            me.collection.modifyType($.Global.Utils.formToDict(this.$('form')), function(data){
+                if(data.errcode == "0"){
+                    $.Global.Notice.SuccessTopNotice('操作成功!');
+                    router.navigate('modify/' + typeId, {'trigger': true});
+                } else {
+                    $.Global.Notice.ErrorTopNotice(data.errmsg);
+                }
+            })
+        }
+
+
+    });
+
+    
+    var AddView = Backbone.View.extend({
+        el: 'body',
+
+        template: _.template($('#add_type_template').html()),
+
+        showPanel: function(){
+            var me = this;
+
+            me.render();
+        },
+
+        render: function(){
+            var me = this;
+
+            $('#add_type_modal').remove();
+            
+            $('body').append(this.template());
+
+            // 绑定事件
+            $('#add_type_modal .cancel').bind('click', function(){
+                history.go(-1);
+            });
+            $('#add_type_modal .ok').bind('click', function(){
+                me.addType();
+            });
+            
+            $('#add_type_modal').modal({'show': true, 'backdrop': 'static'});
+
+        },
+
+        addType: function(){
+            var me = this;
+            
+            if(!$('#add_type_modal form').valid()){
+                return;
+            }
+
+            types.addType($.Global.Utils.formToDict($('#add_type_modal form')), function(data){
+                if(data.errcode == "0"){
+                    router.navigate('modify/' + data.errmsg, {trigger: true});
+                    $('#add_type_modal').modal('hide');
+                    $.Global.Notice.SuccessTopNotice("操作成功");
+                } else {
+                    $.Global.Notice.ErrorTopNotice(data.errmsg);
+                }
+            })
+        }
+
+    });
+
+    
+    // router
+    var Router = Backbone.Router.extend({
+
+        routes: {
+            "":                     "search",
+            "modify/:typeId":       "modify",
+            "search/:pageIndex":    "search",
+            "add":                   "add"
+        },
+
+        // 查询
+        search: function(pageIndex){
+            types.search(pageIndex||1);
+        },
+
+        // 显示修改界面
+        modify: function(typeId){
+            modifyView.modifyType(typeId);
+        },
+
+        add: function(){
+            addView.showPanel();
+        }
+
+    });
+    
+    // 初始化
+    var types = new Types(),
+        listView = new ListView({'collection': types}),
+        modifyView = new ModifyView({'collection': types}),
+        addView = new AddView(),
+        router = new Router();
+ 
+    Backbone.history.start();
+
+});
+
+</script>
+{% endblock %}
+
+{% block right %}
+<ul class="nav nav-pills pt-15 qx-nav-pills">
+    <li class="active">
+        <a href="#type_list" class="black-blue" data-toggle="pill">服务类型列表</a>
+    </li>
+    <li>
+        <a href="#modify_type" class="black-blue" data-toggle="pill">修改服务类型</a>
+    </li>
+    <li class="pull-right">
+        <a href="#add" class="black-blue">添加服务类型</a>
+    </li>
+</ul>
+
+<div class="tab-content">
+    <!-- 客户经理列表 -->
+    <div class="tab-pane fade pt-15 in active" id="type_list">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>服务类型名称</th>
+                    <th>服务类型大类</th>
+                    <th>排序</th>
+                    <th>状态</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+            </tbody>
+        </table>
+
+        <div class="text-center">
+            <ul class="pagination pagination-sm qx-pagination">
+                
+            </ul>
+        </div>
+    </div>
+
+    <!-- 修改客户经理信息 -->
+    <div class="tab-pane fade" id="modify_type">
+        
+    </div>
+</div>
+
+<!-- 客户经理列表 -->
+<script type="text/template" id="type_template">
+    <% _.each(types, function(type){ %>
+        <tr class="pointer" data-type_id="<%= type.typeId %>">
+            <td><%= type.num %></td>
+            <td><%= type.name %></td>
+            <td>
+                {% for group in choices %}
+                    <% if({{group.value}} == type.groupId ){ %>{{group.name}}<% } %>
+                {% endfor %}
+            </td>
+            <td><%= type.sortNum %></td>
+            <td>
+                <% if(!type.state){ %>
+                <span class="fa fa-times co2" title="正常"></span>
+                <% } else { %>
+                <span class="fa fa-check co6" title="无效"></span>
+                <% } %>
+            </td>
+        </tr>
+    <% }) %>
+</script>
+
+<!-- 修改问题模板 -->
+<script type="text/template" id="modify_type_template">
+    <form class="form-horizontal" data-type_id="<%= typeId %>" role="form" method="post" action="">
+        <input type="hidden" name="type_id" value="<%= typeId %>" />
+        <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
+            <label class="col-sm-2 control-label">名称</label>
+            <div class="col-sm-6">
+                <input type="text" class="form-control" name="name" value='<%= name %>'>
+            </div>
+        </div>
+        <!--
+        <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
+            <label class="col-sm-2 control-label">所属大类</label>
+            <div class="col-sm-3">
+                <select class="form-control input-sm" name="group_id">
+                    {% for group in choices %}
+                    <option value="{{group.value}}">{{group.name}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        -->
+        <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
+            <label class="col-sm-2 control-label">排序</label>
+            <div class="col-sm-2">
+                <input type="text" class="form-control" name="sort" value='<%= sortNum %>'>
+            </div>
+        </div>
+        <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
+            <label class="col-sm-2 control-label">状态</label>
+            <div class="col-sm-2">
+                <div class="radio">
+                    <label>
+                        <input type="radio" name="state" value="1" <% if(state=="1"){ %>checked="checked"<% } %> >
+                        有效
+                    </label>
+                </div>
+                <div class="radio">
+                    <label>
+                        <input type="radio" name="state" value="0" <% if(state=="0"){ %>checked="checked"<% } %> >
+                        无效
+                    </label>
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
+            <div class="col-sm-12">
+                <button type="button" class="btn btn-primary save">提交你的修改</button>
+            </div>
+        </div>
+    </form>
+</script>
+
+
+<script type="text/template" id="add_type_template">
+<div class="modal fade" id="add_type_modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header pb-5">
+                <!-- <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button> -->
+                <h4 class="modal-title">添加洗车行</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" role="form" method="post" action="">
+                    <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
+                        <label class="col-sm-2 control-label">名称</label>
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" required name="name" value=''>
+                        </div>
+                    </div>
+                    <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
+                        <label class="col-sm-2 control-label">排序</label>
+                        <div class="col-sm-2">
+                            <input type="text" class="form-control" name="sort" value='0'>
+                        </div>
+                    </div>
+                    <!--
+                    <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
+                        <label class="col-sm-2 control-label">所属大类</label>
+                        <div class="col-sm-3">
+                            <select class="form-control input-sm" name="group_id">
+                                {% for group in choices %}
+                                <option value="{{group.value}}">{{group.name}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group pt-20 pb-20 mb-0">
+                        <label class="col-sm-2 control-label">状态</label>
+                        <div class="col-sm-2">
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" name="state" value="1" checked="checked" >
+                                    有效
+                                </label>
+                            </div>
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" name="state" value="0" >
+                                    无效
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    -->
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default cancel" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary ok">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+</script>
+
+{% endblock right %}

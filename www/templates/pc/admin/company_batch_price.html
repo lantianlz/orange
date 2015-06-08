@@ -1,0 +1,110 @@
+{% extends "pc/admin/home.html" %}
+{% load custom_tags %}
+{% load custom_filters %}
+{% block title %}批量修改服务价格{% endblock %}
+
+{% block css %}
+<style type="text/css">
+
+</style>
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript">
+$(document).ready(function(){
+    $.Global.TextboxList.create('#company', {
+        max: 1,
+        placeholder: '选择所属公司',
+        url: '/admin/company/company/get_companys_by_name',
+        param: 'company_name',
+        loadPlaceholder: '正在加载...'
+    });
+
+    $('.save').bind('click', function(){
+        if(!$('.price-form').valid()){
+            return;
+        }
+
+        g_ajax_processing_obj_id = $('.save').setUUID().attr('id');
+        ajaxSend(
+            "/admin/company/batch_price/save_price", 
+            $.Global.Utils.formToDict($('.price-form')),
+            function(data){
+                if(data.errcode == "0"){
+                    $.Global.Notice.WarningTopNotice(data.errmsg);
+                } else {
+                    $.Global.Notice.ErrorTopNotice(data.errmsg);
+                }
+            }
+        )
+
+        
+    });
+});
+
+</script>
+{% endblock %}
+
+{% block right %}
+<ul class="nav nav-pills pt-15 qx-nav-pills">
+    <li class="active">
+        <a href="#price_list" class="black-blue" data-toggle="pill">批量修改服务价格</a>
+    </li>
+</ul>
+
+<div class="tab-content">
+    <!-- 客户经理列表 -->
+    <div class="tab-pane fade pt-15 in active">
+        <form class="form-horizontal price-form" role="form" method="post" action="">
+            <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
+                <label class="col-sm-2 control-label">公司</label>
+                <div class="col-sm-6">
+                    <input type="text" class="form-control" id="company" required name="company_id" value=''>
+                </div>
+            </div>
+            <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
+                <label class="col-sm-2 control-label">服务类型</label>
+                <div class="col-sm-3">
+                    <select class="form-control input-sm" required name="service_type_id">
+                        {% for type in service_types %}
+                        <option value="{{type.value}}">{{type.name}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
+                <label class="col-sm-2 control-label">售价</label>
+                <div class="col-sm-2">
+                    <input type="text" class="form-control number" required name="sale_price" value='0'>
+                </div>
+            </div>
+            <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
+                <label class="col-sm-2 control-label">原价</label>
+                <div class="col-sm-2">
+                    <input type="text" class="form-control number" required name="origin_price" value='0'>
+                </div>
+            </div>
+            <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
+                <label class="col-sm-2 control-label">结算价</label>
+                <div class="col-sm-2">
+                    <input type="text" class="form-control number" required name="clear_price" value='0'>
+                </div>
+            </div>
+            <div class="form-group pt-20 pb-20 mb-0">
+                <label class="col-sm-2 control-label">排序</label>
+                <div class="col-sm-2">
+                    <input type="text" class="form-control number" required name="sort" value='0'>
+                </div>
+            </div>
+            <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
+                <div class="col-sm-12">
+                    <button type="button" class="btn btn-primary save">批量修改</button>
+                    <!-- <button type="button" class="btn btn-danger remove ml-25">删除此服务价格</button> -->
+                </div>
+            </div>
+        </form>
+    </div>
+
+</div>
+
+{% endblock right %}

@@ -1,0 +1,292 @@
+{% extends "mobile/car_wash/base_car_wash.html" %}
+
+{% block title_all %}三点十分{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" type="text/css" href="{{MEDIA_URL}}css/animate/animate.min.css" />
+<style type="text/css">
+.active a{
+    color: #f23a1a;
+}
+.next-page{
+    padding: 8px;
+    opacity: 0;
+}
+@-webkit-keyframes fadeInDown {
+  0% {
+    opacity: 0;
+    -webkit-transform: translate3d(0, 0, 0);
+  }
+
+  75% {
+    opacity: 1;
+    -webkit-transform: translate3d(0, 25%, 0);
+  }
+
+  100% {
+    opacity: 0;
+    -webkit-transform: translate3d(0, 35%, 0);
+  }
+}
+.fadeInDown {
+  -webkit-animation-name: fadeInDown;
+}
+
+.step-1{
+    opacity: 1;
+    margin-top: 0px;
+}
+
+.step-2{
+    opacity: 1;
+    margin-top: -100px;
+}
+
+.step-3{
+    opacity: 1;
+    margin-top: -100px;
+}
+
+.step-4{
+    opacity: 1;
+    margin-top: -100px;
+}
+</style>
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript" src="{{MEDIA_URL}}js/jquery/jquery.fullPage.min.js"></script>
+<script type="text/javascript" src="{{MEDIA_URL}}js/jquery/jquery.easing.1.3.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+    var nextPageAnimateInterval = null;
+
+    var nextPageAnimate = function(pageIndex){
+
+        if(nextPageAnimateInterval){
+            window.clearInterval(nextPageAnimateInterval);
+        }
+
+        var target = $('.section').eq(pageIndex-1).find('.next-page');
+        target.addClass('fadeInDown');
+        window.setTimeout(function(){
+            target.removeClass('fadeInDown');
+        }, 1100);
+
+        nextPageAnimateInterval = window.setInterval(function(){
+            
+            target.addClass('fadeInDown');
+
+            window.setTimeout(function(){
+                target.removeClass('fadeInDown');
+            }, 1100);
+
+        }, 1200);
+    },
+    pageTransform = function(pageIndex){
+
+        switch(pageIndex){
+
+            case 1:
+                $('.logo').hide().removeClass('bounceIn');
+                window.setTimeout(function(){
+                    $('.logo').show().addClass('bounceIn');
+                }, 500);
+
+                $('.name').hide();
+                window.setTimeout(function(){
+                    $('.name').fadeIn('slow');
+                }, 1200);
+                break;
+
+            case 2:
+                $('.s1').removeClass('pulse');
+                $('.s2').removeClass('pulse');
+                $('.s3').removeClass('pulse');
+
+                window.setTimeout(function(){
+                    $('.s1').addClass('pulse');
+                }, 500);
+                window.setTimeout(function(){
+                    $('.s2').addClass('pulse');
+                }, 1500);
+                window.setTimeout(function(){
+                    $('.s3').addClass('pulse');
+                }, 2500);
+                break;
+
+            case 3:
+                $('.step-1').hide().css({'margin-top': 50, 'opacity': '0'});
+                $('.step-2').hide().css({'margin-top': -50, 'opacity': '0'});
+                $('.step-3').hide().css({'margin-top': -50, 'opacity': '0'});
+                $('.step-4').hide().css({'margin-top': -50, 'opacity': '0'});
+
+                window.setTimeout(function(){
+                    $('.step-1').show().animate({'margin-top': 0, 'opacity': '1'}, 900, 'easeOutCubic');
+                }, 1000);
+
+                window.setTimeout(function(){
+                    $('.step-2').show().animate({'margin-top': -95, 'opacity': '1'}, 900, 'easeOutCubic');
+                }, 2000);
+
+                window.setTimeout(function(){
+                    $('.step-3').show().animate({'margin-top': -95, 'opacity': '1'}, 900, 'easeOutCubic');
+                }, 3000);
+
+                window.setTimeout(function(){
+                    $('.step-4').show().animate({'margin-top': -95, 'opacity': '1'}, 900, 'easeOutCubic');
+                }, 3000);
+
+                break;
+
+            default:
+                break;
+        }
+    };
+
+    // 券屏插件设置
+    $('#fullpage').fullpage({
+        scrollingSpeed: 700,
+        easing: 'easeOutExpo',
+        navigation: false,
+        onLeave: function(index, nextIndex, direction){
+            nextPageAnimate(nextIndex);
+
+            //pageTransform(nextIndex);
+        }
+    });
+
+    // 单击向下箭头导航
+    $('.next-page').bind('click', function(){
+        $.fn.fullpage.moveSectionDown();
+    });
+
+    // 横竖屏判断
+    $(window).bind('orientationchange', function(e){
+        if(window.orientation == 90 || window.orientation == -90){
+            window.alert('为了更好的浏览体验，请使用竖屏浏览');
+        } else {
+            window.location.reload();
+        }
+    });
+
+    nextPageAnimate(1);
+    //pageTransform(1);
+
+});
+</script>
+{% endblock %}
+
+{% block topbar %}{% endblock %}
+
+{% block container %}
+<div id="fullpage">
+
+    <div class="section bgc-f23a1a co5 text-center pr" style="padding-top: 15%;">
+        <div class="f35 fb">专属于年轻人的</div>
+        <div class="f60 fb">洗车平台</div>
+        <div class="f14 pl-15 pr-15 pt-20">汇聚你身边的洗车行，为你提供最优惠、最便捷、最时尚的洗车服务</div>
+        <div class="logo" style="padding-top: 15%" >
+            <img class="w80" src="{{MEDIA_URL}}img/about_m/logo.png">
+        </div>
+        <div class="f22 pt-5 name animated">三点十分</div>
+
+        <div class="w text-center pa" style="bottom: 2%;">
+            <i class="fa fa-angle-double-down co5 f25 next-page animated"></i>
+        </div>
+    </div>
+
+    <div class="section bgc-ffffff co1 pr" style="padding-top: 15%;">
+
+        <div class="container w300 pr s1 animated" style="padding-left: 85px; padding-bottom: 50px;">
+            <img class="pa w70" style="left: 0px;" src="{{MEDIA_URL}}img/homepage/drop.png">
+            <span class="f20 pa f22 co5 fb" style="left: 13px; top: 19px;">省钱</span>
+            <div class="pt-15">最心动的折扣和优惠活动</div>
+            <div>随时随地，让你洗车更省钱</div>
+        </div>
+        <div class="container w300 pr s2 animated" style="padding-left: 85px; padding-bottom: 50px;">
+            <img class="pa w70" style="left: 0px;" src="{{MEDIA_URL}}img/homepage/drop.png">
+            <span class="f20 pa f22 co5 fb" style="left: 13px; top: 19px;">便捷</span>
+            <div class="pt-15">汇聚你身边的洗车网点</div>
+            <div>无论出行还是在家，让洗车更便捷</div>
+        </div>
+        <div class="container w300 pr s3 animated" style="padding-left: 85px; padding-bottom: 50px;">
+            <img class="pa w70" style="left: 0px;" src="{{MEDIA_URL}}img/homepage/drop.png">
+            <span class="f20 pa f22 co5 fb" style="left: 13px; top: 19px;">时尚</span>
+            <div class="pt-15">支持多种在线付款</div>
+            <div>告别传统付款方式，让支付更时尚</div>
+        </div>
+        <div class="container w300 pr" style="padding-top: 70px;">
+            <img class="w" src="{{MEDIA_URL}}img/about_m/cars.png">
+        </div>
+
+        <div class="w text-center pa" style="bottom: 2%;">
+            <i class="fa fa-angle-double-down co15 f25 next-page animated"></i>
+        </div>
+        
+    </div>
+
+    <div class="section bgc-ffffff pr" style="padding-top: 4%;">
+        <div class="text-center co15" style="-webkit-transform: rotateZ(-10deg);">
+            <span class="f35 fb">那么，</span>
+            <span class="f25 fb">如何使用呢？</span>
+        </div>
+        <div class="bgc-f23a1a step-1" style="-webkit-transform: rotateZ(-10deg); margin-left: -25px; width: 120%;">
+            <div class="container w300 pr" style="min-height: 240px; -webkit-transform: rotateZ(10deg);">
+                <img class="pa" style="width: 60px; left: 0px; top: 50px;" src="{{MEDIA_URL}}img/about_m/01.png">
+
+                <img class="pa" style="width: 130px; right:5px; top: 0px;" src="{{MEDIA_URL}}img/homepage/use-step-1.png">
+
+                <span class="pa f25 co5" style="left: 70px; top: 46px;">选择</span>
+                <span class="pa f12 co5" style="left: 70px; top: 86px;">选择离你最近或</span>
+                <span class="pa f12 co5" style="left: 70px; top: 102px;">喜欢的洗车行</span>
+            </div>
+        </div>
+        <div class="bgc-ffffff step-2" style="-webkit-transform: rotateZ(10deg); margin-left: -25px; width: 120%;">
+            <div class="container w300 pr" style="min-height: 240px;-webkit-transform: rotateZ(-10deg);">
+                <img class="pa" style="width: 70px; right: 10px; top: 45px;" src="{{MEDIA_URL}}img/about_m/02.png">
+
+                <img class="pa" style="width: 130px; left:5px; top: 0px;" src="{{MEDIA_URL}}img/homepage/use-step-2.png">
+
+                <span class="pa f25 co15" style="right: 85px; top: 41px;">购买</span>
+                <span class="pa f12 co15" style="right: 85px; top: 81px;">点击购买，使用</span>
+                <span class="pa f12 co15" style="right: 85px; top: 97px;">支付宝或微信支付</span>
+            </div>
+        </div>
+        <div class="bgc-f23a1a step-3" style="-webkit-transform: rotateZ(-10deg); margin-left: -25px; width: 120%;">
+            <div class="container w300 pr" style="min-height: 240px;-webkit-transform: rotateZ(10deg);">
+                <img class="pa" style="width: 70px; left: 0px; top: 50px;" src="{{MEDIA_URL}}img/about_m/03.png">
+
+                <img class="pa" style="width: 130px; right:5px; top: 0px;" src="{{MEDIA_URL}}img/about_m/use-step-3.png">
+
+                <span class="pa f25 co5" style="left: 75px; top: 51px;">消费</span>
+                <span class="pa f12 co5" style="left: 75px; top: 91px;">到店出示洗车码</span>
+                <span class="pa f12 co5" style="left: 75px; top: 107px;">开始愉快的洗车!</span>
+            </div>
+        </div>
+
+        <div class="bgc-f23a1a step-4" style="-webkit-transform: rotateZ(0deg); margin-left: -25px; width: 120%; min-height: 300px;">
+        </div>
+
+        <div class="w text-center pa" style="bottom: 2%;">
+            <i class="fa fa-angle-double-down co5 f25 next-page animated"></i>
+        </div>
+    </div>
+
+    <div class="section bgc-ffffff text-center pr" style="padding-top: 15%;">
+        <div class="">
+            <img class="w100" src="{{MEDIA_URL}}img/logo.png">
+        </div>
+        <div class="f22 pt-10 co1">三点十分</div>
+        <div class="co15 f20" style="padding-top: 15%;">
+            <a href="http://wpa.qq.com/msgrd?v=3&uin=390973848&site=qq&menu=yes"><i class="fa fa-qq pr-3"></i>390973848</a>
+        </div>
+        <div class="co15 f20" style="padding-top: 5%;">lz@3-10.club</div>
+        <div class="co12 f12 pa w text-center" style="bottom: 5%;">Copyright &copy; {% if YEAR == "2014" %}{{YEAR}}{% else %}2014 - {{YEAR}}{% endif %} 3-10.club. All Rights Reserved.</div>
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block nav %}{% endblock %}

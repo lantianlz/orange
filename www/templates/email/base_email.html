@@ -1,0 +1,105 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<style>
+body{
+    font-family: "Helvetica Neue",Helvetica,"Lucida Grande","Luxi Sans",Arial,"Hiragino Sans GB",STHeiti,"Microsoft YaHei","Wenquanyi Micro Hei","WenQuanYi Micro Hei Mono","WenQuanYi Zen Hei","WenQuanYi Zen Hei Mono",LiGothicMed;
+}
+
+.text-right{
+    text-align: right;
+}
+
+.text-danger{
+    color: red;
+}
+
+.part{
+    text-indent: 32px;
+}
+
+.container{
+    margin: 0 auto;
+    width: 600px;
+    /*background-color: red;*/
+    padding: 10px;
+}
+
+.header{
+    /*height: 60px;*/
+    width: 100%;
+}
+
+.header .logo{
+    width: 100%;
+    font-size: 32px;
+}
+
+.header .logo a{
+    text-decoration: none;
+    color: #EF8A55;
+}
+
+.footer{
+    height: 60px;
+    width: 100%;
+    font-size: 12px;
+}
+
+.main{
+    min-height: 100px;
+    width: 100%;
+}
+
+.main a{
+    color: #259;
+    text-decoration: none;
+}
+
+.main a:hover{
+    text-decoration: underline;
+}
+
+.img-circle{
+    width:55px; 
+    height:55px; 
+    border-radius:50%; 
+    position:absolute;
+}
+
+#no-underline a{
+    text-decoration: none;
+    color: #EF8A55;
+}
+
+#no-underline a:hover{
+    text-decoration: underline;
+    color: #EF8A55;
+}
+
+</style>
+</head>
+<body>
+
+<div class="container" id="no-underline">
+    <div class="header">
+        <div class="logo"><a href="{{MAIN_DOMAIN}}"><h2 style="margin-bottom: 10px;">三点十分</h2></a></div>
+        <hr>
+    </div>
+    
+    <div class="main">
+        {% block email_body %}{% endblock %}
+    </div>
+    
+    <div class="footer">
+        <hr>
+        <p class="text-right">
+            {{ now|date:'Y-m-d' }}
+            <br/>
+            （本邮件由系统自动发出，请勿回复）
+        </p>
+    </div>
+</div>
+
+</body>
+</html>

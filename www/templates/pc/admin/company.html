@@ -1,0 +1,402 @@
+{% extends "pc/admin/home.html" %}
+{% load custom_tags %}
+{% load custom_filters %}
+{% block title %}公司信息管理{% endblock %}
+
+{% block css %}
+<style type="text/css">
+
+</style>
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript">
+$(document).ready(function(){
+    // models
+    var Company = Backbone.Model.extend({
+
+        // 默认值
+        defaults: {
+            'num': ''
+        }
+
+    });
+
+    // collections
+    var Companys = Backbone.Collection.extend({
+        model: Company,
+
+        _modelMaps: {
+            'num': 'num',
+            'companyId': 'company_id',
+            'name': 'name',
+            'carWashCount': 'car_wash_count'
+        },
+
+        // 查询
+        search: function(name, pageIndex){
+            var me = this;
+
+            ajaxSend(
+                "/admin/company/company/search", 
+                {'car_wash_name': name||'', 'page_index': pageIndex||1}, 
+                function(data){
+                    me.pageIndex = pageIndex||1;
+                    me.pageCount = data.page_count;
+                    me.name = name||'';
+
+                    me.reset($.Global.Utils.dictMapParse(data.data, me._modelMaps));
+                }
+            );
+        },
+
+        // 获取一个提问的model
+        getOne: function(companyId, callback){
+            var me = this;
+
+            ajaxSend(
+                "/admin/company/company/get_company_by_id", 
+                {'company_id': companyId},
+                function(data){
+                    if(callback){
+                        callback($.Global.Utils.dictMap(data, me._modelMaps));
+                    }
+                }
+            );
+        },
+
+        //
+        modifyCompany: function(data, callback){
+
+            ajaxSend(
+                "/admin/company/company/modify_company", 
+                data,
+                function(response){
+                    if(callback){
+                        callback(response);
+                    }
+                }
+            );
+        },
+
+        addCompany: function(data, callback){
+
+            ajaxSend(
+                "/admin/company/company/add_company", 
+                data,
+                function(response){
+                    if(callback){
+                        callback(response);
+                    }
+                }
+            );
+        }
+
+    });
+
+    // listView
+    var ListView = Backbone.View.extend({
+        el: '#company_list',
+
+        pagination: new $.Global.Pagination.PaginationView(),
+
+        template: _.template($('#company_template').html()),
+
+        initialize: function(){
+            this.listenTo(this.collection, 'reset', this.render);
+        },
+
+        events: {
+            'click .search': 'search',
+            'click .pointer': 'modifyCompany'
+        },
+
+        // 渲染函数
+        render: function(){
+            var data = this.collection.toJSON();
+
+            this.showPanel();
+
+            this.$('tbody').html(this.template({'companys': data}));
+
+            this.pagination.render(
+                this.collection.pageIndex||1, 
+                this.collection.pageCount, 
+                'search/' + this.collection.name
+            );
+        },
+
+        // 显示面板
+        showPanel: function(){
+            $('.qx-nav-pills a[href="#company_list"]').tab('show');
+        },
+
+        search: function(){
+            var name = this.$('.key-word').val();
+
+            router.navigate(String.format('/search/{0}/1', name), {trigger: true});
+        },
+
+        modifyCompany: function(sender){
+            var target = $(sender.currentTarget),
+                companyId = target.data('company_id');
+
+            router.navigate('/modify/' + companyId, {trigger: true});
+        }
+    });
+
+    // modifyView
+    var ModifyView = Backbone.View.extend({
+        
+        el: '#modify_company',
+
+        template: _.template($('#modify_company_template').html()),
+
+        events: {
+            'click .save': 'save'
+        },
+
+        // 显示面板
+        showPanel: function(){
+            $('.qx-nav-pills a[href="#modify_company"]').tab('show');
+        },
+
+        // 渲染
+        render: function(data){
+            this.$el.html(this.template(data));
+        },
+
+        // 显示提问信息
+        modifyCompany: function(companyId){
+            var me = this;
+
+            this.collection.getOne(companyId, function(data){
+                if(data){
+                    me.render(data);
+                    me.showPanel();
+                } else {
+                    setTimeout(function(){history.go(-1);}, 3000);
+                    $.Global.Notice.ErrorTopNotice("没有找到对应的服务类型!");
+                }
+            });
+        },
+
+        // 保存
+        save: function(){
+            var companyId = this.$('form').data('company_id'),
+                me = this;
+
+            me.collection.modifyCompany($.Global.Utils.formToDict(this.$('form')), function(data){
+                if(data.errcode == "0"){
+                    $.Global.Notice.SuccessTopNotice('操作成功!');
+                    router.navigate('modify/' + companyId, {'trigger': true});
+                } else {
+                    $.Global.Notice.ErrorTopNotice(data.errmsg);
+                }
+            });
+        }
+
+
+    });
+
+    
+    var AddView = Backbone.View.extend({
+        el: 'body',
+
+        template: _.template($('#add_company_template').html()),
+
+        showPanel: function(){
+            var me = this;
+
+            me.render();
+        },
+
+        render: function(){
+            var me = this;
+
+            $('#add_company_modal').remove();
+            
+            $('body').append(this.template());
+
+            // 绑定事件
+            $('#add_company_modal .cancel').bind('click', function(){
+                history.go(-1);
+            });
+            $('#add_company_modal .ok').bind('click', function(){
+                me.addCompany();
+            });
+            
+            $('#add_company_modal').modal({'show': true, 'backdrop': 'static'});
+
+        },
+
+        addCompany: function(){
+            var me = this;
+            
+            if(!$('#add_company_modal form').valid()){
+                return;
+            }
+
+            companys.addCompany($.Global.Utils.formToDict($('#add_company_modal form')), function(data){
+                if(data.errcode == "0"){
+                    router.navigate('modify/' + data.errmsg, {trigger: true});
+                    $('#add_company_modal').modal('hide');
+                    $.Global.Notice.SuccessTopNotice("操作成功");
+                } else {
+                    $.Global.Notice.ErrorTopNotice(data.errmsg);
+                }
+            })
+        }
+
+    });
+
+    
+    // router
+    var Router = Backbone.Router.extend({
+
+        routes: {
+            "":                     "search",
+            "modify/:companyId":       "modify",
+            "search/(:name)/:pageIndex":    "search",
+            "add":                   "add"
+        },
+
+        // 查询
+        search: function(name, pageIndex){
+            companys.search(name||'', pageIndex||1);
+        },
+
+        // 显示修改界面
+        modify: function(companyId){
+            modifyView.modifyCompany(companyId);
+        },
+
+        add: function(){
+            addView.showPanel();
+        }
+
+    });
+    
+    // 初始化
+    var companys = new Companys(),
+        listView = new ListView({'collection': companys}),
+        modifyView = new ModifyView({'collection': companys}),
+        addView = new AddView(),
+        router = new Router();
+ 
+    Backbone.history.start();
+
+});
+
+</script>
+{% endblock %}
+
+{% block right %}
+<ul class="nav nav-pills pt-15 qx-nav-pills">
+    <li class="active">
+        <a href="#company_list" class="black-blue" data-toggle="pill">公司信息列表</a>
+    </li>
+    <li>
+        <a href="#modify_company" class="black-blue" data-toggle="pill">修改公司信息</a>
+    </li>
+    <li class="pull-right">
+        <a href="#add" class="black-blue">添加公司信息</a>
+    </li>
+</ul>
+
+<div class="tab-content">
+    <!-- 客户经理列表 -->
+    <div class="tab-pane fade pt-15 in active" id="company_list">
+        <div class="pl-0 pb-10 col-md-3">
+            <div class="input-group input-group-sm">
+                <input type="text" class="form-control border-radius-0 key-word" placeholder="输入公司名称..." />
+                <span class="input-group-btn">
+                    <button class="btn btn-default search" type="submit">查询</button>
+                </span>
+            </div>
+        </div>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>公司名称</th>
+                    <th>洗车行数量</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+            </tbody>
+        </table>
+
+        <div class="text-center">
+            <ul class="pagination pagination-sm qx-pagination">
+                
+            </ul>
+        </div>
+    </div>
+
+    <!-- 修改客户经理信息 -->
+    <div class="tab-pane fade" id="modify_company">
+        
+    </div>
+</div>
+
+<!-- 客户经理列表 -->
+<script type="text/template" id="company_template">
+    <% _.each(companys, function(company){ %>
+        <tr class="pointer" data-company_id="<%= company.companyId %>">
+            <td><%= company.num %></td>
+            <td><%= company.name %></td>
+            <td><%= company.carWashCount %></td>
+        </tr>
+    <% }) %>
+</script>
+
+<!-- 修改问题模板 -->
+<script type="text/template" id="modify_company_template">
+    <form class="form-horizontal" data-company_id="<%= companyId %>" role="form" method="post" action="">
+        <input type="hidden" name="company_id" value="<%= companyId %>" />
+        <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
+            <label class="col-sm-2 control-label">公司名称</label>
+            <div class="col-sm-3">
+                <input type="text" class="form-control" required name="name" value='<%= name %>'>
+            </div>
+        </div>
+        
+        <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
+            <div class="col-sm-12">
+                <button type="button" class="btn btn-primary save">提交你的修改</button>
+            </div>
+        </div>
+    </form>
+</script>
+
+
+<script type="text/template" id="add_company_template">
+<div class="modal fade" id="add_company_modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header pb-5">
+                <!-- <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button> -->
+                <h4 class="modal-title">添加公司信息</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" role="form" method="post" action="">
+                    <div class="form-group pt-20 pb-20 mb-0">
+                        <label class="col-sm-2 control-label">公司名称</label>
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" required name="name" value=''>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default cancel" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary ok">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+</script>
+
+{% endblock right %}

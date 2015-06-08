@@ -1,0 +1,113 @@
+{% extends "pc/base/base.html" %}
+
+{% block title %}微信登录{% endblock %}
+
+{% block base_css %}
+<style type="text/css">
+body{
+    background-color: #41464A;
+}
+
+</style>
+{% endblock %}
+
+{% block base_js %}
+<script type="text/javascript">
+$(document).ready(function(){
+    var expire = parseInt("{{expire}}") * 1000,
+        loginInterval;
+    // expire = 4000;
+
+    // 是否过期
+    window.setTimeout(function(){
+        $('.tips').fadeIn();
+        window.clearInterval(loginInterval);
+    }, expire);
+
+    // 定时查看登录状态 
+    loginInterval = window.setInterval(function(){
+        ajaxSend(
+            "/get_weixin_login_state", 
+            {ticket: "{{ticket}}" }, 
+            function(result){
+                switch(result.errcode){
+                    case 0:
+                        window.clearInterval(loginInterval);
+                        $('.success').fadeIn();
+
+                        window.setTimeout(function(){
+                            window.location.href = result.next_url;
+                        }, 1500);
+                        
+                        break;
+                    case -1:
+                        $('.notice').html('<i class="fa fa-exclamation-circle pr-3 f15"></i>' + result.errmsg);
+                        $('.notice').fadeIn();
+                        window.clearInterval(loginInterval);
+                        break;
+
+                    default:
+                        // do nothing.
+                        break;
+                }
+            }
+        );
+    }, 1500);
+});
+</script>
+{% endblock %}
+
+{% block header %}{% endblock header %}
+
+{% block base_container %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-offset-4 col-md-4 text-center">
+
+            {% if 'is_shop' in request.GET or 'shop' in request.GET.next_url %}
+            <div class="pt-40 pr row pb-20 mt-20">
+                <div class="col-md-7 col-xs-6 text-right">
+                    <img class="" style="width: 40px;" src="{{MEDIA_URL}}img/logo_white_1.png">
+                    <img class="" style="width: 80px;" src="{{MEDIA_URL}}img/logo_white_2.png">
+                </div>
+                <div class="col-md-5 col-xs-6 text-left pl-0 pt-3">
+                    <span class="co12 f20">商户平台</span>
+                </div>
+            </div>
+            {% else %}
+            <div class="pt-30">
+                <img class="w100" src="{{MEDIA_URL}}img/logo_white.png">
+            </div>
+            {% endif %}
+
+            <div class="pt-20">
+                <img style="box-shadow: 0px 3px 6px #252424; width: 300px;" src="https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket={{ticket}}">
+            </div>
+            <div class="pt-20 pb-20">
+                <div class="co12 f13">请使用微信扫描二维码登录</div>
+            </div>
+            <div class="pt-0 pl-30 pr-30">
+                <div class="co10 f13 success none bdr-4 border-1 bdc-333 bgc-333333 pt-5 pb-5 pl-10 pr-10">
+                    <i class="fa fa-check pr-3 f15"></i>扫码登录成功，页面跳转中...
+                </div>
+            </div>
+            <div class="pt-0 pl-30 pr-30">
+                <div class="co8 f13 tips none bdr-4 border-1 bdc-333 bgc-333333 pt-5 pb-5 pl-10 pr-10">
+                    <i class="fa fa-exclamation-circle pr-3 f15"></i>当前二维码已过期，请刷新页面后重试
+                </div>
+            </div>
+            <div class="pt-0 pl-30 pr-30">
+                <div class="co8 f13 notice none bdr-4 border-1 bdc-333 bgc-333333 pt-5 pb-5 pl-10 pr-10">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="text-center w pf" style="bottom: 60px; ">
+    <a href="/login_w?next_url={{next_url}}">使用帐号登录<i class="fa fa-sign-in pl-3 f15"></i></a>
+</div>
+<div class="text-center w pf" style="bottom: 20px; ">
+    <div class="co13 f13">Copyright &copy; {% if YEAR == "2014" %}{{YEAR}}{% else %}2014 - {{YEAR}}{% endif %} 3-10.club. All Rights Reserved.</div>
+</div>
+{% endblock %}
+{% block footer %}{% endblock %}

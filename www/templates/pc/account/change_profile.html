@@ -1,0 +1,195 @@
+{% extends "account/base_settings.html" %}
+{% load custom_tags %}
+{% load custom_filters %}
+{% block title %}基本资料{% endblock title %}
+
+{% block css %}
+<style type="text/css">
+.preview-container{
+	overflow: hidden;
+	border: solid 1px #ddd;
+}
+
+.jcrop-keymgr{
+	opacity: 0;
+	filter: alpha(opacity=0);
+}
+</style>
+{% endblock %}
+{% block javascript %}
+<script type="text/javascript">
+$(document).ready(function(){
+	$('.birthday').datetimepicker({
+        format: 'yyyy-mm-dd',
+        language: 'zh-CN',
+        minView: 2,
+        autoclose: true
+    });
+
+	// 选择完文件之后自动提交
+	$('.avatar-file').bind('change', function(){
+		$.Global.Notice.WarningTopNotice('图片上传中,请不要关闭页面...');
+		$('.avatar-file').parents('form').submit();
+	});
+
+	$('.change-profile-form').validate();
+
+
+	// 图片剪裁
+	var jcropApi,
+		cropInfo = {},
+        preCon = $('.preview-container'),
+        preImg = $('.preview-container img'),
+        xsize = preCon.width(),
+        ysize = preCon.height();
+        updatePreview = function(c){
+        	
+        	if (parseInt(c.w) > 0){
+		        var rx = xsize / c.w;
+		        var ry = ysize / c.h;
+		        cropInfo = c;
+
+		        preImg.css({
+		          	width: Math.round(rx * $('.jcrop-target').width()) + 'px',
+		          	height: Math.round(ry * $('.jcrop-target').height()) + 'px',
+		          	marginLeft: '-' + Math.round(rx * c.x) + 'px',
+		          	marginTop: '-' + Math.round(ry * c.y) + 'px'
+		        });
+		    }
+        };
+
+	if(window.location.href.indexOf('crop_avatar') > -1){
+		$('#crop_modal').modal({
+			show: true,
+			backdrop: 'static'
+		});
+
+		$('.jcrop-target').Jcrop({
+			onChange: updatePreview,
+	      	onSelect: updatePreview,
+	      	allowSelect: false,
+	      	minSize: [50, 50],
+	      	maxSize: [300, 300],
+			aspectRatio: xsize / ysize
+		}, function(){
+			jcropApi = this;
+			jcropApi.animateTo([50, 50, 250, 250]);
+		});
+
+		$('.btn-crop-save').bind('click', function(){
+			
+			g_ajax_processing_obj_id = 'save_img_button_id';
+			ajaxSend(
+				"/crop_img", {
+					'x': cropInfo.x,
+					'y': cropInfo.y,
+					'w': cropInfo.w,
+					'h': cropInfo.h,
+				}, function(data){
+					if(data['flag'] != '0'){
+						$.Global.Notice.WarningTopNotice(data['result']);
+					} else {
+						$('#crop_modal').modal('hide');
+
+						$.Global.Notice.SuccessTopNotice('操作成功!页面即将刷新');
+				        window.setTimeout(function(){
+				            window.location = '/account/user_settings';
+				        }, 3000);
+					}
+					
+				}
+			);
+		})
+	}
+});
+</script>
+{% endblock %}
+
+{% block left %}
+<form class="form-horizontal" role="form" method="post" action="http://up.qiniu.com/" enctype="multipart/form-data">
+	<div class="form-group pt-15">
+		<label class="col-md-2 control-label">头像</label>
+		<div class="col-md-6">
+			<p class="form-control-static avatar mb-10">
+				<img class="img-rounded" alt="{{request.user.nick}}" src="{{request.user.get_avatar_300}}">
+			</p>
+			<input name="token" type="hidden" value="{{uptoken}}">
+			<input name="key" type="hidden" value="{{img_key}}">
+			<input name="x:user_id" type="hidden" value="{{request.user.id}}">
+			<input name="x:img_type" type="hidden" value="avatar">
+			<input name="file" type="file" class="avatar-file" />
+		</div>
+		<div class="col-md-4">
+		    
+		</div>
+	</div>
+</form>
+
+<div class="modal fade" id="crop_modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header pb-5">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">裁剪头像</h4>
+            </div>
+            <div class="modal-body row">
+            	<div class="col-md-9">
+            		<img class="jcrop-target" alt="{{request.user.nick}}" src="{{request.user.get_avatar_450}}">
+            	</div>
+                <div class="col-md-3">
+	                <div class="preview-container avatar-circle mt-10 ml-20 avatar-100">
+			      		<img alt="{{request.user.nick}}" src="{{request.user.get_avatar_450}}">
+			      	</div>
+		    	</div>
+            </div>
+            <div class="modal-footer">
+		        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+		        <button type="button" class="btn btn-primary btn-crop-save" id="save_img_button_id">保存</button>
+	      	</div>
+        </div>
+    </div>
+</div>
+
+<form class="form-horizontal change-profile-form pl-15 pr-15" role="form" method="post" action="/account/user_settings">
+	<div class="form-group border-bottom bdc-eee pt-5 pb-15">
+		<label class="col-sm-2 control-label">邮箱</label>
+		<div class="col-sm-10">
+			<p class="form-control-static">{{request.user.email}}</p>
+		</div>
+	</div>
+	<div class="form-group border-bottom bdc-eee pt-5 pb-15">
+		<label class="col-sm-2 control-label">昵称</label>
+		<div class="col-sm-5">
+			<input type="input" class="form-control" name='nick'
+			placeholder="输入你的昵称" required maxlength='16' value='{{request.user.nick}}'></div>
+	</div>
+	<div class="form-group border-bottom bdc-eee pt-5 pb-15">
+		<label class="col-sm-2 control-label">性别</label>
+		<div class="col-sm-3">
+			<select name="gender" class="form-control">
+				<option value='0' {% if request.user.gender == 0 %} selected{% endif %}>未设置</option>
+				<option value='1' {% if request.user.gender == 1 %} selected{% endif %}>男</option>
+				<option value='2' {% if request.user.gender == 2 %} selected{% endif %}>女</option>
+			</select>
+		</div>
+	</div>
+	<div class="form-group border-bottom bdc-eee pt-5 pb-15">
+		<label class="col-sm-2 control-label">出生日期</label>
+		<div class="col-sm-3">
+			<input type="text" name="birthday" id="birthday-id" class="form-control birthday" value='{{request.user.birthday}}'
+			placeholder="" readonly required></div>
+	</div>
+	<div class="form-group border-bottom bdc-eee pt-5 pb-15">
+		<label for="inputPassword" class="col-sm-2 control-label">个人简介</label>
+		<div class="col-sm-6">
+			<textarea name="des" rows="6" class="form-control"
+				placeholder="一句话描述下自己">{{request.user.des|default:''}}</textarea>
+		</div>
+	</div>
+	<div class="form-group pt-5 pb-15">
+		<div class="col-sm-12">
+			<button type="submit" class="btn btn-danger">提交你的修改</button>
+		</div>
+	</div>
+</form>
+{% endblock left %}

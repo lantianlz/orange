@@ -1,0 +1,16 @@
+{% extends "email/base_email.html" %}
+{% block email_body %}
+
+<a href="{{user.get_full_url}}">
+    <img class="img-circle" src="{{user.get_avatar_65}}" />
+</a>
+
+<div class="" style="padding-left: 70px; margin-top:25px;">
+    <div style="padding-top: 5px;">
+        <a href="{{user.get_full_url}}" style="padding-right: 5px;">{{user.nick}}</a>在提问中@你：
+        <a style="padding-left: 10px;" href="{{MAIN_DOMAIN}}{{answer.question.get_url}}">{{answer.question.title}}</a>
+    </div>
+    <div style="padding-top: 10px; padding-bottom: 15px; font-size: 14px">{{answer.get_summary}}</div>
+</div>
+
+{% endblock %}

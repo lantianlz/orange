@@ -1,0 +1,154 @@
+{% extends "pc/admin/home.html" %}
+{% load custom_tags %}
+{% load custom_filters %}
+{% block title %}当日活跃用户统计{% endblock %}
+
+{% block css %}
+<style type="text/css">
+</style>
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript">
+$(document).ready(function(){
+
+    var User = Backbone.Model.extend({
+        defaults: {
+        }
+    });
+
+    var Users = Backbone.Collection.extend({
+        model: User,
+
+        _modelMaps: {
+            'num': 'num',
+            'userId': 'user_id',
+            'userAvatar': 'user_avatar',
+            'userNick': 'user_nick',
+            'source': 'source',
+            'userDesc': 'user_des',
+            'userEmail': 'user_email',
+            'lastActive': 'last_active',
+            'state': 'state',
+            'ip': 'ip'
+        },
+
+        search: function(pageIndex){
+            var me = this;
+
+            ajaxSend(
+                "/admin/statistics/get_active_user", 
+                {'page_index': pageIndex||1}, 
+                function(data){
+                    
+                    me.pageIndex = pageIndex;
+                    me.pageCount = data.page_count;
+
+                    me.reset($.Global.Utils.dictMapParse(data.data, me._modelMaps))
+                }
+            );
+        }
+        
+    });
+
+
+    // listView
+    var ListView = Backbone.View.extend({
+        el: '#active_user_list',
+
+        pagination: new $.Global.Pagination.PaginationView(),
+
+        template: _.template($('#active_user_template').html()),
+
+        initialize: function(){
+            this.listenTo(this.collection, 'reset', this.render);
+        },
+
+        // 渲染函数
+        render: function(){
+            var data = this.collection.toJSON();
+
+            this.$('tbody').html(this.template({'users': data}));
+            this.pagination.render(
+                this.collection.pageIndex||1, 
+                this.collection.pageCount, 
+                'search'
+            );
+        }
+
+    });
+
+    // router
+    var Router = Backbone.Router.extend({
+
+        routes: {
+            "":                     "search",
+            "search/:pageIndex":    "search"
+        },
+
+        // 查询
+        search: function(pageIndex){
+            
+            users.search(pageIndex||1);
+        }
+
+    });
+    
+    // 初始化
+    var users = new Users(),
+        listView = new ListView({'collection': users}),
+        router = new Router();
+    
+    Backbone.history.start();
+
+});
+
+</script>
+{% endblock %}
+
+{% block right %}
+<div class="pt-15" id="active_user_list">
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>头像</th>
+                <th>用户名称</th>
+                <th>用户邮箱</th>
+                <th>上次活跃来源</th>
+                <th>上次活跃时间</th>
+                <th>上次活跃ip</th>
+            </tr>
+        </thead>
+        <tbody>
+            
+        </tbody>
+    </table>
+
+    <div class="text-center">
+        <ul class="pagination pagination-sm qx-pagination">
+            
+        </ul>
+    </div>
+</div>
+
+
+<script type="text/template" id="active_user_template">
+    <% _.each(users, function(user){ %>
+    <tr>
+        <td><%= user.num %></td>
+        <td><a target="_blank" href="/p/<%= user.userId %>"><img src="<%= user.userAvatar %>" class="avatar-35 avatar-circle" ></a></td>
+        <td><%= user.userNick %></td>
+        <td><%= user.userEmail %></td>
+        <td>
+            {% for source in sources %}
+                <% if({{source.value}} == user.source){ %> {{source.name}} <% } %>
+            {% endfor %}
+        </td>
+        <td><%= user.lastActive %></td>
+        <td><%= user.ip %></td>
+    </tr>
+<% }) %>
+</script>
+
+{% endblock right %}

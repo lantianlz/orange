@@ -1,0 +1,40 @@
+{% extends "base/base.html" %}
+{% load custom_tags %}
+{% load custom_filters %}
+{% block base_css %}
+	{% block css %}{% endblock css %}
+{% endblock %}
+
+{% block base_js %}
+	{% block javascript %}{% endblock javascript %}
+{% endblock %}
+
+{% block container %}
+<div class="col-md-8">
+	<ul class="nav nav-pills pt-15 qx-nav-pills">
+		<li {% if "/user_answer" not in request.path %} class="active" {%endif%}>
+			<a href="{{user.get_url}}" class="black-blue">{% if is_me %}我{% else %}{{user.get_ta_display}}{% endif %}的游记</a>
+		</li>
+		<li {% if "/user_answer" in request.path %} class="active" {%endif%}>
+			<a href="{{user.get_url}}/user_answer" class="black-blue">{% if is_me %}我{% else %}{{user.get_ta_display}}{% endif %}的回复</a>
+		</li>
+	</ul>
+	{% block left %}{% endblock left %}
+</div>
+
+<div class="col-md-4 pl-70 pt-15">
+	{% block right %}
+	<div class="text-center pt-15">
+		<img class="bdc-ddd border-1 pl-3 pt-3 pr-3 pb-3" src="{{user.get_avatar_300}}">
+	</div>
+	<div class="username text-center">
+        <h3 class="ff-yahei fb">{{user.nick}}</h3>
+    </div>
+    <div class="desc text-center">
+        <p>{{user.des|default:"忙着旅行，没能留下点介绍信息"}}</p>
+        {% if is_me and not user.des %}<a class="co5" href="/account/user_settings#set_des">立即设置</a>{% endif %}
+    </div>
+
+	{% endblock right %}
+</div>
+{% endblock container %}

@@ -1,0 +1,6 @@
+{% extends "email/base_email.html" %}
+{% block email_body %}
+<div>
+	<p>{{content|safe}}</p>
+</div>
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends "account/base_settings.html" %}
+{% load custom_tags %}
+{% load custom_filters %}
+{% block title %}修改邮箱{% endblock %}
+
+{% block css %}{% endblock %}
+{% block javascript %}{% endblock %}
+
+{% block left %}
+<form class="form-horizontal change-email-form pl-15 pr-15" role="form" method='post' action="/account/user_settings/change_email">
+	<div class="form-group border-bottom bdc-eee pt-5 pb-15">
+		<label class="col-sm-2 control-label">当前邮箱</label>
+		<div class="col-sm-5">
+			<p class="form-control-static">{{request.user.email}}</p>
+			{% if not request.user.email_verified %}
+			<span>邮箱未验证，</span><a href="/account/user_settings/verify_email">立即验证邮箱</a>
+			{% endif %}
+		</div>
+	</div>
+	<div class="form-group border-bottom bdc-eee pt-5 pb-15">
+		<label class="col-sm-2 control-label">新的邮箱</label>
+		<div class="col-sm-5">
+			<input type="email" name='email' required maxlength='50' class="form-control" placeholder="请输入你的新邮箱地址" value='{{email}}'>
+		</div>
+	</div>
+	<div class="form-group border-bottom bdc-eee pt-5 pb-15">
+		<label class="col-sm-2 control-label">登录密码</label>
+		<div class="col-sm-5">
+			<input name='password' type="password" required maxlength='20' class="form-control" placeholder="请输入你的登录密码">
+		</div>
+	</div>
+	<div class="form-group pt-5 pb-15">
+		<div class="col-sm-12">
+			<button type="submit" class="btn btn-danger">提交你的修改</button>
+		</div>
+	</div>
+</form>
+{% endblock %}

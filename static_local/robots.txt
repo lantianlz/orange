@@ -1,0 +1,17 @@
+User-agent: *
+
+Disallow: /p/*
+Disallow: /message/*
+Disallow: /account/*
+Disallow: /n/*
+Disallow: /admin/*
+Disallow: *password*
+Disallow: *set*
+Disallow: *cancel*
+Disallow: *remove*
+Disallow: *create*
+Disallow: *login*
+Disallow: /500
+Disallow: /search
+Disallow: /logout
+Allow: /

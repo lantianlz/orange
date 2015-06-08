@@ -1,0 +1,114 @@
+{% extends "pc/base/base.html" %}
+
+{% block base_css %}
+<link rel="stylesheet" type="text/css" href="{{MEDIA_URL}}css/animate/animate.min.css" />
+<style type="text/css">
+.nav>li>a{
+    color: #222222;
+    transition: all 0.3s;
+}
+
+.nav>li>a:hover{
+    color: #3297fd;
+    background-color: transparent;
+}
+
+.nav>li>a:focus{
+    background-color: transparent;
+}
+
+.navbar-nav>li>a{
+    margin: 0 30px;
+    padding: 30px 0;
+}
+
+.navbar-nav>li.active>a{
+    color: #3297fd;
+}
+
+.navbar-brand{
+    height: auto;
+}
+.navbar-brand:hover{
+    /*color: #ffffff;*/
+}
+
+.navbar{
+    min-height: 80px;
+}
+
+.line-hover1{
+    position: absolute; 
+    width: 100%; 
+    height: 1px; 
+    background-color: #83CA6B; 
+    top: 65px;
+    left: 0;
+    transition: all 0.3s;
+    transform-origin: 50% 0;
+    -webkit-transform: scaleX(0);
+       -moz-transform: scaleX(0);
+        -ms-transform: scaleX(0);
+            transform: scaleX(0);
+}
+
+.nav>li>a:hover .line-hover{
+    -webkit-transform: scaleX(1);
+       -moz-transform: scaleX(1);
+        -ms-transform: scaleX(1);
+            transform: scaleX(1);
+}
+
+.navbar-nav>li.active>a .line-hover{
+    -webkit-transform: scaleX(1);
+       -moz-transform: scaleX(1);
+        -ms-transform: scaleX(1);
+            transform: scaleX(1);
+}
+</style>
+{% block home_css %}{% endblock %}
+{% endblock %}
+
+{% block base_js %}
+{% block home_js %}{% endblock %}
+{% endblock %}
+
+{% block header %}
+<header class="navbar navbar-fixed-top bgc-ffffff" style="border-bottom: solid 1px #ddd;" role="banner">
+    <!-- <div class="pa" style="opacity: 0.1; filter: alpha(opacity=1); background-color: black; width: 100%; height: 100%;"></div> -->
+    <div class="container pr-50 pl-60">
+        <div class="navbar-header pr">
+            <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a href="../" class="navbar-brand" style="font-size: 40px; padding-top: 30px;">三点十分</a>
+            <!-- <a href="/"><img class="w90 pa" style="left: 5px; top: 19px;" alt="三点十分" src="{{MEDIA_URL}}img/logo.png"></a> -->
+        </div>
+        <nav class="collapse navbar-collapse" role="navigation">
+            <ul class="nav navbar-nav navbar-right">
+                <li {% if '/' == request.path %}class="active"{% endif %}>
+                    <a class="f20 pr" href="/">
+                        估价
+                        <span class="line-hover"></span>
+                    </a>
+                </li>
+                <li {% if 'car_list' in request.path %}class="active"{% endif %}>
+                    <a class="f20" href="/car_list">
+                        买车
+                        <span class="line-hover"></span>
+                    </a>
+                </li>
+                <!-- <li>
+                    <a class="f20" href="#">
+                        车神
+                        <span class="line-hover"></span>
+                    </a>
+                </li> -->
+            </ul>
+        </nav>
+    </div>
+</header>
+{% endblock header %}

@@ -1,0 +1,435 @@
+{% extends "pc/admin/home.html" %}
+{% load custom_tags %}
+{% load custom_filters %}
+{% block title %}洗车码管理{% endblock %}
+
+{% block css %}
+<style type="text/css">
+
+</style>
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript">
+$(document).ready(function(){
+    // models
+    var Code = Backbone.Model.extend({
+
+        // 默认值
+        defaults: {
+            'num': ''
+        }
+
+    });
+
+    // collections
+    var Codes = Backbone.Collection.extend({
+        model: Code,
+
+        _modelMaps: {
+            'num': 'num',
+            'codeId': 'code_id',
+            'code': 'code',
+            'sourceType': 'source_type',
+            'userId': 'user_id',
+            'userNick': 'user_nick',
+            'carWashId': 'car_wash_id',
+            'carWashName': 'car_wash_name',
+            'tradeId': 'trade_id',
+            'codeType': 'code_type',
+            'state': 'state',
+            'useTime': 'use_time',
+            'operaterId': 'operater_id',
+            'operaterNick': 'operater_nick'
+        },
+
+        // 查询
+        search: function(car_wash_name, code, nick, state, pageIndex){
+            var me = this;
+
+            ajaxSend(
+                "/admin/order_code/search", 
+                {'car_wash_name': car_wash_name, 'code': code, 'nick': nick, 'state': state, 'page_index': pageIndex}, 
+                function(data){
+                    me.pageIndex = pageIndex||1;
+                    me.pageCount = data.page_count;
+                    me.carWashName = car_wash_name;
+                    me.code= code;
+                    me.state = state;
+                    me.nick = nick;
+
+                    me.reset($.Global.Utils.dictMapParse(data.data, me._modelMaps));
+                }
+            );
+        },
+
+        // 获取一个提问的model
+        getOne: function(codeId, callback){
+            var me = this;
+
+            ajaxSend(
+                "/admin/order_code/get_code_by_id", 
+                {'code_id': codeId},
+                function(data){
+                    if(callback){
+                        callback($.Global.Utils.dictMap(data, me._modelMaps));
+                    }
+                }
+            );
+        }
+
+    });
+
+    // listView
+    var ListView = Backbone.View.extend({
+        el: '#code_list',
+
+        pagination: new $.Global.Pagination.PaginationView(),
+
+        template: _.template($('#code_template').html()),
+
+        initialize: function(){
+            this.listenTo(this.collection, 'reset', this.render);
+        },
+
+        events: {
+            'click .search': 'search',
+            'click .pointer': 'modifyCode'
+        },
+
+        // 渲染函数
+        render: function(){
+            var data = this.collection.toJSON();
+
+            this.showPanel();
+
+            this.$('tbody').html(this.template({'codes': data}));
+
+            this.pagination.render(
+                this.collection.pageIndex||1, 
+                this.collection.pageCount, 
+                'search/' + this.collection.carWashName + '/' + this.collection.code + '/' + this.collection.nick + '/' + this.collection.state
+            );
+        },
+
+        // 显示面板
+        showPanel: function(){
+            $('.qx-nav-pills a[href="#code_list"]').tab('show');
+        },
+
+        search: function(){
+            var carWashName = this.$('.key-word').val(),
+                code = this.$('.key-word-code').val(),
+                nick = this.$('.key-word-nick').val(),
+                state = this.$('.key-word-state').val();
+
+            router.navigate(String.format('/search/{0}/{1}/{2}/{3}/1', carWashName, code, nick, state), {trigger: true});
+        },
+
+        modifyCode: function(sender){
+            var target = $(sender.currentTarget),
+                codeId = target.data('code_id');
+
+            router.navigate('/modify/' + codeId, {trigger: true});
+        }
+    });
+
+    // modifyView
+    var ModifyView = Backbone.View.extend({
+        
+        el: '#modify_code',
+
+        template: _.template($('#modify_code_template').html()),
+
+        events: {
+            'click .save': 'save'
+        },
+
+        // 显示面板
+        showPanel: function(){
+            $('.qx-nav-pills a[href="#modify_code"]').tab('show');
+        },
+
+        carWashTextBox: null,
+        initCarWashTextBox: function(name, value){
+            var me = this;
+
+            this.carWashTextBox = $.Global.TextboxList.create('#car_wash_modify', {
+                max: 1,
+                placeholder: '选择所属洗车行',
+                url: '/admin/car_wash/car_wash/get_car_washs_by_name',
+                param: 'car_wash_name',
+                loadPlaceholder: '正在加载...'
+            });
+            
+            if(value){
+                this.carWashTextBox.add(name, value);
+            }
+        },
+
+        userTextBox: null,
+        initUserTextBox: function(name, value){
+            var me = this;
+
+            this.userTextBox = $.Global.TextboxList.create('#user_modify', {
+                max: 1,
+                placeholder: '选择用户',
+                url: '/admin/user/user/get_user_by_nick',
+                param: 'nick',
+                loadPlaceholder: '正在加载...'
+            });
+
+            if(value){
+                this.userTextBox.add(name, value);
+            }
+            
+        },
+
+        initDate: function(){
+            $('#expiry_time_modify').datetimepicker({
+                format: 'yyyy-mm-dd',
+                language: 'zh-CN',
+                minView: 2,
+                autoclose: true
+            });
+        },
+
+        // 渲染
+        render: function(data){
+            this.$el.html(this.template(data));
+
+            this.initCarWashTextBox(data.carWashName, data.carWashId);
+            this.initUserTextBox(data.userNick, data.userId);
+            this.initDate();
+        },
+
+        // 显示提问信息
+        modifyCode: function(codeId){
+            var me = this;
+
+            this.collection.getOne(codeId, function(data){
+                if(data){
+                    me.render(data);
+                    me.showPanel();
+                } else {
+                    setTimeout(function(){history.go(-1);}, 3000);
+                    $.Global.Notice.ErrorTopNotice("没有找到对应的服务类型!");
+                }
+            });
+        },
+
+        // 保存
+        save: function(){
+            var codeId = this.$('form').data('code_id'),
+                me = this;
+
+            if(!me.$('form').valid()){
+                return;
+            }
+
+            me.collection.modifyCode($.Global.Utils.formToDict(this.$('form')), function(data){
+                if(data.errcode == "0"){
+                    $.Global.Notice.SuccessTopNotice('操作成功!');
+                    router.navigate('modify/' + codeId, {'trigger': true});
+                } else {
+                    $.Global.Notice.ErrorTopNotice(data.errmsg);
+                }
+            })
+        }
+
+
+    });
+
+    
+    // router
+    var Router = Backbone.Router.extend({
+
+        routes: {
+            "":                     "search",
+            "modify/:codeId":       "modify",
+            "search/(:carWashName)/(:code)/(:nick)/(:state)/:pageIndex":    "search",
+        },
+
+        // 查询
+        search: function(carWashName, code, nick, state, pageIndex){
+            codes.search(carWashName||'', code||'', nick||'', state||-2, pageIndex||1);
+        },
+
+        // 显示修改界面
+        modify: function(codeId){
+            modifyView.modifyCode(codeId);
+        }
+
+    });
+    
+    // 初始化
+    var codes = new Codes(),
+        listView = new ListView({'collection': codes}),
+        modifyView = new ModifyView({'collection': codes}),
+        router = new Router();
+ 
+    Backbone.history.start();
+
+});
+
+</script>
+{% endblock %}
+
+{% block right %}
+<ul class="nav nav-pills pt-15 qx-nav-pills">
+    <li class="active">
+        <a href="#code_list" class="black-blue" data-toggle="pill">订单列表</a>
+    </li>
+    <li>
+        <a href="#modify_code" class="black-blue" data-toggle="pill">修改订单</a>
+    </li>
+</ul>
+
+<div class="tab-content">
+    <!-- 客户经理列表 -->
+    <div class="tab-pane fade pt-15 in active" id="code_list">
+        <form action="." onsubmit="javascript: return false;">
+            <div class="col-sm-2 pl-0">
+                <select class="form-control input-sm key-word-state">
+                    <option value="-2">全部</option>
+                    {% for choice in state_choices %}
+                    <option value="{{choice.value}}">{{choice.name}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="pl-0 pb-10 col-md-2">
+                <input type="text" class="input-sm form-control border-radius-0 key-word-code" placeholder="输入洗车码..." />
+            </div>
+            <div class="pl-0 pb-10 col-md-2">
+                <input type="text" class="input-sm form-control border-radius-0 key-word-nick" placeholder="输入用户呢称..." />
+            </div>
+            <div class="pl-0 pb-10 col-md-3">
+                <div class="input-group input-group-sm">
+                    <input type="text" class="form-control border-radius-0 key-word" placeholder="输入洗车行名称..." />
+                    <span class="input-group-btn">
+                        <button class="btn btn-default search" type="submit">查询</button>
+                    </span>
+                </div>
+            </div>
+        </form>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>洗车码</th>
+                    <th>购买人</th>
+                    <th>所属洗车行</th>
+                    <th>订单号</th>
+                    <th>兑换人</th>
+                    <th>使用时间</th>
+                    <th>状态</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+            </tbody>
+        </table>
+
+        <div class="text-center">
+            <ul class="pagination pagination-sm qx-pagination">
+                
+            </ul>
+        </div>
+    </div>
+
+    <!-- 修改客户经理信息 -->
+    <div class="tab-pane fade" id="modify_code">
+        
+    </div>
+</div>
+
+<!-- 客户经理列表 -->
+<script type="text/template" id="code_template">
+    <% _.each(codes, function(code){ %>
+        <tr class="pointer" data-code_id="<%= code.codeId %>">
+            <td><%= code.num %></td>
+            <td><%= code.code %></td>
+            <td><%= code.userNick %></td>
+            <td><%= code.carWashName %></td>
+            <td><%= code.tradeId %></td>
+            <td><%= code.operaterNick %></td>
+            <td><%= code.useTime %></td>
+            <td>
+                {% for choice in state_choices %}
+                    <% if({{choice.value}} == code.state){ %>
+                        {{choice.name}}
+                    <% } %>
+                {% endfor %}
+            </td>
+        </tr>
+    <% }) %>
+</script>
+
+<!-- 修改问题模板 -->
+<script type="text/template" id="modify_code_template">
+    <form class="form-horizontal" data-code_id="<%= codeId %>" role="form" method="post" action="">
+        <input type="hidden" name="code_id" value="<%= codeId %>" />
+        <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
+            <label class="col-sm-2 control-label">洗车码</label>
+            <div class="col-sm-3">
+                <p class="form-control-static"><%= code %></p>
+            </div>
+        </div>
+
+        <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
+            <label class="col-sm-2 control-label">购买人</label>
+            <div class="col-sm-3">
+                <p class="form-control-static"><%= userNick %></p>
+            </div>
+        </div>
+
+        <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
+            <label class="col-sm-2 control-label">订单号</label>
+            <div class="col-sm-3">
+                <p class="form-control-static"><%= tradeId %></p>
+            </div>
+        </div>
+
+        <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
+            <label class="col-sm-2 control-label">所属洗车行</label>
+            <div class="col-sm-3">
+                <p class="form-control-static"><%= carWashName %></p>
+            </div>
+        </div>
+
+        <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
+            <label class="col-sm-2 control-label">状态</label>
+            <div class="col-sm-3">
+                <p class="form-control-static">
+                    {% for choice in state_choices %}
+                        <% if({{choice.value}} == state){ %>
+                            {{choice.name}}
+                        <% } %>
+                    {% endfor %}
+                </p>
+            </div>
+        </div>
+
+        <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
+            <label class="col-sm-2 control-label">使用时间</label>
+            <div class="col-sm-3">
+                <p class="form-control-static"><%= useTime %></p>
+            </div>
+        </div>
+
+        <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
+            <label class="col-sm-2 control-label">兑换人</label>
+            <div class="col-sm-3">
+                <p class="form-control-static"><%= operaterNick %></p>
+            </div>
+        </div>
+
+        <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee none">
+            <div class="col-sm-12">
+                <button type="button" class="btn btn-primary save">提交你的修改</button>
+            </div>
+        </div>
+    </form>
+</script>
+
+{% endblock right %}

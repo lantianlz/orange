@@ -1,0 +1,41 @@
+{% extends "account/base_settings.html" %}
+{% load custom_tags %}
+{% load custom_filters %}
+{% block title %}修改密码{% endblock %}
+
+{% block css %}{% endblock %}
+{% block javascript %}
+<script type="text/javascript">
+$(document).ready(function(){
+	$('.change-pwd-form').validate();
+});
+</script>
+{% endblock %}
+
+{% block left %}
+<form class="form-horizontal change-pwd-form pl-15 pr-15" role="form" method='post' action="/account/user_settings/change_pwd">
+	<div class="form-group border-bottom bdc-eee pt-15 pb-15">
+		<label class="col-sm-2 control-label">当前密码</label>
+		<div class="col-sm-5">
+			<input type="password" required maxlength='20' class="form-control" placeholder="请输入你的旧密码" name='old_password'>
+		</div>
+	</div>
+	<div class="form-group border-bottom bdc-eee pt-5 pb-15">
+		<label class="col-sm-2 control-label">新的密码</label>
+		<div class="col-sm-5">
+			<input type="password" required maxlength='20' class="form-control" placeholder="请输入你的新密码" name='new_password_1' id="password_1">
+		</div>
+	</div>
+	<div class="form-group border-bottom bdc-eee pt-5 pb-15">
+		<label class="col-sm-2 control-label">确认密码</label>
+		<div class="col-sm-5">
+			<input type="password" required maxlength='20' class="form-control" placeholder="请确认你的新密码" name='new_password_2' id="password_2" equalTo="#password_1">
+		</div>
+	</div>
+	<div class="form-group pt-5 pb-15">
+		<div class="col-sm-12">
+			<button type="submit" class="btn btn-danger">提交你的修改</button>
+		</div>
+	</div>
+</form>
+{% endblock %}

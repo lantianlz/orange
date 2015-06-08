@@ -1,0 +1,490 @@
+{% extends "pc/admin/home.html" %}
+{% load custom_tags %}
+{% load custom_filters %}
+{% block title %}权限管理{% endblock %}
+
+{% block css %}
+<style type="text/css">
+
+</style>
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript">
+$(document).ready(function(){
+    var Administrator = Backbone.Model.extend({
+        defaults: {
+            'num': '',
+            'userId': '',
+            'userNick': '',
+            'userAvatar': ''
+        }
+    });
+    var UserPermission = Backbone.Model.extend({
+        defaults: {
+            'permissions': ''
+        }
+    });
+    
+
+    var Administrators = Backbone.Collection.extend({
+        model: Administrator,
+
+        _modelMaps: {
+            'num': 'num',
+            'userId': 'user_id',
+            'userNick': 'user_nick',
+            'userAvatar': 'user_avatar',
+        },
+
+        search: function(){
+            var me = this;
+
+            ajaxSend(
+                "/admin/permission/get_all_administrators", 
+                {}, 
+                function(data){
+                    me.reset($.Global.Utils.dictMapParse(data, me._modelMaps));
+                }
+            );
+        }
+        
+    });
+    var UserPermissions = Backbone.Collection.extend({
+        model: UserPermission,
+
+        search: function(userId, callback){
+            var me = this;
+
+            ajaxSend(
+                "/admin/permission/get_user_permissions", 
+                {'user_id': userId}, 
+                function(data){
+                    if(callback){
+                        callback(data);
+                    }
+                }
+            );
+        },
+
+        saveUserPermission: function(userId, postData, callback){
+            var me = this;
+            
+            ajaxSend(
+                "/admin/permission/save_user_permission?user_id=" + userId, 
+                $.param(postData, true), 
+                function(data){
+                    if(callback){
+                        callback(data);
+                    }
+                }
+            );
+        },
+
+        cancelAdmin: function(userId, callback){
+            var me = this;
+
+            ajaxSend(
+                "/admin/permission/cancel_admin", 
+                {'user_id': userId}, 
+                function(data){
+                    //me.reset($.Global.Utils.dictMapParse(data.permissions, me._modelMaps))
+                    if(callback){
+                        callback(data);
+                    }
+                }
+            );
+        }
+        
+    });
+
+    var AdministratorView = Backbone.View.extend({
+        el: '#administrator_list',
+
+        template: _.template($('#administrator-template').html()),
+
+        initialize: function(){
+            this.listenTo(this.collection, 'reset', this.render);
+        },
+
+        events: {
+            'click .pointer': 'modifyUserPermission'
+        },
+
+        render: function(){
+            var data = this.collection.toJSON();
+            
+            this.showPanel();
+            this.$('tbody').html(this.template({'administrators': data}));
+            
+        },
+
+        // 显示面板
+        showPanel: function(){
+            $('.qx-nav-pills a[href="#administrator_list"]').tab('show');
+        },
+
+        // 修改用户权限
+        modifyUserPermission: function(sender){
+            var target = $(sender.currentTarget),
+                userId = target.data('user_id');
+
+            router.navigate('/modifyUserPermission/' + userId, {trigger: true});
+            //modifyUserPermissionView.modifyUserPermission(userId);
+        }
+
+    });
+    var ModifyUserPermissionView = Backbone.View.extend({
+        el: '#modify_user_permission',
+
+        initialize: function(){
+            this.listenTo(this.collection, 'reset', this.render);
+        },
+
+        events: {
+            'click .parent-checkbox': 'parentCheck',
+            'click .child-checkbox': 'childCheck',
+            'click .save-user-permission': 'saveUserPermission',
+            'click .cancel-admin': 'cancelAdmin'
+        },
+
+        render: function(data, user){
+            var me = this;
+
+            me.$('.user-name').html(user.user_nick);
+            me.$('.user-name').data('user_id', user.user_id);
+
+            me.$('input[type=checkbox]').attr('checked', false);
+
+            _.map(data, function(p){
+                me.$('#p_' + p).click();
+            });
+
+            me.$('.child-checkbox').parent().removeClass('co15');
+            me.$('.child-checkbox').filter(function(){
+                return !$(this).attr('checked');
+            }).parent().addClass('co15');
+        },
+
+        // 显示面板
+        showPanel: function(){
+            $('.qx-nav-pills a[href="#modify_user_permission"]').tab('show');
+        },
+
+        // 父选项选中事件
+        parentCheck: function(sender){
+            
+            var target = $(sender.currentTarget);
+            
+            target
+            .parent()
+            .next()
+            .find('.child-checkbox')
+            .attr('checked', target.attr('checked') ? true : false);
+                  
+        },
+
+        // 子选项选中事件
+        childCheck: function(sender){
+            var target = $(sender.currentTarget),
+                flag = '';
+            
+            $.map(target.parents('.col-sm-10').find('.child-checkbox'), function(c){
+                flag += c.checked ? '1' : '0';
+            });
+            
+            // 父选项是否选中控制
+            target
+            .parents('.form-group')
+            .find('.parent-checkbox')
+            .attr('checked', (flag.indexOf('0') == -1) ? true : false);
+            
+        },
+
+
+        modifyUserPermission: function(userId){
+            var me = this;
+
+            this.collection.search(userId, function(data){
+                
+                if(data.permissions.length > 0){
+                    me.showPanel();
+                    me.render(data.permissions, data.user);
+                } else {
+                    $.Global.Notice.ErrorTopNotice('没有此用户!');
+                }
+            });
+        },
+
+        saveUserPermission: function(sender){
+            var userId = this.$('.user-name').data('user_id'),
+                me = this;
+            
+            this.collection.saveUserPermission(userId, $.Global.Utils.formToDict(this.$('form')), function(data){
+                if(data.errcode === 0){
+                    me.modifyUserPermission(userId);
+                    $.Global.Notice.SuccessTopNotice('修改成功!');
+                } else {
+                    $.Global.Notice.ErrorTopNotice(data.errmsg);
+                }
+                
+            });
+        },
+
+        cancelAdmin: function(sender){
+            var userId = this.$('.user-name').data('user_id'),
+                me = this;
+
+            if(confirm('确认要删除此管理员?')){
+                me.collection.cancelAdmin(userId, function(data){
+                    if(data.errcode === 0){
+                        $.Global.Notice.SuccessTopNotice('删除此管理员成功!');
+                        router.navigate('', {trigger: true});
+                    } else {
+                        $.Global.Notice.ErrorTopNotice(data.errmsg);
+                    }
+                });
+            }
+
+            
+        }
+
+    });
+    
+    var AddUserPermissionView = Backbone.View.extend({
+        el: '#add_user_permission',
+
+        template: _.template($('#add-user-permission-template').html()),
+
+        render: function(userId, userNick){
+            var me = this;
+
+            $('#add_user_permission_modal').remove();
+            
+            $('body').append(this.template({'userId': userId, 'userNick': userNick}));
+
+            // 绑定事件
+            $('#add_user_permission_modal .cancel').bind('click', function(){
+                history.go(-1);
+            });
+            $('#add_user_permission_modal .add-admin').bind('click', function(){
+                me.addAdmin();
+            });
+            $('#add_user_permission_modal .parent-checkbox').bind('click', function(){
+                me.parentCheck($(this));
+            });
+            $('#add_user_permission_modal .child-checkbox').bind('click', function(){
+                me.childCheck($(this));
+            });
+
+            
+            $('#add_user_permission_modal').modal({'show': true, 'backdrop': 'static'});
+        },
+
+        // 父选项选中事件
+        parentCheck: function(sender){
+            
+            var target = sender;//$(sender.currentTarget);
+            
+            target
+            .parent()
+            .next()
+            .find('.child-checkbox')
+            .attr('checked', target.attr('checked') ? true : false);
+                  
+        },
+
+        // 子选项选中事件
+        childCheck: function(sender){
+            var target = sender,//$(sender.currentTarget);
+                flag = '';
+            
+            $.map(target.parents('.col-sm-10').find('.child-checkbox'), function(c){
+                flag += c.checked ? '1' : '0';
+            });
+            
+            // 父选项是否选中控制
+            target
+            .parents('.form-group')
+            .find('.parent-checkbox')
+            .attr('checked', (flag.indexOf('0') == -1) ? true : false);
+            
+        },
+
+        showPanel: function(userId){
+            var me = this;
+
+            ajaxSend(
+                "/admin/user/get_user_by_id", 
+                {'user_id': userId}, 
+                function(data){
+                    if(data){
+                        me.render(data.user_id, data.user_nick);
+                    } else {
+                        $.Global.Notice.ErrorTopNotice('没有找到对应的用户');
+                    }
+                }
+            );
+
+        },
+
+        addAdmin: function(){
+            
+            var modal = $('#add_user_permission_modal'),
+                userId = modal.find('.user-name').data('user_id'),
+                me = this;
+            
+            modifyUserPermissionView.collection.saveUserPermission(userId, $.Global.Utils.formToDict(modal.find('form')), function(data){
+                if(data.errcode === 0){
+                    router.navigate('modifyUserPermission/' + userId, {trigger: true});
+                    modal.modal('hide');
+                    $.Global.Notice.SuccessTopNotice('添加成功!');
+                } else {
+                    $.Global.Notice.ErrorTopNotice(data.errmsg);
+                }
+                
+            });
+        }
+
+    });
+
+    var Router = Backbone.Router.extend({
+        routes: {
+            "":                                 "search",
+            "addAdmin/:userId":                 "addAdmin",
+            "modifyUserPermission/:userId":     "modifyUserPermission"
+        },
+
+        // 获取推荐用户
+        search: function(){
+            administrators.search();
+        },
+
+        addAdmin: function(userId){
+            addUserPermissionView.showPanel(userId);
+        },
+
+        modifyUserPermission: function(userId){
+            modifyUserPermissionView.modifyUserPermission(userId);
+        }
+        
+    });
+
+    var administrators = new Administrators(),
+        userPermissions = new UserPermissions(),
+        administratorView = new AdministratorView({'collection': administrators}),
+        modifyUserPermissionView = new ModifyUserPermissionView({'collection': userPermissions}),
+        addUserPermissionView = new AddUserPermissionView(),
+        router = new Router();
+
+    Backbone.history.start();
+});
+
+</script>
+{% endblock %}
+
+{% block right %}
+<ul class="nav nav-pills pt-15 qx-nav-pills">
+    <li class="active">
+        <a href="#administrator_list" class="black-blue" data-toggle="pill">管理员列表</a>
+    </li>
+    <li>
+        <a href="#modify_user_permission" class="black-blue" data-toggle="pill">修改管理员权限</a>
+    </li>
+</ul>
+
+<div class="tab-content">
+    <!-- 管理员列表 -->
+    <div class="tab-pane fade pt-15 in active" id="administrator_list">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>头像</th>
+                    <th>用户名称</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 修改管理员权限 -->
+    <div class="tab-pane fade pt-15" id="modify_user_permission">
+        <form class="form-horizontal" role="form" method="post" action="">
+            <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
+                <p>修改用户<span class="pl-15 pr-15 fb fi user-name" data-user_id=""></span>的管理权限</p>
+            </div>
+            {% for parent in permissions %}
+            <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
+                <label class="col-sm-2 control-label pointer">
+                    <input class="parent-checkbox" type="checkbox" id="{{ parent.code }}" value="{{ parent.code }}"> {{ parent.name }}
+                </label>
+                <div class="col-sm-10">
+                    {% for child in parent.children.all %}
+                    <label class="checkbox-inline pl-40">
+                        <input class="child-checkbox" type="checkbox" id="p_{{ child.code }}" name="permissions" value="{{ child.id }}"> {{ child.name }}
+                    </label>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+            <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
+                <div class="col-md-12">
+                    <button type="button" class="btn btn-primary save-user-permission">提交你的修改</button>
+                    <button type="button" class="btn btn-danger ml-15 cancel-admin">取消此管理员</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script type="text/template" id="administrator-template">
+<% _.each(administrators, function(administrator){ %>
+    <tr class="pointer" data-user_id="<%= administrator.userId %>">
+        <td><%= administrator.num %></td>
+        <td><img src="<%= administrator.userAvatar %>" class="avatar-35 avatar-circle" ></td>
+        <td><%= administrator.userNick %></td>
+    </tr>
+<% }) %>
+</script>
+
+<script type="text/template" id="add-user-permission-template">
+<div class="modal fade" id="add_user_permission_modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header pb-5">
+                <!--<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>-->
+                <h4 class="modal-title">添加管理员</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" role="form" method="post" action="">
+                    <div class="form-group pt-20 pb-20 pl-15 mb-0 border-bottom bdc-eee">
+                        <p>为用户<span class="pl-15 pr-15 fb fi user-name" data-user_id="<%= userId %>"><%= userNick %></span>添加管理权限</p>
+                    </div>
+                    {% for parent in permissions %}
+                    <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
+                        <label class="col-sm-3 control-label pointer">
+                            <input class="parent-checkbox" type="checkbox" id="p_{{ parent.code }}" value="{{ parent.code }}"> {{ parent.name }}
+                        </label>
+                        <div class="col-sm-9">
+                            {% for child in parent.children.all %}
+                            <label class="checkbox-inline pl-40">
+                                <input class="child-checkbox" type="checkbox" id="p_{{ child.code }}" name="permissions" value="{{ child.id }}"> {{ child.name }}
+                            </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default cancel">取消</button>
+                <button type="button" class="btn btn-primary add-admin">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+</script>
+{% endblock right %}

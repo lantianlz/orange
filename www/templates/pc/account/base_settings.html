@@ -1,0 +1,30 @@
+{% extends "base/base.html" %}
+
+{% block base_css %}
+	{% block css %}{% endblock css %}
+{% endblock %}
+
+{% block base_js %}
+	{% block javascript %}{% endblock javascript %}
+{% endblock %}
+
+{% block container %}
+<div class="col-md-8">
+	<ul class="nav nav-pills pt-15 qx-nav-pills">
+		<li {% if request.path == "/account/user_settings" %} class="active" {%endif%}>
+			<a href="/account/user_settings" class="black-blue">基本资料</a>
+		</li>
+		<li {% if request.path == "/account/user_settings/change_pwd" %} class="active" {%endif%}>
+			<a href="/account/user_settings/change_pwd" class="black-blue">修改密码</a>
+		</li>
+		<li {% if request.path == "/account/user_settings/change_email" %} class="active" {%endif%}>
+			<a href="/account/user_settings/change_email" class="black-blue">修改邮箱</a>
+		</li>
+	</ul>
+	{% block left %}{% endblock left %}
+</div>
+
+<div class="col-md-4 pl-70 pt-15">
+	{% block right %}{% endblock right %}
+</div>
+{% endblock container %}
