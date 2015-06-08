@@ -12,21 +12,10 @@ import common.utils
 from www.misc.decorators import common_ajax_response
 from car.interface import BrandBase, SerialBase, CarBasicInfoBase, UserUsedCarBase
 
+
 def car(request, template_name='pc/index.html'):
-    brands = BrandBase().get_all_parent_brand(True)
-
-    year = datetime.datetime.now().year
-    years = range(year - 15, year + 1)
-    years.reverse()
-    months = range(1, 13)
-
-    # 滚动20条历史纪录
-    historys = UserUsedCarBase().get_top_20_history()
-
-    # 估车前5 
-    top_5_evaluate_car = UserUsedCarBase().get_top_5_evaluate_car()
-
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
+
 
 def get_serial_by_brand(request):
     data = []
@@ -42,6 +31,7 @@ def get_serial_by_brand(request):
 
     return HttpResponse(json.dumps(data))
 
+
 def get_car_basic_info_by_serial(request):
     data = []
 
@@ -55,6 +45,7 @@ def get_car_basic_info_by_serial(request):
         })
 
     return HttpResponse(json.dumps(data))
+
 
 def evaluate_price(request):
     car_basic_info_id = request.REQUEST.get('car_basic_info_id')
@@ -81,6 +72,7 @@ def evaluate_price(request):
 
     return HttpResponse(json.dumps({'errcode': flag, 'data': data}))
 
+
 @common_ajax_response
 def sell_car(request):
     user_used_car_id = request.REQUEST.get('user_used_car_id')
@@ -93,7 +85,7 @@ def get_top_5_evaluate_car(request):
     data = []
 
     for x in UserUsedCarBase().get_top_5_evaluate_car():
-        
+
         serial = SerialBase().get_serial_by_id(x['car__serial__id'])[0]
         data.append({
             'name': serial.name,
@@ -101,14 +93,3 @@ def get_top_5_evaluate_car(request):
         })
 
     return HttpResponse(json.dumps(data))
-
-
-
-
-
-
-
-
-
-
-
