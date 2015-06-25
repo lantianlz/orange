@@ -461,7 +461,7 @@ class UserBase(object):
         if et:
             return True, self.get_user_by_id(et.user_id)
         else:
-            email = '%s_%s@mr3-10.club' % (source, int(time.time() * 1000))
+            email = '%s_%s@mr3-10.cc' % (source, int(time.time() * 1000))
             nick = self.generate_nick_by_external_nick(nick)
             if not nick:
                 return False, u'生成名称异常'
