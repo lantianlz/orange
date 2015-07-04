@@ -1,9 +1,13 @@
 body {
-	"Helvetica Neue",Helvetica,Arial,"Hiragino Sans GB","华文细黑","STHeiti","微软雅黑","Microsoft YaHei",SimHei,sans-serif； 
+	font-family: "Helvetica Neue",Helvetica,Arial,"Hiragino Sans GB","华文细黑","STHeiti","微软雅黑","Microsoft YaHei",SimHei,sans-serif； 
 	color: #222;
 }
 
-a:focus {outline: none;-moz-outline: none;}
+body{
+	font-family: 'Lantinghei SC', 'Open Sans', Arial, 'Hiragino Sans GB', 'Microsoft YaHei', 微软雅黑, STHeiti, 'WenQuanYi Micro Hei', SimSun, sans-serif;
+}
+
+a:focus {outline: none; -moz-outline: none;}
 
 .line-through{text-decoration: line-through;}
 .no-underline{text-decoration: none;}
@@ -13,11 +17,9 @@ a:focus {outline: none;-moz-outline: none;}
 	line-height: 35px;
 }
 
-.none{display:none}
-.block{display:block;}
-.visible{visibility: visible;}
-.visible-hidden{visibility: hidden;}
-.inline-block{display:inline-block;}
+.none{display: none}
+.block{display: block;}
+.inline-block{display: inline-block;}
 
 .pointer{cursor: pointer;}
 
@@ -29,92 +31,75 @@ a:focus {outline: none;-moz-outline: none;}
 .pf{position: fixed;}
 
 .f12{font-size: 12px;}
-.f13{font-size: 13px;}
-.f14{font-size: 14px;}
-.f16{font-size: 16px;}
-.f17{font-size: 17px;}
 .f18{font-size: 18px;}
-.f20{font-size: 20px;}
 .f22{font-size: 22px;}
-.f25{font-size: 25px;}
-.f28{font-size: 28px;}
-.f30{font-size: 30px;}
-.f60{font-size: 60px;}
-.f70{font-size: 70px;}
 
 .w{width: 100%;}
-.w75{width: 75px;}
-.w80{width: 80px;}
-.w90{width: 90px;}
-.w240{width: 240px;}
+.w35{width: 35px;}
+.w40{width: 40px;}
+.w100{width: 100px;}
+.w300{width: 300px;}
+.h{height: 100%;}
 
-
-.co-222222{color: #222222;}
 .co-ffffff{color: #ffffff;}
-.co-555555{color: #555555;}
-.co-777777{color: #777777;}
-.co-66afe9{color: #66afe9;}
-.co-bbbbbb{color: #bbbbbb;}
+.co-222222{color: #222222;}
+.co-8CA0B4{color: #8CA0B4;}
 
 .border-1{border: 1px solid;}
 .border-2{border: 2px solid;}
+.border-bottom-1{border-bottom: 1px solid;}
 
 .bdc-ffffff{border-color: #ffffff;}
+.bdc-303547{border-color: #303547;}
 
-.bdr-50{border-radius: 50px;}
 .bdr-circle{border-radius: 50%;}
 
-.bgc-000000{background-color: #000000;}
-.bgc-282828{background-color: #282828;}
-.bgc-666666{background-color: #666666;}
-.bgc-ffffff{background-color: #ffffff;}
-.bgc-282828{background-color: #282828;}
 .bgc-eeeeee{background-color: #eeeeee;}
+.bgc-EEF3F6{background-color: #EEF3F6;}
+.bgc-333A4C{background-color: #333A4C;}
+.bgc-3E445B{background-color: #3E445B;}
+.bgc-ffffff{background-color: #ffffff;}
 
 .pt-0{padding-top: 0;}
-.pt-3{padding-top: 3px;}
-.pt-5{padding-top: 5px;}
-.pt-8{padding-top: 8px;}
-.pt-10{padding-top: 10px;}
 .pt-15{padding-top: 15px;}
 .pt-20{padding-top: 20px;}
 .pt-25{padding-top: 25px;}
 .pt-30{padding-top: 30px;}
-.pt-35{padding-top: 35px;}
-.pt-45{padding-top: 45px;}
-.pt-50{padding-top: 50px;}
 .pt-100{padding-top: 100px;}
-.pl-0{padding-left: 0;}
-.pl-5{padding-left: 5px;}
-.pl-6{padding-left: 6px;}
-.pl-8{padding-left: 8px;}
-.pl-10{padding-left: 10px;}
-.pl-15{padding-left: 15px;}
-.pl-22{padding-left: 22px;}
-.pl-60{padding-left: 60px;}
-.pl-70{padding-left: 70px;}
-.pl-160{padding-left: 160px;}
 .pb-0{padding-bottom: 0;}
-.pb-3{padding-bottom: 3px;}
-.pb-5{padding-bottom: 5px;}
-.pb-8{padding-bottom: 8px;}
-.pb-10{padding-bottom: 10px;}
 .pb-15{padding-bottom: 15px;}
 .pb-20{padding-bottom: 20px;}
 .pb-30{padding-bottom: 30px;}
-.pb-50{padding-bottom: 50px;}
+.pl-0{padding-left: 0;}
+.pl-15{padding-left: 15px;}
+.pl-25{padding-left: 25px;}
+.pl-30{padding-left: 30px;}
+.pl-35{padding-left: 35px;}
+.pl-40{padding-left: 40px;}
+.pl-45{padding-left: 45px;}
+.pl-50{padding-left: 50px;}
+.pl-60{padding-left: 60px;}
+.pl-65{padding-left: 65px;}
+.pl-240{padding-left: 240px;}
+.pl-300{padding-left: 300px;}
 .pr-0{padding-right: 0;}
-.pr-3{padding-right: 3px;}
-.pr-5{padding-right: 5px;}
-.pr-6{padding-right: 6px;}
-.pr-8{padding-right: 8px;}
-.pr-10{padding-right: 10px;}
-.pr-50{padding-right: 50px;}
+.pr-15{padding-right: 15px;}
+.pr-30{padding-right: 30px;}
 
 .mr-0{margin-right: 0;}
 .ml-0{margin-left: 0;}
+.ml-300{margin-left: 300px;}
+.mb-0{margin-bottom: 0;}
 .mb-20{margin-bottom: 20px;}
 .mt-10{margin-top: 10px;}
 .mt-15{margin-top: 15px;}
 
+.z-99{z-index: 99;}
+.z-100{z-index: 100;}
+
 .placeholder { color: #aaa; }
+
+.avatar-30{
+	width: 30px;
+	border-radius: 50%;
+}
