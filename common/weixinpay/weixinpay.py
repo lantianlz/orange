@@ -24,7 +24,7 @@ from common.weixinpay.config_real import settings
 from common import debug, utils
 
 
-MAIN_DOMAIN = 'http://www.3-10.club'
+MAIN_DOMAIN = 'http://www.3-10.cc'
 WEIXINPAY_URL = 'https://api.mch.weixin.qq.com'
 
 

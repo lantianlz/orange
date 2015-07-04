@@ -34,7 +34,7 @@ def main():
     # print wb.send_msg_to_weixin(content, to_user, app_key)
 
     context = {'reset_url': '%s/reset_password?code=%s' % (settings.MAIN_DOMAIN, "123"), }
-    print async_send_email("web@3-10.club", u'来自三点十分', utils.render_email_template('email/reset_password.html', context), 'html')
+    print async_send_email("web@3-10.cc", u'来自三点十分', utils.render_email_template('email/reset_password.html', context), 'html')
 
     # pprint(wb.get_user_info(app_key, to_user))
     # pprint(wb.get_qr_code_ticket(app_key))

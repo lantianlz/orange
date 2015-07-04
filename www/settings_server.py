@@ -19,17 +19,17 @@ SITE_ROOT = os.path.dirname(os.path.abspath(__file__))
 sys.path.extend([os.path.abspath(os.path.join(SITE_ROOT, '../'))])
 
 SERVER_NAME = 'ORANGE_WEB0' if not LOCAL_FLAG else 'DEVELOPER'
-SERVER_DOMAIN = '3-10.club' if not LOCAL_FLAG else '192.168.0.199:8002'
+SERVER_DOMAIN = '3-10.cc' if not LOCAL_FLAG else '192.168.0.199:8002'
 MAIN_DOMAIN = ('http://www.%s' % SERVER_DOMAIN) if not LOCAL_FLAG else ('http://%s' % SERVER_DOMAIN)
 
-IMG0_DOMAIN = 'http://img0.3-10.club'
+IMG0_DOMAIN = 'http://img0.3-10.cc'
 
-EMAIL_FROM = u'"三点十分" <service@aoaoxc.com>'
-EMAIL_HOST_USER = 'service@aoaoxc.com'
+EMAIL_FROM = u'"三点十分" <service@3-10.cc>'
+EMAIL_HOST_USER = 'service@3-10.cc'
 EMAIL_HOST_PASSWORD = ''
 EMAIL_HOST = 'smtp.exmail.qq.com'
 EMAIL_PORT = '25'
-NOTIFICATION_EMAIL = ['web@aoaoxc.com']
+NOTIFICATION_EMAIL = ['web@3-10.cc']
 
 if LOCAL_FLAG:
     DB_USER, DB_PWD, DB_HOST = 'root', '***', ''
@@ -113,7 +113,7 @@ INSTALLED_APPS = (
     'www.custom_tags',
     'www.admin',
     'www.account',
-    'www.car',
+    'www.company',
 )
 
 AUTHENTICATION_BACKENDS = ('www.middleware.user_backend.AuthBackend',)
@@ -139,7 +139,7 @@ LOGGING = {
 
 SESSION_COOKIE_AGE = 60 * 60 * 24 * 30
 SESSION_COOKIE_HTTPONLY = True
-# SESSION_COOKIE_DOMAIN = '.3-10.club' if not LOCAL_FLAG else '.a.com'
+# SESSION_COOKIE_DOMAIN = '.3-10.cc' if not LOCAL_FLAG else '.a.com'
 SESSION_COOKIE_NAME = 'sessionid_orange'
 
 import logging
