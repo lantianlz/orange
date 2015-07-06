@@ -83,6 +83,8 @@ a:focus {outline: none; -moz-outline: none;}
 .pl-240{padding-left: 240px;}
 .pl-300{padding-left: 300px;}
 .pr-0{padding-right: 0;}
+.pr-3{padding-right: 3px;}
+.pr-5{padding-right: 5px;}
 .pr-15{padding-right: 15px;}
 .pr-30{padding-right: 30px;}
 

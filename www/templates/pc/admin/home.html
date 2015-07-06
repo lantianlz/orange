@@ -2,6 +2,9 @@
 
 {% block base_css %}
 <style type="text/css">
+body{
+    overflow-x: hidden;
+}
 .list-group-item:first-child,
 .list-group-item:last-child{
     border-radius: 0;
@@ -35,6 +38,7 @@
     background-color: #333A4C;
     position: fixed;
     height: 100%;
+    overflow-y: auto;
 }
 @media only screen and (max-width: 768px) {
     .admin-left{
@@ -65,6 +69,7 @@
     cursor: pointer;
 }
 .p-nav>.list-group-item.active,
+.p-nav>.list-group-item.nav-down,
 .p-nav>.list-group-item:hover{
     background-color: #1DABD9;
     border-color: #303547;
@@ -83,6 +88,7 @@
             transition: all 0.3s;
 }
 .p-nav>.list-group-item.active>a,
+.p-nav>.list-group-item.nav-down>a,
 .p-nav>.list-group-item:hover>a{
     color: #F2FAFC;
 }
@@ -98,6 +104,7 @@
             transition: all 0.3s;
 }
 .p-nav>.list-group-item.active>a>i,
+.p-nav>.list-group-item.nav-down>a>i,
 .p-nav>.list-group-item:hover>a>i{
     color: #EBF1F4;
 }
@@ -136,7 +143,8 @@
     font-size: 13px;
     transition: all 0.3s;
 }
-.sub-nav>.list-group-item>a:hover{
+.sub-nav>.list-group-item>a:hover,
+.sub-nav>.list-group-item>a:focus{
     text-decoration: none;
 }
 .sub-nav>.list-group-item>a>i{
@@ -193,22 +201,45 @@
 {% block base_js %}
 <script type="text/javascript">
 $(document).ready(function(){
+
+    // 侧面菜单的开关
     $('.fa-bars').on('click', function(){
         $('.admin-top').toggleClass('nav-open');
         $('.admin-main').toggleClass('nav-open');
     });
 
+    // 点击菜单事件
     $('.p-nav>.list-group-item>a').on('click', function(){
-        var target = $(this).siblings();
+
+        // 关闭其他的菜单
+        $('.sub-nav').slideUp('fast');
+        $('.p-nav>.list-group-item').removeClass('nav-down');
+        $(this).parent().addClass('nav-down');
+
+        // 打开点击的目标菜单
+        var target = $(this).next();
 
         if(target && target.css('display') != 'none'){
-            target.hide('fast');
+            target.slideUp('fast');
         }
         else{
-            target.show('fast');
+            target.slideDown('fast');
         }
 
-        // target.toggleClass('sub-nav-close')
+    });
+
+    // 将子菜单打开
+    $('.p-nav>.list-group-item.active>.sub-nav').slideDown('fast');
+
+    // 手机访问时 用户头像点击事件
+    $('.user-avatar').on('click', function(){
+
+        var target = $(this).next();
+        if(target.css('display') == 'none'){
+            target.fadeIn('fast');
+        } else {
+            target.fadeOut('fast');
+        }
         
     });
 });
@@ -220,8 +251,18 @@ $(document).ready(function(){
 <div class="container-fluid pr-0 pl-0">
     <!-- <div class="row"> -->
         <div class="admin-top">
-            <i class="fa fa-bars" style="position: absolute; left: 20px; top: 15px;"></i>
+            <i class="fa fa-bars pa" style="left: 20px; top: 15px;"></i>
             <span class="f18">本月流水统计</span>
+            <img class="user-avatar avatar-30 pa" style="right: 20px; top: 12px;" src="http://tp1.sinaimg.cn/1613200184/180/1286542530/1">
+            <ul class="dropdown-menu pa co-222222" style="right: 1px; left: auto; top: 52px; max-width: 160px;">
+                <li>
+                    <a href="#"><i class="fa fa-user pr-5"></i>半夜没事瞎溜达</a>
+                </li>
+                <li class="divider"></li>
+                <li>
+                    <a href="#"><i class="fa fa-sign-out pr-5"></i>退出</a>
+                </li>
+            </ul>
         </div>
         <div class="admin-left">
             <div class="co-ffffff pr pt-20 pb-20">
@@ -238,10 +279,24 @@ $(document).ready(function(){
                         <li class="list-group-item">
                             <a href="#"><i class="point"></i>管理员维护</a>
                         </li>
+                        <li class="list-group-item">
+                            <a href="#"><i class="point"></i>用户留存率</a>
+                        </li>
+                        <li class="list-group-item">
+                            <a href="#"><i class="point"></i>用户留存率</a>
+                        </li>
                     </ul>
                 </li>
                 <li class="list-group-item" href="#">
                     <a href="#"><i class="fa fa-newspaper-o pr-3"></i>每日订单</a>
+                    <ul class="list-group sub-nav">
+                        <li class="list-group-item">
+                            <a href="#"><i class="point"></i>已完成订单</a>
+                        </li>
+                        <li class="list-group-item">
+                            <a href="#"><i class="point"></i>未完成订单</a>
+                        </li>
+                    </ul>
                 </li>
                 <li class="list-group-item active" href="#">
                     <a href="#"><i class="fa fa-bar-chart pr-3"></i>统计管理</a>
@@ -290,7 +345,7 @@ $(document).ready(function(){
                 <div class="col-md-6 text-right">
                     <img class="avatar-30" src="http://tp1.sinaimg.cn/1613200184/180/1286542530/1">
                     <span>半夜没事瞎溜达，</span>
-                    <a href="#">退出</a>
+                    <a href="#"><i class="fa fa-sign-out pr-3"></i>退出</a>
                 </div>
             </div>
 
