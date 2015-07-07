@@ -194,6 +194,43 @@ body{
             transform: translateX(240px);
 }
 
+.sidebar{
+    position: absolute;
+    display: inline-block;
+    left: 20px; 
+    top: 13px;
+}
+.sidebar-line{
+    display: block;
+    height: 2px;
+    width: 21px;
+    background-color: #fff;
+    margin-top: 5px;
+    -webkit-transition: all 0.3s;
+       -moz-transition: all 0.3s;
+        -ms-transition: all 0.3s;
+            transition: all 0.3s;
+    -webkit-transform-origin: right;
+       -moz-transform-origin: right;
+        -ms-transform-origin: right;
+            transform-origin: right;
+}
+
+.sidebar.sidebar-open>.sidebar-line-1{
+    -webkit-transform: rotatez(-45deg);
+       -moz-transform: rotatez(-45deg);
+        -ms-transform: rotatez(-45deg);
+            transform: rotatez(-45deg);
+}
+.sidebar.sidebar-open>.sidebar-line-2{
+    opacity: 0;
+}
+.sidebar.sidebar-open>.sidebar-line-3{
+    -webkit-transform: rotatez(45deg);
+       -moz-transform: rotatez(45deg);
+        -ms-transform: rotatez(45deg);
+            transform: rotatez(45deg);
+}
 </style>
 {% block css %}{% endblock %}
 {% endblock %}
@@ -203,9 +240,10 @@ body{
 $(document).ready(function(){
 
     // 侧面菜单的开关
-    $('.fa-bars').on('click', function(){
+    $('.sidebar').on('click', function(){
         $('.admin-top').toggleClass('nav-open');
         $('.admin-main').toggleClass('nav-open');
+        $('.sidebar').toggleClass('sidebar-open');
     });
 
     // 点击菜单事件
@@ -251,7 +289,13 @@ $(document).ready(function(){
 <div class="container-fluid pr-0 pl-0">
     <!-- <div class="row"> -->
         <div class="admin-top">
-            <i class="fa fa-bars pa" style="left: 20px; top: 15px;"></i>
+            <!-- <i class="fa fa-bars pa" style="left: 20px; top: 15px;"></i> -->
+            <span class="sidebar">
+                <span class="sidebar-line sidebar-line-1"></span>
+                <span class="sidebar-line sidebar-line-2"></span>
+                <span class="sidebar-line sidebar-line-3"></span>
+            </span>
+
             <span class="f18">本月流水统计</span>
             <img class="user-avatar avatar-30 pa" style="right: 20px; top: 12px;" src="http://tp1.sinaimg.cn/1613200184/180/1286542530/1">
             <ul class="dropdown-menu pa co-222222" style="right: 1px; left: auto; top: 52px; max-width: 160px;">
@@ -338,18 +382,18 @@ $(document).ready(function(){
         </div>
 
         <div class="admin-main">
-            <div class="col-md-12 pt-20 pb-15 hidden-xs">
-                <div class="col-md-6 pl-30">
+            <div class="col-md-12 col-sm-12 pt-20 pb-15 hidden-xs">
+                <div class="col-md-6 col-sm-6 pl-30">
                     <span class="f22 co-8CA0B4">本月流水统计</span>
                 </div>
-                <div class="col-md-6 text-right">
+                <div class="col-md-6 col-sm-6 text-right">
                     <img class="avatar-30" src="http://tp1.sinaimg.cn/1613200184/180/1286542530/1">
                     <span>半夜没事瞎溜达，</span>
                     <a href="#"><i class="fa fa-sign-out pr-3"></i>退出</a>
                 </div>
             </div>
 
-            <div class="content-main col-md-12">
+            <div class="content-main col-md-12 col-xs-12">
                 <div style="min-height: 700px;">本月流水统计</div>
             </div>
         </div>
