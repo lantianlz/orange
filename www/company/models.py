@@ -14,16 +14,16 @@ class Company(models.Model):
     name = models.CharField(max_length=128, unique=True)
     logo = models.CharField(max_length=256, null=True)
     des = models.TextField(null=True)
-    staff_name = models.CharField(max_length=16)     # 企业联系人
-    mobile = models.CharField(max_length=32)
+    staff_name = models.CharField(max_length=16, null=True)     # 企业联系人
+    mobile = models.CharField(max_length=32, null=True)
     tel = models.CharField(max_length=32, null=True)
-    addr = models.CharField(max_length=256)
+    addr = models.CharField(max_length=256, null=True)
 
     city_id = models.IntegerField(default=0)
     person_count = models.IntegerField(default=0)
     source = models.IntegerField(default=0, choices=source_choices)
-
     state = models.BooleanField(default=True, db_index=True)
+    create_time = models.DateTimeField(auto_now_add=True, db_index=True)
 
 
 class CashAccount(models.Model):
