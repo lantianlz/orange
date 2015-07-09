@@ -14,6 +14,11 @@ class Company(models.Model):
     name = models.CharField(max_length=128, unique=True)
     logo = models.CharField(max_length=256, null=True)
     des = models.TextField(null=True)
+    staff_name = models.CharField(max_length=16)     # 企业联系人
+    mobile = models.CharField(max_length=32)
+    tel = models.CharField(max_length=32, null=True)
+    addr = models.CharField(max_length=256)
+
     city_id = models.IntegerField(default=0)
     person_count = models.IntegerField(default=0)
     source = models.IntegerField(default=0, choices=source_choices)
@@ -78,6 +83,24 @@ class RechargeOrder(models.Model):
         ordering = ['-id', ]
 
 
+class BookInfo(models.Model):
+
+    '''
+    @note: 企业预留预订信息
+    '''
+    state_choices = ((0, u"未处理"), (1, u"已处理"))
+    source_choices = ((0, u"官网"), (1, u"IT桔子"), (1, u"拉勾网"), (1, u"推事本"), )
+
+    company_name = models.CharField(max_length=64)
+    staff_name = models.CharField(max_length=16)     # 企业联系人
+    mobile = models.CharField(max_length=32)
+    source = models.IntegerField(default=0, choices=source_choices)
+
+    state = models.IntegerField(default=0, choices=state_choices)
+    operation_user_id = models.IntegerField(null=True)
+    note = models.CharField(max_length=512)
+
+
 class Meal(models.Model):
 
     '''
@@ -105,19 +128,9 @@ class Invoice(models.Model):
     # 发票状态
 
 
-class BookInfo(models.Model):
+class InvoiceMealOrder(models.Model):
 
     '''
-    @note: 企业预留预订信息
+    @note: 发票对应的订单
     '''
-    state_choices = ((0, u"未处理"), (1, u"已处理"))
-    source_choices = ((0, u"官网"), (1, u"IT桔子"), (1, u"拉勾网"), (1, u"推事本"), )
-
-    company_name = models.CharField(max_length=64)
-    staff = models.CharField(max_length=16)
-    mobile = models.CharField(max_length=32)
-    source = models.IntegerField(default=0, choices=source_choices)
-
-    state = models.IntegerField(default=0, choices=state_choices)
-    operation_user_id = models.IntegerField(null=True)
-    note = models.CharField(max_length=512)
+    # 发票状态
