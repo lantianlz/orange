@@ -10,6 +10,6 @@ from django.shortcuts import render_to_response
 
 from misc.decorators import staff_required, common_ajax_response, verify_permission
 
-# @verify_permission('')
+@verify_permission('')
 def home(request):
     return HttpResponseRedirect('/admin/user/user')

@@ -266,6 +266,7 @@ $(document).ready(function(){
 
     });
 
+    $('.sub-nav>.list-group-item.active').parents('li').addClass('active');
     // 将子菜单打开
     $('.p-nav>.list-group-item.active>.sub-nav').slideDown('fast');
 
@@ -287,116 +288,109 @@ $(document).ready(function(){
 
 {% block base_container %}
 <div class="container-fluid pr-0 pl-0">
-    <!-- <div class="row"> -->
-        <div class="admin-top">
-            <!-- <i class="fa fa-bars pa" style="left: 20px; top: 15px;"></i> -->
-            <span class="sidebar">
-                <span class="sidebar-line sidebar-line-1"></span>
-                <span class="sidebar-line sidebar-line-2"></span>
-                <span class="sidebar-line sidebar-line-3"></span>
-            </span>
+    <div class="admin-top">
+        <!-- <i class="fa fa-bars pa" style="left: 20px; top: 15px;"></i> -->
+        <span class="sidebar">
+            <span class="sidebar-line sidebar-line-1"></span>
+            <span class="sidebar-line sidebar-line-2"></span>
+            <span class="sidebar-line sidebar-line-3"></span>
+        </span>
 
-            <span class="f18">本月流水统计</span>
-            <img class="user-avatar avatar-30 pa" style="right: 20px; top: 12px;" src="http://tp1.sinaimg.cn/1613200184/180/1286542530/1">
-            <ul class="dropdown-menu pa co-222222" style="right: 1px; left: auto; top: 52px; max-width: 160px;">
-                <li>
-                    <a href="#"><i class="fa fa-user pr-5"></i>半夜没事瞎溜达</a>
-                </li>
-                <li class="divider"></li>
-                <li>
-                    <a href="#"><i class="fa fa-sign-out pr-5"></i>退出</a>
-                </li>
-            </ul>
+        <span class="f18">{% block admin_title_m %}{% endblock %}</span>
+        <img class="user-avatar avatar-30 pa" style="right: 20px; top: 12px;" src="http://tp1.sinaimg.cn/1613200184/180/1286542530/1">
+        <ul class="dropdown-menu pa co-222222" style="right: 1px; left: auto; top: 52px; max-width: 160px;">
+            <li>
+                <a href="#"><i class="fa fa-user pr-5"></i>半夜没事瞎溜达</a>
+            </li>
+            <li class="divider"></li>
+            <li>
+                <a href="/logout"><i class="fa fa-sign-out pr-5"></i>退出</a>
+            </li>
+        </ul>
+    </div>
+    <div class="admin-left">
+        <div class="co-ffffff pr pt-20 pb-20">
+            <img class="w35 pa" style="left: 22px; top: 18px;" src="{{MEDIA_URL}}img/logo.png?v=1">
+            <span class="f18 pl-65">三点十分 后台管理</span>
         </div>
-        <div class="admin-left">
-            <div class="co-ffffff pr pt-20 pb-20">
-                <img class="w35 pa" style="left: 22px; top: 18px;" src="{{MEDIA_URL}}img/logo.png?v=1">
-                <span class="f18 pl-65">三点十分 后台管理</span>
-            </div>
-            <ul class="list-group p-nav">
-                <li class="list-group-item" href="#">
-                    <a href="#"><i class="fa fa-user pr-3" style="left: 33px;"></i>用户管理</a>
-                    <ul class="list-group sub-nav">
-                        <li class="list-group-item">
-                            <a href="#"><i class="point"></i>注册用户管理</a>
-                        </li>
-                        <li class="list-group-item">
-                            <a href="#"><i class="point"></i>管理员维护</a>
-                        </li>
-                        <li class="list-group-item">
-                            <a href="#"><i class="point"></i>用户留存率</a>
-                        </li>
-                        <li class="list-group-item">
-                            <a href="#"><i class="point"></i>用户留存率</a>
-                        </li>
-                    </ul>
-                </li>
-                <li class="list-group-item" href="#">
-                    <a href="#"><i class="fa fa-newspaper-o pr-3"></i>每日订单</a>
-                    <ul class="list-group sub-nav">
-                        <li class="list-group-item">
-                            <a href="#"><i class="point"></i>已完成订单</a>
-                        </li>
-                        <li class="list-group-item">
-                            <a href="#"><i class="point"></i>未完成订单</a>
-                        </li>
-                    </ul>
-                </li>
-                <li class="list-group-item active" href="#">
-                    <a href="#"><i class="fa fa-bar-chart pr-3"></i>统计管理</a>
-                    <ul class="list-group sub-nav">
-                        <li class="list-group-item">
-                            <a href="#"><i class="point"></i>当日流水统计</a>
-                        </li>
-                        <li class="list-group-item active">
-                            <a href="#"><i class="point"></i>本月流水统计</a>
-                        </li>
-                        <li class="list-group-item">
-                            <a href="#"><i class="point"></i>年度流水统计</a>
-                        </li>
-                    </ul>
-                </li>
-                <li class="list-group-item" href="#">
-                    <a href="#"><i class="fa fa-cogs pr-3"></i>系统设置</a>
-                    <ul class="list-group sub-nav">
-                        <li class="list-group-item">
-                            <a href="#"><i class="point"></i>修改密码</a>
-                        </li>
-                        <li class="list-group-item">
-                            <a href="#"><i class="point"></i>缓存维护</a>
-                        </li>
-                    </ul>
-                </li>
-                <li class="list-group-item" href="#">
-                    <a href="#"><i class="fa fa-comments pr-3"></i>用户反馈</a>
-                    <ul class="list-group sub-nav">
-                        <li class="list-group-item">
-                            <a href="#"><i class="point"></i>用户反馈信息</a>
-                        </li>
-                        <li class="list-group-item">
-                            <a href="#"><i class="point"></i>关于我们</a>
-                        </li>
-                    </ul>
-                </li>
-            </ul>
-        </div>
+        <ul class="list-group p-nav">
+            <li class="list-group-item {% if '/user/user' in request.path %}active{% endif %}" href="#">
+                <a href="/admin/user/user"><i class="fa fa-user pr-3" style="left: 33px;"></i>用户管理</a>
+            </li>
+            <li class="list-group-item" href="#">
+                <a href="#"><i class="fa fa-users pr-3"></i>公司管理</a>
+                <ul class="list-group sub-nav">
+                    <li class="list-group-item">
+                        <a href="#"><i class="point"></i>公司信息管理</a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="#"><i class="point"></i>公司现金账户管理</a>
+                    </li>
+                </ul>
+            </li>
+            <li class="list-group-item" href="#">
+                <a href="#"><i class="fa fa-shopping-cart pr-3"></i>在线预订信息管理</a>
+            </li>
+            <li class="list-group-item" href="#">
+                <a href="#"><i class="fa fa-list-alt pr-3"></i>套餐消费订单管理</a>
+            </li>
+            <li class="list-group-item" href="#">
+                <a href="#"><i class="fa fa-archive pr-3"></i>套餐管理</a>
+            </li>
+            <li class="list-group-item" href="#">
+                <a href="#"><i class="fa fa-print pr-3"></i>打印配送单</a>
+            </li>
+            <li class="list-group-item" href="#">
+                <a href="#"><i class="fa fa-newspaper-o pr-3"></i>发票管理</a>
+            </li>
+            <li class="list-group-item" href="#">
+                <a href="#"><i class="fa fa-bar-chart pr-3"></i>统计管理</a>
+                <ul class="list-group sub-nav">
+                    <li class="list-group-item">
+                        <a href="#"><i class="point"></i>当日流水统计</a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="#"><i class="point"></i>本月流水统计</a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="#"><i class="point"></i>年度流水统计</a>
+                    </li>
+                </ul>
+            </li>
+            <li class="list-group-item" href="#">
+                <a href="#"><i class="fa fa-cogs pr-3"></i>系统设置</a>
+                <ul class="list-group sub-nav">
+                    <li class="list-group-item">
+                        <a href="#"><i class="point"></i>缓存管理</a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="#"><i class="point"></i>敏感操作日志管理</a>
+                    </li>
+                    <li class="list-group-item {% if '/permission' in request.path %}active{% endif %}">
+                        <a href="/admin/permission"><i class="point"></i>权限管理</a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </div>
 
-        <div class="admin-main">
-            <div class="col-md-12 col-sm-12 pt-20 pb-15 hidden-xs">
-                <div class="col-md-6 col-sm-6 pl-30">
-                    <span class="f22 co-8CA0B4">本月流水统计</span>
-                </div>
-                <div class="col-md-6 col-sm-6 text-right">
-                    <img class="avatar-30" src="http://tp1.sinaimg.cn/1613200184/180/1286542530/1">
-                    <span>半夜没事瞎溜达，</span>
-                    <a href="#"><i class="fa fa-sign-out pr-3"></i>退出</a>
-                </div>
+    <div class="admin-main">
+        <div class="col-md-12 col-sm-12 pt-20 pb-15 hidden-xs">
+            <div class="col-md-6 col-sm-6 pl-30">
+                <span class="f22 co-8CA0B4">{% block admin_title %}{% endblock %}</span>
             </div>
-
-            <div class="content-main col-md-12 col-xs-12">
-                <div style="min-height: 700px;">本月流水统计</div>
+            <div class="col-md-6 col-sm-6 text-right">
+                <img class="avatar-30" src="http://tp1.sinaimg.cn/1613200184/180/1286542530/1">
+                <span>半夜没事瞎溜达，</span>
+                <a href="/logout"><i class="fa fa-sign-out pr-3"></i>退出</a>
             </div>
         </div>
-    <!-- </div> -->
+
+        <div class="content-main col-md-12 col-xs-12">
+            <div style="min-height: 700px;">
+                {% block admin_main %}{% endblock %}
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}

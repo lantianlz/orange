@@ -6,8 +6,8 @@ from django.views.generic.simple import direct_to_template
 
 
 urlpatterns = patterns('',
-                       url(r'^login$', 'www.account.views.login_weixin'),
-                       url(r'^login_w$', 'www.account.views.login'),
+                       # url(r'^login$', 'www.account.views.login_weixin'),
+                       url(r'^login$', 'www.account.views.login'),
                        url(r'^get_weixin_login_state$', 'www.account.views.get_weixin_login_state'),
                        url(r'^logout$', 'www.account.views.logout'),
                        url(r'^qiniu_img_return$', 'www.misc.views.qiniu_img_return'),

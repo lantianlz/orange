@@ -383,7 +383,10 @@ $(document).ready(function(){
 </script>
 {% endblock %}
 
-{% block right %}
+{% block admin_title %}权限管理{% endblock %}
+{% block admin_title_m %}权限管理{% endblock %}
+
+{% block admin_main %}
 <ul class="nav nav-pills pt-15 qx-nav-pills">
     <li class="active">
         <a href="#administrator_list" class="black-blue" data-toggle="pill">管理员列表</a>
@@ -487,4 +490,4 @@ $(document).ready(function(){
     </div>
 </div>
 </script>
-{% endblock right %}
+{% endblock admin_main %}

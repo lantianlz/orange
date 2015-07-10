@@ -21,12 +21,12 @@ def home_welcome(request, template_name='pc/index.html'):
 def car_list(request, template_name='pc/car_list.html'):
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
 
-def login(request, template_name='pc/shop/login_shop.html'):
-    email = request.POST.get('email', '').strip()
+def login(request, template_name='pc/account/login.html'):
+    mobile = request.POST.get('mobile', '').strip()
     password = request.POST.get('password', '').strip()
 
     if request.POST:
-        user = auth.authenticate(username=email, password=password)
+        user = auth.authenticate(username=mobile, password=password)
         if user:
             auth.login(request, user)
             next_url = request.session.get('next_url') or '/'
