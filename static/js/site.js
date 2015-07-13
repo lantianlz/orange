@@ -216,7 +216,7 @@ if (!String.format) {
     */
     $.Global.Notice.TopNotice = function(type, content, closeSeconds){
         var noticeHtml = [
-                '<div class="alert alert-dismissable pf box-shadow-224 border-radius-2 co5 zx-top-notice qx-{0}-notice">',
+                '<div class="alert alert-dismissable pf box-shadow-224 border-radius-2 co-ffffff zx-top-notice orange-{0}-notice">',
                     '<button type="button" class="close" aria-hidden="true">',
                         '<span class="fa fa-times co5 f18 pointer"></span>',
                     '</button>',
@@ -238,20 +238,20 @@ if (!String.format) {
             left = ($(window).width() - target.width()) / 2 - 30;
 
         target
-        .css({'left': left > 0 ? left : 0 , 'top': 0})
-        .animate({'top': 55}, 300);
+        .css({'left': left > 0 ? left : 0 , 'top': -55})
+        .animate({'top': 7}, 300);
 
         target
         .find('.close')
         .bind('click', function(){
             // 关闭之后删除自己
-            target.animate({'top': 0}, 300, function(){target.remove()});
+            target.animate({'top': -55}, 300, function(){target.remove()});
         });
 
         // 自动关闭时间
         if(closeSeconds){
             window.setTimeout(function(){
-                target.animate({'top': 0}, 300, function(){target.remove()});
+                target.animate({'top': -55}, 300, function(){target.remove()});
             }, closeSeconds);
         }
 
@@ -608,6 +608,19 @@ $(document).ready(function(){
             }
         }
         
+    });
+
+    // 点击按钮效果
+    $('.btn-wave').on('mousedown', function(e){
+        var e = e || window.event,
+            offset = $(this).offset(),
+            left = e.pageX - offset.left - 20,
+            top = e.pageY - offset.top - 20,
+            target = $('<span class="wave" style="left: '+left+'px; top: '+top+'px"></span>').appendTo($(this));
+        
+        target.one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function(){
+            $(this).remove();
+        });
     });
 
 });

@@ -53,6 +53,7 @@ a:focus {outline: none; -moz-outline: none;}
 
 .bdc-ffffff{border-color: #ffffff;}
 .bdc-303547{border-color: #303547;}
+.bdc-e4e4e4{border-color: #e4e4e4;}
 
 .bdr-circle{border-radius: 50%;}
 
@@ -93,6 +94,7 @@ a:focus {outline: none; -moz-outline: none;}
 
 .mr-0{margin-right: 0;}
 .ml-0{margin-left: 0;}
+.ml-15{margin-left: 15px;}
 .ml-300{margin-left: 300px;}
 .mb-0{margin-bottom: 0;}
 .mb-20{margin-bottom: 20px;}
@@ -113,4 +115,99 @@ a:focus {outline: none; -moz-outline: none;}
 label.error {
 	color: #863114;
 	font-size: 12px;
+}
+
+/*
+	波纹按钮
+*/
+.btn{
+	border-radius: 2px;
+}
+
+.btn-wave{
+    position: relative;
+    overflow: hidden;
+}
+.btn:focus, 
+.btn:active:focus, 
+.btn.active:focus{
+	outline: 0;
+}
+.wave{
+    display: inline-block;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 40px;
+    height: 40px;
+    background-color: #fff;
+    border-radius: 50%;
+    opacity: 0.5;
+    -webkit-animation: wave 1.2s;
+       -moz-animation: wave 1.2s;
+        -ms-animation: wave 1.2s;
+            animation: wave 1.2s;
+    -webkit-animation-fill-mode: forwards;
+       -moz-animation-fill-mode: forwards;
+        -ms-animation-fill-mode: forwards;
+            animation-fill-mode: forwards;
+}
+@-webkit-keyframes wave{
+    0%{
+        opacity: 0.5;
+        -webkit-transform: scale(1);
+           -moz-transform: scale(1);
+            -ms-transform: scale(1);
+                transform: scale(1);
+    }
+    100%{
+        opacity: 0;
+        -webkit-transform: scale(8);
+           -moz-transform: scale(8);
+            -ms-transform: scale(8);
+                transform: scale(8);
+    }
+}
+@keyframes wave{
+    0%{
+        opacity: 0.5;
+        -webkit-transform: scale(1);
+           -moz-transform: scale(1);
+            -ms-transform: scale(1);
+                transform: scale(1);
+    }
+    100%{
+        opacity: 0;
+        -webkit-transform: scale(8);
+           -moz-transform: scale(8);
+            -ms-transform: scale(8);
+                transform: scale(8);
+    }
+}
+
+/*
+	提示框
+*/
+.orange-info-notice{
+  background-color: #56A8C7;
+  border-color: #56A8C7;
+  z-index: 1099;
+}
+
+.orange-success-notice{
+  background-color: #65B153;
+  border-color: #0FA70D;
+  z-index: 1099;
+}
+
+.orange-error-notice{
+  background-color: #C94C42;
+  border-color: #B43A30;
+  z-index: 1099;
+}
+
+.orange-warning-notice{
+  background-color: #EEA31F;
+  border-color: #EEA31F;
+  z-index: 1099;
 }

@@ -4,6 +4,7 @@
 <style type="text/css">
 body{
     overflow-x: hidden;
+    background-color: #EEF3F6;
 }
 .list-group-item:first-child,
 .list-group-item:last-child{
@@ -176,14 +177,16 @@ body{
 }
 
 .content-main{
-    background-color: #EEF3F6;
     padding-left: 45px;
     padding-top: 15px;
+    padding-right: 45px;
 }
 @media only screen and (max-width: 768px) {
     .content-main{
         padding-left: 15px;
         padding-top: 70px;
+        padding-right: 15px;
+        background-color: #EEF3F6;
     }
 }
 
@@ -231,6 +234,35 @@ body{
         -ms-transform: rotatez(45deg);
             transform: rotatez(45deg);
 }
+
+.orange-nav-pills{
+    border-bottom: 2px solid #d9d9d9;
+}
+.orange-nav-pills>li>a{
+  border-radius: 0px;
+  margin-bottom: -2px;
+  border-bottom: 2px solid #d9d9d9;
+  color: #222222;
+  transition: all 0.3s;
+}
+.orange-nav-pills>li>a:hover{
+  background-color: transparent;
+  border-bottom: 2px solid #428bca;
+  color: #428bca;
+}
+.orange-nav-pills>li.active>a,
+.orange-nav-pills>li.active>a:hover, 
+.orange-nav-pills>li.active>a:focus{
+  background-color: transparent;
+  color: #428bca;
+  border-bottom: 2px solid #428bca;
+}
+
+.form-horizontal .form-group{
+  margin-right: 0px;
+  margin-left: 0px;
+}
+
 </style>
 {% block css %}{% endblock %}
 {% endblock %}
@@ -247,7 +279,7 @@ $(document).ready(function(){
     });
 
     // 点击菜单事件
-    $('.p-nav>.list-group-item>a').on('click', function(){
+    $('.p-nav>.list-group-item>a').on('click', function(e){
 
         // 关闭其他的菜单
         $('.sub-nav').slideUp('fast');
@@ -263,6 +295,8 @@ $(document).ready(function(){
         else{
             target.slideDown('fast');
         }
+
+        // e.preventDefault();
 
     });
 
@@ -281,6 +315,7 @@ $(document).ready(function(){
         }
         
     });
+
 });
 </script>
 {% block javascript %}{% endblock %}
@@ -358,7 +393,7 @@ $(document).ready(function(){
                 </ul>
             </li>
             <li class="list-group-item" href="#">
-                <a href="#"><i class="fa fa-cogs pr-3"></i>系统设置</a>
+                <a><i class="fa fa-cogs pr-3"></i>系统设置</a>
                 <ul class="list-group sub-nav">
                     <li class="list-group-item">
                         <a href="#"><i class="point"></i>缓存管理</a>
@@ -375,7 +410,7 @@ $(document).ready(function(){
     </div>
 
     <div class="admin-main">
-        <div class="col-md-12 col-sm-12 pt-20 pb-15 hidden-xs">
+        <div class="col-md-12 col-sm-12 pt-20 pb-15 hidden-xs bgc-ffffff">
             <div class="col-md-6 col-sm-6 pl-30">
                 <span class="f22 co-8CA0B4">{% block admin_title %}{% endblock %}</span>
             </div>

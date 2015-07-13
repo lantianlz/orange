@@ -121,7 +121,7 @@ $(document).ready(function(){
 
         // 显示面板
         showPanel: function(){
-            $('.qx-nav-pills a[href="#administrator_list"]').tab('show');
+            $('.orange-nav-pills a[href="#administrator_list"]').tab('show');
         },
 
         // 修改用户权限
@@ -168,7 +168,7 @@ $(document).ready(function(){
 
         // 显示面板
         showPanel: function(){
-            $('.qx-nav-pills a[href="#modify_user_permission"]').tab('show');
+            $('.orange-nav-pills a[href="#modify_user_permission"]').tab('show');
         },
 
         // 父选项选中事件
@@ -387,12 +387,27 @@ $(document).ready(function(){
 {% block admin_title_m %}权限管理{% endblock %}
 
 {% block admin_main %}
-<ul class="nav nav-pills pt-15 qx-nav-pills">
+<ul class="nav nav-pills pt-15 orange-nav-pills">
     <li class="active">
-        <a href="#administrator_list" class="black-blue" data-toggle="pill">管理员列表</a>
+        <a href="#administrator_list" data-toggle="pill">
+            <i class="fa fa-list-ol pr-5"></i>
+            <span class="hidden-sm hidden-md hidden-lg">列表</span>
+            <span class="hidden-xs">管理员列表</span>
+        </a>
     </li>
     <li>
-        <a href="#modify_user_permission" class="black-blue" data-toggle="pill">修改管理员权限</a>
+        <a href="#modify_user_permission" data-toggle="pill">
+            <i class="fa fa-pencil-square-o pr-5"></i>
+            <span class="hidden-sm hidden-md hidden-lg">修改</span>
+            <span class="hidden-xs">修改管理员权限</span>
+        </a>
+    </li>
+    <li class="pull-right">
+        <a href="#add_user_permission" data-toggle="pill">
+            <i class="fa fa-plus-circle pr-5"></i>
+            <span class="hidden-sm hidden-md hidden-lg">添加</span>
+            <span class="hidden-xs">添加管理员</span>
+        </a>
     </li>
 </ul>
 
@@ -416,11 +431,11 @@ $(document).ready(function(){
     <!-- 修改管理员权限 -->
     <div class="tab-pane fade pt-15" id="modify_user_permission">
         <form class="form-horizontal" role="form" method="post" action="">
-            <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
+            <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4 pl-15">
                 <p>修改用户<span class="pl-15 pr-15 fb fi user-name" data-user_id=""></span>的管理权限</p>
             </div>
             {% for parent in permissions %}
-            <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
+            <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
                 <label class="col-sm-2 control-label pointer">
                     <input class="parent-checkbox" type="checkbox" id="{{ parent.code }}" value="{{ parent.code }}"> {{ parent.name }}
                 </label>
@@ -433,7 +448,7 @@ $(document).ready(function(){
                 </div>
             </div>
             {% endfor %}
-            <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
+            <div class="form-group pt-20 pb-20 mb-0">
                 <div class="col-md-12">
                     <button type="button" class="btn btn-primary save-user-permission">提交你的修改</button>
                     <button type="button" class="btn btn-danger ml-15 cancel-admin">取消此管理员</button>
@@ -463,11 +478,11 @@ $(document).ready(function(){
             </div>
             <div class="modal-body">
                 <form class="form-horizontal" role="form" method="post" action="">
-                    <div class="form-group pt-20 pb-20 pl-15 mb-0 border-bottom bdc-eee">
+                    <div class="form-group pt-20 pb-20 pl-15 mb-0 border-bottom-1 bdc-e4e4e4">
                         <p>为用户<span class="pl-15 pr-15 fb fi user-name" data-user_id="<%= userId %>"><%= userNick %></span>添加管理权限</p>
                     </div>
                     {% for parent in permissions %}
-                    <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
+                    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
                         <label class="col-sm-3 control-label pointer">
                             <input class="parent-checkbox" type="checkbox" id="p_{{ parent.code }}" value="{{ parent.code }}"> {{ parent.name }}
                         </label>
