@@ -1,8 +1,3 @@
-body {
-	font-family: "Helvetica Neue",Helvetica,Arial,"Hiragino Sans GB","华文细黑","STHeiti","微软雅黑","Microsoft YaHei",SimHei,sans-serif； 
-	color: #222;
-}
-
 body{
 	font-family: 'Lantinghei SC', 'Open Sans', Arial, 'Hiragino Sans GB', 'Microsoft YaHei', 微软雅黑, STHeiti, 'WenQuanYi Micro Hei', SimSun, sans-serif;
 }
@@ -13,9 +8,8 @@ a:focus {outline: none; -moz-outline: none;}
 .no-underline{text-decoration: none;}
 .no-underline:hover{text-decoration: none;}
 
-.line-height-35{
-	line-height: 35px;
-}
+.line-height-23{line-height: 23px;}
+.line-height-35{line-height: 35px;}
 
 .none{display: none}
 .block{display: block;}
@@ -31,9 +25,15 @@ a:focus {outline: none; -moz-outline: none;}
 .pf{position: fixed;}
 
 .f12{font-size: 12px;}
+.f13{font-size: 13px;}
+.f14{font-size: 14px;}
+.f16{font-size: 16px;}
 .f18{font-size: 18px;}
 .f20{font-size: 20px;}
 .f22{font-size: 22px;}
+.f25{font-size: 25px;}
+.f28{font-size: 28px;}
+.f30{font-size: 30px;}
 
 .w{width: 100%;}
 .w35{width: 35px;}
@@ -46,6 +46,8 @@ a:focus {outline: none; -moz-outline: none;}
 .co-222222{color: #222222;}
 .co-8CA0B4{color: #8CA0B4;}
 .co-888888{color: #888888;}
+.co-3B99FC{color: #3B99FC;}
+.co-ADADAD{color: #ADADAD;}
 
 .border-1{border: 1px solid;}
 .border-2{border: 2px solid;}
@@ -54,27 +56,45 @@ a:focus {outline: none; -moz-outline: none;}
 .bdc-ffffff{border-color: #ffffff;}
 .bdc-303547{border-color: #303547;}
 .bdc-e4e4e4{border-color: #e4e4e4;}
+.bdc-222222{border-color: #222222;}
+.bdc-eeeeee{border-color: #eeeeee;}
 
 .bdr-circle{border-radius: 50%;}
+.bdr-50{border-radius: 50px;}
 
 .bgc-eeeeee{background-color: #eeeeee;}
 .bgc-EEF3F6{background-color: #EEF3F6;}
 .bgc-333A4C{background-color: #333A4C;}
 .bgc-3E445B{background-color: #3E445B;}
 .bgc-ffffff{background-color: #ffffff;}
+.bgc-84CCC7{background-color: #84CCC7;}
+.bgc-EE7A32{background-color: #EE7A32;}
+.bgc-444B5C{background-color: #444B5C;}
 
 .pt-0{padding-top: 0;}
+.pt-3{padding-top: 3px;}
+.pt-5{padding-top: 5px;}
+.pt-8{padding-top: 8px;}
 .pt-15{padding-top: 15px;}
 .pt-20{padding-top: 20px;}
 .pt-25{padding-top: 25px;}
 .pt-30{padding-top: 30px;}
 .pt-40{padding-top: 40px;}
+.pt-55{padding-top: 55px;}
+.pt-80{padding-top: 80px;}
 .pt-100{padding-top: 100px;}
 .pb-0{padding-bottom: 0;}
+.pb-3{padding-bottom: 3px;}
+.pb-8{padding-bottom: 8px;}
 .pb-15{padding-bottom: 15px;}
 .pb-20{padding-bottom: 20px;}
+.pb-25{padding-bottom: 25px;}
 .pb-30{padding-bottom: 30px;}
+.pb-50{padding-bottom: 50px;}
+.pb-80{padding-bottom: 80px;}
 .pl-0{padding-left: 0;}
+.pl-6{padding-left: 6px;}
+.pl-8{padding-left: 8px;}
 .pl-15{padding-left: 15px;}
 .pl-25{padding-left: 25px;}
 .pl-30{padding-left: 30px;}
@@ -89,8 +109,12 @@ a:focus {outline: none; -moz-outline: none;}
 .pr-0{padding-right: 0;}
 .pr-3{padding-right: 3px;}
 .pr-5{padding-right: 5px;}
+.pr-6{padding-right: 6px;}
+.pr-8{padding-right: 8px;}
 .pr-15{padding-right: 15px;}
+.pr-25{padding-right: 25px;}
 .pr-30{padding-right: 30px;}
+.pr-50{padding-right: 50px;}
 
 .mr-0{margin-right: 0;}
 .ml-0{margin-left: 0;}
@@ -121,7 +145,7 @@ label.error {
 	波纹按钮
 */
 .btn{
-	border-radius: 2px;
+	border-radius: 1px;
 }
 
 .btn-wave{

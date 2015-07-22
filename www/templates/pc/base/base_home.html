@@ -1,15 +1,20 @@
 {% extends "pc/base/base.html" %}
 
 {% block base_css %}
-<link rel="stylesheet" type="text/css" href="{{MEDIA_URL}}css/animate/animate.min.css" />
 <style type="text/css">
+body{
+    overflow-x: hidden;
+}
+.container{
+    width: 1000px !important;
+}
+
 .nav>li>a{
     color: #222222;
-    transition: all 0.3s;
 }
 
 .nav>li>a:hover{
-    color: #3297fd;
+    color: #EF7B32;
     background-color: transparent;
 }
 
@@ -23,25 +28,22 @@
 }
 
 .navbar-nav>li.active>a{
-    color: #3297fd;
+    color: #EF7B32;
 }
 
 .navbar-brand{
     height: auto;
-}
-.navbar-brand:hover{
-    /*color: #ffffff;*/
 }
 
 .navbar{
     min-height: 80px;
 }
 
-.line-hover1{
+.line-hover{
     position: absolute; 
     width: 100%; 
     height: 1px; 
-    background-color: #83CA6B; 
+    background-color: #EF7B32; 
     top: 65px;
     left: 0;
     transition: all 0.3s;
@@ -65,18 +67,64 @@
         -ms-transform: scaleX(1);
             transform: scaleX(1);
 }
+
+.nav-login>span{
+    padding: 3px 8px;
+    border: 1px solid #222222;
+    border-radius: 50px;
+}
+.nav-login:hover>span{
+    border: 1px solid #EF7B32;
+}
+
+.contact-hover-email{
+    cursor: pointer;
+    transition: all 0.3s;
+}
+.contact-hover-email:hover{
+    color: #4675CC;
+    background-color: #ffffff;
+}
+
+.contact-hover-qq{
+    cursor: pointer;
+    transition: all 0.3s;
+}
+.contact-hover-qq:hover{
+    color: #189BD6;
+    background-color: #ffffff;
+}
+
+.contact-hover-weibo{
+    cursor: pointer;
+    transition: all 0.3s;
+}
+.contact-hover-weibo:hover{
+    color: #E6162D;
+    background-color: #ffffff;
+}
+
+.contact-hover-weixin{
+    cursor: pointer;
+    color: #ffffff;
+    transition: all 0.3s;
+}
+.contact-hover-weixin:hover{
+    color: #25A210;
+    background-color: #ffffff;
+}
 </style>
-{% block home_css %}{% endblock %}
+{% block css %}{% endblock %}
 {% endblock %}
 
 {% block base_js %}
-{% block home_js %}{% endblock %}
+{% block js %}{% endblock %}
 {% endblock %}
 
 {% block header %}
-<header class="navbar navbar-fixed-top bgc-ffffff" style="border-bottom: solid 1px #ddd;" role="banner">
-    <!-- <div class="pa" style="opacity: 0.1; filter: alpha(opacity=1); background-color: black; width: 100%; height: 100%;"></div> -->
-    <div class="container pr-50 pl-60">
+<header class="navbar navbar-fixed-top bdc-eeeeee border-bottom-1" role="banner">
+    <div class="pa" style="opacity: 0.90; filter: alpha(opacity=90); background-color: white; width: 100%; height: 100%;"></div>
+    <div class="container">
         <div class="navbar-header pr">
             <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target=".navbar-collapse">
                 <span class="sr-only">Toggle navigation</span>
@@ -84,29 +132,44 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a href="../" class="navbar-brand" style="font-size: 40px; padding-top: 30px;">三点十分</a>
-            <!-- <a href="/"><img class="w90 pa" style="left: 5px; top: 19px;" alt="三点十分" src="{{MEDIA_URL}}img/logo.png"></a> -->
+            <!-- <a href="../" class="navbar-brand co-ffffff" style="font-size: 40px; padding-top: 30px;">车咖</a> -->
+            <a href="/">
+                <img class="pa" style="left: 5px; top: 19px; width: 35px;" alt="三点十分" src="{{MEDIA_URL}}img/logo.png">
+                <img class="pa" style="left: 48px; top: 27px; width: 70px;" alt="三点十分" src="{{MEDIA_URL}}img/logo-text.png">
+                <img class="pa" style="left: 48px; top: 49px; width: 90px;" alt="下午茶点服务专家" src="{{MEDIA_URL}}img/slogan.png">
+            </a>
         </div>
         <nav class="collapse navbar-collapse" role="navigation">
             <ul class="nav navbar-nav navbar-right">
-                <li {% if '/' == request.path %}class="active"{% endif %}>
-                    <a class="f20 pr" href="/">
-                        估价
+                <li {% if request.path == '/' %}class="active"{% endif %}>
+                    <a class="f16 pr" href="/">
+                        首页
                         <span class="line-hover"></span>
                     </a>
                 </li>
-                <li {% if 'car_list' in request.path %}class="active"{% endif %}>
-                    <a class="f20" href="/car_list">
-                        买车
+                <li>
+                    <a class="f16" href="#">
+                        产品介绍
                         <span class="line-hover"></span>
                     </a>
                 </li>
-                <!-- <li>
-                    <a class="f20" href="#">
-                        车神
+                <li>
+                    <a class="f16" href="#">
+                        典型客户
                         <span class="line-hover"></span>
                     </a>
-                </li> -->
+                </li>
+                <li {% if '/s/about' in request.path %}class="active"{% endif %}>
+                    <a class="f16" href="#">
+                        关于我们
+                        <span class="line-hover"></span>
+                    </a>
+                </li>
+                <li>
+                    <a class="f12 nav-login" href="#">
+                        <span class="">登录</span>
+                    </a>
+                </li>
             </ul>
         </nav>
     </div>

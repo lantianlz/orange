@@ -1,551 +1,283 @@
 {% extends "pc/base/base_home.html" %}
 
 {% block title_all %}三点十分{% endblock %}
-{% block home_css %}
-<!-- <link rel="stylesheet" type="text/css" href="{{MEDIA_URL}}js/dropkick/css/dropkick.css" /> -->
-<link rel="stylesheet" type="text/css" href="{{MEDIA_URL}}js/selectize/css/selectize.css" />
-<link rel="stylesheet" type="text/css" href="{{MEDIA_URL}}js/selectize/css/selectize.bootstrap3.css" />
+{% block css %}
 <style type="text/css">
-.bg{
-    width: 100%;
-    height: 100vh;
-    position: relative;
+.customer{
+    -webkit-transition: all 0.2s;
+            transition: all 0.2s;
+    cursor: pointer;
 }
-
-.bg-img{
-    height: 460px;
+.customer:hover{
+    -webkit-transform: scale(0.95);
+            transform: scale(0.95);
+    background-color: #f9f9f9;
 }
-
-.evaluate－form{
-    width: 420px; 
-    height: 350px; 
-    z-index: 100;
-    position: relative;
-    color: #222;
-    padding: 25px 30px;
-}
-.evaluate－cover{
+.customer-circle-1{
+    border-radius: 50%;
     position: absolute;
-    z-index: 99;
-    left: 60px;
+    left: 0;
     top: 0;
-    width: 420px; 
-    height: 350px; 
-    background-color: #ffffff; 
-    /*opacity: 0.5; */
-    /*border-radius: 4px;*/
-    border: solid 1px #ddd;
-    /*box-shadow: 0px 0px 10px #ffffff;*/
-}
-
-.dropkick-sel{
-    /*color: #bbb;*/
-    font-size: 13px;
-}
-
-.dk-select, .dk-select-multi{
+    border: 1px solid #ddd;
     width: 100%;
+    height: 100%;
+    opacity: 0;
+    -webkit-transform: scale(0.95);
+            transform: scale(0.95);
+}
+.customer:hover .customer-circle-1{
+    -webkit-animation: circle-wave-1 1.3s ease-out 75ms;
+            animation: circle-wave-1 1.3s ease-out 75ms;
+    -webkit-animation-fill-mode: forwards;
+            animation-fill-mode: forwards;
+}
+@-webkit-keyframes circle-wave-1 {
+    0% {
+        opacity: 0.3;
+    }
+    40% {
+        opacity: 0.6;
+        border: 1px solid #eee;
+        box-shadow: 0 0 0 2px rgba(255,255,255,0.1), 0 0 10px 10px #ffffff, 0 0 0 10px rgba(255,255,255,0.5);
+    }
+    100% {
+        border: 1px solid #eee;
+        box-shadow: 0 0 0 2px rgba(255,255,255,0.1), 0 0 10px 10px #ffffff, 0 0 0 10px rgba(255,255,255,0.5);
+        -webkit-transform: scale(1.25);
+                transform: scale(1.25);
+        opacity: 0;
+    }
+}
+@keyframes circle-wave-1 {
+    0% {
+        opacity: 0.3;
+    }
+    40% {
+        opacity: 0.6;
+        border: 1px solid #eee;
+        box-shadow: 0 0 0 2px rgba(255,255,255,0.1), 0 0 10px 10px #ffffff, 0 0 0 10px rgba(255,255,255,0.5);
+    }
+    100% {
+        border: 1px solid #eee;
+        box-shadow: 0 0 0 2px rgba(255,255,255,0.1), 0 0 10px 10px #ffffff, 0 0 0 10px rgba(255,255,255,0.5);
+        -webkit-transform: scale(1.25);
+                transform: scale(1.25);
+        opacity: 0;
+    }
+}
+.customer-circle-2{
+    border-radius: 50%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    border: 1px solid #ddd;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    -webkit-transform: scale(0.95);
+            transform: scale(0.95);
+}
+.customer:hover .customer-circle-2{
+    -webkit-animation: circle-wave-2 1.3s ease-out 75ms;
+            animation: circle-wave-2 1.3s ease-out 75ms;
+    -webkit-animation-fill-mode: forwards;
+            animation-fill-mode: forwards;
+}
+@-webkit-keyframes circle-wave-2 {
+    0% {
+        opacity: 0.3;
+    }
+    40% {
+        opacity: 0.6;
+        border: 1px solid #eee;
+        box-shadow: 0 0 0 2px rgba(255,255,255,0.1), 0 0 10px 10px #ffffff, 0 0 0 10px rgba(255,255,255,0.5);
+    }
+    100% {
+        border: 1px solid #eee;
+        box-shadow: 0 0 0 2px rgba(255,255,255,0.1), 0 0 10px 10px #ffffff, 0 0 0 10px rgba(255,255,255,0.5);
+        -webkit-transform: scale(1.5);
+                transform: scale(1.5);
+        opacity: 0;
+    }
+}
+@keyframes circle-wave-2 {
+    0% {
+        opacity: 0.3;
+    }
+    40% {
+        opacity: 0.6;
+        border: 1px solid #eee;
+        box-shadow: 0 0 0 2px rgba(255,255,255,0.1), 0 0 10px 10px #ffffff, 0 0 0 10px rgba(255,255,255,0.5);
+    }
+    100% {
+        border: 1px solid #eee;
+        box-shadow: 0 0 0 2px rgba(255,255,255,0.1), 0 0 10px 10px #ffffff, 0 0 0 10px rgba(255,255,255,0.5);
+        -webkit-transform: scale(1.5);
+                transform: scale(1.5);
+        opacity: 0;
+    }
 }
 
-.list-group-item:first-child{
-    border-top: 0;
-}
-.list-group-item{
-    padding-top: 15px;
-    padding-bottom: 15px;
-    border-bottom: 0px;
-    border-left: 0px;
-    border-right: 0px;
-}
-
-.scroll-list{
-    overflow: hidden;
-    height: 200px;
-}
 </style>
 {% endblock %}
 
-{% block home_js %}
-<!-- <script type="text/javascript" src="{{MEDIA_URL}}js/dropkick/dropkick.js"></script> -->
-<script type="text/javascript" src="{{MEDIA_URL}}js/selectize/js/standalone/selectize.js"></script>
-<script type="text/javascript" src="{{MEDIA_URL}}js/jquery/jquery.easing.1.3.min.js"></script>
+{% block js %}
 
 <script type="text/javascript">
 $(document).ready(function(){
 
-    var count = 0;
-
-    // 背景切换
-    // window.setInterval(function(){
-    //     $('.bg-img').eq(count).animate({'opacity': 0}, 500);
-
-    //     count = (count >= 3) ? -1 : count;
-    //     count += 1;
-
-    //     $('.bg-img').eq(count).animate({'opacity': 1}, 500);
-
-    // }, 5000);
-    
-
-    // $('.dropkick-sel').dropkick();
-    var selBrand = $('.sel-brand').selectize()[0].selectize,
-        selType = $('.sel-type').selectize()[0].selectize,
-        selStyle = $('.sel-style').selectize()[0].selectize,
-        selYear = $('.sel-year').selectize()[0].selectize,
-        selMonth = $('.sel-month').selectize()[0].selectize,
-        getGroup = function(data){
-            var group = [];
-            $.map(data, function(per){
-                
-                if($.inArray(per.group, group) == -1){
-                    group.push({'value': per.group, 'label': per.group});
-                }
-
-            })
-
-            return group;
-        };
-    $('input, textarea').placeholder();
-    selBrand.on('change', function(value){
-        if(!value){
-            return;
-        }
-        ajaxSend(
-            '/car/get_serial_by_brand', 
-            'brand_id=' + value,
-            function(data){
-                
-                selType.destroy();
-
-                selType = $('.sel-type').selectize({
-                    options: data,
-                    optgroups: getGroup(data),
-                    optgroupField: 'group',
-                    labelField: 'name',
-                    searchField: ['name'],
-                    render: {
-                        optgroup_header: function(data, escape) {
-                            return '<div class="f18 pt-5 pb-10 pl-10 fb">' + escape(data.label) + '</div>';
-                        }
-                    }
-                })[0].selectize;
-
-                // 车型
-                selType.on('change', function(value){
-                    if(!value){
-                        return;
-                    }
-
-                    ajaxSend(
-                        '/car/get_car_basic_info_by_serial', 
-                        'serial_id=' + value,
-                        function(data){
-                            
-                            selStyle.destroy();
-
-                            selStyle = $('.sel-style').selectize({
-                                options: data,
-                                optgroups: getGroup(data),
-                                optgroupField: 'group',
-                                labelField: 'name',
-                                searchField: ['name'],
-                                render: {
-                                    optgroup_header: function(data, escape) {
-                                        return '<div class="f18 pt-5 pb-10 pl-10 fb">' + escape(data.label) + '</div>';
-                                    }
-                                }
-                            })[0].selectize;
-
-                            selStyle.focus();
-                        }
-                    );
-
-                });
-
-                selType.focus();
-            }
-        );
-        
-    });
-    
-    selYear.on('change', function(value){
-        if(!value){
-            return;
-        }
-
-        selMonth.focus();
-    });
-
-
-    // 无限滚动
-    window.setInterval(function(){
-        var target = $('.scroll-list'),
-            scrollTop = target.children().eq(0).outerHeight();
-
-        target
-        .animate({'scrollTop': scrollTop}, 1000, 'easeInOutQuad', function(){
-            target.append(target.children().eq(0));
-            target.scrollTop(0);
-        })
-    }, 2000);
-
-    // 估价事件
-    $('.btn-evaluate').bind('click', function(e){
-        e.preventDefault();
-
-        var brand = selBrand.getValue(),
-            type = selType.getValue(),
-            style = selStyle.getValue(),
-            year = selYear.getValue(),
-            month = selMonth.getValue(),
-            distance = $('#distance').val();
-
-        if(!brand){
-            alert('请选择品牌');
-            selBrand.focus();
-            return;
-        }
-        if(!type){
-            alert('请选择车型');
-            selType.focus();
-            return;
-        }
-        if(!style){
-            alert('请选择车系');
-            selStyle.focus();
-            return;
-        }
-        if(!year){
-            alert('请选择上牌年份');
-            selYear.focus();
-            return;
-        }
-        if(!month){
-            alert('请选择上牌月份');
-            selMonth.focus();
-            return;
-        }
-        if(!distance || !/^((\d+)|(\d+.\d{1,2}))$/.test(distance)){
-            alert('请出入正确的行驶里程');
-            $('#distance').focus();
-            return;
-        }
-        g_ajax_processing_obj_id = "a_evaluate";
-        ajaxSend(
-            '/car/evaluate_price', 
-            {'car_basic_info_id': style, 'year': year, 'month': month, 'distance': distance},
-            function(data){
-                // 更新数据
-                $('.info-price').html([
-                    '您的',
-                    '<span class="pl-5 pr-5">'+data.data['serial_name']+'</span>',
-                    '<span class="pl-5 pr-5">'+data.data['name']+'</span>',
-                    '<br>评估价为:',
-                    (data.data['price'] != "0.0") ? ('<span class="co-66afe9 pl-15 pr-5"><i class="fa fa-rmb pr-5"></i>'+data.data['price']+' 万</span>') : '<span class="pl-5 co-66afe9">暂无报价</span>'
-                ].join(''));
-
-                $('.info-desc').html([
-                    '<span>'+data.data['license_time']+'上牌，'+data.data['trip_distance']+'万公里，新车指导价 <i class="fa fa-rmb pr-3"></i>'+data.data['original_price']+' 万</span>'
-                ].join(''));
-
-                $('.car-img').attr('src', data.data['img']);
-
-                $('#user_used_car_id').val(data.data['user_used_car_id']);
-
-                // 控制页面
-                $('.evaluate-result').prev().addClass('none');
-                $('.evaluate-result').prev().prev().addClass('none');
-                $('.evaluate-result').removeClass('none');
-                // $('body').scrollTop(5000);
-                $('html,body').animate({'scrollTop': 600}, 500);
-            }
-        );
-        
-    });
-
-    var sellCarModal = function(){
-        var html = [
-            '<div class="modal fade" id="sell_car_modal" tabindex="-1" role="dialog">',
-                '<div class="modal-dialog">',
-                    '<div class="modal-content">',
-                        '<form role="form" class="form-horizontal" method="post" action="" onsubmit="javascript: return false;">',
-                            '<div class="modal-header pb-5">',
-                                '<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>',
-                                '<h4 class="modal-title">高价卖车</h4>',
-                            '</div>',
-                            '<div class="modal-body">',
-                                '<div class="form-group">',
-                                    '<div class="col-md-12">请填写您的手机号码: <span class="co-bbbbbb">(我们的在线车神会联系你，并且承诺不会公开您的手机号)</span></div>',
-                                '</div>',
-                                '<div class="form-group">',
-                                    '<div class="col-md-9">',
-                                        '<input class="form-control tel" placeholder="" />',
-                                    '</div>',
-                                    '<div class="col-md-3">',
-                                        '<a href="#" id="sell_car_btn" style="border-radius: 0;" class="btn btn-primary btn-block btn-sell">提交</a>',
-                                    '</div>',
-                                '</div>',
-                            '</div>',
-                        '</form>',
-                    '</div>',
-                '</div>',
-            '</div>'
-        ].join('');
-
-        $('#sell_car_modal').remove();
-
-        $('body').append(html);
-
-        $('#sell_car_modal').modal({'show': true, 'backdrop': 'static'});
-
-        $('#sell_car_modal .btn-sell').on('click', function(){
-            var tel = $('#sell_car_modal .tel').val();
-            if(!/^(((13[0-9]{1})|(15[0-9]{1})|(18[0-9]{1}))+\d{8})$/.test(tel)){
-                alert('请输入有效的手机号码！');
-                return false;
-            }
-            
-            g_ajax_processing_obj_id = "sell_car_btn";
-            ajaxSend(
-                '/car/sell_car', 
-                {'user_used_car_id': $('#user_used_car_id').val(), 'mobile': tel},
-                function(data){
-                    if(data.errcode===0){
-                        alert('提交成功！稍后客服将与你联系卖车事宜。');
-                        $('#sell_car_modal').modal('hide');
-                    } else {
-                        alert('提交失败！' + data.errmsg);
-                    }
-                }
-            );
-
-        });
-    };
-
-    $('.btn-sell-car').on('click', function(){
-        sellCarModal();
-    });
 });
 
 </script>
 {% endblock %}
 
 {% block base_container %}
-
-<div class="container-fluid" style="margin-top: 81px; padding: 0;">
-    <!-- <div class="container pl-0 pr-0" style="margin-top: 81px; overflow: hidden; height: 460px;">
-        <div class="bg">
-            <img class="bg-img" style="opacity: 1;" src="{{MEDIA_URL}}img/banner1.jpg">
-            <img class="bg-img" src="{{MEDIA_URL}}img/banner2.jpg">
-            <img class="bg-img" src="{{MEDIA_URL}}img/banner3.jpg">
-            <img class="bg-img" src="{{MEDIA_URL}}img/banner4.jpg">
+<div class="container-fluid pl-0 pr-0">
+    <div class="row">
+        <div class="col-md-12">
+            <img class="w" src="{{MEDIA_URL}}img/home/banner-1.jpg">
         </div>
-        <img class="" src="{{MEDIA_URL}}img/banner4.jpg">
-    </div> -->
-    <img style="width: 100%; height: 460px;" src="{{MEDIA_URL}}img/banner4.jpg">
+    </div>
 </div>
-
-
-<div class="container-fluid pl-0 pr-0 pa" style="right: 0; top: 140px; width: 100%;">
-    <div class="container pr-50 pl-60 pr" style="">
-        <div class="evaluate－cover"></div>
-        <div class="evaluate－form">
-            <div class="f20">二手车估价</div>
-            <div class="pt-20 co-777777">
-                选择车型
-            </div>
-            <div class="pt-5 row">
-                <div class="col-md-6 pr-10">
-                    <select class="selectize-sel sel-brand" placeholder="请选择品牌">
-                        <option value="">请选择品牌</option>
-                        {% for brand in brands %}
-                        <option value="{{brand.id}}">{{brand.first_word}} {{brand.name}}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="col-md-6 pl-10">
-                    <select class="selectize-sel sel-type" placeholder="请选择车型">
-                        
-                    </select>
-                </div>
-            </div>
-            <div class="pt-15">
-                <select class="selectize-sel sel-style" placeholder="请选择车款">
-                </select>
-            </div>
-            <div class="pt-15 co-777777">
-                上牌时间
-            </div>
-            <div class="pt-5 row">
-                <div class="col-md-6 pr-10">
-                    <select class="selectize-sel sel-year" placeholder="请选择上牌年份">
-                        {% for year in years %}
-                        <option value="{{year}}">{{year}} 年</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="col-md-6 pl-10">
-                    <select class="selectize-sel sel-month" placeholder="请选择上牌月份">
-                        {% for month in months %}
-                        <option value="{{month}}">{{month}} 月</option>
-                        {% endfor %}
-                    </select>
-                </div>
-            </div>
-            <div class="pt-15 co-777777">
-                行驶里程
-            </div>
-            <div class="pt-5 row">
-                <div class="col-md-6 pr pr-10">
-                    <input id="distance" maxlength="6" class="form-control input-sm" type="text" style="font-size: 13px; border-radius:0;" />
-                    <label for="distance" class="pa" style="color: #777; right: 20px; top: 7px; font-size: 13px; font-weight: normal;">万公里</label>
-                </div>
-                <div class="col-md-6 pl-10">
-                    <a href="#" id="a_evaluate" style="border-radius:0;" class="btn btn-sm btn-primary btn-block f13 btn-evaluate">开  始  估  价</a>
-                </div>
-            </div>
-        </div>
-
-        <div class="pa co-ffffff" style="right: 60px; top: 0;">
-            <div class="pt-50 f16 pb-5" style="border-bottom: 1px solid #ddd;">
-                <span>评估车源总量:<span class="co-ffffff pl-10 fb">15万辆</span></span>
-                <span class="pl-15">估价准确率:<span class="co-ffffff pl-10 fb">99.7%</span></span>
-            </div>
-            <div class="mt-15 f14 scroll-list">
-                {% for history in historys %}
-                <div class="pb-5">{{history.car.serial.name}} {{history.car.name}} 估价 <span class="fi fb">{{history.price}}</span> 万</div>
-                {% endfor %}
+<div class="container-fluid pl-0 pr-0 bgc-84CCC7">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 text-center f30 co-ffffff pt-80 pb-30">三点十分，给你最好的下午茶</div>
+            <div class="col-md-10 col-md-offset-1 text-center f14 co-ffffff pb-80 line-height-23">
+                <p>
+                车咖，以行业领导者为目标，致力打造汽车行业的五星级快修美容连锁；届时你会像当初惊叹苹果公司给手机行业带来的冲击一样，惊叹车咖给你带来的非比寻常的汽车保养体验。这一切并不遥远，这一切将要发生，集万千宠爱于一身的车咖，经大师之手精心打磨，即将重磅出场。由此，汽车快修美容行业将被刷新；汽车快修美容行业历史将被改写。
+                </p>
             </div>
         </div>
     </div>
 </div>
-
-<div class="container pr-50 pl-60 pb-20 pt-50" >
-    <div class="row" style="border-bottom: 1px solid #ddd; padding-bottom: 40px;">
-        <div class="col-md-4">
-            <div class="f20">第三方估值平台</div>
-            <div class="co-bbbbbb">公正透明独立第三方评估服务平台</div>
+<div class="container-fluid pl-0 pr-0">
+    <div class="row">
+        <div class="col-md-12 text-center f30 pt-80">
+            工作流程
         </div>
-        <div class="col-md-4">
-            <div class="f20">先进估价模型</div>
-            <div class="co-bbbbbb">采用业内先进二手车评估车辆保值率模型</div>
+        <div class="col-md-12 text-center f20 pt-3 co-ADADAD">
+            WORKFLOW
         </div>
-        <div class="col-md-4">
-            <div class="f20">海量车源数据</div>
-            <div class="co-bbbbbb">每日追踪分析全网二手车海量交易价格</div>
+    </div>
+    <div class="container pb-50">
+        <div class="row">
+            <div class="col-md-6 pt-55">
+                <div class="border-1 bdc-eeeeee row mr-0 ml-0">
+                    <div>
+                        <img class="w" src="{{MEDIA_URL}}img/home/workflow-1.jpg">
+                    </div>
+                    <div class="col-md-3 f30 pt-25 pb-25 pl-35">
+                        采购
+                    </div>
+                    <div class="col-md-9 pt-25 pr-25">
+                        早上六点，我们的采购团队已经出发到批发市场，力求买到最新鲜的水果食材。
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 pt-55">
+                <div class="border-1 bdc-eeeeee row mr-0 ml-0">
+                    <div>
+                        <img class="w" src="{{MEDIA_URL}}img/home/workflow-2.jpg">
+                    </div>
+                    <div class="col-md-3 f30 pt-25 pb-25 pl-35">
+                        洗切
+                    </div>
+                    <div class="col-md-9 pt-25 pr-25">
+                        早上六点，我们的采购团队已经出发到批发市场，力求买到最新鲜的水果食材。
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 pt-30">
+                <div class="border-1 bdc-eeeeee row mr-0 ml-0">
+                    <div>
+                        <img class="w" src="{{MEDIA_URL}}img/home/workflow-3.jpg">
+                    </div>
+                    <div class="col-md-3 f30 pt-25 pb-25 pl-35">
+                        包装
+                    </div>
+                    <div class="col-md-9 pt-25 pr-25">
+                        早上六点，我们的采购团队已经出发到批发市场，力求买到最新鲜的水果食材。
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 pt-30">
+                <div class="border-1 bdc-eeeeee row mr-0 ml-0">
+                    <div>
+                        <img class="w" src="{{MEDIA_URL}}img/home/workflow-4.jpg">
+                    </div>
+                    <div class="col-md-3 f30 pt-25 pb-25 pl-35">
+                        配送
+                    </div>
+                    <div class="col-md-9 pt-25 pr-25">
+                        早上六点，我们的采购团队已经出发到批发市场，力求买到最新鲜的水果食材。
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
-
-<div class="container pr-50 pl-60 pb-20">
-    <div class="pl-50 row">
-
-        <div class="col-md-4 pr-50">
-            <div class="pt-50 f16">大家都在估什么车</div>
-            <ul class="list-group">
-                {% for x in top_5_evaluate_car %}
-                <li class="list-group-item pl-5 pr-5">
-                    <span style="background-color: #428BCA; padding: 2px; color: #fff"> 0{{ forloop.counter }}</span>
-                    <span class="pl-5">{{x.car__serial__name}}</span>
-                    <span class="pull-right co-bbbbbb">{{x.total}}</span>
-                </li>
-                {% endfor %}
-            </ul>
+<div class="container-fluid pl-0 pr-0 bgc-eeeeee">
+    <div class="row">
+        <div class="col-md-12 text-center f30 pt-80">
+            主要客户
         </div>
-
-        <div class="col-md-4 pr-50">
-            <div class="pt-50 f16">大家都在卖什么车</div>
-            <ul class="list-group">
-                <li class="list-group-item pl-5 pr-5">
-                    <span style="background-color: #428BCA; padding: 2px; color: #fff">01</span>
-                    <span class="pl-5">大众POLO</span>
-                    <span class="pull-right co-bbbbbb">3213</span>
-                </li>
-                <li class="list-group-item pl-5 pr-5">
-                    <span style="background-color: #428BCA; padding: 2px; color: #fff">02</span>
-                    <span class="pl-5">奥迪A4</span>
-                    <span class="pull-right co-bbbbbb">2276</span>
-                </li>
-                <li class="list-group-item pl-5 pr-5">
-                    <span style="background-color: #428BCA; padding: 2px; color: #fff">03</span>
-                    <span class="pl-5">雅阁</span>
-                    <span class="pull-right co-bbbbbb">2063</span>
-                </li>
-                <li class="list-group-item pl-5 pr-5">
-                    <span style="background-color: #428BCA; padding: 2px; color: #fff">04</span>
-                    <span class="pl-5">宝马3系</span>
-                    <span class="pull-right co-bbbbbb">1988</span>
-                </li>
-                <li class="list-group-item pl-5 pr-5">
-                    <span style="background-color: #428BCA; padding: 2px; color: #fff">05</span>
-                    <span class="pl-5">奔驰E300</span>
-                    <span class="pull-right co-bbbbbb">1002</span>
-                </li>
-            </ul>
+        <div class="col-md-12 text-center f20 pt-3 co-ADADAD">
+            MAIN CUSTOMER
         </div>
-
-        <div class="col-md-8 none evaluate-result pr-50">
-            
-            <div class="pt-50 f16 pb-5" style="border-bottom: 1px solid #ddd;">评估结果:</div>
-            <div class="col-md-8 pl-0 pr-0">
-                <div class="pt-15 f20 info-price line-height-35">
-                    您的
-                    <span class="pl-5 pr-5">奔驰S级</span>
-                    <span class="pl-5 pr-5">600L</span>
-                    评估价为:
-                    <span class="co-66afe9 pl-5 pr-5"><i class="fa fa-rmb"></i>32.10万</span>
+    </div>
+    <div class="container pt-55 pb-80">
+        <div class="row">
+            <div class="col-md-3 pr-50 pl-50">
+                <div class="bdr-circle bgc-ffffff pl-30 pr-30 pt-30 pb-30 customer pr">
+                    <img class="w" src="{{MEDIA_URL}}img/home/customer-1.png">
+                    <div class="customer-circle-1"></div>
+                    <div class="customer-circle-2"></div>
                 </div>
-                <div class="f14 pt-5 pb-20 co-bbbbbb info-desc">
-                    <span>2014年 05月上牌，2.34万公里，新车指导价 <i class="fa fa-rmb"></i>49.9万</span>
-                </div>
-                <div class="pt-5 pb-20">
-                    <a class="btn btn-primary btn-sell-car" style="border-radius:0;" href="#">立即高价卖车</a>
-                </div>
-                <div class="pt-20 pb-50">
-                    <a class="" href="/">我要评估其他车>></a>
-                </div>
+                <div class="text-center f20 pt-20">咕咚网</div>
             </div>
-            <div class="col-md-4 pr-5 pl-5 pt-20">
-                <img class="w car-img" src="http://img3.bitautoimg.com/autoalbum/files/20120803/264/1007332648_3.jpg">
+            <div class="col-md-3 pr-50 pl-50">
+                <div class="bdr-circle bgc-ffffff pl-30 pr-30 pt-30 pb-30 customer pr">
+                    <img class="w" src="{{MEDIA_URL}}img/home/customer-2.png">
+                    <div class="customer-circle-1"></div>
+                    <div class="customer-circle-2"></div>
+                </div>
+                <div class="text-center f20 pt-20">Camera 360</div>
             </div>
-            <input type="hidden" value="" id="user_used_car_id" />
+            <div class="col-md-3 pr-50 pl-50">
+                <div class="bdr-circle bgc-ffffff pl-30 pr-30 pt-30 pb-30 customer pr">
+                    <img class="w" src="{{MEDIA_URL}}img/home/customer-3.png">
+                    <div class="customer-circle-1"></div>
+                    <div class="customer-circle-2"></div>
+                </div>
+                <div class="text-center f20 pt-20">小娱Wi-Fi</div>
+            </div>
+            <div class="col-md-3 pr-50 pl-50">
+                <div class="bdr-circle bgc-ffffff pl-30 pr-30 pt-30 pb-30 customer pr">
+                    <img class="w" src="{{MEDIA_URL}}img/home/customer-4.png">
+                    <div class="customer-circle-1"></div>
+                    <div class="customer-circle-2"></div>
+                </div>
+                <div class="text-center f20 pt-20">麦麦</div>
+            </div>
         </div>
-
-        <div class="col-md-4">
-            <ul class="pt-50 list-group">
-                <li class="list-group-item">
-                    <div class="pl-70 pr">
-                        <img class="pa" style="left: 0; top: 0; height:53px;" src="{{MEDIA_URL}}img/cheshen2.png">
-                        <a class="pa f13" style="top: 5px; right: 0;" target="_blank" href="http://wpa.qq.com/msgrd?v=3&amp;uin=200581107&amp;site=qq&amp;menu=yes">
-                            <i class="fa fa-qq"></i>咨询车神
-                        </a>
-                        <div class="f16 pt-5">小巴</div>
-                        <div class="pt-5 co-bbbbbb">评估大师/真实体验说话/态度鲜明</div>
-                    </div>
-                </li>
-                <li class="list-group-item">
-                    <div class="pl-70 pr">
-                        <img class="pa" style="left: 0; top: 0; height:53px;" src="{{MEDIA_URL}}img/cheshen1.jpeg">
-                        <a class="pa f13" style="top: 5px; right: 0;" href="http://wpa.qq.com/msgrd?v=3&amp;uin=200581107&amp;site=qq&amp;menu=yes" target="_blank">
-                            <i class="fa fa-qq"></i>咨询车神
-                        </a>
-                        <div class="f16 pt-5">聪哥</div>
-                        <div class="pt-5 co-bbbbbb">真实体验说话/态度鲜明/犀利、爱挑刺</div>
-                    </div>
-                </li>
-                <li class="list-group-item">
-                    <div class="pl-70 pr">
-                        <img class="pa f13" style="left: 0; top: 0; height:53px;" src="{{MEDIA_URL}}img/cheshen3.png">
-                        <a class="pa f13" style="top: 5px; right: 0;" target="_blank" href="http://wpa.qq.com/msgrd?v=3&amp;uin=200581107&amp;site=qq&amp;menu=yes">
-                            <i class="fa fa-qq"></i>咨询车神
-                        </a>
-                        <div class="f16 pt-5">小适</div>
-                        <div class="pt-5 co-bbbbbb">真实体验说话/专业性能测评/态度鲜明</div>
-                    </div>
-                </li>
-            </ul>
+    </div>
+</div>
+<div class="container-fluid pl-0 pr-0 bgc-EE7A32">
+    <div class="row">
+        <div class="col-md-12 text-center f30 pt-80 co-ffffff">
+            联系我们
         </div>
-    </div> 
+        <div class="col-md-12 text-center f20 pt-3 co-ffffff">
+            CONTACT US
+        </div>
+    </div>
+    <div class="container" style="min-height: 300px;">
+        
+    </div>
+    <div class="container-fluid" style="min-height: 80px; background-color: #B35B26;">
+        
+    </div>
 </div>
 {% endblock %}
 
