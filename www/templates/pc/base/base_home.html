@@ -6,7 +6,7 @@ body{
     overflow-x: hidden;
 }
 .container{
-    width: 1000px !important;
+    width: 920px !important;
 }
 
 .nav>li>a{
@@ -147,20 +147,20 @@ body{
                         <span class="line-hover"></span>
                     </a>
                 </li>
-                <li>
-                    <a class="f16" href="#">
+                <li {% if '/s/introduction' in request.path %}class="active"{% endif %}>
+                    <a class="f16" href="/s/introduction">
                         产品介绍
                         <span class="line-hover"></span>
                     </a>
                 </li>
-                <li>
-                    <a class="f16" href="#">
+                <li {% if '/s/customers' in request.path %}class="active"{% endif %}>
+                    <a class="f16" href="/s/customers">
                         典型客户
                         <span class="line-hover"></span>
                     </a>
                 </li>
                 <li {% if '/s/about' in request.path %}class="active"{% endif %}>
-                    <a class="f16" href="#">
+                    <a class="f16" href="/s/about">
                         关于我们
                         <span class="line-hover"></span>
                     </a>

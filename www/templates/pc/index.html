@@ -118,6 +118,196 @@
     }
 }
 
+.city{
+    line-height: 80px;
+    text-align: center;
+    font-size: 20px;
+    color: #ffffff;
+    cursor: pointer;
+    -webkit-transition: all .3s;
+            transition: all .3s;
+}
+.city.active, .city:hover{
+    background-color: #623314;
+}
+
+.location{
+    position: absolute;
+    left: 430px;
+    top: 270px;
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    border: 2px solid #ffffff;
+}
+.location-cover{
+    position: absolute;
+    left: 0;
+    top: 0;
+    border-radius: 50%;
+    opacity: 0.4;
+    background-color: #B35B26;
+    display: inline-block;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+.location-point{
+    width: 14px;
+    height: 14px;
+    background-color: #ffffff;
+    display: inline-block;
+    border-radius: 50%;
+    margin: 18px;
+    position: relative;
+    z-index: 2;
+}
+.location-wave{
+    position: absolute;
+    left: 0;
+    top: 0;
+    border-radius: 50%;
+    display: inline-block;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    border: solid 2px white;
+    opacity: 0;
+    -webkit-transform: scale(0.2);
+            transform: scale(0.2);
+    -webkit-animation: location-wave-effect 1.9s linear infinite;
+            animation: location-wave-effect 1.9s linear infinite;
+}
+@-webkit-keyframes location-wave-effect {
+    0% {
+        opacity: 0;
+    }
+    50% {
+        opacity: 1;
+        -webkit-transform: scale(1);
+                transform: scale(1);
+    }
+    100%{
+        -webkit-transform: scale(1.8);
+                transform: scale(1.8);
+        opacity: 0;
+    }
+}
+@keyframes location-wave-effect {
+    0% {
+        opacity: 0;
+    }
+    50% {
+        opacity: 1;
+        -webkit-transform: scale(1);
+                transform: scale(1);
+    }
+    100%{
+        -webkit-transform: scale(1.8);
+                transform: scale(1.8);
+        opacity: 0;
+    }
+}
+.location-wave-out{
+    -webkit-animation: location-wave-out 1s both;
+            animation: location-wave-out 1s both;
+}
+@-webkit-keyframes location-wave-out {
+    25% {
+        -webkit-animation-timing-function: cubic-bezier(1.000, 0.000, 0.000, 1.000);
+        -webkit-transform: scale(1.2);
+    }
+    100% {
+        -webkit-transform: scale(0);
+    }
+}
+@keyframes location-wave-out {
+    25% {
+        -webkit-animation-timing-function: cubic-bezier(1.000, 0.000, 0.000, 1.000);
+                animation-timing-function: cubic-bezier(1.000, 0.000, 0.000, 1.000);
+        -webkit-transform: scale(1.2);
+                transform: scale(1.2);
+    }
+    100% {
+        -webkit-transform: scale(0);
+                transform: scale(0);
+    }
+}
+.location-wave-in{
+    -webkit-animation: location-wave-in 1s both;
+            animation: location-wave-in 1s both;
+}
+@-webkit-keyframes location-wave-in {
+    0%{
+        -webkit-transform: scale(0);
+    }
+    75% {
+        -webkit-animation-timing-function: cubic-bezier(1.000, 0.000, 0.000, 1.000);
+        -webkit-transform: scale(1.2);
+    }
+    100% {
+        -webkit-transform: scale(1);
+    }
+}
+@keyframes location-wave-in {
+    0%{
+        -webkit-transform: scale(0);
+                transform: scale(0);
+    }
+    75% {
+        -webkit-animation-timing-function: cubic-bezier(1.000, 0.000, 0.000, 1.000);
+                animation-timing-function: cubic-bezier(1.000, 0.000, 0.000, 1.000);
+        -webkit-transform: scale(1.2);
+                transform: scale(1.2);
+    }
+    100% {
+        -webkit-transform: scale(1);
+                transform: scale(1);
+    }
+}
+
+.contact-card{
+    position: absolute;
+    left: 530px;
+    top: 250px;
+    background-color: #ffffff;
+    width: 300px;
+}
+.contact-user{
+    position: absolute;
+    left: 22px;
+    top: 13px;
+    width: 20px;
+}
+.contact-phone{
+    position: absolute;
+    left: 22px;
+    top: 12px;
+    width: 20px;
+}
+.contact-map{
+    position: absolute;
+    left: 22px;
+    top: 15px;
+    width: 20px;
+}
+.contact-split{
+    position: absolute;
+    height: 28px;
+    width: 1px;
+    background-color: #cccccc;
+    display: inline-block;
+}
+.arrow-left{
+    width: 0;
+    height: 0;
+    position: absolute;
+    left: -15px;
+    top: 40px;
+    border-top: 5px solid transparent;
+    border-right: 15px solid white;
+    border-bottom: 5px solid transparent;
+}
 </style>
 {% endblock %}
 
@@ -125,7 +315,48 @@
 
 <script type="text/javascript">
 $(document).ready(function(){
+    /*
+        城市切换效果
+    */
+    var CITY_COOR = {
+        0: {'left': 430, 'top': 270},
+        1: {'left': 600, 'top': 110},
+        2: {'left': 670, 'top': 270}
+    }
+    $('.city').on('click', function(){
+        $('.city').removeClass('active');
+        $(this).addClass('active');
 
+        var city = $(this).data('city'),
+            coor = CITY_COOR[city];
+
+        $('.contact-card').hide('fast');
+        $('.location-wave').fadeOut('fast');
+        window.setTimeout(function(){
+            $('.location').removeClass('location-wave-in').addClass('location-wave-out');
+        }, 300);
+        window.setTimeout(function(){
+            $('.location')
+            .css({
+                'left': coor.left,
+                'top': coor.top
+            })
+            .removeClass('location-wave-out')
+            .addClass('location-wave-in');
+        }, 1400)
+
+        window.setTimeout(function(){
+            $('.contact-card')
+            .css({
+                'left': coor.left + 100,
+                'top': coor.top - 20
+            })
+            .show('fast', function(){
+                $(this).css('overflow', 'inherit')
+            });
+            $('.location-wave').fadeIn('fast');
+        }, 2600);
+    });
 });
 
 </script>
@@ -167,7 +398,7 @@ $(document).ready(function(){
                     <div>
                         <img class="w" src="{{MEDIA_URL}}img/home/workflow-1.jpg">
                     </div>
-                    <div class="col-md-3 f30 pt-25 pb-25 pl-35">
+                    <div class="col-md-3 f30 pt-25 pb-25 pr-0 text-center">
                         采购
                     </div>
                     <div class="col-md-9 pt-25 pr-25">
@@ -180,7 +411,7 @@ $(document).ready(function(){
                     <div>
                         <img class="w" src="{{MEDIA_URL}}img/home/workflow-2.jpg">
                     </div>
-                    <div class="col-md-3 f30 pt-25 pb-25 pl-35">
+                    <div class="col-md-3 f30 pt-25 pb-25 pr-0 text-center">
                         洗切
                     </div>
                     <div class="col-md-9 pt-25 pr-25">
@@ -193,7 +424,7 @@ $(document).ready(function(){
                     <div>
                         <img class="w" src="{{MEDIA_URL}}img/home/workflow-3.jpg">
                     </div>
-                    <div class="col-md-3 f30 pt-25 pb-25 pl-35">
+                    <div class="col-md-3 f30 pt-25 pb-25 pr-0 text-center">
                         包装
                     </div>
                     <div class="col-md-9 pt-25 pr-25">
@@ -206,7 +437,7 @@ $(document).ready(function(){
                     <div>
                         <img class="w" src="{{MEDIA_URL}}img/home/workflow-4.jpg">
                     </div>
-                    <div class="col-md-3 f30 pt-25 pb-25 pl-35">
+                    <div class="col-md-3 f30 pt-25 pb-25 pr-0 text-center">
                         配送
                     </div>
                     <div class="col-md-9 pt-25 pr-25">
@@ -263,7 +494,8 @@ $(document).ready(function(){
         </div>
     </div>
 </div>
-<div class="container-fluid pl-0 pr-0 bgc-EE7A32">
+<div class="container-fluid pl-0 pr-0 bgc-EE7A32 pr">
+    <div class="container-fluid pa" style="left: 0; bottom: 0; width: 100%; opacity: 0.5; min-height: 80px; background-color: #B35B26;"></div>
     <div class="row">
         <div class="col-md-12 text-center f30 pt-80 co-ffffff">
             联系我们
@@ -272,12 +504,40 @@ $(document).ready(function(){
             CONTACT US
         </div>
     </div>
-    <div class="container" style="min-height: 300px;">
-        
+    <div class="container pr">
+        <img class="w" style="margin-top: -150px;" src="{{MEDIA_URL}}img/home/china.png">
+        <div class="row" style="margin-top: -20px;">
+            <div class="col-md-10 col-md-offset-1">
+                <div class="col-md-4 city active" data-city="0">成都</div>
+                <div class="col-md-4 city" data-city="1">北京</div>
+                <div class="col-md-4 city" data-city="2">上海</div>
+            </div>
+        </div>
+        <span class="location">
+            <span class="location-cover"></span>
+            <span class="location-point"></span>
+            <span class="location-wave"></span>
+        </span>
+        <div class="contact-card row">
+            <span class="arrow-left"></span>
+            <div class="col-md-12 pr pt-18 pb-18 pl-85 border-bottom-1 bdc-eeeeee">
+                <img class="contact-user" src="{{MEDIA_URL}}img/home/user.png">
+                <span class='contact-split' style="left: 62px; top: 10px;"></span>
+                李先生
+            </div>
+            <div class="col-md-12 pr pt-18 pb-18 pl-85 border-bottom-1 bdc-eeeeee">
+                <img class="contact-phone" src="{{MEDIA_URL}}img/home/phone.png">
+                <span class='contact-split' style="left: 62px; top: 12px;"></span>
+                134 8898 5003
+            </div>
+            <div class="col-md-12 pr pt-10 pb-10 pl-85">
+                <img class="contact-map" src="{{MEDIA_URL}}img/home/map.png">
+                <span class='contact-split' style="left: 62px; top: 15px;"></span>
+                成都市益州大道1800号移动互联创业大厦
+            </div>
+        </div>
     </div>
-    <div class="container-fluid" style="min-height: 80px; background-color: #B35B26;">
-        
-    </div>
+    
 </div>
 {% endblock %}
 
