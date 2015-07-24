@@ -13,6 +13,7 @@ a:focus {outline: none; -moz-outline: none;}
 .line-height-35{line-height: 35px;}
 
 .letter-spacing-1{letter-spacing: 1px;}
+.letter-spacing-3{letter-spacing: 3px;}
 .letter-spacing-5{letter-spacing: 5px;}
 
 .overflow-y{overflow-y: hidden;}

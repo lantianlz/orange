@@ -493,30 +493,33 @@
             filter: blur(0);
 }
 .modal-content{
-    background-color: #E74C3C;
+    background-color: #ffffff;
     border-radius: 2px;
     box-shadow: 0 5px 15px rgba(0,0,0,.3);
     border: 1px solid rgba(70, 70, 70, 0.2);
 }
 .modal-header{
     border-bottom: 0;
-    background-color: rgba(0,0,0,0.1);
+    background-color: #EE7A32;
 }
 .modal-title{
     font-size: 20px;
 }
 .modal-body{
     font-size: 16px;
+    padding: 0;
 }
 .modal-footer{
     border-top: 0;
+    padding: 0;
     text-align: center;
 }
 .btn-modal{
-    background-color: #c0392b;
+    background-color: #EE7A32;
     border-radius: 2px;
     color: #fff;
     border-color: transparent;
+    display: none;
 }
 .btn-modal:hover{
     background: #A5281B;
