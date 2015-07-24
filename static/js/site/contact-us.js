@@ -49,6 +49,6 @@ $(document).ready(function(){
             });
             $('.location-wave').fadeIn('fast');
             isTrans = false;
-        }, 2600);
+        }, 2400);
     });
 });
