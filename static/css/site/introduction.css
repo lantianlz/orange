@@ -1,0 +1,182 @@
+.btn-booking-1{
+    border-radius: 50px;
+    padding-right: 25px;
+    padding-left: 25px;
+    font-size: 16px;
+    background-color: transparent;
+    border-color: #EF7B32;
+    color: #EF7B32;
+    -webkit-transition: all 0.3s;
+            transition: all 0.3s;
+}
+.btn-booking-1:hover, 
+.btn-booking-1:focus, 
+.btn-booking-1:active{
+    background-color: #EF7B32;
+    border-color: #eeeeee;
+}
+
+.btn-booking-2{
+    border-color: #EF7B32;
+    background-color: #EF7B32;
+    color: #ffffff;
+    -webkit-transition: all 0.3s;
+            transition: all 0.3s;
+}
+.btn-booking-2:hover, 
+.btn-booking-2:focus, 
+.btn-booking-2:active{
+    background-color: #D4621B;
+    border-color: #D4621B;
+}
+
+.form-control{
+    border-radius: 1px;
+}
+.form-control:focus{
+    border-color: #EF7B32;
+    outline: 0;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(233, 148, 102, 0.6);;
+            box-shadow: inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(233, 148, 102, 0.6);;
+}
+
+#fullPage-nav span{
+    width: 12px;
+    height: 12px;
+    border-color: #EF7B32;
+    -webkit-transition: all .3s;
+            transition: all .3s;
+}
+#fullPage-nav li .active span{
+    background-color: #EF7B32;
+}
+
+
+.rotate-text{
+    display: inline-block;
+    -webkit-transition: all 1.3s;
+            transition: all 1.3s;
+}
+.rotate-x{
+    -webkit-transform: rotateX(360deg);
+            transform: rotateX(360deg);
+}
+.rotate-y{
+    -webkit-transform: rotateY(360deg);
+            transform: rotateY(360deg);
+}
+
+.tile-up{
+    -webkit-animation: tile-up 18s 3s both infinite;
+            animation: tile-up 18s 3s both infinite;
+}
+@-webkit-keyframes tile-up {
+    0% {
+        top: -100%;
+    }
+    5% {
+        top: 0;
+    }
+    50% {
+        top: 0;
+    }
+    55% {
+        top: -100%;
+    }
+    100% {
+        top: -100%;
+    }
+}
+@keyframes tile-up {
+    0% {
+        top: -100%;
+    }
+    5% {
+        top: 0;
+    }
+    50% {
+        top: 0;
+    }
+    55% {
+        top: -100%;
+    }
+    100% {
+        top: -100%;
+    }
+}
+.tile-left{
+    -webkit-animation: tile-left 28s 5s both infinite;
+            animation: tile-left 28s 5s both infinite;
+}
+@-webkit-keyframes tile-left {
+    0% {
+        top: -100%;
+    }
+    5% {
+        top: 0;
+    }
+    50% {
+        top: 0;
+    }
+    55% {
+        top: -100%;
+    }
+    100% {
+        top: -100%;
+    }
+}
+@keyframes tile-up {
+    0% {
+        top: -100%;
+    }
+    5% {
+        top: 0;
+    }
+    50% {
+        top: 0;
+    }
+    55% {
+        top: -100%;
+    }
+    100% {
+        top: -100%;
+    }
+}
+.tile-down{
+    -webkit-animation: tile-down 24s 7s both infinite;
+            animation: tile-down 24s 7s both infinite;
+}
+@-webkit-keyframes tile-down {
+    0% {
+        top: 0;
+    }
+    5% {
+        top: -100%;
+    }
+    50% {
+        top: -100%;
+    }
+    55% {
+        top: 0;
+    }
+    100% {
+        top: 0;
+    }
+}
+@keyframes tile-down {
+    0% {
+        top: 0;
+    }
+    5% {
+        top: -100%;
+    }
+    50% {
+        top: -100%;
+    }
+    55% {
+        top: 0;
+    }
+    100% {
+        top: 0;
+    }
+}

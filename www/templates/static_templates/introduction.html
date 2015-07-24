@@ -1,132 +1,16 @@
 {% extends "pc/base/base_home.html" %}
 
-{% block title_all %}三点十分{% endblock %}
+{% block title_all %}产品介绍 - 三点十分{% endblock %}
 {% block css %}
+<link rel="stylesheet" type="text/css" href="{{MEDIA_URL}}css/animate/animate.min.css" />
 <link rel="stylesheet" type="text/css" href="{{MEDIA_URL}}css/fullpage/jquery.fullPage.css" />
-<style type="text/css">
-.btn-booking-1{
-    border-radius: 50px;
-    padding-right: 25px;
-    padding-left: 25px;
-    font-size: 16px;
-    background-color: transparent;
-    border-color: #EF7B32;
-    color: #EF7B32;
-    -webkit-transition: all 0.3s;
-            transition: all 0.3s;
-}
-.btn-booking-1:hover, 
-.btn-booking-1:focus, 
-.btn-booking-1:active{
-    background-color: #EF7B32;
-    border-color: #eeeeee;
-}
-
-.btn-booking-2{
-    border-color: #EF7B32;
-    background-color: #EF7B32;
-    color: #ffffff;
-    -webkit-transition: all 0.3s;
-            transition: all 0.3s;
-}
-.btn-booking-2:hover, 
-.btn-booking-2:focus, 
-.btn-booking-2:active{
-    background-color: #D4621B;
-    border-color: #D4621B;
-}
-
-.form-control{
-    border-radius: 1px;
-}
-.form-control:focus{
-    border-color: #EF7B32;
-    outline: 0;
-    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(233, 148, 102, 0.6);;
-            box-shadow: inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(233, 148, 102, 0.6);;
-}
-
-#fullPage-nav span{
-    width: 12px;
-    height: 12px;
-    border-color: #EF7B32;
-    -webkit-transition: all .3s;
-            transition: all .3s;
-}
-#fullPage-nav li .active span{
-    background-color: #EF7B32;
-}
-
-
-.rotate-text{
-    display: inline-block;
-    -webkit-transition: all 1.3s;
-            transition: all 1.3s;
-}
-.rotate-x{
-    -webkit-transform: rotateX(360deg);
-            transform: rotateX(360deg);
-}
-.rotate-y{
-    -webkit-transform: rotateY(360deg);
-            transform: rotateY(360deg);
-}
-
-</style>
+<link rel="stylesheet" type="text/css" href="{{MEDIA_URL}}css/site/introduction.css">
 {% endblock %}
 
 {% block js %}
 <script type="text/javascript" src="{{MEDIA_URL}}js/jquery/jquery.fullPage.min.js"></script>
 <script type="text/javascript" src="{{MEDIA_URL}}js/jquery/jquery.easing.1.3.min.js"></script>
-<script type="text/javascript">
-$(document).ready(function(){
-
-    $('#fullpage').fullpage({
-        scrollingSpeed: 700,
-        easing: 'easeOutExpo',
-        navigation: true,
-        onLeave: function(index, nextIndex, direction){
-
-            // pageTransform(nextIndex);
-            
-        }
-    });
-
-
-    /*
-        第一屏效果
-    */
-    var TEXT_1 = "新鲜多一点".split(""),
-        TEXT_2 = "乐趣多一点".split(""),
-        rotate1 = function(){
-            var targets = $(".rotate-text-1 span");
-            $.each(targets, function(i){
-                window.setTimeout(function(){
-                    targets.eq(i).addClass('rotate-y');
-                }, 100*i);
-            });
-        },
-        rotate2 = function(){
-            var targets = $(".rotate-text-2 span");
-            $.each(targets, function(i){
-                window.setTimeout(function(){
-                    targets.eq(i).addClass('rotate-x');
-                }, 100*i);
-            });
-        };
-    $.map(TEXT_1, function(i){
-        $('.rotate-text-1').append('<span class="rotate-text">'+i+'</span>');
-    });
-    $.map(TEXT_2, function(i){
-        $('.rotate-text-2').append('<span class="rotate-text">'+i+'</span>');
-    });
-    window.setTimeout(rotate1, 400);
-    window.setTimeout(rotate2, 1800);
-
-
-});
-
-</script>
+<script type="text/javascript" src="{{MEDIA_URL}}js/site/introduction.js"></script>
 {% endblock %}
 
 {% block base_container %}
@@ -139,15 +23,19 @@ $(document).ready(function(){
                     <div class="f30 pb-20 fb letter-spacing-5 rotate-text-2"></div>
                     <div class="f14 pb-80 letter-spacing-1">每天搭配多种水果，给你不一样的新鲜！</div>
                     <div class="pb-20">
-                        <a href="#" class="btn btn-danger btn-booking-1">马上预订</a>
+                        <a href="#" class="btn btn-danger btn-booking-1 animated">马上预订</a>
                     </div>
                     <div class="pb-20">
                         <img class="w150" src="{{MEDIA_URL}}img/introduction/cube.png">
                     </div>
                 </div>
                 <div class="col-md-7 pl-0 pr-0">
-                    <div class="col-md-6 pl-0 pr-0">
-                        <img class="w" src="{{MEDIA_URL}}img/introduction/tile-1.jpg">
+                    <div class="col-md-6 pl-0 pr-0 overflow-y">
+                        <img class="w visibility-hidden" src="{{MEDIA_URL}}img/introduction/tile-1.jpg">
+                        <div class="pa tile-up" style="left: 0; top: -100%;">
+                            <img class="w" src="{{MEDIA_URL}}img/introduction/tile-1.jpg">
+                            <img class="w" src="{{MEDIA_URL}}img/introduction/tile-6.jpg">
+                        </div>
                     </div>
                     <div class="col-md-6 pl-0 pr-0 text-center pr bgc-ffffff">
                         <img class="w visibility-hidden" src="{{MEDIA_URL}}img/introduction/tile-1.jpg">
@@ -163,11 +51,19 @@ $(document).ready(function(){
                             <div class="f14 pt-5 pl-30 pr-30">时令水果同时呈现，不定时还有点心哦</div>
                         </div>
                     </div>
-                    <div class="col-md-6 pl-0 pr-0">
-                        <img class="w" src="{{MEDIA_URL}}img/introduction/tile-2.jpg">
+                    <div class="col-md-6 pl-0 pr-0 overflow-y">
+                        <img class="w visibility-hidden" src="{{MEDIA_URL}}img/introduction/tile-2.jpg">
+                        <div class="pa tile-left" style="left: 0; top: -100%;">
+                            <img class="w" src="{{MEDIA_URL}}img/introduction/tile-2.jpg">
+                            <img class="w" src="{{MEDIA_URL}}img/introduction/tile-5.jpg">
+                        </div>
                     </div>
-                    <div class="col-md-6 pl-0 pr-0">
-                        <img class="w" src="{{MEDIA_URL}}img/introduction/tile-3.jpg">
+                    <div class="col-md-6 pl-0 pr-0 overflow-y">
+                        <img class="w visibility-hidden" src="{{MEDIA_URL}}img/introduction/tile-3.jpg">
+                        <div class="pa tile-down" style="left: 0; top: 0%;">
+                            <img class="w" src="{{MEDIA_URL}}img/introduction/tile-3.jpg">
+                            <img class="w" src="{{MEDIA_URL}}img/introduction/tile-4.jpg">
+                        </div>
                     </div>
                     <div class="col-md-6 pl-0 pr-0 text-center pr bgc-ffffff">
                         <img class="w visibility-hidden" src="{{MEDIA_URL}}img/introduction/tile-3.jpg">

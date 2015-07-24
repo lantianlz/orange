@@ -8,11 +8,14 @@ a:focus {outline: none; -moz-outline: none;}
 .no-underline{text-decoration: none;}
 .no-underline:hover{text-decoration: none;}
 
+.line-height-20{line-height: 20px;}
 .line-height-23{line-height: 23px;}
 .line-height-35{line-height: 35px;}
 
 .letter-spacing-1{letter-spacing: 1px;}
 .letter-spacing-5{letter-spacing: 5px;}
+
+.overflow-y{overflow-y: hidden;}
 
 .none{display: none}
 .block{display: block;}
@@ -59,6 +62,7 @@ a:focus {outline: none; -moz-outline: none;}
 .co-ADADAD{color: #ADADAD;}
 .co-EF7B32{color: #EF7B32;}
 .co-555555{color: #555555;}
+.co-84CCC7{color: #84CCC7;}
 
 .border-1{border: 1px solid;}
 .border-2{border: 2px solid;}
@@ -85,7 +89,7 @@ a:focus {outline: none; -moz-outline: none;}
 .bgc-EE7A32{background-color: #EE7A32;}
 .bgc-444B5C{background-color: #444B5C;}
 .bgc-FAE4D5{background-color: #FAE4D5;}
-.bgc-84CCC7{background-color: #84CCC7;}
+.bgc-F6F5F1{background-color: #F6F5F1;}
 
 .pt-0{padding-top: 0;}
 .pt-3{padding-top: 3px;}
@@ -117,6 +121,7 @@ a:focus {outline: none; -moz-outline: none;}
 .pl-6{padding-left: 6px;}
 .pl-8{padding-left: 8px;}
 .pl-15{padding-left: 15px;}
+.pl-20{padding-left: 20px;}
 .pl-25{padding-left: 25px;}
 .pl-30{padding-left: 30px;}
 .pl-35{padding-left: 35px;}

@@ -1,292 +1,120 @@
-{% extends "mobile/car_wash/base_car_wash.html" %}
+{% extends "pc/base/base_home.html" %}
 
-{% block title_all %}三点十分{% endblock %}
-
+{% block title_all %}关于我们 - 三点十分{% endblock %}
 {% block css %}
-<link rel="stylesheet" type="text/css" href="{{MEDIA_URL}}css/animate/animate.min.css" />
+<link rel="stylesheet" type="text/css" href="{{MEDIA_URL}}css/site/contact-us.css">
 <style type="text/css">
-.active a{
-    color: #f23a1a;
+.fade-move{
+    min-height: 420px;
+    padding-top: 200px;
+    font-size: 25px;
+    color: #ffffff;
 }
-.next-page{
-    padding: 8px;
-    opacity: 0;
-}
-@-webkit-keyframes fadeInDown {
-  0% {
-    opacity: 0;
-    -webkit-transform: translate3d(0, 0, 0);
-  }
-
-  75% {
-    opacity: 1;
-    -webkit-transform: translate3d(0, 25%, 0);
-  }
-
-  100% {
-    opacity: 0;
-    -webkit-transform: translate3d(0, 35%, 0);
-  }
-}
-.fadeInDown {
-  -webkit-animation-name: fadeInDown;
-}
-
-.step-1{
-    opacity: 1;
-    margin-top: 0px;
-}
-
-.step-2{
-    opacity: 1;
-    margin-top: -100px;
-}
-
-.step-3{
-    opacity: 1;
-    margin-top: -100px;
-}
-
-.step-4{
-    opacity: 1;
-    margin-top: -100px;
+.fade-text{
+    overflow: hidden;
+    vertical-align: top;
+    height: 40px;
+    font-weight: bold;
+    display: inline-block;
 }
 </style>
 {% endblock %}
 
-{% block javascript %}
-<script type="text/javascript" src="{{MEDIA_URL}}js/jquery/jquery.fullPage.min.js"></script>
+{% block js %}
 <script type="text/javascript" src="{{MEDIA_URL}}js/jquery/jquery.easing.1.3.min.js"></script>
-<script type="text/javascript">
-$(document).ready(function(){
-    var nextPageAnimateInterval = null;
-
-    var nextPageAnimate = function(pageIndex){
-
-        if(nextPageAnimateInterval){
-            window.clearInterval(nextPageAnimateInterval);
-        }
-
-        var target = $('.section').eq(pageIndex-1).find('.next-page');
-        target.addClass('fadeInDown');
-        window.setTimeout(function(){
-            target.removeClass('fadeInDown');
-        }, 1100);
-
-        nextPageAnimateInterval = window.setInterval(function(){
-            
-            target.addClass('fadeInDown');
-
-            window.setTimeout(function(){
-                target.removeClass('fadeInDown');
-            }, 1100);
-
-        }, 1200);
-    },
-    pageTransform = function(pageIndex){
-
-        switch(pageIndex){
-
-            case 1:
-                $('.logo').hide().removeClass('bounceIn');
-                window.setTimeout(function(){
-                    $('.logo').show().addClass('bounceIn');
-                }, 500);
-
-                $('.name').hide();
-                window.setTimeout(function(){
-                    $('.name').fadeIn('slow');
-                }, 1200);
-                break;
-
-            case 2:
-                $('.s1').removeClass('pulse');
-                $('.s2').removeClass('pulse');
-                $('.s3').removeClass('pulse');
-
-                window.setTimeout(function(){
-                    $('.s1').addClass('pulse');
-                }, 500);
-                window.setTimeout(function(){
-                    $('.s2').addClass('pulse');
-                }, 1500);
-                window.setTimeout(function(){
-                    $('.s3').addClass('pulse');
-                }, 2500);
-                break;
-
-            case 3:
-                $('.step-1').hide().css({'margin-top': 50, 'opacity': '0'});
-                $('.step-2').hide().css({'margin-top': -50, 'opacity': '0'});
-                $('.step-3').hide().css({'margin-top': -50, 'opacity': '0'});
-                $('.step-4').hide().css({'margin-top': -50, 'opacity': '0'});
-
-                window.setTimeout(function(){
-                    $('.step-1').show().animate({'margin-top': 0, 'opacity': '1'}, 900, 'easeOutCubic');
-                }, 1000);
-
-                window.setTimeout(function(){
-                    $('.step-2').show().animate({'margin-top': -95, 'opacity': '1'}, 900, 'easeOutCubic');
-                }, 2000);
-
-                window.setTimeout(function(){
-                    $('.step-3').show().animate({'margin-top': -95, 'opacity': '1'}, 900, 'easeOutCubic');
-                }, 3000);
-
-                window.setTimeout(function(){
-                    $('.step-4').show().animate({'margin-top': -95, 'opacity': '1'}, 900, 'easeOutCubic');
-                }, 3000);
-
-                break;
-
-            default:
-                break;
-        }
-    };
-
-    // 券屏插件设置
-    $('#fullpage').fullpage({
-        scrollingSpeed: 700,
-        easing: 'easeOutExpo',
-        navigation: false,
-        onLeave: function(index, nextIndex, direction){
-            nextPageAnimate(nextIndex);
-
-            //pageTransform(nextIndex);
-        }
-    });
-
-    // 单击向下箭头导航
-    $('.next-page').bind('click', function(){
-        $.fn.fullpage.moveSectionDown();
-    });
-
-    // 横竖屏判断
-    $(window).bind('orientationchange', function(e){
-        if(window.orientation == 90 || window.orientation == -90){
-            window.alert('为了更好的浏览体验，请使用竖屏浏览');
-        } else {
-            window.location.reload();
-        }
-    });
-
-    nextPageAnimate(1);
-    //pageTransform(1);
-
-});
-</script>
+<script type="text/javascript" src="{{MEDIA_URL}}js/site/contact-us.js"></script>
+<script type="text/javascript" src="{{MEDIA_URL}}js/site/about.js"></script>
 {% endblock %}
 
-{% block topbar %}{% endblock %}
-
-{% block container %}
-<div id="fullpage">
-
-    <div class="section bgc-f23a1a co5 text-center pr" style="padding-top: 15%;">
-        <div class="f35 fb">专属于年轻人的</div>
-        <div class="f60 fb">洗车平台</div>
-        <div class="f14 pl-15 pr-15 pt-20">汇聚你身边的洗车行，为你提供最优惠、最便捷、最时尚的洗车服务</div>
-        <div class="logo" style="padding-top: 15%" >
-            <img class="w80" src="{{MEDIA_URL}}img/about_m/logo.png">
-        </div>
-        <div class="f22 pt-5 name animated">三点十分</div>
-
-        <div class="w text-center pa" style="bottom: 2%;">
-            <i class="fa fa-angle-double-down co5 f25 next-page animated"></i>
-        </div>
-    </div>
-
-    <div class="section bgc-ffffff co1 pr" style="padding-top: 15%;">
-
-        <div class="container w300 pr s1 animated" style="padding-left: 85px; padding-bottom: 50px;">
-            <img class="pa w70" style="left: 0px;" src="{{MEDIA_URL}}img/homepage/drop.png">
-            <span class="f20 pa f22 co5 fb" style="left: 13px; top: 19px;">省钱</span>
-            <div class="pt-15">最心动的折扣和优惠活动</div>
-            <div>随时随地，让你洗车更省钱</div>
-        </div>
-        <div class="container w300 pr s2 animated" style="padding-left: 85px; padding-bottom: 50px;">
-            <img class="pa w70" style="left: 0px;" src="{{MEDIA_URL}}img/homepage/drop.png">
-            <span class="f20 pa f22 co5 fb" style="left: 13px; top: 19px;">便捷</span>
-            <div class="pt-15">汇聚你身边的洗车网点</div>
-            <div>无论出行还是在家，让洗车更便捷</div>
-        </div>
-        <div class="container w300 pr s3 animated" style="padding-left: 85px; padding-bottom: 50px;">
-            <img class="pa w70" style="left: 0px;" src="{{MEDIA_URL}}img/homepage/drop.png">
-            <span class="f20 pa f22 co5 fb" style="left: 13px; top: 19px;">时尚</span>
-            <div class="pt-15">支持多种在线付款</div>
-            <div>告别传统付款方式，让支付更时尚</div>
-        </div>
-        <div class="container w300 pr" style="padding-top: 70px;">
-            <img class="w" src="{{MEDIA_URL}}img/about_m/cars.png">
-        </div>
-
-        <div class="w text-center pa" style="bottom: 2%;">
-            <i class="fa fa-angle-double-down co15 f25 next-page animated"></i>
-        </div>
-        
-    </div>
-
-    <div class="section bgc-ffffff pr" style="padding-top: 4%;">
-        <div class="text-center co15" style="-webkit-transform: rotateZ(-10deg);">
-            <span class="f35 fb">那么，</span>
-            <span class="f25 fb">如何使用呢？</span>
-        </div>
-        <div class="bgc-f23a1a step-1" style="-webkit-transform: rotateZ(-10deg); margin-left: -25px; width: 120%;">
-            <div class="container w300 pr" style="min-height: 240px; -webkit-transform: rotateZ(10deg);">
-                <img class="pa" style="width: 60px; left: 0px; top: 50px;" src="{{MEDIA_URL}}img/about_m/01.png">
-
-                <img class="pa" style="width: 130px; right:5px; top: 0px;" src="{{MEDIA_URL}}img/homepage/use-step-1.png">
-
-                <span class="pa f25 co5" style="left: 70px; top: 46px;">选择</span>
-                <span class="pa f12 co5" style="left: 70px; top: 86px;">选择离你最近或</span>
-                <span class="pa f12 co5" style="left: 70px; top: 102px;">喜欢的洗车行</span>
-            </div>
-        </div>
-        <div class="bgc-ffffff step-2" style="-webkit-transform: rotateZ(10deg); margin-left: -25px; width: 120%;">
-            <div class="container w300 pr" style="min-height: 240px;-webkit-transform: rotateZ(-10deg);">
-                <img class="pa" style="width: 70px; right: 10px; top: 45px;" src="{{MEDIA_URL}}img/about_m/02.png">
-
-                <img class="pa" style="width: 130px; left:5px; top: 0px;" src="{{MEDIA_URL}}img/homepage/use-step-2.png">
-
-                <span class="pa f25 co15" style="right: 85px; top: 41px;">购买</span>
-                <span class="pa f12 co15" style="right: 85px; top: 81px;">点击购买，使用</span>
-                <span class="pa f12 co15" style="right: 85px; top: 97px;">支付宝或微信支付</span>
-            </div>
-        </div>
-        <div class="bgc-f23a1a step-3" style="-webkit-transform: rotateZ(-10deg); margin-left: -25px; width: 120%;">
-            <div class="container w300 pr" style="min-height: 240px;-webkit-transform: rotateZ(10deg);">
-                <img class="pa" style="width: 70px; left: 0px; top: 50px;" src="{{MEDIA_URL}}img/about_m/03.png">
-
-                <img class="pa" style="width: 130px; right:5px; top: 0px;" src="{{MEDIA_URL}}img/about_m/use-step-3.png">
-
-                <span class="pa f25 co5" style="left: 75px; top: 51px;">消费</span>
-                <span class="pa f12 co5" style="left: 75px; top: 91px;">到店出示洗车码</span>
-                <span class="pa f12 co5" style="left: 75px; top: 107px;">开始愉快的洗车!</span>
-            </div>
-        </div>
-
-        <div class="bgc-f23a1a step-4" style="-webkit-transform: rotateZ(0deg); margin-left: -25px; width: 120%; min-height: 300px;">
-        </div>
-
-        <div class="w text-center pa" style="bottom: 2%;">
-            <i class="fa fa-angle-double-down co5 f25 next-page animated"></i>
-        </div>
-    </div>
-
-    <div class="section bgc-ffffff text-center pr" style="padding-top: 15%;">
-        <div class="">
-            <img class="w100" src="{{MEDIA_URL}}img/logo.png">
-        </div>
-        <div class="f22 pt-10 co1">三点十分</div>
-        <div class="co15 f20" style="padding-top: 15%;">
-            <a href="http://wpa.qq.com/msgrd?v=3&uin=390973848&site=qq&menu=yes"><i class="fa fa-qq pr-3"></i>390973848</a>
-        </div>
-        <div class="co15 f20" style="padding-top: 5%;">lz@3-10.cc</div>
-        <div class="co12 f12 pa w text-center" style="bottom: 5%;">Copyright &copy; {% if YEAR == "2014" %}{{YEAR}}{% else %}2014 - {{YEAR}}{% endif %} 3-10.cc. All Rights Reserved.</div>
-    </div>
-
+{% block base_container %}
+<div class="container-fluid pl-0 pr-0 text-center fade-move bgc-84CCC7">
+    <span class="">我们</span>
+    <span class="fade-text"></span>
+    <span class="">汽车后</span>
+    <span class="fade-text"></span>
+    <br>
+    <span class="">致力于</span>
+    <span class="fade-text"></span>
+    <span class="">的</span>
+    <span class="fade-text"></span>
 </div>
-
+<div class="container-fluid pl-0 pr-0">
+    <div class="row">
+        <div class="col-md-12 text-center f30 pt-80">
+            我们是谁
+        </div>
+        <div class="col-md-12 text-center f20 pt-3 co-ADADAD">
+            WHO WE ARE
+        </div>
+    </div>
+    <div class="container pt-80 pl-25">
+        <div class="row pb-30">
+            <div class="col-md-12">
+                <div class="col-md-4 pr-0">
+                    <div class="co-84CCC7 f20 pb-3">我们不生产水果，</div>
+                    <div class="co-84CCC7 f20 pb-15">我们只是新鲜水果的搬运工</div>
+                    <div class="f13 letter-spacing-1 line-height-20">每一份鲜切果盒都是精选当季最富活力的时令鲜果和进口鲜果，从四川国际农产品交易中心的供应商直接引。我们的货源主要来自原产地、批发市场、大型超市、加工工厂。依赖这些优质货源，我们希望送到您手里的水果是健康的、新鲜的、安全的。</div>
+                </div>
+                <div class="col-md-4 col-md-offset-2 pr-30">
+                    <img class="w" style="margin-top: -15px;" src="{{MEDIA_URL}}img/about/cube.png">
+                </div>
+            </div>
+            <div class="col-md-12 pt-55">
+                <div class="col-md-4">
+                    <img class="w" style="margin-top: -35px;" src="{{MEDIA_URL}}img/about/cake.png">
+                </div>
+                <div class="col-md-5 col-md-offset-2 pl-50">
+                    <div class="co-84CCC7 f20 pb-3">我们的自信，</div>
+                    <div class="co-84CCC7 f20 pb-15">我们的优势</div>
+                    <div class="f13 letter-spacing-1 line-height-20">我们是从事鲜果切领域的先行者，我们反复研究不断打磨产品，不仅提供了鲜果切行业专利标准，还送出了超过千万次的服务。100%即开即食，水果种类一次多样搭配等特点，非常适合繁忙的您在工作之余享用，让您在补充营养的同时，高效完成工作！</div>
+                </div>
+            </div>
+            <div class="col-md-12 pt-55">
+                <div class="col-md-4 pr-0">
+                    <div class="co-84CCC7 f20 pb-3">我们的路线，</div>
+                    <div class="co-84CCC7 f20 pb-15">我们的成长</div>
+                    <div class="f13 letter-spacing-1 line-height-20">走得再远，勿忘初衷。为了给白领们提供最健康的工作时间水果服务，2015年08月01日我们送出了第一份鲜果切，奋斗在鲜果切这一细分领域。未来我们还会提供更多可能，让三点十分走向每一位白领！</div>
+                </div>
+                <div class="col-md-4 col-md-offset-2">
+                    <img class="w" style="margin-top: -30px;" src="{{MEDIA_URL}}img/about/banana.png">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container-fluid pl-0 pr-0 bgc-F6F5F1">
+    <div class="row">
+        <div class="col-md-12 text-center f30 pt-80">
+            我们的团队
+        </div>
+        <div class="col-md-12 text-center f20 pt-3 co-ADADAD">
+            OUR TEAM
+        </div>
+    </div>
+    <div class="container pb-30">
+        <div class="row pt-40 pb-30">
+            <div class="col-md-3 text-center pl-25 pr-25">
+                <img class="w" src="{{MEDIA_URL}}img/about/employee-1.png">
+                <div class="f20 fb pt-25">杨颖</div>
+                <div class="co-ADADAD f13 pt-10">创始人</div>
+            </div>
+            <div class="col-md-3 text-center pl-25 pr-25">
+                <img class="w" src="{{MEDIA_URL}}img/about/employee-1.png">
+                <div class="f20 fb pt-25">杨颖</div>
+                <div class="co-ADADAD f13 pt-10">创始人</div>
+            </div>
+            <div class="col-md-3 text-center pl-25 pr-25">
+                <img class="w" src="{{MEDIA_URL}}img/about/employee-1.png">
+                <div class="f20 fb pt-25">杨颖</div>
+                <div class="co-ADADAD f13 pt-10">创始人</div>
+            </div>
+            <div class="col-md-3 text-center pl-25 pr-25">
+                <img class="w" src="{{MEDIA_URL}}img/about/employee-1.png">
+                <div class="f20 fb pt-25">杨颖</div>
+                <div class="co-ADADAD f13 pt-10">创始人</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% include "pc/include/_contact_us.html" %}
 {% endblock %}
-
-{% block nav %}{% endblock %}
