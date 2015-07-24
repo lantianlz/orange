@@ -94,8 +94,11 @@ $(document).ready(function(){
         currentIndex = (currentIndex >= $('.slide-nav-item').length) ? 0 : currentIndex;
         
         $('.slide-nav-item').eq(currentIndex).click();
-    }, 6000);
+    }, 7000);
 
+    window.setTimeout(function(){
+        $('.slide-nav-item').eq(1).click();
+    }, 2000);
 
 
     var showScaleModal = function(){
@@ -105,15 +108,10 @@ $(document).ready(function(){
                 '<div class="modal-content">',
                   '<div class="modal-header">',
                     '<button type="button" class="close hide" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>',
-                    '<h4 class="modal-title text-center">Modal Title</h4>',
+                    '<h4 class="modal-title text-center letter-spacing-3">咕咚网</h4>',
                   '</div>',
                   '<div class="modal-body">',
-                    '<p>This is a modal window. You can do the following things with it:</p>',
-                    '<ul>',
-                        '<li><strong>Read:</strong> modal windows will probably tell you something important so dont forget to read what they say.</li>',
-                        '<li><strong>Look:</strong> a modal window enjoys a certain kind of attention; just look at it and appreciate its presence.</li>',
-                        '<li><strong>Close:</strong> click on the button below to close the modal.</li>',
-                   '</ul>',
+                    '<img class="w" src="'+MEDIA_URL+'img/customers/1.jpg" />',
                   '</div>',
                   '<div class="modal-footer">',
                     '<a class="btn btn-default btn-modal" data-dismiss="modal">CLOSE ME</a>',
