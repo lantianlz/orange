@@ -448,8 +448,8 @@
 	color: #EF7B32;
 	padding-bottom: 10px;
 	padding-top: 10px;
-	border-top-left-radius: 5px;
-	border-top-right-radius: 5px;
+	border-top-left-radius: 3px;
+	border-top-right-radius: 3px;
 	-webkit-transition: all 0.3s;
             transition: all 0.3s;
 }
@@ -459,8 +459,8 @@
 }
 .customer-img{
 	cursor: pointer;
-	border-bottom-left-radius: 5px;
-	border-bottom-right-radius: 5px;
+	border-bottom-left-radius: 3px;
+	border-bottom-right-radius: 3px;
 }
 
 

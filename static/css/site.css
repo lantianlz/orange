@@ -17,6 +17,7 @@ a:focus {outline: none; -moz-outline: none;}
 .letter-spacing-5{letter-spacing: 5px;}
 
 .overflow-y{overflow-y: hidden;}
+.overflow-x{overflow-x: hidden;}
 
 .none{display: none}
 .block{display: block;}
@@ -44,6 +45,7 @@ a:focus {outline: none; -moz-outline: none;}
 .f25{font-size: 25px;}
 .f28{font-size: 28px;}
 .f30{font-size: 30px;}
+.f32{font-size: 32px;}
 
 .w{width: 100%;}
 .w20{width: 20px;}
@@ -52,6 +54,7 @@ a:focus {outline: none; -moz-outline: none;}
 .w100{width: 100px;}
 .w130{width: 130px;}
 .w150{width: 150px;}
+.w200{width: 200px;}
 .w300{width: 300px;}
 .h{height: 100%;}
 
@@ -91,6 +94,7 @@ a:focus {outline: none; -moz-outline: none;}
 .bgc-444B5C{background-color: #444B5C;}
 .bgc-FAE4D5{background-color: #FAE4D5;}
 .bgc-F6F5F1{background-color: #F6F5F1;}
+.bgc-F2FDFD{background-color: #F2FDFD;}
 
 .pt-0{padding-top: 0;}
 .pt-3{padding-top: 3px;}

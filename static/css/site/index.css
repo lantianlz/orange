@@ -112,3 +112,106 @@
         opacity: 0;
     }
 }
+
+.slide-img{
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    opacity: 0;
+}
+.slide-in{
+    -webkit-animation: slideIn 1s both;
+            animation: slideIn 1s both;
+}
+@-webkit-keyframes slideIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+@keyframes slideIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+.slide-out{
+    -webkit-animation: slideOut 1.2s both;
+            animation: slideOut 1.2s both;
+}
+@-webkit-keyframes slideOut {
+    0% {
+        opacity: 1;
+        -webkit-filter: contrast(1);
+           -moz-filter: contrast(1);
+            -ms-filter: contrast(1);
+                filter: contrast(1);
+    }
+    30% {
+        opacity: 1;
+        -webkit-filter: contrast(2);
+           -moz-filter: contrast(2);
+            -ms-filter: contrast(2);
+                filter: contrast(2);
+    }
+    100% {
+        opacity: 0;
+    }
+}
+@keyframes slideOut {
+    0% {
+        opacity: 1;
+        -webkit-filter: contrast(1);
+           -moz-filter: contrast(1);
+            -ms-filter: contrast(1);
+                filter: contrast(1);
+    }
+    30% {
+        opacity: 1;
+        -webkit-filter: contrast(2);
+           -moz-filter: contrast(2);
+            -ms-filter: contrast(2);
+                filter: contrast(2);
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+.arrow-bottom{
+    width: 0;
+    height: 0;
+    position: absolute;
+    left: 48.5%;
+    bottom: -15px;
+    border-top: 15px solid #84CCC7;
+    border-right: 15px solid transparent;
+    border-left: 15px solid transparent;
+}
+
+.slide-nav{
+    position: absolute;
+    left: 0;
+    text-align: center;
+    bottom: 0;
+    width: 100%;
+}
+.slide-nav-item{
+    width: 12px;
+    height: 12px;
+    margin-right: 15px;
+    display: inline-block;
+    background-color: #bbb;
+    border-radius: 50%;
+    cursor: pointer;
+    -webkit-transition: all 0.3s;
+            transition: all 0.3s;
+}
+.slide-nav-item.active{
+    background-color: #EF7A33;
+}

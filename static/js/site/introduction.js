@@ -4,11 +4,7 @@ $(document).ready(function(){
         scrollingSpeed: 700,
         easing: 'easeOutExpo',
         navigation: true,
-        onLeave: function(index, nextIndex, direction){
-
-            // pageTransform(nextIndex);
-            
-        }
+        lockAnchors: false
     });
 
 
@@ -50,4 +46,19 @@ $(document).ready(function(){
         }, 100);
     }, 8000);
 
+    // 点击预订跳转
+    $('.btn-booking-1').on('click', function(e){
+        e.preventDefault();
+        $.fn.fullpage.moveTo(6);
+        window.setTimeout(function(){
+            $('.name').focus();
+        }, 300);
+    });
+    $('.btn-booking-3').on('click', function(e){
+        e.preventDefault();
+        $.fn.fullpage.moveTo(6);
+        window.setTimeout(function(){
+            $('.name').focus();
+        }, 300);
+    });
 });

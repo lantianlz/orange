@@ -37,14 +37,35 @@ $(document).ready(function(){
 
                     fadeText(WORDS[i]);
 
-                }, i*6000);
+                }, i * 5000);
                 
             });
         };
 
     window.setInterval(function(){
         loopFadeText();
-    }, WORDS.length * 6000);
+    }, WORDS.length * 5000);
     
     loopFadeText();
+
+
+    // 员工效果
+    $('.employee')
+    .on('mousemove', function(e){
+        
+        var HEIGHT = 262,
+            x = e.offsetX,
+            width = $(this).width();
+
+        if ( 0 <= x && x <= width/3 ) {
+            $(this).css("background-position", "0 -196px");
+        } else if ( width/3 <= x && x <= width/3*2 ) {
+            $(this).css("background-position", "0 -392px");
+        } else if ( width/3*2 <= x && x <= width ) {
+            $(this).css("background-position", "0 -588px");
+        }
+    })
+    .on('mouseleave', function(e){
+        $(this).css("background-position", "0 0");
+    });
 });

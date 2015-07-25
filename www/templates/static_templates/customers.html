@@ -2,11 +2,11 @@
 
 {% block title_all %}典型客户 - 三点十分{% endblock %}
 {% block css %}
-<link rel="stylesheet" type="text/css" href="{{MEDIA_URL}}css/site/customers.css">
+<link rel="stylesheet" type="text/css" href="{{MEDIA_URL}}css/site/customers.css?v={{MEDIA_VERSION}}">
 {% endblock %}
 
 {% block js %}
-<script type="text/javascript" src="{{MEDIA_URL}}js/site/customers.js"></script>
+<script type="text/javascript" src="{{MEDIA_URL}}js/site/customers.js?v={{MEDIA_VERSION}}"></script>
 {% endblock %}
 
 {% block base_container %}
@@ -94,20 +94,20 @@
         </div>
     </div>
     <div class="container">
-    	<div class="row pl-30 pr-30 pt-55 pb-30">
-    		<div class="col-md-6 pl-30 pr-30 customer pb-30">
+    	<div class="row pt-55 pb-30">
+    		<div class="col-md-4 pl-30 pr-30 customer pb-30">
     			<div class="text-center customer-title">咕咚网</div>
     			<img class="w customer-img" src="{{MEDIA_URL}}img/customers/customer-1.jpg">
     		</div>
-    		<div class="col-md-6 pl-30 pr-30 customer pb-30">
+    		<div class="col-md-4 pl-30 pr-30 customer pb-30">
     			<div class="text-center customer-title">Camera360</div>
     			<img class="w customer-img" src="{{MEDIA_URL}}img/customers/customer-2.jpg">
     		</div>
-    		<div class="col-md-6 pl-30 pr-30 customer pt-30 pb-30">
+    		<div class="col-md-4 pl-30 pr-30 customer pb-30">
     			<div class="text-center customer-title">小娱Wi-Fi</div>
     			<img class="w customer-img" src="{{MEDIA_URL}}img/customers/customer-3.jpg">
     		</div>
-    		<div class="col-md-6 pl-30 pr-30 customer pt-30 pb-30">
+    		<div class="col-md-4 pl-30 pr-30 customer pt-30 pb-30">
     			<div class="text-center customer-title">麦麦</div>
     			<img class="w customer-img" src="{{MEDIA_URL}}img/customers/customer-4.jpg">
     		</div>

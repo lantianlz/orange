@@ -4,19 +4,19 @@
 {% block css %}
 <link rel="stylesheet" type="text/css" href="{{MEDIA_URL}}css/animate/animate.min.css" />
 <link rel="stylesheet" type="text/css" href="{{MEDIA_URL}}css/fullpage/jquery.fullPage.css" />
-<link rel="stylesheet" type="text/css" href="{{MEDIA_URL}}css/site/introduction.css">
+<link rel="stylesheet" type="text/css" href="{{MEDIA_URL}}css/site/introduction.css?v={{MEDIA_VERSION}}">
 {% endblock %}
 
 {% block js %}
 <script type="text/javascript" src="{{MEDIA_URL}}js/jquery/jquery.fullPage.min.js"></script>
 <script type="text/javascript" src="{{MEDIA_URL}}js/jquery/jquery.easing.1.3.min.js"></script>
-<script type="text/javascript" src="{{MEDIA_URL}}js/site/introduction.js"></script>
+<script type="text/javascript" src="{{MEDIA_URL}}js/site/introduction.js?v={{MEDIA_VERSION}}"></script>
 {% endblock %}
 
 {% block base_container %}
 <div id="fullpage">
     <div class="section">
-        <div class="container pl-40 pr-40 mt-80">
+        <div class="container mt-80">
             <div class="row bgc-FAE4D5">
                 <div class="col-md-5 co-EF7B32 text-center">
                     <div class="f30 pt-80 fb letter-spacing-5 rotate-text-1"></div>
@@ -25,8 +25,8 @@
                     <div class="pb-20">
                         <a href="#" class="btn btn-danger btn-booking-1 animated">马上预订</a>
                     </div>
-                    <div class="pb-20">
-                        <img class="w150" src="{{MEDIA_URL}}img/introduction/cube.png">
+                    <div class="pb-20 pt-20">
+                        <img class="w200" src="{{MEDIA_URL}}img/introduction/cube.png">
                     </div>
                 </div>
                 <div class="col-md-7 pl-0 pr-0">
@@ -34,7 +34,7 @@
                         <img class="w visibility-hidden" src="{{MEDIA_URL}}img/introduction/tile-1.jpg">
                         <div class="pa tile-up" style="left: 0; top: -100%;">
                             <img class="w" src="{{MEDIA_URL}}img/introduction/tile-1.jpg">
-                            <img class="w" src="{{MEDIA_URL}}img/introduction/tile-6.jpg">
+                            <img class="w" src="{{MEDIA_URL}}img/introduction/tile-2.jpg">
                         </div>
                     </div>
                     <div class="col-md-6 pl-0 pr-0 text-center pr bgc-ffffff">
@@ -45,28 +45,28 @@
                         </div>
                     </div>
                     <div class="col-md-6 pl-0 pr-0 text-center pr bgc-ffffff">
-                        <img class="w visibility-hidden" src="{{MEDIA_URL}}img/introduction/tile-2.jpg">
+                        <img class="w visibility-hidden" src="{{MEDIA_URL}}img/introduction/tile-3.jpg">
                         <div class="pa w" style="top: 35%; left: 0;">
                             <div class="f18 fb">多样</div>
                             <div class="f14 pt-5 pl-30 pr-30">时令水果同时呈现，不定时还有点心哦</div>
                         </div>
                     </div>
                     <div class="col-md-6 pl-0 pr-0 overflow-y">
-                        <img class="w visibility-hidden" src="{{MEDIA_URL}}img/introduction/tile-2.jpg">
-                        <div class="pa tile-left" style="left: 0; top: -100%;">
-                            <img class="w" src="{{MEDIA_URL}}img/introduction/tile-2.jpg">
-                            <img class="w" src="{{MEDIA_URL}}img/introduction/tile-5.jpg">
-                        </div>
-                    </div>
-                    <div class="col-md-6 pl-0 pr-0 overflow-y">
                         <img class="w visibility-hidden" src="{{MEDIA_URL}}img/introduction/tile-3.jpg">
-                        <div class="pa tile-down" style="left: 0; top: 0%;">
+                        <div class="pa tile-up-2" style="left: 0; top: -100%;">
                             <img class="w" src="{{MEDIA_URL}}img/introduction/tile-3.jpg">
                             <img class="w" src="{{MEDIA_URL}}img/introduction/tile-4.jpg">
                         </div>
                     </div>
+                    <div class="col-md-6 pl-0 pr-0 overflow-y">
+                        <img class="w visibility-hidden" src="{{MEDIA_URL}}img/introduction/tile-5.jpg">
+                        <div class="pa tile-down" style="left: 0; top: 0%;">
+                            <img class="w" src="{{MEDIA_URL}}img/introduction/tile-5.jpg">
+                            <img class="w" src="{{MEDIA_URL}}img/introduction/tile-6.jpg">
+                        </div>
+                    </div>
                     <div class="col-md-6 pl-0 pr-0 text-center pr bgc-ffffff">
-                        <img class="w visibility-hidden" src="{{MEDIA_URL}}img/introduction/tile-3.jpg">
+                        <img class="w visibility-hidden" src="{{MEDIA_URL}}img/introduction/tile-5.jpg">
                         <div class="pa w" style="top: 30%; left: 0;">
                             <div class="f18 fb">健康</div>
                             <div class="f14 pt-5 pl-30 pr-30">确保每个流程的卫生，追求健康食材</div>
@@ -81,22 +81,24 @@
             <div class="row text-center">
                 <div class="col-md-12 f30">供应商</div>
                 <div class="col-md-12 f20 co-ADADAD">SUPPLIERS</div>
-                <div class="col-md-10 col-md-offset-1 letter-spacing-1 line-height-23 f13 pt-20">
-                    <div>每一份鲜切果盒都是精选当季最富活力的时令鲜果和进口鲜果，从四川国际农产品交易中心的供应商直接引。</div>
-                    <div>我们的货源主要来自原产地、批发市场、大型超市、加工工厂。依赖这些优质货源，我们希望送到您手里的水果是</div>
-                    <div>健康的、新鲜的、安全的。</div>
+                <div class="col-md-10 col-md-offset-1 letter-spacing-1 line-height-23 f13 pt-30 pb-30">
+                    每一份鲜切果盒都是精选当季最富活力的时令鲜果和进口鲜果，从四川国际农产品交易中心的供应商直接引。我们的货源主要来自原产地、批发市场、大型超市、加工工厂。依赖这些优质货源，我们希望送到您手里的水果是健康的、新鲜的、安全的。
                 </div>
-                <div class="col-md-5 col-md-offset-1 pr-0 pl-30">
-                    <img class="w" src="{{MEDIA_URL}}img/introduction/supplier-1.jpg">
+                <div class="col-md-3 pr-0 pl-0 overflow-y">
+                    <img class="w tips-img" src="{{MEDIA_URL}}img/introduction/supplier-1.jpg">
+                    <div class="tips">原产地</div>
                 </div>
-                <div class="col-md-5 pl-0 pr-30">
-                    <img class="w" src="{{MEDIA_URL}}img/introduction/supplier-2.jpg">
+                <div class="col-md-3 pl-0 pr-0 overflow-y">
+                    <img class="w tips-img" src="{{MEDIA_URL}}img/introduction/supplier-2.jpg">
+                    <div class="tips">批发市场</div>
                 </div>
-                <div class="col-md-5 col-md-offset-1 pr-0 pl-30">
-                    <img class="w" src="{{MEDIA_URL}}img/introduction/supplier-3.jpg">
+                <div class="col-md-3 pr-0 pl-0 overflow-y">
+                    <img class="w tips-img" src="{{MEDIA_URL}}img/introduction/supplier-3.jpg">
+                    <div class="tips">大型超市</div>
                 </div>
-                <div class="col-md-5 pl-0 pr-30">
-                    <img class="w" src="{{MEDIA_URL}}img/introduction/supplier-4.jpg">
+                <div class="col-md-3 pl-0 pr-0 overflow-y">
+                    <img class="w tips-img" src="{{MEDIA_URL}}img/introduction/supplier-4.jpg">
+                    <div class="tips">加工工厂</div>
                 </div>
             </div>
         </div>
@@ -138,29 +140,61 @@
                 <div class="col-md-12 f30">配送</div>
                 <div class="col-md-12 f20 co-555555 pb-20">TRANSPORT</div>
                 <div class="col-md-12 pt-10">
-                    <div class="col-md-3 pl-0 pr-0">
-                        <img class="w" src="{{MEDIA_URL}}img/introduction/transport-1.jpg">
+
+                    <div class="col-md-3 pl-0 pr-0 pr overflow-x">
+                        <div class="pa tile-left-1" style="left: 0px; top: 0; width: 200%;">
+                            <img class="pull-left" src="{{MEDIA_URL}}img/introduction/transport-1.jpg" style="width: 50%">
+                            <img src="{{MEDIA_URL}}img/introduction/transport-2.jpg" style="width: 50%">
+                        </div>
+                        <img class="w visibility-hidden" src="{{MEDIA_URL}}img/introduction/transport-1.jpg">
                     </div>
-                    <div class="col-md-3 pl-0 pr-0">
-                        <img class="w" src="{{MEDIA_URL}}img/introduction/transport-2.jpg">
+                    <div class="col-md-3 pl-0 pr-0 bgc-F2FDFD">
+                        <img class="w visibility-hidden" src="{{MEDIA_URL}}img/introduction/transport-1.jpg">
+                        <div class="pa f20 w pl-15" style="left: 0; top: 43%;">
+                            <i class="fa fa-angle-left pa f32" style="left: 25%; top: -3px;"></i>配送人员
+                        </div>
                     </div>
-                    <div class="col-md-3 pl-0 pr-0">
-                        <img class="w" src="{{MEDIA_URL}}img/introduction/transport-3.jpg">
+
+                    <div class="col-md-3 pl-0 pr-0 pr overflow-x">
+                        <div class="pa tile-left-2" style="left: 0px; top: 0; width: 200%;">
+                            <img class="pull-left" src="{{MEDIA_URL}}img/introduction/transport-3.jpg" style="width: 50%">
+                            <img src="{{MEDIA_URL}}img/introduction/transport-4.jpg" style="width: 50%">
+                        </div>
+                        <img class="w visibility-hidden" src="{{MEDIA_URL}}img/introduction/transport-3.jpg">
                     </div>
-                    <div class="col-md-3 pl-0 pr-0">
-                        <img class="w" src="{{MEDIA_URL}}img/introduction/transport-4.jpg">
+                    <div class="col-md-3 pl-0 pr-0 bgc-F2FDFD">
+                        <img class="w visibility-hidden" src="{{MEDIA_URL}}img/introduction/transport-3.jpg">
+                        <div class="pa f20 w pl-15" style="left: 0; top: 43%;">
+                            <i class="fa fa-angle-left pa f32" style="left: 35%; top: -3px;"></i>冰袋
+                        </div>
                     </div>
-                    <div class="col-md-3 pl-0 pr-0">
-                        <img class="w" src="{{MEDIA_URL}}img/introduction/transport-5.jpg">
+
+                    <div class="col-md-3 pl-0 pr-0 bgc-F2FDFD">
+                        <img class="w visibility-hidden" src="{{MEDIA_URL}}img/introduction/transport-5.jpg">
+                        <div class="pa f20 w pr-15" style="left: 0; top: 43%;">
+                            <i class="fa fa-angle-right pa f32" style="right: 25%; top: -3px;"></i>配送车辆
+                        </div>
                     </div>
-                    <div class="col-md-3 pl-0 pr-0">
-                        <img class="w" src="{{MEDIA_URL}}img/introduction/transport-6.jpg">
+                    <div class="col-md-3 pl-0 pr-0 pr overflow-x">
+                        <div class="pa tile-left-3" style="left: 0px; top: 0; width: 200%;">
+                            <img class="pull-left" src="{{MEDIA_URL}}img/introduction/transport-5.jpg" style="width: 50%">
+                            <img src="{{MEDIA_URL}}img/introduction/transport-6.jpg" style="width: 50%">
+                        </div>
+                        <img class="w visibility-hidden" src="{{MEDIA_URL}}img/introduction/transport-5.jpg">
                     </div>
-                    <div class="col-md-3 pl-0 pr-0">
-                        <img class="w" src="{{MEDIA_URL}}img/introduction/transport-7.jpg">
+
+                    <div class="col-md-3 pl-0 pr-0 bgc-F2FDFD">
+                        <img class="w visibility-hidden" src="{{MEDIA_URL}}img/introduction/transport-7.jpg">
+                        <div class="pa f20 w pr-15" style="left: 0; top: 43%;">
+                            <i class="fa fa-angle-right pa f32" style="right: 30%; top: -3px;"></i>隔热箱
+                        </div>
                     </div>
-                    <div class="col-md-3 pl-0 pr-0">
-                        <img class="w" src="{{MEDIA_URL}}img/introduction/transport-8.jpg">
+                    <div class="col-md-3 pl-0 pr-0 pr overflow-x">
+                        <div class="pa tile-left-4" style="left: 0px; top: 0; width: 200%;">
+                            <img class="pull-left" src="{{MEDIA_URL}}img/introduction/transport-7.jpg" style="width: 50%">
+                            <img src="{{MEDIA_URL}}img/introduction/transport-8.jpg" style="width: 50%">
+                        </div>
+                        <img class="w visibility-hidden" src="{{MEDIA_URL}}img/introduction/transport-7.jpg">
                     </div>
                 </div>
             </div>
@@ -171,11 +205,11 @@
             <div class="row">
                 <div class="col-md-12 f30 text-center">套餐介绍</div>
                 <div class="col-md-12 f20 co-ADADAD pb-20 text-center">PACKAGE</div>
-                <div class="col-md-12 pt-30">
+                <div class="col-md-12 pt-10">
                     <div class="col-md-3">
                         <div class="col-md-12 border-1 bdc-eeeeee pl-0 pr-0">
                             <img class="w" src="{{MEDIA_URL}}img/introduction/package-1.jpg">
-                            <div class="col-md-12 pb-15">
+                            <div class="col-md-12 pb-15 bgc-F6F5F1">
                                 <div class="f18 pt-15 fb pb-15">
                                     王老五套餐
                                     <span class="pull-right co-EF7B32"><i class="fa fa-rmb pr-3"></i>99</span>
@@ -184,13 +218,16 @@
                                 <div class="f12 pb-5">新鲜车厘子 1 斤;</div>
                                 <div class="f12 pb-5">口口脆西瓜 2 斤;</div>
                                 <div class="f12 pb-5">美国红地厘蛇果 3 斤;</div>
+                                <div class="pt-15 pb-5">
+                                    <a href="#" class="btn btn-danger btn-booking-3 f14">立即预订</a>
+                                </div>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="col-md-12 border-1 bdc-eeeeee pl-0 pr-0">
                             <img class="w" src="{{MEDIA_URL}}img/introduction/package-2.jpg">
-                            <div class="col-md-12 pb-15">
+                            <div class="col-md-12 pb-15 bgc-F6F5F1">
                                 <div class="f18 pt-15 fb pb-15">
                                     小资套餐
                                     <span class="pull-right co-EF7B32"><i class="fa fa-rmb pr-3"></i>199</span>
@@ -199,13 +236,16 @@
                                 <div class="f12 pb-5">新鲜车厘子 1 斤;</div>
                                 <div class="f12 pb-5">口口脆西瓜 2 斤;</div>
                                 <div class="f12 pb-5">美国红地厘蛇果 3 斤;</div>
+                                <div class="pt-15 pb-5">
+                                    <a href="#" class="btn btn-danger btn-booking-3 f14">立即预订</a>
+                                </div>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="col-md-12 border-1 bdc-eeeeee pl-0 pr-0">
                             <img class="w" src="{{MEDIA_URL}}img/introduction/package-3.jpg">
-                            <div class="col-md-12 pb-15">
+                            <div class="col-md-12 pb-15 bgc-F6F5F1">
                                 <div class="f18 pt-15 fb pb-15">
                                     土豪套餐
                                     <span class="pull-right co-EF7B32"><i class="fa fa-rmb pr-3"></i>299</span>
@@ -214,13 +254,16 @@
                                 <div class="f12 pb-5">新鲜车厘子 1 斤;</div>
                                 <div class="f12 pb-5">口口脆西瓜 2 斤;</div>
                                 <div class="f12 pb-5">美国红地厘蛇果 3 斤;</div>
+                                <div class="pt-15 pb-5">
+                                    <a href="#" class="btn btn-danger btn-booking-3 f14">立即预订</a>
+                                </div>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="col-md-12 border-1 bdc-eeeeee pl-0 pr-0">
                             <img class="w" src="{{MEDIA_URL}}img/introduction/package-1.jpg">
-                            <div class="col-md-12 pb-15">
+                            <div class="col-md-12 pb-15 bgc-F6F5F1">
                                 <div class="f18 pt-15 fb pb-15">
                                     情怀套餐
                                     <span class="pull-right co-EF7B32"><i class="fa fa-rmb pr-3"></i>399</span>
@@ -229,6 +272,9 @@
                                 <div class="f12 pb-5">新鲜车厘子 1 斤;</div>
                                 <div class="f12 pb-5">口口脆西瓜 2 斤;</div>
                                 <div class="f12 pb-5">美国红地厘蛇果 3 斤;</div>
+                                <div class="pt-15 pb-5">
+                                    <a href="#" class="btn btn-danger btn-booking-3 f14">立即预订</a>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -242,20 +288,20 @@
                 <div class="col-md-12 f30 text-center">立即预订</div>
                 <div class="col-md-12 f20 co-ADADAD pb-20 text-center">BOOKING</div>
                 <div class="col-md-12 pt-30">
-                    <form class="form-inline">
+                    <!-- <form class="form-inline"> -->
                         <div class="form-group col-md-3">
-                            <input type="text" class="form-control" placeholder="姓名">
+                            <input type="text" class="form-control name" placeholder="姓名">
                         </div>
                         <div class="form-group col-md-3">
-                            <input type="text" class="form-control" placeholder="公司名称">
+                            <input type="text" class="form-control company" placeholder="公司名称">
                         </div>
                         <div class="form-group col-md-3">
-                            <input type="text" class="form-control" placeholder="联系方式">
+                            <input type="text" class="form-control tel" placeholder="联系方式">
                         </div>
                         <div class="form-group col-md-3">
                             <a href="#" class="btn btn-danger btn-booking-2 btn-block">立即预订</a>
                         </div>
-                    </form>
+                    <!-- </form> -->
                 </div>
             </div>
         </div>

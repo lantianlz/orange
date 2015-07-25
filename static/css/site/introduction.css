@@ -30,6 +30,20 @@
     border-color: #D4621B;
 }
 
+.btn-booking-3{
+    border-color: #EF7B32;
+    background-color: #EF7B32;
+    color: #ffffff;
+    -webkit-transition: all 0.3s;
+            transition: all 0.3s;
+}
+.btn-booking-3:hover, 
+.btn-booking-3:focus, 
+.btn-booking-3:active{
+    background-color: #D4621B;
+    border-color: #D4621B;
+}
+
 .form-control{
     border-radius: 1px;
 }
@@ -104,11 +118,11 @@
         top: -100%;
     }
 }
-.tile-left{
-    -webkit-animation: tile-left 28s 5s both infinite;
-            animation: tile-left 28s 5s both infinite;
+.tile-up-2{
+    -webkit-animation: tile-up-2 28s 5s both infinite;
+            animation: tile-up-2 28s 5s both infinite;
 }
-@-webkit-keyframes tile-left {
+@-webkit-keyframes tile-up-2 {
     0% {
         top: -100%;
     }
@@ -125,7 +139,7 @@
         top: -100%;
     }
 }
-@keyframes tile-up {
+@keyframes tile-up-2 {
     0% {
         top: -100%;
     }
@@ -178,5 +192,73 @@
     }
     100% {
         top: 0;
+    }
+}
+
+.tips{
+    position: absolute;
+    letter-spacing: 2px;
+    left: 0;
+    bottom: -46px;
+    color: #fff;
+    padding: 12px;
+    font-size: 16px;
+    width: 100%;
+    background-color: rgba(0,0,0,.7);
+    -webkit-transition: all 0.3s;
+            transition: all 0.3s;
+}
+.tips-img:hover~.tips{
+    bottom: 0px;
+}
+
+.tile-left-1{
+    -webkit-animation: tileLeft 15s 3s both infinite;
+            animation: tileLeft 15s 3s both infinite;
+}
+.tile-left-2{
+    -webkit-animation: tileLeft 20s 5s both infinite;
+            animation: tileLeft 20s 5s both infinite;
+}
+.tile-left-3{
+    -webkit-animation: tileLeft 25s 4s both infinite;
+            animation: tileLeft 25s 4s both infinite;
+}
+.tile-left-4{
+    -webkit-animation: tileLeft 28s 7s both infinite;
+            animation: tileLeft 28s 7s both infinite;
+}
+@-webkit-keyframes tileLeft {
+    0% {
+        left: 0;
+    }
+    5% {
+        left: -100%;
+    }
+    50% {
+        left: -100%;
+    }
+    55% {
+        left: 0;
+    }
+    100% {
+        left: 0;
+    }
+}
+@keyframes tileLeft {
+    0% {
+        left: 0;
+    }
+    5% {
+        left: -100%;
+    }
+    50% {
+        left: -100%;
+    }
+    55% {
+        left: 0;
+    }
+    100% {
+        left: 0;
     }
 }

@@ -2,7 +2,7 @@ body{
     overflow-x: hidden;
 }
 .container{
-    width: 920px !important;
+    width: 1000px !important;
 }
 
 .nav>li>a{

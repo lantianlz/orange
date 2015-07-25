@@ -2,33 +2,40 @@
 
 {% block title_all %}三点十分{% endblock %}
 {% block css %}
-<link rel="stylesheet" type="text/css" href="{{MEDIA_URL}}css/site/index.css">
-<link rel="stylesheet" type="text/css" href="{{MEDIA_URL}}css/site/contact-us.css">
+<link rel="stylesheet" type="text/css" href="{{MEDIA_URL}}css/site/index.css?v={{MEDIA_VERSION}}">
+<link rel="stylesheet" type="text/css" href="{{MEDIA_URL}}css/site/contact-us.css?v={{MEDIA_VERSION}}">
 {% endblock %}
 
 {% block js %}
-<script type="text/javascript" src="{{MEDIA_URL}}js/site/contact-us.js"></script>
-<script type="text/javascript">
-
-</script>
+<script type="text/javascript" src="{{MEDIA_URL}}js/site/contact-us.js?v={{MEDIA_VERSION}}"></script>
+<script type="text/javascript" src="{{MEDIA_URL}}js/site/index.js?v={{MEDIA_VERSION}}"></script>
 {% endblock %}
 
 {% block base_container %}
 <div class="container-fluid pl-0 pr-0">
     <div class="row">
-        <div class="col-md-12">
-            <img class="w" src="{{MEDIA_URL}}img/home/banner-1.jpg">
+        <div class="col-md-12 pr">
+            <img class="w visibility-hidden" src="{{MEDIA_URL}}img/home/banner-1.jpg">
+            <img class="slide-img slide-in" src="{{MEDIA_URL}}img/home/banner-1.jpg">
+            <img class="slide-img" src="{{MEDIA_URL}}img/home/banner-2.jpg">
+            <img class="slide-img" src="{{MEDIA_URL}}img/home/banner-3.jpg">
+            <div class="slide-nav">
+                <span class="slide-nav-item active" data-index="0"></span>
+                <span class="slide-nav-item" data-index="1"></span>
+                <span class="slide-nav-item" data-index="2"></span>
+            </div>
         </div>
     </div>
 </div>
 <div class="container-fluid pl-0 pr-0 bgc-84CCC7">
     <div class="container">
-        <div class="row">
+        <div class="row pr">
             <div class="col-md-12 text-center f30 co-ffffff pt-80 pb-30">三点十分，给你最好的下午茶</div>
             <div class="col-md-10 col-md-offset-1 text-center f14 co-ffffff pb-80 line-height-23">
                 <p>最新鲜的水果，最美味的点心，尽在三点十分</p>
                 <p>水果每天鲜切，点心每天定制生产，每天按时送达</p>
             </div>
+            <span class="arrow-bottom"></span>
         </div>
     </div>
 </div>
