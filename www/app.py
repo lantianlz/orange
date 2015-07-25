@@ -28,7 +28,7 @@ def main(port):
 if __name__ == '__main__':
     try:
         import setproctitle
-        setproctitle.setproctitle('orange:' + sys.argv[1])
+        setproctitle.setproctitle('www:' + sys.argv[1])
     except ImportError:
         pass
     main(int(sys.argv[1]))
