@@ -114,8 +114,8 @@
     }
 }
 .location-wave-in{
-    -webkit-animation: location-wave-in 1s both;
-            animation: location-wave-in 1s both;
+    -webkit-animation: location-wave-in 0.8s both;
+            animation: location-wave-in 0.8s both;
 }
 @-webkit-keyframes location-wave-in {
     0%{

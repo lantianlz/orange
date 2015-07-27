@@ -47,7 +47,7 @@ $(document).ready(function(){
             })
             .removeClass('location-wave-out')
             .addClass('location-wave-in');
-        }, 1000)
+        }, 900)
 
         window.setTimeout(function(){
             $('.contact-card')
@@ -60,6 +60,6 @@ $(document).ready(function(){
             });
             $('.location-wave').fadeIn('fast');
             isTrans = false;
-        }, 1850);
+        }, 1650);
     });
 });
