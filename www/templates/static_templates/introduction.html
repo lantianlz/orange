@@ -305,40 +305,7 @@
                 </div>
             </div>
         </div>
-        <div class="pt-30 pb-30 bgc-444B5C co-ADADAD f12 pa" style="left: 0; bottom: 0; width: 100%;">
-            <div class="container pb-0 pt-20 pb-10">
-                <div class="row">
-                    <div class="col-md-4 col-md-offset-4 text-center">
-                        <div class="col-md-4">
-                            <a class="co-ffffff" href="mailto:lz@3-10.cc">
-                                <i class="contact-hover-email fa fa-envelope-o f28 bdc-ffffff border-2 bdr-circle pl-8 pr-8 pb-8 pt-8"></i>
-                            </a>
-                        </div>
-                        <div class="col-md-4">
-                            <a href="http://wpa.qq.com/msgrd?v=3&amp;uin=390973848&amp;site=qq&amp;menu=yes" target="_blank" class="co-ffffff">
-                                <i class="contact-hover-qq fa fa-qq f28 bdc-ffffff border-2 bdr-circle pl-8 pr-8 pb-8 pt-8"></i>
-                            </a>
-                        </div>
-                        <!-- <div class="col-md-3">
-                            <i class="contact-hover-weibo fa fa-weibo f28 bdc-ffffff border-2 bdr-circle pl-8 pr-8 pb-8 pt-8"></i>
-                        </div> -->
-                        <div class="col-md-4 pr">
-                            <i class="contact-hover-weixin fa fa-weixin f28 bdc-ffffff border-2 bdr-circle pl-6 pr-6 pb-8 pt-8"></i>
-                            <!-- <img class="w140 pa cekaa-wx" style="left: -10px; top: -155px;" src="{{MEDIA_URL}}img/home/cekaa_wx.jpg"> -->
-                        </div>
-                    </div>
-
-                    <div class="col-md-6 col-md-offset-3 text-center pt-40 co-ffffff f22">
-                        三点十分
-                    </div>
-
-                    <div class="col-md-12 text-center pt-20">
-                        <div class="pt-5">Copyright &copy; {% if YEAR == "2015" %}{{YEAR}}{% else %}2015 - {{YEAR}}{% endif %} 大橙科技. All Rights Reserved.</div>
-                        <!-- <div class="pt-5 co-555555">蜀ICP备14028531号-2</div> -->
-                    </div>
-                </div>
-            </div>
-        </div>
+        {% include "pc/include/_footer.html" %}
     </div>
 </div>
 {% endblock %}
