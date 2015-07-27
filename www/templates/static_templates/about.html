@@ -19,13 +19,29 @@
 }
 
 .employee{
-    height: 212px;
+    height: 210px;
     background-size: 100%;
     background-repeat: no-repeat;
 }
 .col-md-2{
     width: 20%;
     padding-bottom: 30px;
+}
+
+.employee-info{
+    cursor: pointer;
+}
+.employee-info .employee-special{
+    display: none;
+}
+.employee-info .employee-normal{
+    display: block;
+}
+.employee-info:hover .employee-special{
+    display: block;
+}
+.employee-info:hover .employee-normal{
+    display: none;
 }
 </style>
 {% endblock %}
@@ -109,49 +125,76 @@
         <div class="row pt-40 pb-0">
             <div class="col-md-2 text-center pl-25 pr-25">
                 <div class="employee" style="background-image: url({{MEDIA_URL}}img/about/employee-1.png)"></div>
-                <div class="f20 pt-5">李政</div>
-                <div class="co-ADADAD f13 pt-5">CEO</div>
+                <div class="employee-info">
+                    <div class="f20 pt-5">李政</div>
+                    <div class="co-ADADAD f13 pt-5 employee-normal">CEO</div>
+                    <div class="co-ADADAD f13 pt-5 employee-special">扫地僧</div>
+                </div>
             </div>
             <div class="col-md-2 text-center pl-25 pr-25">
                 <div class="employee" style="background-image: url({{MEDIA_URL}}img/about/employee-2.png)"></div>
-                <div class="f20 pt-5">雷成铭</div>
-                <div class="co-ADADAD f13 pt-5">技术总监</div>
+                <div class="employee-info">
+                    <div class="f20 pt-5">雷成铭</div>
+                    <div class="co-ADADAD f13 pt-5 employee-normal">技术总监</div>
+                    <div class="co-ADADAD f13 pt-5 employee-special">code monkey</div>
+                </div>
             </div>
             <div class="col-md-2 text-center pl-25 pr-25">
                 <div class="employee" style="background-image: url({{MEDIA_URL}}img/about/employee-3.png)"></div>
-                <div class="f20 pt-5">李瑶</div>
-                <div class="co-ADADAD f13 pt-5">设计顾问</div>
+                <div class="employee-info">
+                    <div class="f20 pt-5">李瑶</div>
+                    <div class="co-ADADAD f13 pt-5 employee-normal">设计顾问</div>
+                    <div class="co-ADADAD f13 pt-5 employee-special">暴力罗莉</div>
+                </div>
             </div>
             <div class="col-md-2 text-center pl-25 pr-25">
                 <div class="employee" style="background-image: url({{MEDIA_URL}}img/about/employee-5.png)"></div>
-                <div class="f20 pt-5">李聪</div>
-                <div class="co-ADADAD f13 pt-5">物流专员</div>
+                <div class="employee-info">
+                    <div class="f20 pt-5">李聪</div>
+                    <div class="co-ADADAD f13 pt-5 employee-normal">物流专员</div>
+                    <div class="co-ADADAD f13 pt-5 employee-special">双流王思聪</div>
+                </div>
             </div>
             <div class="col-md-2 text-center pl-25 pr-25">
                 <div class="employee" style="background-image: url({{MEDIA_URL}}img/about/employee-4.png)"></div>
-                <div class="f20 pt-5">马瑶</div>
-                <div class="co-ADADAD f13 pt-5">服务专员</div>
+                <div class="employee-info">
+                    <div class="f20 pt-5">马瑶</div>
+                    <div class="co-ADADAD f13 pt-5 employee-normal">服务专员</div>
+                    <div class="co-ADADAD f13 pt-5 employee-special">呆萌实习生</div>
+                </div>
             </div>
 
             <div class="col-md-2 text-center pl-25 pr-25">
                 <div class="employee" style="background-image: url({{MEDIA_URL}}img/about/employee-1.png)"></div>
-                <div class="f20 pt-5">袁某某</div>
-                <div class="co-ADADAD f13 pt-5">营养顾问</div>
+                <div class="employee-info">
+                    <div class="f20 pt-5">袁某某</div>
+                    <div class="co-ADADAD f13 pt-5 employee-normal">营养顾问</div>
+                    <div class="co-ADADAD f13 pt-5 employee-special">营养大拿</div>
+                </div>
             </div>
             <div class="col-md-2 text-center pl-25 pr-25">
                 <div class="employee" style="background-image: url({{MEDIA_URL}}img/about/employee-2.png)"></div>
-                <div class="f20 pt-5">赖某某</div>
-                <div class="co-ADADAD f13 pt-5">市场顾问</div>
+                <div class="employee-info">
+                    <div class="f20 pt-5">赖某某</div>
+                    <div class="co-ADADAD f13 pt-5 employee-normal">市场顾问</div>
+                    <div class="co-ADADAD f13 pt-5 employee-special">领家小妹</div>
+                </div>
             </div>
             <div class="col-md-2 text-center pl-25 pr-25">
                 <div class="employee" style="background-image: url({{MEDIA_URL}}img/about/employee-3.png)"></div>
-                <div class="f20 pt-5">神秘大佬</div>
-                <div class="co-ADADAD f13 pt-5">种子投资人</div>
+                <div class="employee-info">
+                    <div class="f20 pt-5">神秘大佬</div>
+                    <div class="co-ADADAD f13 pt-5 employee-normal">种子投资人</div>
+                    <div class="co-ADADAD f13 pt-5 employee-special">高富帅</div>
+                </div>
             </div>
             <div class="col-md-2 text-center pl-25 pr-25">
                 <div class="employee" style="background-image: url({{MEDIA_URL}}img/about/employee-4.png)"></div>
-                <div class="f20 pt-5">dog</div>
-                <div class="co-ADADAD f13 pt-5">程序员鼓励师</div>
+                <div class="employee-info">
+                    <div class="f20 pt-5">dog</div>
+                    <div class="co-ADADAD f13 pt-5 employee-normal">员工鼓励师</div>
+                    <div class="co-ADADAD f13 pt-5 employee-special">萌宠</div>
+                </div>
             </div>
         </div>
     </div>

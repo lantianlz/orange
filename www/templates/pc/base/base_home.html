@@ -1,7 +1,7 @@
 {% extends "pc/base/base.html" %}
 
 {% block base_css %}
-<link rel="stylesheet" type="text/css" href="{{MEDIA_URL}}css/site/head.css">
+<link rel="stylesheet" type="text/css" href="{{MEDIA_URL}}css/site/head.css?v={{MEDIA_VERSION}}">
 {% block css %}{% endblock %}
 {% endblock %}
 
@@ -20,7 +20,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a href="/">
+            <a href="/" style="display: inline-block; width: 140px; height: 80px;">
                 <img class="pa" style="left: 5px; top: 19px; width: 35px;" alt="三点十分" src="{{MEDIA_URL}}img/logo.png">
                 <img class="pa" style="left: 48px; top: 27px; width: 70px;" alt="三点十分" src="{{MEDIA_URL}}img/logo-text.png">
                 <img class="pa" style="left: 48px; top: 49px; width: 90px;" alt="下午茶点服务专家" src="{{MEDIA_URL}}img/slogan.png">
