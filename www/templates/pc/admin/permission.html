@@ -2,6 +2,8 @@
 {% load custom_tags %}
 {% load custom_filters %}
 {% block title %}权限管理{% endblock %}
+{% block admin_title %}权限管理{% endblock %}
+{% block admin_title_m %}权限管理{% endblock %}
 
 {% block css %}
 <style type="text/css">
@@ -382,9 +384,6 @@ $(document).ready(function(){
 
 </script>
 {% endblock %}
-
-{% block admin_title %}权限管理{% endblock %}
-{% block admin_title_m %}权限管理{% endblock %}
 
 {% block admin_main %}
 <ul class="nav nav-pills pt-15 orange-nav-pills">

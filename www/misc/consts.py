@@ -15,6 +15,19 @@ G_DICT_ERROR = {
 
 
 PERMISSIONS = [
+    {'code': 'user_manage', 'name': u'用户管理', 'parent': None},
+    {'code': 'add_user', 'name': u'添加用户', 'parent': 'user_manage'},
+    {'code': 'query_user', 'name': u'查询用户', 'parent': 'user_manage'},
+    {'code': 'modify_user', 'name': u'修改用户', 'parent': 'user_manage'},
+    {'code': 'remove_user', 'name': u'删除用户', 'parent': 'user_manage'},
+    {'code': 'change_pwd', 'name': u'修改用户密码', 'parent': 'user_manage'},
+
+    {'code': 'tools', 'name': u'常用工具', 'parent': None},
+    {'code': 'get_cache', 'name': u'查询缓存', 'parent': 'tools'},
+    {'code': 'remove_cache', 'name': u'删除缓存', 'parent': 'tools'},
+    {'code': 'modify_cache', 'name': u'修改缓存', 'parent': 'tools'},
+    {'code': 'query_sensitive_operation_log', 'name': u'查询敏感操作日志', 'parent': 'tools'},
+    
     {'code': 'permission_manage', 'name': u'权限管理', 'parent': None},
     {'code': 'add_user_permission', 'name': u'添加用户权限', 'parent': 'permission_manage'},
     {'code': 'query_user_permission', 'name': u'查询用户权限', 'parent': 'permission_manage'},

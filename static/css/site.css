@@ -125,6 +125,7 @@ a:focus {outline: none; -moz-outline: none;}
 .pl-0{padding-left: 0;}
 .pl-6{padding-left: 6px;}
 .pl-8{padding-left: 8px;}
+.pl-10{padding-left: 10px;}
 .pl-15{padding-left: 15px;}
 .pl-20{padding-left: 20px;}
 .pl-25{padding-left: 25px;}
@@ -155,6 +156,7 @@ a:focus {outline: none; -moz-outline: none;}
 .mr-0{margin-right: 0;}
 .ml-0{margin-left: 0;}
 .ml-15{margin-left: 15px;}
+.ml-25{margin-left: 25px;}
 .ml-300{margin-left: 300px;}
 .mb-0{margin-bottom: 0;}
 .mb-20{margin-bottom: 20px;}

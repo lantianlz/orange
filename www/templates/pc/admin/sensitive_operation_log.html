@@ -1,7 +1,9 @@
 {% extends "pc/admin/home.html" %}
 {% load custom_tags %}
 {% load custom_filters %}
-{% block title %}敏感操作日志{% endblock %}
+{% block title %}敏感操作日志管理{% endblock %}
+{% block admin_title %}敏感操作日志管理{% endblock %}
+{% block admin_title_m %}敏感操作日志管理{% endblock %}
 
 {% block css %}
 <style type="text/css">
@@ -33,7 +35,7 @@ $(document).ready(function(){
             var me = this;
 
             ajaxSend(
-                "/admin/tools/get_sensitive_operation_log", 
+                "/admin/sensitive_operation_log/get_sensitive_operation_log", 
                 {'page_index': pageIndex, 'nick': nick}, 
                 function(data){
                     
@@ -113,7 +115,7 @@ $(document).ready(function(){
 </script>
 {% endblock %}
 
-{% block right %}
+{% block admin_main %}
 <div class="pt-15" id="log_list">
     <form action="." onsubmit="javascript: return false;">
         <div class="pl-0 pb-10 col-md-3">
@@ -160,4 +162,4 @@ $(document).ready(function(){
 <% }) %>
 </script>
 
-{% endblock right %}
+{% endblock %}

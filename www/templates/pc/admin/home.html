@@ -10,6 +10,15 @@ body{
 .list-group-item:last-child{
     border-radius: 0;
 }
+.form-control{
+    border-radius: 1px;
+}
+.input-group-sm>.form-control, .input-group-sm>.input-group-addon, .input-group-sm>.input-group-btn>.btn{
+    border-radius: 1px;
+}
+.table-hover>tbody>tr:hover>td, .table-hover>tbody>tr:hover>th {
+    background-color: #E4F0F1;
+}
 
 .admin-top{
     position: fixed;
@@ -345,12 +354,12 @@ $(document).ready(function(){
     </div>
     <div class="admin-left">
         <div class="co-ffffff pr pt-20 pb-20">
-            <img class="w35 pa" style="left: 22px; top: 18px;" src="{{MEDIA_URL}}img/logo.png?v=1">
+            <img class="pa" style="left: 22px; top: 16px; width: 24px; " src="{{MEDIA_URL}}img/logo.png?v=1">
             <span class="f18 pl-65">三点十分 后台管理</span>
         </div>
         <ul class="list-group p-nav">
-            <li class="list-group-item {% if '/user/user' in request.path %}active{% endif %}" href="#">
-                <a href="/admin/user/user"><i class="fa fa-user pr-3" style="left: 33px;"></i>用户管理</a>
+            <li class="list-group-item {% if '/user' in request.path %}active{% endif %}" href="#">
+                <a href="/admin/user"><i class="fa fa-user pr-3" style="left: 33px;"></i>用户管理</a>
             </li>
             <li class="list-group-item" href="#">
                 <a href="#"><i class="fa fa-users pr-3"></i>公司管理</a>
@@ -395,11 +404,11 @@ $(document).ready(function(){
             <li class="list-group-item" href="#">
                 <a><i class="fa fa-cogs pr-3"></i>系统设置</a>
                 <ul class="list-group sub-nav">
-                    <li class="list-group-item">
-                        <a href="#"><i class="point"></i>缓存管理</a>
+                    <li class="list-group-item {% if '/caches' in request.path %}active{% endif %}">
+                        <a href="/admin/caches"><i class="point"></i>缓存管理</a>
                     </li>
-                    <li class="list-group-item">
-                        <a href="#"><i class="point"></i>敏感操作日志管理</a>
+                    <li class="list-group-item {% if '/sensitive_operation_log' in request.path %}active{% endif %}">
+                        <a href="/admin/sensitive_operation_log"><i class="point"></i>敏感操作日志管理</a>
                     </li>
                     <li class="list-group-item {% if '/permission' in request.path %}active{% endif %}">
                         <a href="/admin/permission"><i class="point"></i>权限管理</a>
@@ -416,7 +425,7 @@ $(document).ready(function(){
             </div>
             <div class="col-md-6 col-sm-6 text-right">
                 <img class="avatar-30" src="http://tp1.sinaimg.cn/1613200184/180/1286542530/1">
-                <span>半夜没事瞎溜达，</span>
+                <span>{{request.user.nick}}，</span>
                 <a href="/logout"><i class="fa fa-sign-out pr-3"></i>退出</a>
             </div>
         </div>
