@@ -13,7 +13,7 @@ $(document).ready(function(){
 
                 trans(next);
                 
-            }, 110000);
+            }, 11000);
         },
         getIndex = function(){
             var index = 0;
