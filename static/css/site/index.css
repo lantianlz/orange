@@ -768,7 +768,7 @@
 .banner-box-3 .line-6{
     position: absolute;
     display: inline-block;
-    left: 0px;
+    left: -1px;
     top: -15px;
     width: 1px;
     height: 165%;
