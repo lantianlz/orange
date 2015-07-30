@@ -101,23 +101,87 @@ class BookInfo(models.Model):
     note = models.CharField(max_length=512)
 
 
+class Item(models.Model):
+
+    '''
+    @note: 单项
+    '''
+    state_choices = ((0, u"停用"), (1, u"正常"))
+    type_choices = ((1, u"水果"), (2, u"糕点"))
+
+    name = models.CharField(verbose_name=u"名称", max_length=128, unique=True)
+    price = models.DecimalField(verbose_name=u"单价", max_digits=10, decimal_places=2, default=0)
+    item_type = models.IntegerField(verbose_name=u"类型", default=1, choices=type_choices)
+    state = models.IntegerField(verbose_name=u"状态", default=1, choices=state_choices)
+    spec = models.CharField(verbose_name=u"规格", max_length=32, null=True)
+    sort = models.IntegerField(verbose_name=u"排序", default=0, choices=type_choices)
+    create_time = models.DateTimeField(auto_now_add=True, db_index=True)
+    
+    code = models.CharField(verbose_name=u"货号", max_length=32, null=True)
+    img = models.CharField(verbose_name=u"图片", max_length=128, null=True)
+
+    class Meta:
+        ordering = ["sort", "-create_time"]
+
 class Meal(models.Model):
 
     '''
     @note: 套餐
     '''
+    state_choices = ((0, u"停用"), (1, u"正常"))
 
-    name = models.CharField(max_length=128, unique=True)
-    des = models.TextField(null=True)
-    price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    company = models.ForeignKey("Company")
+    name = models.CharField(verbose_name=u"名称", max_length=128)
+    des = models.TextField(verbose_name=u"描述", null=True)
+    price = models.DecimalField(verbose_name=u"价格", max_digits=10, decimal_places=2, default=0)
+    start_date = models.DateField(verbose_name=u"开始日期", db_index=True)
+    end_date = models.DateField(verbose_name=u"结束日期", db_index=True)
+    state = models.IntegerField(verbose_name=u"状态", default=1, choices=state_choices)
+    create_time = models.DateTimeField(verbose_name=u"创建时间", auto_now_add=True, db_index=True)
 
 
-class MealOrder(models.Model):
+class MealItem(models.Model):
 
     '''
-    @note: 订单
+    @note: 套餐下的项目
     '''
-    # 订单状态，试吃订单
+    meal = models.ForeignKey("Meal")
+    item = models.ForeignKey("Item")
+    amount = models.DecimalField(verbose_name=u"数量", max_digits=6, decimal_places=2, default=0)
+
+
+class Order(models.Model):
+
+    '''
+    @note: 每日订单
+    '''
+    state_choices = ((0, u"作废"), (1, u"准备中"), (2, u"配送中"), (3, u"已完成"))
+
+    meal = models.ForeignKey("Meal")
+    company = models.ForeignKey("Company")
+    order_no = models.CharField(verbose_name=u"订单号", max_length=32)
+    create_operator = models.CharField(verbose_name=u"订单创建人", max_length=32)
+    create_time = models.DateTimeField(verbose_name=u"订单创建时间", auto_now_add=True, db_index=True)
+    distribute_operator = models.CharField(verbose_name=u"订单配送人", max_length=32)
+    distribute_time = models.DateTimeField(verbose_name=u"订单配送时间", auto_now_add=True, db_index=True)
+    confirm_operator = models.CharField(verbose_name=u"订单确认人", max_length=32)
+    confirm_time = models.DateTimeField(verbose_name=u"订单确认时间", auto_now_add=True, db_index=True)
+    total_price = models.DecimalField(verbose_name=u"订单价格", max_digits=10, decimal_places=2, default=0)
+    state = models.IntegerField(verbose_name=u"状态", default=1, choices=state_choices)
+    
+
+class OrderItem(models.Model):
+
+    '''
+    @note: 每日订单下的项目
+    '''
+    type_choices = ((0, u"套餐项目"), (1, u"非套餐项目"))
+
+    order = models.ForeignKey("Order")
+    item = models.ForeignKey("Item")
+    amount = models.DecimalField(verbose_name=u"数量", max_digits=6, decimal_places=2, default=0)
+    price = models.DecimalField(verbose_name=u"价格", max_digits=10, decimal_places=2, default=0)
+    item_type = models.IntegerField(verbose_name=u"项目状态", default=0, choices=type_choices)
 
 
 class Invoice(models.Model):
@@ -125,12 +189,25 @@ class Invoice(models.Model):
     '''
     @note: 发票
     '''
-    # 发票状态
+    customer_type_choices = ((0, u"个人"), (1, u"企业"))
+    taxpayer_type_choices = ((0, u"增值税普通发票"), (1, u"增值税专用发票"))
+
+    company = models.ForeignKey("Company")
+    un_invoice_amount = models.DecimalField(verbose_name=u"未开发票金额", max_digits=10, decimal_places=2, default=0)
+    title = models.CharField(verbose_name=u"发票抬头", max_length=32)
+    customer_type = models.IntegerField(verbose_name=u"开具类型", default=0, choices=customer_type_choices)
+    taxpayer_type = models.IntegerField(verbose_name=u"发票类型", default=0, choices=taxpayer_type_choices)
 
 
-class InvoiceMealOrder(models.Model):
+class InvoiceRecord(models.Model):
 
-    '''
-    @note: 发票对应的订单
-    '''
-    # 发票状态
+    invoice = models.ForeignKey("Invoice")
+    invoice_amount = models.DecimalField(verbose_name=u"发票金额", max_digits=10, decimal_places=2, default=0)
+    operator = models.CharField(verbose_name=u"开票人", max_length=32)
+    create_time = models.DateTimeField(verbose_name=u"创建时间", auto_now_add=True, db_index=True)
+
+
+
+
+
+

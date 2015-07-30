@@ -19,6 +19,16 @@ urlpatterns += patterns('www.admin.views_user',
     url(r'^user$', 'user'),
 )
 
+# 产品管理
+urlpatterns += patterns('www.admin.views_item',
+
+    url(r'^item/add_item$', 'add_item'),
+    url(r'^item/modify_item$', 'modify_item'),
+    url(r'^item/get_item_by_id$', 'get_item_by_id'),
+    url(r'^item/search$', 'search'),
+    url(r'^item$', 'item'),
+)
+
 # 缓存管理
 urlpatterns += patterns('www.admin.views_caches',
 

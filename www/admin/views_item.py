@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import json
-import urllib
-from django.contrib import auth
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.template import RequestContext
 from django.shortcuts import render_to_response
@@ -10,53 +8,52 @@ from django.shortcuts import render_to_response
 from common import utils, page
 from misc.decorators import staff_required, common_ajax_response, verify_permission, member_required
 
-from www.account.interface import UserBase, UserCountBase
-
+from www.company.interface import ItemBase
 
 @verify_permission('')
-def user(request, template_name='pc/admin/user.html'):
-    from www.account.models import User
-    states = [{'name': x[1], 'value': x[0]} for x in User.state_choices]
+def item(request, template_name='pc/admin/item.html'):
+    from www.company.models import Item
+    states = [{'name': x[1], 'value': x[0]} for x in Item.state_choices]
+    types = [{'name': x[1], 'value': x[0]} for x in Item.type_choices]
     
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
 
 
-@verify_permission('query_user')
-def search(request):
-    user_nick = request.REQUEST.get('user_nick')
-    page_index = int(request.REQUEST.get('page_index', 1))
-    email = request.REQUEST.get('email')
-
-    users = []
-    ub = UserBase()
-    users = ub.get_user_for_admin(user_nick, email)
-
-    page_objs = page.Cpt(users, count=10, page=page_index).info
-
-    # 格式化
-    format_users = [ub.format_user_full_info(x.id if not isinstance(x.id, long) else x.user_id) for x in page_objs[0]]
-
+def format_item(objs, num):
     data = []
-    num = 10 * (page_index - 1) + 0
 
-    for user in format_users:
-
+    for x in objs:
         num += 1
+
         data.append({
             'num': num,
-            'user_id': user.id,
-            'user_avatar': user.get_avatar_65(),
-            'user_nick': user.nick,
-            'user_des': user.des,
-            'user_email': user.email,
-            'user_mobilenumber': user.mobilenumber,
-            'is_admin': user.is_admin,
-            'last_active': str(user.last_active),
-            'register_date': str(user.create_time),
-            'state': user.state,
-            'source': user.source_display,
-            'ip': user.ip
+            'item_id': x.id,
+            'name': x.name,
+            'price': str(x.price),
+            'item_type': x.item_type,
+            'spec': x.spec,
+            'state': x.state,
+            'code': x.code,
+            'img': x.img
         })
+
+    return data
+
+
+@verify_permission('query_user')
+def search(request):
+    data = []
+
+    name = request.REQUEST.get('name')
+    page_index = int(request.REQUEST.get('page_index'))
+
+    objs = ItemBase().search_items_for_admin(name)
+
+    page_objs = page.Cpt(objs, count=10, page=page_index).info
+
+    # 格式化json
+    num = 10 * (page_index - 1)
+    data = format_item(page_objs[0], num)
 
     return HttpResponse(
         json.dumps({'data': data, 'page_count': page_objs[4], 'total_count': page_objs[5]}),
@@ -80,7 +77,6 @@ def get_user_by_id(request):
             'user_nick': user.nick,
             'user_des': user.des,
             'user_email': user.email,
-            'user_mobilenumber': user.mobilenumber,
             'user_gender': user.gender,
             'birthday': str(user.birthday),
             'is_admin': user.is_admin,
@@ -109,17 +105,16 @@ def modify_user(request):
 
     return UserBase().change_profile(user, nick, gender, birthday, des, state)
 
-@verify_permission('add_user')
+@verify_permission('add_item')
 @common_ajax_response
-def add_user(request):
-    email = request.POST.get('email', '').strip()
-    nick = request.POST.get('nick', '').strip()
-    password = request.POST.get('password', '').strip()
-    re_password = request.POST.get('re_password', '').strip()
-    mobilenumber = request.POST.get('mobilenumber', '').strip()
-    ip = utils.get_clientip(request)
+def add_item(request):
+    name = request.POST.get('name')
+    item_type = request.POST.get('item_type')
+    spec = request.POST.get('spec')
+    price = request.POST.get('price')
+    sort = request.POST.get('sort')
 
-    flag, msg = UserBase().regist_user(email, nick, password, re_password, ip, mobilenumber)
+    flag, msg = ItemBase().add_item(name, item_type, spec, price, sort)
     return flag, msg.id if flag == 0 else msg
 
 @member_required

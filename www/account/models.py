@@ -15,7 +15,7 @@ class User(models.Model):
     auto_id = models.AutoField(primary_key=True)
     id = models.CharField(max_length=32, unique=True)
     email = models.CharField(verbose_name=u'邮箱', max_length=64, unique=True)
-    mobilenumber = models.CharField(verbose_name=u'邮箱', max_length=32, null=True, unique=True)
+    mobilenumber = models.CharField(verbose_name=u'手机', max_length=32, null=True, unique=True)
     username = models.CharField(verbose_name=u'用户名', max_length=32, null=True, unique=True)
     password = models.CharField(verbose_name=u'密码', max_length=128)
     state = models.IntegerField(verbose_name=u'用户状态', default=1, choices=state_choices, db_index=True)

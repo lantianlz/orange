@@ -12,4 +12,4 @@ from misc.decorators import staff_required, common_ajax_response, verify_permiss
 
 @verify_permission('')
 def home(request):
-    return HttpResponseRedirect('/admin/user/user')
+    return HttpResponseRedirect('/admin/user')

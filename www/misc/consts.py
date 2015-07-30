@@ -22,6 +22,11 @@ PERMISSIONS = [
     {'code': 'remove_user', 'name': u'删除用户', 'parent': 'user_manage'},
     {'code': 'change_pwd', 'name': u'修改用户密码', 'parent': 'user_manage'},
 
+    {'code': 'item_manage', 'name': u'产品管理', 'parent': None},
+    {'code': 'add_item', 'name': u'添加产品', 'parent': 'item_manage'},
+    {'code': 'query_item', 'name': u'查询产品', 'parent': 'item_manage'},
+    {'code': 'modify_item', 'name': u'修改产品', 'parent': 'item_manage'},
+
     {'code': 'tools', 'name': u'常用工具', 'parent': None},
     {'code': 'get_cache', 'name': u'查询缓存', 'parent': 'tools'},
     {'code': 'remove_cache', 'name': u'删除缓存', 'parent': 'tools'},

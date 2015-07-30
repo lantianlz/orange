@@ -31,6 +31,7 @@ $(document).ready(function(){
             'userNick': 'user_nick',
             'userDesc': 'user_des',
             'userEmail': 'user_email',
+            'userMobilenumber': 'user_mobilenumber',
             'userGender': 'user_gender',
             'birthday': 'birthday',
             'isAdmin': 'is_admin',
@@ -394,7 +395,7 @@ $(document).ready(function(){
 {% endblock %}
 
 {% block admin_main %}
-<ul class="nav nav-pills pt-15 orange-nav-pills">
+<ul class="nav nav-pills orange-nav-pills">
     <li class="active">
         <a href="#user_list" data-toggle="pill">
             <i class="fa fa-list-ol pr-5"></i>
@@ -422,7 +423,7 @@ $(document).ready(function(){
     <!-- 用户列表 -->
     <div class="tab-pane fade pt-15 in active" id="user_list">
         <form action="." onsubmit="javascript: return false;">
-            <div class="pl-0 pb-10 col-md-4">
+            <div class="pl-0 pb-10 col-md-3">
                 <input type="text" class="form-control email input-sm" placeholder="输入用户邮箱..." />
             </div>
             <div class="pl-0 pb-10 col-md-3">
@@ -440,6 +441,7 @@ $(document).ready(function(){
                     <th>#</th>
                     <th>头像</th>
                     <th>用户名称</th>
+                    <th class="hidden-xs">手机</th>
                     <th class="hidden-xs">邮箱</th>
                     <th class="hidden-xs">来源</th>
                     <th>管理员</th>
@@ -475,6 +477,9 @@ $(document).ready(function(){
         </td>
         <td class="pointer modify-user" data-user_id="<%= user.userId %>"><%= user.userNick %></td>
         <td class="hidden-xs">
+            <%= user.userMobilenumber %>
+        </td>
+        <td class="hidden-xs">
             <%= user.userEmail %>
         </td>
         <td class="hidden-xs">
@@ -486,7 +491,7 @@ $(document).ready(function(){
                     <span class="fa fa-check co6 f18"></span>
                 </a>
             <% } else if(!user.isAdmin && user.state) { %>
-                <a href="/admin/permission#addAdmin/<%= user.userId %>" title="设置管理员"><span class="fa fa-check co3 pointer f18"></span></a>
+                <a href="/admin/permission#addAdmin/<%= user.userId %>" title="设置管理员"><span class="fa fa-check co-ADADAD pointer f18"></span></a>
             <% } %>
         </td>
         <td class="hidden-xs">
@@ -509,6 +514,13 @@ $(document).ready(function(){
         <label class="col-sm-2 control-label">用户呢称</label>
         <div class="col-sm-5">
             <input type="text" class="form-control" name='nick' value='<%= userNick %>'>
+        </div>
+    </div>
+    
+    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+        <label class="col-sm-2 control-label">用户手机</label>
+        <div class="col-sm-5">
+            <p class="form-control-static"><%= userMobilenumber %></p>
         </div>
     </div>
     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
@@ -590,7 +602,7 @@ $(document).ready(function(){
                     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
                         <label class="col-sm-2 control-label">用户呢称</label>
                         <div class="col-sm-5">
-                            <input type="text" class="form-control" name='nick' value=''>
+                            <input type="text" required class="form-control" name='nick' value=''>
                         </div>
                     </div>
                     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
@@ -600,15 +612,21 @@ $(document).ready(function(){
                         </div>
                     </div>
                     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+                        <label class="col-sm-2 control-label">用户手机</label>
+                        <div class="col-sm-5">
+                            <input type="text" required class="form-control" name='mobilenumber' value=''>
+                        </div>
+                    </div>
+                    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
                         <label class="col-sm-2 control-label">密码</label>
                         <div class="col-sm-5">
-                            <input type="text" class="form-control" name='password' value=''>
+                            <input type="text" required class="form-control" name='password' value=''>
                         </div>
                     </div>
                     <div class="form-group pt-20 pb-20 mb-0">
                         <label class="col-sm-2 control-label">确认密码</label>
                         <div class="col-sm-5">
-                            <input type="text" class="form-control" name='re_password' value=''>
+                            <input type="text" required class="form-control" name='re_password' value=''>
                         </div>
                     </div>
                 </form>

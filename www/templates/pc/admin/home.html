@@ -19,6 +19,14 @@ body{
 .table-hover>tbody>tr:hover>td, .table-hover>tbody>tr:hover>th {
     background-color: #E4F0F1;
 }
+.pagination-sm>li:first-child>a, .pagination-sm>li:first-child>span{
+    border-top-left-radius: 1px;
+    border-bottom-left-radius: 1px;
+}
+.pagination-sm>li:last-child>a, .pagination-sm>li:last-child>span{
+    border-top-right-radius: 1px;
+    border-bottom-right-radius: 1px;
+}
 
 .admin-top{
     position: fixed;
@@ -373,14 +381,23 @@ $(document).ready(function(){
                 </ul>
             </li>
             <li class="list-group-item" href="#">
+                <a href="#"><i class="fa fa-archive pr-3"></i>产品管理</a>
+                <ul class="list-group sub-nav">
+                    <li class="list-group-item {% if '/item' in request.path %}active{% endif %}">
+                        <a href="/admin/item"><i class="point"></i>茶点产品管理</a>
+                    </li>
+                    <li class="list-group-item {% if '/meal' in request.path %}active{% endif %}">
+                        <a href="/admin/meal"><i class="point"></i>套餐管理</a>
+                    </li>
+                </ul>
+            </li>
+            <li class="list-group-item" href="#">
                 <a href="#"><i class="fa fa-shopping-cart pr-3"></i>在线预订信息管理</a>
             </li>
             <li class="list-group-item" href="#">
                 <a href="#"><i class="fa fa-list-alt pr-3"></i>套餐消费订单管理</a>
             </li>
-            <li class="list-group-item" href="#">
-                <a href="#"><i class="fa fa-archive pr-3"></i>套餐管理</a>
-            </li>
+            
             <li class="list-group-item" href="#">
                 <a href="#"><i class="fa fa-print pr-3"></i>打印配送单</a>
             </li>
