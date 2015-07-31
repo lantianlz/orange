@@ -19,6 +19,16 @@ urlpatterns += patterns('www.admin.views_user',
     url(r'^user$', 'user'),
 )
 
+# 公司管理
+urlpatterns += patterns('www.admin.views_company',
+    url(r'^company/get_companys_by_name$', 'get_companys_by_name'),
+    url(r'^company/modify_company$', 'modify_company'),
+    url(r'^company/add_company$', 'add_company'),
+    url(r'^company/get_company_by_id$', 'get_company_by_id'),
+    url(r'^company/search$', 'search'),
+    url(r'^company$', 'company'),
+)
+
 # 产品管理
 urlpatterns += patterns('www.admin.views_item',
 
@@ -27,6 +37,27 @@ urlpatterns += patterns('www.admin.views_item',
     url(r'^item/get_item_by_id$', 'get_item_by_id'),
     url(r'^item/search$', 'search'),
     url(r'^item$', 'item'),
+)
+
+# 城市
+urlpatterns += patterns('www.admin.views_city',
+
+    url(r'^city/get_citys_by_name$', 'get_citys_by_name'),
+    url(r'^city/get_districts_by_city$', 'get_districts_by_city'),
+    url(r'^city/modify_note$', 'modify_note'),
+    url(r'^city/modify_city$', 'modify_city'),
+    url(r'^city/get_city_by_id$', 'get_city_by_id'),
+    url(r'^city/search$', 'search'),
+    url(r'^city$', 'city'),
+)
+
+# 区
+urlpatterns += patterns('www.admin.views_district',
+
+    url(r'^district/modify_district$', 'modify_district'),
+    url(r'^district/get_district_by_id$', 'get_district_by_id'),
+    url(r'^district/search$', 'search'),
+    url(r'^district$', 'district'),
 )
 
 # 缓存管理

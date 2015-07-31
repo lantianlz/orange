@@ -27,6 +27,10 @@ body{
     border-top-right-radius: 1px;
     border-bottom-right-radius: 1px;
 }
+.textboxlist-bits{
+    background-color: #ffffff;
+    border-radius: 1px;
+}
 
 .admin-top{
     position: fixed;
@@ -372,8 +376,8 @@ $(document).ready(function(){
             <li class="list-group-item" href="#">
                 <a href="#"><i class="fa fa-users pr-3"></i>公司管理</a>
                 <ul class="list-group sub-nav">
-                    <li class="list-group-item">
-                        <a href="#"><i class="point"></i>公司信息管理</a>
+                    <li class="list-group-item {% if '/company' in request.path %}active{% endif %}">
+                        <a href="/admin/company"><i class="point"></i>公司信息管理</a>
                     </li>
                     <li class="list-group-item">
                         <a href="#"><i class="point"></i>公司现金账户管理</a>
@@ -381,7 +385,7 @@ $(document).ready(function(){
                 </ul>
             </li>
             <li class="list-group-item" href="#">
-                <a href="#"><i class="fa fa-archive pr-3"></i>产品管理</a>
+                <a><i class="fa fa-archive pr-3"></i>产品管理</a>
                 <ul class="list-group sub-nav">
                     <li class="list-group-item {% if '/item' in request.path %}active{% endif %}">
                         <a href="/admin/item"><i class="point"></i>茶点产品管理</a>
@@ -397,7 +401,6 @@ $(document).ready(function(){
             <li class="list-group-item" href="#">
                 <a href="#"><i class="fa fa-list-alt pr-3"></i>套餐消费订单管理</a>
             </li>
-            
             <li class="list-group-item" href="#">
                 <a href="#"><i class="fa fa-print pr-3"></i>打印配送单</a>
             </li>
@@ -415,6 +418,17 @@ $(document).ready(function(){
                     </li>
                     <li class="list-group-item">
                         <a href="#"><i class="point"></i>年度流水统计</a>
+                    </li>
+                </ul>
+            </li>
+            <li class="list-group-item" href="#">
+                <a><i class="fa fa-map-o pr-3"></i>城市区域管理</a>
+                <ul class="list-group sub-nav">
+                    <li class="list-group-item {% if '/city' in request.path %}active{% endif %}">
+                        <a href="/admin/city"><i class="point"></i>城市管理</a>
+                    </li>
+                    <li class="list-group-item {% if '/district' in request.path %}active{% endif %}">
+                        <a href="/admin/district"><i class="point"></i>区管理</a>
                     </li>
                 </ul>
             </li>

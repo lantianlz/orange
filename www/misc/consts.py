@@ -22,10 +22,25 @@ PERMISSIONS = [
     {'code': 'remove_user', 'name': u'删除用户', 'parent': 'user_manage'},
     {'code': 'change_pwd', 'name': u'修改用户密码', 'parent': 'user_manage'},
 
+    {'code': 'company_manage', 'name': u'公司管理', 'parent': None},
+    {'code': 'add_company', 'name': u'添加公司', 'parent': 'company_manage'},
+    {'code': 'query_company', 'name': u'查询公司', 'parent': 'company_manage'},
+    {'code': 'modify_company', 'name': u'修改公司', 'parent': 'company_manage'},
+
     {'code': 'item_manage', 'name': u'产品管理', 'parent': None},
     {'code': 'add_item', 'name': u'添加产品', 'parent': 'item_manage'},
     {'code': 'query_item', 'name': u'查询产品', 'parent': 'item_manage'},
     {'code': 'modify_item', 'name': u'修改产品', 'parent': 'item_manage'},
+
+    {'code': 'city_manage', 'name': u'城市管理', 'parent': None},
+    #{'code': 'add_city', 'name': u'添加城市', 'parent': 'city_manage'},
+    {'code': 'query_city', 'name': u'查询城市', 'parent': 'city_manage'},
+    {'code': 'modify_city', 'name': u'修改城市', 'parent': 'city_manage'},
+
+    {'code': 'district_manage', 'name': u'区管理', 'parent': None},
+    #{'code': 'add_district', 'name': u'添加区', 'parent': 'district_manage'},
+    {'code': 'query_district', 'name': u'查询区', 'parent': 'district_manage'},
+    {'code': 'modify_district', 'name': u'修改区', 'parent': 'district_manage'},
 
     {'code': 'tools', 'name': u'常用工具', 'parent': None},
     {'code': 'get_cache', 'name': u'查询缓存', 'parent': 'tools'},

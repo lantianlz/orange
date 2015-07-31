@@ -32,7 +32,8 @@ $(document).ready(function(){
             'spec': 'spec',
             'state': 'state',
             'code': 'code',
-            'img': 'img'
+            'img': 'img',
+            'sort': 'sort'
         },
 
         search: function(name, pageIndex){
@@ -105,8 +106,8 @@ $(document).ready(function(){
         pagination: new $.Global.Pagination.PaginationView(),
 
         events: {
-            'click .search-item': 'searchItem',
-            'click .modify-item': 'modifyItem'
+            'click .search': 'searchItem',
+            'click .pointer': 'modifyItem'
         },
 
         initialize: function(){
@@ -137,7 +138,8 @@ $(document).ready(function(){
         },
 
         modifyItem: function(sender){
-            var itemId = target.data('item_id');
+            var target = $(sender.currentTarget),
+                itemId = target.data('item_id');
 
             router.navigate('/modify/' + itemId, {trigger: true});
         }
@@ -182,8 +184,12 @@ $(document).ready(function(){
             var itemId = this.$('form').data('item_id'),
                 me = this;
 
+            if(!this.$('form').valid()){
+                return;
+            }
+
             me.collection.modifyItem(this.$('form').serialize(), function(data){
-                if(data.errcode === 0){
+                if(data.errcode == "0"){
                     $.Global.Notice.SuccessTopNotice('操作成功');
                     router.navigate('modify/' + itemId, {'trigger': true});
                 } else {
@@ -314,7 +320,7 @@ $(document).ready(function(){
                 <div class="input-group input-group-sm">
                     <input type="text" class="form-control name" placeholder="输入产品名称..." />
                     <span class="input-group-btn">
-                        <button class="btn btn-default search-item" type="submit">查询</button>
+                        <button class="btn btn-default search" type="submit">查询</button>
                     </span>
                 </div>
             </div>
@@ -350,7 +356,7 @@ $(document).ready(function(){
 
 <script type="text/template" id="item_list_template">
 <% _.each(items, function(item){ %>
-    <tr>
+    <tr class="pointer" data-item_id="<%= item.itemId %>">
         <td><%= item.num %></td>
         <td><%= item.name %></td>
         <td>
@@ -377,12 +383,50 @@ $(document).ready(function(){
 <form class="form-horizontal" data-item_id='<%= itemId %>' role="form" method="post" action="">
     <input type="hidden" name="item_id" value="<%= itemId %>" />
     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
-        <label class="col-sm-2 control-label">用户头像</label>
+        <label class="col-sm-2 control-label">名称</label>
         <div class="col-sm-5">
-            <img class="avatar-circle" src="<%= userAvatar300 %>">
+            <input type="text" required class="form-control" name='name' value='<%= name %>'>
         </div>
     </div>
     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+        <label class="col-sm-2 control-label">类型</label>
+        <div class="col-sm-3">
+            <select name="item_type" class="form-control">
+                {% for type in types %}
+                <option value="{{type.value}}" <% if(itemType == {{type.value}}){ %>selected<% } %> >{{type.name}}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+        <label class="col-sm-2 control-label">规格</label>
+        <div class="col-sm-3">
+            <input type="text" class="form-control" name='spec' value='<%= spec %>' placeholder="论斤 or 论个">
+        </div>
+    </div>
+    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+        <label class="col-sm-2 control-label">单价</label>
+        <div class="col-sm-3">
+            <input type="text" required class="form-control" name='price' value='<%= price %>'>
+        </div>
+    </div>
+    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+        <label class="col-sm-2 control-label">排序</label>
+        <div class="col-sm-3">
+            <input type="text" required class="form-control" name='sort' value='<%= sort %>'>
+        </div>
+    </div>
+    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+        <label class="col-sm-2 control-label">状态</label>
+        <div class="col-sm-3">
+            <select name="state" class="form-control">
+                {% for state in states %}
+                <option value="{{state.value}}" <% if(state == {{state.value}}){ %>selected<% } %> >{{state.name}}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    <div class="form-group pt-20 pb-20 mb-0">
         <div class="col-sm-12">
             <button type="button" class="btn btn-primary save">提交你的修改</button>
         </div>

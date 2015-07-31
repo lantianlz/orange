@@ -2,6 +2,8 @@
 {% load custom_tags %}
 {% load custom_filters %}
 {% block title %}公司信息管理{% endblock %}
+{% block admin_title %}公司信息管理{% endblock %}
+{% block admin_title_m %}公司信息管理{% endblock %}
 
 {% block css %}
 <style type="text/css">
@@ -30,7 +32,19 @@ $(document).ready(function(){
             'num': 'num',
             'companyId': 'company_id',
             'name': 'name',
-            'carWashCount': 'car_wash_count'
+            'logo': 'logo',
+            'des': 'des',
+            'staffName': 'staff_name',
+            'mobile': 'mobile',
+            'tel': 'tel',
+            'addr': 'addr',
+            'cityId': 'city_id',
+            'cityName': 'city_name',
+            'personCount': 'person_count',
+            'source': 'source',
+            'state': 'state',
+            'sort': 'sort',
+            'createTime': 'create_time'
         },
 
         // 查询
@@ -38,8 +52,8 @@ $(document).ready(function(){
             var me = this;
 
             ajaxSend(
-                "/admin/company/company/search", 
-                {'car_wash_name': name||'', 'page_index': pageIndex||1}, 
+                "/admin/company/search", 
+                {'name': name||'', 'page_index': pageIndex||1}, 
                 function(data){
                     me.pageIndex = pageIndex||1;
                     me.pageCount = data.page_count;
@@ -55,7 +69,7 @@ $(document).ready(function(){
             var me = this;
 
             ajaxSend(
-                "/admin/company/company/get_company_by_id", 
+                "/admin/company/get_company_by_id", 
                 {'company_id': companyId},
                 function(data){
                     if(callback){
@@ -69,7 +83,7 @@ $(document).ready(function(){
         modifyCompany: function(data, callback){
 
             ajaxSend(
-                "/admin/company/company/modify_company", 
+                "/admin/company/modify_company", 
                 data,
                 function(response){
                     if(callback){
@@ -82,7 +96,7 @@ $(document).ready(function(){
         addCompany: function(data, callback){
 
             ajaxSend(
-                "/admin/company/company/add_company", 
+                "/admin/company/add_company", 
                 data,
                 function(response){
                     if(callback){
@@ -128,7 +142,7 @@ $(document).ready(function(){
 
         // 显示面板
         showPanel: function(){
-            $('.qx-nav-pills a[href="#company_list"]').tab('show');
+            $('.orange-nav-pills a[href="#company_list"]').tab('show');
         },
 
         search: function(){
@@ -158,12 +172,31 @@ $(document).ready(function(){
 
         // 显示面板
         showPanel: function(){
-            $('.qx-nav-pills a[href="#modify_company"]').tab('show');
+            $('.orange-nav-pills a[href="#modify_company"]').tab('show');
+        },
+
+        cityTextBox: null,
+        initCityTextBox: function(name, value){
+            var me = this;
+
+            this.cityTextBox = $.Global.TextboxList.create('#city_modify', {
+                max: 1,
+                placeholder: '选择所属城市',
+                url: '/admin/city/get_citys_by_name',
+                param: 'city_name',
+                loadPlaceholder: '正在加载...'
+            });
+
+            if(value){
+                this.cityTextBox.add(name, value);
+            }
         },
 
         // 渲染
         render: function(data){
             this.$el.html(this.template(data));
+
+            this.initCityTextBox(data.cityName, data.cityId);
         },
 
         // 显示提问信息
@@ -211,6 +244,24 @@ $(document).ready(function(){
             me.render();
         },
 
+        cityTextBox: null,
+        initCityTextBox: function(name, value){
+            var me = this;
+
+            this.cityTextBox = $.Global.TextboxList.create('#city_add', {
+                max: 1,
+                placeholder: '选择所属城市',
+                url: '/admin/city/get_citys_by_name',
+                param: 'city_name',
+                loadPlaceholder: '正在加载...'
+            });
+
+            if(value){
+                this.cityTextBox.add(name, value);
+            }
+            
+        },
+
         render: function(){
             var me = this;
 
@@ -228,6 +279,7 @@ $(document).ready(function(){
             
             $('#add_company_modal').modal({'show': true, 'backdrop': 'static'});
 
+            me.initCityTextBox();
         },
 
         addCompany: function(){
@@ -291,36 +343,54 @@ $(document).ready(function(){
 </script>
 {% endblock %}
 
-{% block right %}
-<ul class="nav nav-pills pt-15 qx-nav-pills">
+{% block admin_main %}
+<ul class="nav nav-pills orange-nav-pills">
     <li class="active">
-        <a href="#company_list" class="black-blue" data-toggle="pill">公司信息列表</a>
+        <a href="#company_list" data-toggle="pill">
+            <i class="fa fa-list-ol pr-5"></i>
+            <span class="hidden-sm hidden-md hidden-lg">列表</span>
+            <span class="hidden-xs">公司信息列表</span>
+        </a>
     </li>
     <li>
-        <a href="#modify_company" class="black-blue" data-toggle="pill">修改公司信息</a>
+        <a href="#modify_company" data-toggle="pill">
+            <i class="fa fa-pencil-square-o pr-5"></i>
+            <span class="hidden-sm hidden-md hidden-lg">修改</span>
+            <span class="hidden-xs">修改公司信息</span>
+        </a>
     </li>
     <li class="pull-right">
-        <a href="#add" class="black-blue">添加公司信息</a>
+        <a href="#add">
+            <i class="fa fa-plus-circle pr-5"></i>
+            <span class="hidden-sm hidden-md hidden-lg">添加</span>
+            <span class="hidden-xs">添加公司信息</span>
+        </a>
     </li>
 </ul>
 
 <div class="tab-content">
     <!-- 客户经理列表 -->
     <div class="tab-pane fade pt-15 in active" id="company_list">
-        <div class="pl-0 pb-10 col-md-3">
-            <div class="input-group input-group-sm">
-                <input type="text" class="form-control border-radius-0 key-word" placeholder="输入公司名称..." />
-                <span class="input-group-btn">
-                    <button class="btn btn-default search" type="submit">查询</button>
-                </span>
+        <form action="." onsubmit="javascript: return false;">
+            <div class="pl-0 pb-10 col-md-3">
+                <div class="input-group input-group-sm">
+                    <input type="text" class="form-control border-radius-0 key-word" placeholder="输入公司名称..." />
+                    <span class="input-group-btn">
+                        <button class="btn btn-default search" type="submit">查询</button>
+                    </span>
+                </div>
             </div>
-        </div>
+        </form>
         <table class="table table-hover">
             <thead>
                 <tr>
                     <th>#</th>
                     <th>公司名称</th>
-                    <th>洗车行数量</th>
+                    <th>联系人</th>
+                    <th>联系人手机</th>
+                    <th class="hidden-xs">座机</th>
+                    <th class="hidden-xs">所属城市</th>
+                    <th>状态</th>
                 </tr>
             </thead>
             <tbody>
@@ -347,7 +417,17 @@ $(document).ready(function(){
         <tr class="pointer" data-company_id="<%= company.companyId %>">
             <td><%= company.num %></td>
             <td><%= company.name %></td>
-            <td><%= company.carWashCount %></td>
+            <td><%= company.staffName %></td>
+            <td><%= company.mobile %></td>
+            <td class="hidden-xs"><%= company.tel %></td>
+            <td class="hidden-xs"><%= company.cityName %></td>
+            <td>
+                <% if(company.state){ %>
+                    <span class="fa fa-check co-3B99FC"></span>
+                <% } else { %>
+                    <span class="fa fa-times co-C33333"></span>
+                <% } %>
+            </td>
         </tr>
     <% }) %>
 </script>
@@ -358,11 +438,62 @@ $(document).ready(function(){
         <input type="hidden" name="company_id" value="<%= companyId %>" />
         <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
             <label class="col-sm-2 control-label">公司名称</label>
-            <div class="col-sm-3">
+            <div class="col-sm-4">
                 <input type="text" class="form-control" required name="name" value='<%= name %>'>
             </div>
         </div>
-        
+        <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+            <label class="col-sm-2 control-label">联系人</label>
+            <div class="col-sm-2">
+                <input type="text" class="form-control" required name="staff_name" value='<%= staffName %>'>
+            </div>
+        </div>
+        <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+            <label class="col-sm-2 control-label">联系人手机</label>
+            <div class="col-sm-3">
+                <input type="text" class="form-control" required name="mobile" value='<%= mobile %>'>
+            </div>
+        </div>
+        <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+            <label class="col-sm-2 control-label">座机</label>
+            <div class="col-sm-3">
+                <input type="text" class="form-control" required name="tel" value='<%= tel %>'>
+            </div>
+        </div>
+        <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+            <label class="col-sm-2 control-label">地址</label>
+            <div class="col-sm-6">
+                <input type="text" class="form-control" required name="addr" value='<%= addr %>'>
+            </div>
+        </div>
+        <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+            <label class="col-sm-2 control-label">所属城市</label>
+            <div class="col-sm-6">
+                <input type="text" class="form-control" id="city_modify" required name="city_id" value=''>
+            </div>
+        </div>
+        <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+            <label class="col-sm-2 control-label">排序</label>
+            <div class="col-sm-2">
+                <input type="text" class="form-control" required name="sort" value='<%= sort %>'>
+            </div>
+        </div>
+        <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+            <label class="col-sm-2 control-label">状态</label>
+            <div class="col-sm-2">
+                <select name="state" class="form-control">
+                    {% for state in states %}
+                    <option value="{{state.value}}" <% if(state == {{state.value}}){ %>selected<% } %> >{{state.name}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="form-group pt-20 pb-20 mb-0">
+            <label class="col-sm-2 control-label">简介</label>
+            <div class="col-sm-9">
+                <textarea name="des" rows="6" class="form-control" placeholder=""><%= des %></textarea>
+            </div>
+        </div>
         <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
             <div class="col-sm-12">
                 <button type="button" class="btn btn-primary save">提交你的修改</button>
@@ -382,10 +513,52 @@ $(document).ready(function(){
             </div>
             <div class="modal-body">
                 <form class="form-horizontal" role="form" method="post" action="">
-                    <div class="form-group pt-20 pb-20 mb-0">
-                        <label class="col-sm-2 control-label">公司名称</label>
+                    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+                        <label class="col-sm-3 control-label">公司名称</label>
                         <div class="col-sm-6">
                             <input type="text" class="form-control" required name="name" value=''>
+                        </div>
+                    </div>
+                    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+                        <label class="col-sm-3 control-label">联系人</label>
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" required name="staff_name" value=''>
+                        </div>
+                    </div>
+                    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+                        <label class="col-sm-3 control-label">联系人手机</label>
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" required name="mobile" value=''>
+                        </div>
+                    </div>
+                    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+                        <label class="col-sm-3 control-label">座机</label>
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" required name="tel" value=''>
+                        </div>
+                    </div>
+                    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+                        <label class="col-sm-3 control-label">地址</label>
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" required name="addr" value=''>
+                        </div>
+                    </div>
+                    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+                        <label class="col-sm-3 control-label">所属城市</label>
+                        <div class="col-sm-6">
+                            <input type="text" id="city_add" class="form-control" required name="city_id" value=''>
+                        </div>
+                    </div>
+                    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+                        <label class="col-sm-3 control-label">排序</label>
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" required name="sort" value='0'>
+                        </div>
+                    </div>
+                    <div class="form-group pt-20 pb-20 mb-0">
+                        <label class="col-sm-3 control-label">简介</label>
+                        <div class="col-sm-9">
+                            <textarea name="des" rows="6" class="form-control" placeholder=""></textarea>
                         </div>
                     </div>
                 </form>
@@ -399,4 +572,4 @@ $(document).ready(function(){
 </div>
 </script>
 
-{% endblock right %}
+{% endblock %}

@@ -34,13 +34,14 @@ def format_item(objs, num):
             'spec': x.spec,
             'state': x.state,
             'code': x.code,
-            'img': x.img
+            'img': x.img,
+            'sort': x.sort
         })
 
     return data
 
 
-@verify_permission('query_user')
+@verify_permission('query_item')
 def search(request):
     data = []
 
@@ -61,49 +62,29 @@ def search(request):
     )
 
 
-@verify_permission('query_user')
-def get_user_by_id(request):
-    user_id = request.REQUEST.get('user_id')
-    data = ''
+@verify_permission('query_item')
+def get_item_by_id(request):
+    item_id = request.REQUEST.get('item_id')
 
-    user = UserBase().get_user_by_id(user_id)
-    if user:
-        user = UserBase().format_user_full_info(user.id)
-
-        data = {
-            'user_id': user.id,
-            'user_avatar': user.get_avatar_25(),
-            'user_avatar_300': user.get_avatar_300(),
-            'user_nick': user.nick,
-            'user_des': user.des,
-            'user_email': user.email,
-            'user_gender': user.gender,
-            'birthday': str(user.birthday),
-            'is_admin': user.is_admin,
-            'last_active': str(user.last_active),
-            'state': user.state,
-            'source': user.source_display,
-            'ip': user.ip,
-            'register_date': str(user.create_time)
-        }
+    data = format_item([ItemBase().get_item_by_id(item_id)], 1)[0]
 
     return HttpResponse(json.dumps(data), mimetype='application/json')
 
 
-@verify_permission('modify_user')
+@verify_permission('modify_item')
 @common_ajax_response
-def modify_user(request):
+def modify_item(request):
 
-    user_id = request.REQUEST.get('user_id')
-    nick = request.REQUEST.get('nick')
-    gender = request.REQUEST.get('gender')
-    birthday = request.REQUEST.get('birthday')
-    des = request.REQUEST.get('des')
-    state = int(request.REQUEST.get('state'))
+    item_id = request.POST.get('item_id')
+    name = request.POST.get('name')
+    item_type = request.POST.get('item_type')
+    spec = request.POST.get('spec')
+    price = request.POST.get('price')
+    sort = request.POST.get('sort')
+    state = request.POST.get('state')
+    # state = True if state == "1" else False
 
-    user = UserBase().get_user_by_id(user_id)
-
-    return UserBase().change_profile(user, nick, gender, birthday, des, state)
+    return ItemBase().modify_item(item_id, name, item_type, spec, price, sort, state)
 
 @verify_permission('add_item')
 @common_ajax_response
@@ -116,28 +97,3 @@ def add_item(request):
 
     flag, msg = ItemBase().add_item(name, item_type, spec, price, sort)
     return flag, msg.id if flag == 0 else msg
-
-@member_required
-def get_user_by_nick(request):
-    '''
-    根据名字查询用户
-    '''
-    nick = request.REQUEST.get('nick')
-
-    result = []
-
-    user = UserBase().get_user_by_nick(nick)
-
-    if user:
-        result.append([user.id, user.nick, None, user.nick])
-
-    return HttpResponse(json.dumps(result), mimetype='application/json')
-
-@verify_permission('change_pwd')
-@common_ajax_response
-def change_pwd(request):
-
-    user_id = request.REQUEST.get('user_id')
-    pwd = request.REQUEST.get('pwd')
-
-    return UserBase().change_pwd_by_admin(user_id, pwd)

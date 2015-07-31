@@ -8,22 +8,23 @@ class Company(models.Model):
     '''
     @note: 公司
     '''
-
+    state_choices = ((0, u"停用"), (1, u"正常"))
     source_choices = ((0, u"地推"), (1, u""))
 
-    name = models.CharField(max_length=128, unique=True)
-    logo = models.CharField(max_length=256, null=True)
-    des = models.TextField(null=True)
-    staff_name = models.CharField(max_length=16, null=True)     # 企业联系人
-    mobile = models.CharField(max_length=32, null=True)
-    tel = models.CharField(max_length=32, null=True)
-    addr = models.CharField(max_length=256, null=True)
+    name = models.CharField(verbose_name=u"名称", max_length=128, unique=True)
+    logo = models.CharField(verbose_name=u"logo", max_length=256, null=True)
+    des = models.TextField(verbose_name=u"简介", null=True)
+    staff_name = models.CharField(verbose_name=u"企业联系人", max_length=16, null=True)
+    mobile = models.CharField(verbose_name=u"手机", max_length=32, null=True)
+    tel = models.CharField(verbose_name=u"座机", max_length=32, null=True)
+    addr = models.CharField(verbose_name=u"地址", max_length=256, null=True)
 
-    city_id = models.IntegerField(default=0)
-    person_count = models.IntegerField(default=0)
-    source = models.IntegerField(default=0, choices=source_choices)
-    state = models.BooleanField(default=True, db_index=True)
-    create_time = models.DateTimeField(auto_now_add=True, db_index=True)
+    city_id = models.IntegerField(verbose_name=u"所属城市", default=0)
+    person_count = models.IntegerField(verbose_name=u"员工总数", default=0)
+    source = models.IntegerField(verbose_name=u"来源", default=0, choices=source_choices)
+    state = models.IntegerField(verbose_name=u"状态", default=1, db_index=True, choices=state_choices)
+    sort = models.IntegerField(verbose_name=u"排序", default=0)
+    create_time = models.DateTimeField(verbose_name=u"创建时间", auto_now_add=True, db_index=True)
 
 
 class CashAccount(models.Model):
@@ -116,7 +117,7 @@ class Item(models.Model):
     spec = models.CharField(verbose_name=u"规格", max_length=32, null=True)
     sort = models.IntegerField(verbose_name=u"排序", default=0, choices=type_choices)
     create_time = models.DateTimeField(auto_now_add=True, db_index=True)
-    
+
     code = models.CharField(verbose_name=u"货号", max_length=32, null=True)
     img = models.CharField(verbose_name=u"图片", max_length=128, null=True)
 
@@ -131,7 +132,7 @@ class Meal(models.Model):
     state_choices = ((0, u"停用"), (1, u"正常"))
 
     company = models.ForeignKey("Company")
-    name = models.CharField(verbose_name=u"名称", max_length=128)
+    name = models.CharField(verbose_name=u"名称", max_length=128, db_index=True)
     des = models.TextField(verbose_name=u"描述", null=True)
     price = models.DecimalField(verbose_name=u"价格", max_digits=10, decimal_places=2, default=0)
     start_date = models.DateField(verbose_name=u"开始日期", db_index=True)
@@ -159,15 +160,15 @@ class Order(models.Model):
 
     meal = models.ForeignKey("Meal")
     company = models.ForeignKey("Company")
-    order_no = models.CharField(verbose_name=u"订单号", max_length=32)
+    order_no = models.CharField(verbose_name=u"订单号", max_length=32, db_index=True)
     create_operator = models.CharField(verbose_name=u"订单创建人", max_length=32)
     create_time = models.DateTimeField(verbose_name=u"订单创建时间", auto_now_add=True, db_index=True)
     distribute_operator = models.CharField(verbose_name=u"订单配送人", max_length=32)
-    distribute_time = models.DateTimeField(verbose_name=u"订单配送时间", auto_now_add=True, db_index=True)
+    distribute_time = models.DateTimeField(verbose_name=u"订单配送时间", auto_now_add=True)
     confirm_operator = models.CharField(verbose_name=u"订单确认人", max_length=32)
-    confirm_time = models.DateTimeField(verbose_name=u"订单确认时间", auto_now_add=True, db_index=True)
+    confirm_time = models.DateTimeField(verbose_name=u"订单确认时间", auto_now_add=True)
     total_price = models.DecimalField(verbose_name=u"订单价格", max_digits=10, decimal_places=2, default=0)
-    state = models.IntegerField(verbose_name=u"状态", default=1, choices=state_choices)
+    state = models.IntegerField(verbose_name=u"状态", default=1, choices=state_choices, db_index=True)
     
 
 class OrderItem(models.Model):

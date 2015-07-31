@@ -188,3 +188,10 @@
     border-right: 15px solid white;
     border-bottom: 5px solid transparent;
 }
+
+.orange-wx{
+    display: none;
+}
+.contact-hover-weixin:hover~.orange-wx{
+    display: block;
+}

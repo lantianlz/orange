@@ -2,6 +2,8 @@
 {% load custom_tags %}
 {% load custom_filters %}
 {% block title %}区管理{% endblock %}
+{% block admin_title %}区管理{% endblock %}
+{% block admin_title_m %}区管理{% endblock %}
 
 {% block css %}
 <style type="text/css">
@@ -44,7 +46,7 @@ $(document).ready(function(){
             var me = this;
 
             ajaxSend(
-                "/admin/city/district/search", 
+                "/admin/district/search", 
                 {'name': name||'', 'city_name': cityName||'', 'is_show': isShow||0, 'page_index': pageIndex||1}, 
                 function(data){
                     me.pageIndex = pageIndex||1;
@@ -63,7 +65,7 @@ $(document).ready(function(){
             var me = this;
 
             ajaxSend(
-                "/admin/city/district/get_district_by_id", 
+                "/admin/district/get_district_by_id", 
                 {'district_id': districtId},
                 function(data){
                     if(callback){
@@ -81,7 +83,7 @@ $(document).ready(function(){
             _.map(data, function(i){postData[i.name] = i.value});
 
             ajaxSend(
-                "/admin/city/district/modify_district", 
+                "/admin/district/modify_district", 
                 postData,
                 function(data){
                     if(callback){
@@ -127,7 +129,7 @@ $(document).ready(function(){
 
         // 显示面板
         showPanel: function(){
-            $('.qx-nav-pills a[href="#district_list"]').tab('show');
+            $('.orange-nav-pills a[href="#district_list"]').tab('show');
         },
 
         search: function(){
@@ -160,7 +162,7 @@ $(document).ready(function(){
 
         // 显示面板
         showPanel: function(){
-            $('.qx-nav-pills a[href="#modify_district"]').tab('show');
+            $('.orange-nav-pills a[href="#modify_district"]').tab('show');
         },
 
         // 渲染
@@ -235,13 +237,21 @@ $(document).ready(function(){
 </script>
 {% endblock %}
 
-{% block right %}
-<ul class="nav nav-pills pt-15 qx-nav-pills">
+{% block admin_main %}
+<ul class="nav nav-pills orange-nav-pills">
     <li class="active">
-        <a href="#district_list" class="black-blue" data-toggle="pill">区列表</a>
+        <a href="#district_list" data-toggle="pill">
+            <i class="fa fa-list-ol pr-5"></i>
+            <span class="hidden-sm hidden-md hidden-lg">列表</span>
+            <span class="hidden-xs">区列表</span>
+        </a>
     </li>
     <li>
-        <a href="#modify_district" class="black-blue" data-toggle="pill">修改区信息</a>
+        <a href="#modify_district" data-toggle="pill">
+            <i class="fa fa-pencil-square-o pr-5"></i>
+            <span class="hidden-sm hidden-md hidden-lg">修改</span>
+            <span class="hidden-xs">修改区信息</span>
+        </a>
     </li>
 </ul>
 
@@ -256,10 +266,10 @@ $(document).ready(function(){
                     <option value="1">已经开放</option>
                 </select>
             </div>
-            <div class="pl-0 pr-0 pb-10 col-md-2">
-                <div class="input-group input-group-sm">
-                    <input type="text" class="form-control key-word-city" placeholder="输入城市名称">
-                </div>
+            <div class="pl-0 pr-3 pb-10 col-md-2 col-xs-12">
+                <!-- <div class="input-group input-group-sm"> -->
+                    <input type="text" class="form-control key-word-city input-sm" placeholder="输入城市名称">
+                <!-- </div> -->
             </div>
             <div class="pl-0 pb-10 col-md-3">
                 <div class="input-group input-group-sm">
@@ -276,9 +286,9 @@ $(document).ready(function(){
                     <th>#</th>
                     <th>区名称</th>
                     <th>所属城市</th>
-                    <th>拼音</th>
-                    <th>拼音简写</th>
-                    <th>排序</th>
+                    <th class="hidden-xs">拼音</th>
+                    <th class="hidden-xs">拼音简写</th>
+                    <th class="hidden-xs">排序</th>
                     <th>状态</th>
                 </tr>
             </thead>
@@ -307,14 +317,14 @@ $(document).ready(function(){
             <td><%= district.num %></td>
             <td><%= district.districtName %></td>
             <td><%= district.cityName %></td>
-            <td><%= district.pinyin %></td>
-            <td><%= district.pinyinAbbr %></td>
-            <td><%= district.sort %></td>
+            <td class="hidden-xs"><%= district.pinyin %></td>
+            <td class="hidden-xs"><%= district.pinyinAbbr %></td>
+            <td class="hidden-xs"><%= district.sort %></td>
             <td>
                 <% if(!district.isShow){ %>
-                <span class="fa fa-times co2" title="未开放"></span>
+                <span class="fa fa-times co-C33333" title="未开放"></span>
                 <% } else { %>
-                <span class="fa fa-check co6" title="已开放"></span>
+                <span class="fa fa-check co-3B99FC" title="已开放"></span>
                 <% } %>
             </td>
         </tr>
@@ -325,37 +335,37 @@ $(document).ready(function(){
 <script type="text/template" id="modify_district_template">
     <form class="form-horizontal" data-district_id="<%= districtId %>" role="form" method="post" action="">
         <input type="hidden" name="district_id" value="<%= districtId %>" />
-        <div class="form-group pt-20 pb-20 mb-0 bottom-border bdc-eee">
+        <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
             <label class="col-sm-2 control-label">区名称</label>
-            <div class="col-sm-6">
+            <div class="col-sm-3">
                 <input type="text" class="form-control" name="name" value='<%= districtName %>'>
             </div>
         </div>
-        <div class="form-group pt-20 pb-20 mb-0 bottom-border bdc-eee">
+        <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
             <label class="col-sm-2 control-label">所属城市</label>
             <div class="col-sm-3">
                 <p class="form-control-static"><%= cityName %></p>
             </div>
         </div>
-        <div class="form-group pt-20 pb-20 mb-0 bottom-border bdc-eee">
+        <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
             <label class="col-sm-2 control-label">拼音</label>
             <div class="col-sm-3">
                 <input type="text" class="form-control" name="pinyin" value='<%= pinyin %>'>
             </div>
         </div>
-        <div class="form-group pt-20 pb-20 mb-0 bottom-border bdc-eee">
+        <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
             <label class="col-sm-2 control-label">拼音简写</label>
             <div class="col-sm-3">
                 <input type="text" class="form-control" name="pinyin_abbr" value='<%= pinyinAbbr %>'>
             </div>
         </div>
-        <div class="form-group pt-20 pb-20 mb-0 bottom-border bdc-eee">
+        <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
             <label class="col-sm-2 control-label">排序</label>
             <div class="col-sm-2">
                 <input type="text" class="form-control" name="sort" value='<%= sort %>'>
             </div>
         </div>
-        <div class="form-group pt-20 pb-20 mb-0 bottom-border bdc-eee">
+        <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
             <label class="col-sm-2 control-label">状态</label>
             <div class="col-sm-2">
                 <div class="radio">
@@ -373,7 +383,7 @@ $(document).ready(function(){
             </div>
         </div>
         
-        <div class="form-group pt-20 pb-20 mb-0 bottom-border bdc-eee">
+        <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
             <div class="col-sm-12">
                 <button type="button" class="btn btn-primary save">提交你的修改</button>
                 <button type="button" class="btn btn-danger ml-15 remove none">删除此友情链接</button>
@@ -382,4 +392,4 @@ $(document).ready(function(){
     </form>
 </script>
 
-{% endblock right %}
+{% endblock %}
