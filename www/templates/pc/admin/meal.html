@@ -1,13 +1,21 @@
 {% extends "pc/admin/home.html" %}
 {% load custom_tags %}
 {% load custom_filters %}
-{% block title %}茶点产品管理{% endblock %}
-{% block admin_title %}茶点产品管理{% endblock %}
-{% block admin_title_m %}茶点产品管理{% endblock %}
+{% block title %}套餐管理{% endblock %}
+{% block admin_title %}套餐管理{% endblock %}
+{% block admin_title_m %}套餐管理{% endblock %}
 
 {% block css %}
+<link rel="stylesheet" type="text/css" href="{{MEDIA_URL}}js/jquery/jquery.autocomplete.js">
 <style type="text/css">
-
+.btn-search-item{
+    position: absolute;
+    top: 7px;
+    right: 15px;
+    font-size: 18px;
+    color: #999999;
+    cursor: pointer;
+}
 </style>
 {% endblock %}
 
@@ -212,6 +220,45 @@ $(document).ready(function(){
             me.render();
         },
 
+        initStartDate: function(){
+            $('#start_date_add').datetimepicker({
+                format: 'yyyy-mm-dd',
+                language: 'zh-CN',
+                minView: 2,
+                autoclose: true
+            });
+        },
+
+        initEndDate: function(){
+            $('#end_date_add').datetimepicker({
+                format: 'yyyy-mm-dd',
+                language: 'zh-CN',
+                minView: 2,
+                autoclose: true
+            });
+        },
+
+        companyTextBox: null,
+        initCompanyTextBox: function(name, value){
+            var me = this;
+
+            this.companyTextBox = $.Global.TextboxList.create('#company_add', {
+                max: 1,
+                placeholder: '选择所属公司',
+                url: '/admin/company/get_companys_by_name',
+                param: 'company_name',
+                loadPlaceholder: '正在加载...'
+            });
+
+            if(value){
+                this.companyTextBox.add(name, value);
+            }
+        },
+
+        initMealItems: function(){
+            
+        },
+
         render: function(){
             var me = this;
 
@@ -229,6 +276,9 @@ $(document).ready(function(){
             
             $('#add_item_modal').modal({'show': true, 'backdrop': 'static'});
 
+            me.initCompanyTextBox();
+            me.initStartDate();
+            me.initEndDate();
         },
 
         addItem: function(){
@@ -293,21 +343,21 @@ $(document).ready(function(){
         <a href="#item_list" data-toggle="pill">
             <i class="fa fa-list-ol pr-5"></i>
             <span class="hidden-sm hidden-md hidden-lg">列表</span>
-            <span class="hidden-xs">产品列表</span>
+            <span class="hidden-xs">套餐列表</span>
         </a>
     </li>
     <li>
         <a href="#modify_item" data-toggle="pill">
             <i class="fa fa-pencil-square-o pr-5"></i>
             <span class="hidden-sm hidden-md hidden-lg">修改</span>
-            <span class="hidden-xs">修改产品信息</span>
+            <span class="hidden-xs">修改套餐信息</span>
         </a>
     </li>
     <li class="pull-right">
         <a href="#add">
             <i class="fa fa-plus-circle pr-5"></i>
             <span class="hidden-sm hidden-md hidden-lg">添加</span>
-            <span class="hidden-xs">添加产品</span>
+            <span class="hidden-xs">添加套餐</span>
         </a>
     </li>
 </ul>
@@ -318,7 +368,7 @@ $(document).ready(function(){
         <form action="." onsubmit="javascript: return false;">
             <div class="pl-0 pb-10 col-md-3">
                 <div class="input-group input-group-sm">
-                    <input type="text" class="form-control name" placeholder="输入产品名称..." />
+                    <input type="text" class="form-control name" placeholder="输入套餐名称..." />
                     <span class="input-group-btn">
                         <button class="btn btn-default search" type="submit">查询</button>
                     </span>
@@ -439,42 +489,99 @@ $(document).ready(function(){
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header pb-5">
-                <h4 class="modal-title">添加产品</h4>
+                <h4 class="modal-title">添加套餐</h4>
             </div>
             <div class="modal-body">
                 <form class="form-horizontal" role="form" method="post" action="">
                     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
                         <label class="col-sm-2 control-label">名称</label>
-                        <div class="col-sm-5">
+                        <div class="col-sm-6">
                             <input type="text" required class="form-control" name='name' value=''>
                         </div>
                     </div>
                     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
-                        <label class="col-sm-2 control-label">类型</label>
-                        <div class="col-sm-3">
-                            <select name="item_type" class="form-control">
-                                {% for type in types %}
-                                <option value="{{type.value}}">{{type.name}}</option>
-                                {% endfor %}
-                            </select>
+                        <label class="col-sm-2 control-label">所属公司</label>
+                        <div class="col-sm-6">
+                            <input type="text" id="company_add" class="form-control" name='company' value=''>
                         </div>
                     </div>
                     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
-                        <label class="col-sm-2 control-label">规格</label>
+                        <label class="col-sm-2 control-label">开始日期</label>
                         <div class="col-sm-3">
-                            <input type="text" class="form-control" name='spec' value='' placeholder="论斤 or 论个">
+                            <input type="text" id="start_date_add" required class="form-control" name='start_date' value='{{start_date}}'>
                         </div>
                     </div>
                     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
-                        <label class="col-sm-2 control-label">单价</label>
+                        <label class="col-sm-2 control-label">结束日期</label>
                         <div class="col-sm-3">
-                            <input type="text" required class="form-control" name='price' value='0'>
+                            <input type="text" id="end_date_add" required class="form-control" name='end_date' value='{{end_date}}'>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+                        <label class="col-sm-2 control-label">描述</label>
+                        <div class="col-sm-10">
+                            <textarea name="des" rows="6" class="form-control" placeholder=""></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+                        <label class="col-sm-2 control-label">套餐项目</label>
+                        <div class="col-sm-10" id="meal_item_add">
+
+                            <ul class="list-unstyled well">
+                                <div class="pb-15 border-bottom-1 bdc-e4e4e4 mb-15 pr">
+                                    <input type="text" class="form-control search-item" placeholder="输入茶点项目名字" value="">
+                                    <span class="btn-search-item"><i class="fa fa-search"></i></span>
+                                </div>
+                                <li class="pb-10">
+                                    <div class="row">
+                                        <div class="col-sm-5 pr-0">
+                                            <div class="input-group">
+                                                <span class="input-group-addon">苹果</span>
+                                                <input type="text" class="form-control" value="1">
+                                                <span class="input-group-addon">斤</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4 hide">
+                                            <div class="input-group">
+                                                <input type="text" class="form-control" value="20">
+                                                <span class="input-group-addon">元</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-3">
+                                            <a class="btn btn-danger btn-remove-item" title="删除该项目">X</a>
+                                        </div>
+                                    </div>
+                                </li>
+
+                                <li class="pb-10">
+                                    <div class="row">
+                                        <div class="col-sm-5 pr-0">
+                                            <div class="input-group">
+                                                <span class="input-group-addon">火龙果</span>
+                                                <input type="text" class="form-control" value="1">
+                                                <span class="input-group-addon">斤</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4 hide">
+                                            <div class="input-group">
+                                                <input type="text" class="form-control" value="20">
+                                                <span class="input-group-addon">元</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-3">
+                                            <a class="btn btn-danger btn-remove-item" title="删除该项目">X</a>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                            
                         </div>
                     </div>
                     <div class="form-group pt-20 pb-20 mb-0">
-                        <label class="col-sm-2 control-label">排序</label>
+                        <label class="col-sm-2 control-label">价格</label>
                         <div class="col-sm-3">
-                            <input type="text" required class="form-control" name='sort' value='0'>
+                            <input type="text" required class="form-control" name='price' value='0'>
                         </div>
                     </div>
                 </form>

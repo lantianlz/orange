@@ -31,6 +31,9 @@ body{
     background-color: #ffffff;
     border-radius: 1px;
 }
+.input-group-addon{
+    border-radius: 1px;
+}
 
 .admin-top{
     position: fixed;
@@ -44,8 +47,6 @@ body{
     left: 0;
     text-align: center;
     -webkit-transition: all 0.3s;
-       -moz-transition: all 0.3s;
-         -o-transition: all 0.3s;
             transition: all 0.3s;
 }
 @media only screen and (max-width: 768px) {
@@ -83,8 +84,6 @@ body{
     padding-bottom: 0;
     position: relative;
     -webkit-transition: all 0.3s;
-       -moz-transition: all 0.3s;
-         -o-transition: all 0.3s;
             transition: all 0.3s;
     color: #C9CACF;
     font-size: 14px;
@@ -105,8 +104,6 @@ body{
     padding-top: 15px;
     width: 100%;
     -webkit-transition: all 0.3s;
-       -moz-transition: all 0.3s;
-         -o-transition: all 0.3s;
             transition: all 0.3s;
 }
 .p-nav>.list-group-item.active>a,
@@ -121,8 +118,6 @@ body{
     left: 30px; 
     top: 15px;
     -webkit-transition: all 0.3s;
-       -moz-transition: all 0.3s;
-         -o-transition: all 0.3s;
             transition: all 0.3s;
 }
 .p-nav>.list-group-item.active>a>i,
@@ -185,8 +180,6 @@ body{
     background-color: #eeeeee;
     height: 100%;
     -webkit-transition: all 0.3s;
-       -moz-transition: all 0.3s;
-         -o-transition: all 0.3s;
             transition: all 0.3s;
 }
 @media only screen and (max-width: 768px) {
@@ -213,8 +206,6 @@ body{
 
 .nav-open{
     -webkit-transform: translateX(240px);
-       -moz-transform: translateX(240px);
-         -o-transform: translateX(240px);
             transform: translateX(240px);
 }
 
@@ -231,19 +222,13 @@ body{
     background-color: #fff;
     margin-top: 5px;
     -webkit-transition: all 0.3s;
-       -moz-transition: all 0.3s;
-        -ms-transition: all 0.3s;
             transition: all 0.3s;
     -webkit-transform-origin: right;
-       -moz-transform-origin: right;
-        -ms-transform-origin: right;
             transform-origin: right;
 }
 
 .sidebar.sidebar-open>.sidebar-line-1{
     -webkit-transform: rotatez(-45deg);
-       -moz-transform: rotatez(-45deg);
-        -ms-transform: rotatez(-45deg);
             transform: rotatez(-45deg);
 }
 .sidebar.sidebar-open>.sidebar-line-2{
@@ -251,8 +236,6 @@ body{
 }
 .sidebar.sidebar-open>.sidebar-line-3{
     -webkit-transform: rotatez(45deg);
-       -moz-transform: rotatez(45deg);
-        -ms-transform: rotatez(45deg);
             transform: rotatez(45deg);
 }
 
@@ -370,11 +353,11 @@ $(document).ready(function(){
             <span class="f18 pl-65">三点十分 后台管理</span>
         </div>
         <ul class="list-group p-nav">
-            <li class="list-group-item {% if '/user' in request.path %}active{% endif %}" href="#">
+            <li class="list-group-item {% if '/user' in request.path %}active{% endif %}">
                 <a href="/admin/user"><i class="fa fa-user pr-3" style="left: 33px;"></i>用户管理</a>
             </li>
-            <li class="list-group-item" href="#">
-                <a href="#"><i class="fa fa-users pr-3"></i>公司管理</a>
+            <li class="list-group-item">
+                <a><i class="fa fa-users pr-3"></i>公司管理</a>
                 <ul class="list-group sub-nav">
                     <li class="list-group-item {% if '/company' in request.path %}active{% endif %}">
                         <a href="/admin/company"><i class="point"></i>公司信息管理</a>
@@ -384,7 +367,7 @@ $(document).ready(function(){
                     </li>
                 </ul>
             </li>
-            <li class="list-group-item" href="#">
+            <li class="list-group-item">
                 <a><i class="fa fa-archive pr-3"></i>产品管理</a>
                 <ul class="list-group sub-nav">
                     <li class="list-group-item {% if '/item' in request.path %}active{% endif %}">
@@ -395,19 +378,19 @@ $(document).ready(function(){
                     </li>
                 </ul>
             </li>
-            <li class="list-group-item" href="#">
+            <li class="list-group-item">
                 <a href="#"><i class="fa fa-shopping-cart pr-3"></i>在线预订信息管理</a>
             </li>
-            <li class="list-group-item" href="#">
+            <li class="list-group-item">
                 <a href="#"><i class="fa fa-list-alt pr-3"></i>套餐消费订单管理</a>
             </li>
-            <li class="list-group-item" href="#">
+            <li class="list-group-item">
                 <a href="#"><i class="fa fa-print pr-3"></i>打印配送单</a>
             </li>
-            <li class="list-group-item" href="#">
+            <li class="list-group-item">
                 <a href="#"><i class="fa fa-newspaper-o pr-3"></i>发票管理</a>
             </li>
-            <li class="list-group-item" href="#">
+            <li class="list-group-item">
                 <a href="#"><i class="fa fa-bar-chart pr-3"></i>统计管理</a>
                 <ul class="list-group sub-nav">
                     <li class="list-group-item">
@@ -421,7 +404,7 @@ $(document).ready(function(){
                     </li>
                 </ul>
             </li>
-            <li class="list-group-item" href="#">
+            <li class="list-group-item">
                 <a><i class="fa fa-map-o pr-3"></i>城市区域管理</a>
                 <ul class="list-group sub-nav">
                     <li class="list-group-item {% if '/city' in request.path %}active{% endif %}">
@@ -432,7 +415,7 @@ $(document).ready(function(){
                     </li>
                 </ul>
             </li>
-            <li class="list-group-item" href="#">
+            <li class="list-group-item">
                 <a><i class="fa fa-cogs pr-3"></i>系统设置</a>
                 <ul class="list-group sub-nav">
                     <li class="list-group-item {% if '/caches' in request.path %}active{% endif %}">

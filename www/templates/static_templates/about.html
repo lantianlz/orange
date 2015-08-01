@@ -43,6 +43,25 @@
 .employee-info:hover .employee-normal{
     display: none;
 }
+
+.employee-des{
+    position: absolute;
+    font-size: 13px;
+    left: 200px;
+    top: 12px;
+    padding: 20px 15px;
+    line-height: 24px;
+    width: 375px;
+    letter-spacing: 1px;
+    background-color: #F6F5F1;
+    z-index: 1;
+    border: 1px solid #ddd;
+    display: none;
+    border-radius: 1px;
+}
+.employee:hover~.employee-des{
+    display: block;
+}
 </style>
 {% endblock %}
 
@@ -80,7 +99,7 @@
     <div class="container pt-80 pl-25">
         <div class="row pb-30">
             <div class="col-md-12">
-                <div class="col-md-4 pr-0">
+                <div class="col-md-5 pr-0">
                     <div class="co-84CCC7 f20 pb-3">专注于企业下午茶点服务，</div>
                     <div class="co-84CCC7 f20 pb-15">新鲜的水果和点心，尽在三点十分</div>
                     <div class="f13 letter-spacing-1 line-height-20">每一份鲜切水果都是精选当季最富活力的时令鲜果和进口鲜果，我们的水果主要来自原产地、批发市场、大型超市，我们的点心由一流的加工工厂每天定制生产并按时送达。正是因为这些优质货源，我们才能保证送到您手里的水果和点心是可口的、健康的、新鲜的、安全的。</div>
@@ -93,14 +112,14 @@
                 <div class="col-md-4">
                     <img class="w" style="margin-top: -55px;" src="{{MEDIA_URL}}img/about/cake.png" alt="cake">
                 </div>
-                <div class="col-md-5 col-md-offset-2 pl-50">
+                <div class="col-md-5 col-md-offset-2">
                     <div class="co-84CCC7 f20 pb-3">我们的自信，</div>
                     <div class="co-84CCC7 f20 pb-15">我们的优势</div>
                     <div class="f13 letter-spacing-1 line-height-20">我们是从事下午茶点服务的先行者，我们反复研究不断打磨产品，不断提升大家的下午茶体验，为此我们组建了专门的采购团队、服务团队、物流团队来保证更好的体验并不断迭代完善。时令水果精心组合，合理搭配各类点心，由专业的营养师为你精心配制，为企业白领们提供强劲能量，提升员工幸福感，让你在补充营养的同时，高效完成工作。</div>
                 </div>
             </div>
             <div class="col-md-12 pt-30">
-                <div class="col-md-4 pr-0">
+                <div class="col-md-5 pr-0">
                     <div class="co-84CCC7 f20 pb-3">我们的路线，</div>
                     <div class="co-84CCC7 f20 pb-15">我们的成长</div>
                     <div class="f13 letter-spacing-1 line-height-20">走得再远，勿忘初衷。我们致力于给广大白领们提供最健康的工作时间下午茶点服务，自2015年08月01日送出第一份下午茶点，我们一直奋斗在下午茶O2O这一细分领域，服务体验迭代之路，永无止境，未来我们还会提供更多可能，让三点十分走向每一位白领。</div>
@@ -131,16 +150,22 @@
                     <div class="co-ADADAD f13 pt-5 employee-special">扫地僧</div>
                 </div>
             </div>
-            <div class="col-md-2 text-center pl-25 pr-25">
-                <div class="employee" style="background-image: url({{MEDIA_URL}}img/about/employee-2.png)"></div>
+            <div class="col-md-2 text-center pl-25 pr-25 pr">
+                <div class="employee" style="background-image: url({{MEDIA_URL}}img/about/employee-12.png)"></div>
                 <div class="employee-info">
                     <div class="f20 pt-5">雷成铭</div>
                     <div class="co-ADADAD f13 pt-5 employee-normal">技术总监</div>
-                    <div class="co-ADADAD f13 pt-5 employee-special">code monkey</div>
+                    <div class="co-ADADAD f13 pt-5 employee-special">程序猿</div>
+                </div>
+                <div class="employee-des">
+                    本人学识渊博、经验丰富，代码风骚、效率恐怖，python、javascript 无不精通，熟练掌握各种框架。
+                    深山苦练20余年，一天只睡4小时，千里之外定位问题，瞬息之间修复上线。
+                    身体强壮、健步如飞，可连续编程100小时不休息，讨论技术方案5小时不喝水，上至带项目、出方案，下至盗账号、威胁pm，啥都能干。
+                    
                 </div>
             </div>
             <div class="col-md-2 text-center pl-25 pr-25">
-                <div class="employee" style="background-image: url({{MEDIA_URL}}img/about/employee-3.png)"></div>
+                <div class="employee" style="background-image: url({{MEDIA_URL}}img/about/employee-15.png)"></div>
                 <div class="employee-info">
                     <div class="f20 pt-5">李瑶</div>
                     <div class="co-ADADAD f13 pt-5 employee-normal">设计顾问</div>
@@ -148,7 +173,7 @@
                 </div>
             </div>
             <div class="col-md-2 text-center pl-25 pr-25">
-                <div class="employee" style="background-image: url({{MEDIA_URL}}img/about/employee-5.png)"></div>
+                <div class="employee" style="background-image: url({{MEDIA_URL}}img/about/employee-13.png)"></div>
                 <div class="employee-info">
                     <div class="f20 pt-5">李聪</div>
                     <div class="co-ADADAD f13 pt-5 employee-normal">物流专员</div>
@@ -156,24 +181,24 @@
                 </div>
             </div>
             <div class="col-md-2 text-center pl-25 pr-25">
-                <div class="employee" style="background-image: url({{MEDIA_URL}}img/about/employee-4.png)"></div>
+                <div class="employee" style="background-image: url({{MEDIA_URL}}img/about/employee-14.png)"></div>
                 <div class="employee-info">
                     <div class="f20 pt-5">马瑶</div>
                     <div class="co-ADADAD f13 pt-5 employee-normal">服务专员</div>
-                    <div class="co-ADADAD f13 pt-5 employee-special">呆萌实习生</div>
+                    <div class="co-ADADAD f13 pt-5 employee-special">豪爽女汉子</div>
                 </div>
             </div>
 
             <div class="col-md-2 text-center pl-25 pr-25">
-                <div class="employee" style="background-image: url({{MEDIA_URL}}img/about/employee-1.png)"></div>
+                <div class="employee" style="background-image: url({{MEDIA_URL}}img/about/employee-16.png)"></div>
                 <div class="employee-info">
-                    <div class="f20 pt-5">袁某某</div>
+                    <div class="f20 pt-5">袁娇</div>
                     <div class="co-ADADAD f13 pt-5 employee-normal">营养顾问</div>
                     <div class="co-ADADAD f13 pt-5 employee-special">资深吃货</div>
                 </div>
             </div>
             <div class="col-md-2 text-center pl-25 pr-25">
-                <div class="employee" style="background-image: url({{MEDIA_URL}}img/about/employee-2.png)"></div>
+                <div class="employee" style="background-image: url({{MEDIA_URL}}img/about/employee-16.png)"></div>
                 <div class="employee-info">
                     <div class="f20 pt-5">赖某某</div>
                     <div class="co-ADADAD f13 pt-5 employee-normal">市场顾问</div>
@@ -181,7 +206,7 @@
                 </div>
             </div>
             <div class="col-md-2 text-center pl-25 pr-25">
-                <div class="employee" style="background-image: url({{MEDIA_URL}}img/about/employee-3.png)"></div>
+                <div class="employee" style="background-image: url({{MEDIA_URL}}img/about/employee-17.png)"></div>
                 <div class="employee-info">
                     <div class="f20 pt-5">神秘大佬</div>
                     <div class="co-ADADAD f13 pt-5 employee-normal">种子投资人</div>

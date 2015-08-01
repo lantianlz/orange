@@ -57,10 +57,10 @@ class ItemBase(object):
 
     def search_items_for_admin(self, name):
         objs = self.get_all_item()
-
+        
         if name:
             objs = objs.filter(name__contains=name)
-
+        
         return objs
 
     def get_item_by_id(self, item_id):

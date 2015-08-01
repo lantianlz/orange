@@ -39,6 +39,16 @@ urlpatterns += patterns('www.admin.views_item',
     url(r'^item$', 'item'),
 )
 
+# 套餐管理
+urlpatterns += patterns('www.admin.views_meal',
+
+    url(r'^meal/add_meal$', 'add_meal'),
+    url(r'^meal/modify_meal$', 'modify_meal'),
+    url(r'^meal/get_meal_by_id$', 'get_meal_by_id'),
+    url(r'^meal/search$', 'search'),
+    url(r'^meal$', 'meal'),
+)
+
 # 城市
 urlpatterns += patterns('www.admin.views_city',
 
