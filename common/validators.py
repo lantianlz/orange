@@ -22,7 +22,7 @@ def vlen(s, min_l, max_l):
 
 
 def vemail(s, min_len=3, max_len=50):
-    re_str = ur"^[-_A-Za-z0-9\.]+@([_A-Za-z0-9]+\.)+[A-Za-z0-9]{2,32}$"
+    re_str = ur"^[-_A-Za-z0-9\.]+@([-_A-Za-z0-9]+\.)+[A-Za-z0-9]{2,32}$"
     vlen(s, min_len, max_len)
     if not re.match(re_str, s):
         raise VerifyError, u"邮箱格式不正确"
