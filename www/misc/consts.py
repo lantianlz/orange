@@ -32,6 +32,16 @@ PERMISSIONS = [
     {'code': 'query_item', 'name': u'查询产品', 'parent': 'item_manage'},
     {'code': 'modify_item', 'name': u'修改产品', 'parent': 'item_manage'},
 
+    {'code': 'meal_manage', 'name': u'套餐管理', 'parent': None},
+    {'code': 'add_meal', 'name': u'添加套餐', 'parent': 'meal_manage'},
+    {'code': 'query_meal', 'name': u'查询套餐', 'parent': 'meal_manage'},
+    {'code': 'modify_meal', 'name': u'修改套餐', 'parent': 'meal_manage'},
+
+    {'code': 'order_manage', 'name': u'订单管理', 'parent': None},
+    {'code': 'add_order', 'name': u'添加订单', 'parent': 'order_manage'},
+    {'code': 'query_order', 'name': u'查询订单', 'parent': 'order_manage'},
+    {'code': 'modify_order', 'name': u'修改订单', 'parent': 'order_manage'},
+
     {'code': 'city_manage', 'name': u'城市管理', 'parent': None},
     #{'code': 'add_city', 'name': u'添加城市', 'parent': 'city_manage'},
     {'code': 'query_city', 'name': u'查询城市', 'parent': 'city_manage'},

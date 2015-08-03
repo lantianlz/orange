@@ -148,7 +148,7 @@ class MealItem(models.Model):
     '''
     meal = models.ForeignKey("Meal")
     item = models.ForeignKey("Item")
-    amount = models.DecimalField(verbose_name=u"数量", max_digits=6, decimal_places=2, default=0)
+    amount = models.FloatField(verbose_name=u"数量", default=0)
 
 
 class Order(models.Model):
@@ -180,7 +180,7 @@ class OrderItem(models.Model):
 
     order = models.ForeignKey("Order")
     item = models.ForeignKey("Item")
-    amount = models.DecimalField(verbose_name=u"数量", max_digits=6, decimal_places=2, default=0)
+    amount = models.FloatField(verbose_name=u"数量", default=0)
     price = models.DecimalField(verbose_name=u"价格", max_digits=10, decimal_places=2, default=0)
     item_type = models.IntegerField(verbose_name=u"项目状态", default=0, choices=type_choices)
 

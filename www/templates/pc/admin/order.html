@@ -2,79 +2,62 @@
 {% load custom_tags %}
 {% load custom_filters %}
 {% block title %}订单管理{% endblock %}
+{% block admin_title %}订单管理{% endblock %}
+{% block admin_title_m %}订单管理{% endblock %}
 
 {% block css %}
+<link rel="stylesheet" type="text/css" href="{{MEDIA_URL}}css/autocomplete/styles.css">
 <style type="text/css">
 
 </style>
 {% endblock %}
 
 {% block javascript %}
+<script type="text/javascript" src="{{MEDIA_URL}}js/jquery/jquery.autocomplete.js"></script>
 <script type="text/javascript">
 $(document).ready(function(){
-    // models
     var Order = Backbone.Model.extend({
-
-        // 默认值
         defaults: {
-            'num': ''
-        }
 
+        }
     });
 
-    // collections
     var Orders = Backbone.Collection.extend({
         model: Order,
 
         _modelMaps: {
             'num': 'num',
             'orderId': 'order_id',
-            'tradeId': 'trade_id',
-            'serviceType': 'service_type',
-            'sourceType': 'source_type',
-            'userId': 'user_id',
-            'userNick': 'user_nick',
-            'carWashId': 'car_wash_id',
-            'carWashName': 'car_wash_name',
-            'salePrice': 'sale_price',
-            'originPrice': 'origin_price',
-            'clearPrice': 'clear_price',
-            'count': 'count',
-            'couponCode': 'coupon_code',
-            'couponType': 'coupon_type',
-            'couponDiscount': 'coupon_discount',
-            'totalFee': 'total_fee',
-            'discountFee': 'discount_fee',
-            'userCashFee': 'user_cash_fee',
-            'payFee': 'pay_fee',
-            'payType': 'pay_type',
-            'payTime': 'pay_time',
-            'payInfo': 'pay_info',
-            'ip': 'ip',
+            'name': 'name',
+            'companyId': 'company_id',
+            'companyName': 'company_name',
+            'des': 'des',
+            'price': 'price',
+            'startDate': 'start_date',
+            'endDate': 'end_date',
+            'items': 'items',
             'state': 'state'
         },
 
-        // 查询
-        search: function(car_wash_name, tradeId, nick, state, pageIndex){
-            var me = this;
+        search: function(name, pageIndex){
+            var me = this,
+                name = name || '',
+                pageIndex = pageIndex || 1;
 
             ajaxSend(
                 "/admin/order/search", 
-                {'car_wash_name': car_wash_name, 'trade_id': tradeId, 'nick': nick, 'state': state, 'page_index': pageIndex}, 
+                {'name': name, 'page_index': pageIndex}, 
                 function(data){
-                    me.pageIndex = pageIndex||1;
+                    
+                    me.pageIndex = pageIndex;
                     me.pageCount = data.page_count;
-                    me.carWashName = car_wash_name;
-                    me.tradeId= tradeId;
-                    me.nick = nick;
-                    me.state = state;
+                    me.name = name;
 
                     me.reset($.Global.Utils.dictMapParse(data.data, me._modelMaps));
                 }
             );
         },
 
-        // 获取一个提问的model
         getOne: function(orderId, callback){
             var me = this;
 
@@ -89,12 +72,25 @@ $(document).ready(function(){
             );
         },
 
-        //
         modifyOrder: function(data, callback){
+            var me = this;
 
             ajaxSend(
                 "/admin/order/modify_order", 
-                data,
+                $.param(data, true),
+                function(data){
+                    if(callback){
+                        callback(data);
+                    }
+                }
+            );
+        },
+
+        addOrder: function(data, callback){
+
+            ajaxSend(
+                "/admin/order/add_order", 
+                $.param(data, true),
                 function(response){
                     if(callback){
                         callback(response);
@@ -104,51 +100,44 @@ $(document).ready(function(){
         }
 
     });
-
-    // listView
+    
     var ListView = Backbone.View.extend({
         el: '#order_list',
 
+        template: _.template($('#order_list_template').html()),
+
         pagination: new $.Global.Pagination.PaginationView(),
 
-        template: _.template($('#order_template').html()),
+        events: {
+            'click .search': 'searchOrder',
+            'click .pointer': 'modifyOrder'
+        },
 
         initialize: function(){
             this.listenTo(this.collection, 'reset', this.render);
         },
 
-        events: {
-            'click .search': 'search',
-            'click .pointer': 'modifyOrder'
-        },
-
-        // 渲染函数
         render: function(){
             var data = this.collection.toJSON();
-
+            
             this.showPanel();
-
             this.$('tbody').html(this.template({'orders': data}));
-
             this.pagination.render(
                 this.collection.pageIndex||1, 
                 this.collection.pageCount, 
-                'search/' + this.collection.carWashName + '/' + this.collection.tradeId + '/' + this.collection.nick + '/' + this.collection.state
+                'search/' + this.collection.name
             );
         },
 
         // 显示面板
         showPanel: function(){
-            $('.qx-nav-pills a[href="#order_list"]').tab('show');
+            $('.orange-nav-pills a[href="#order_list"]').tab('show');
         },
 
-        search: function(){
-            var carWashName = this.$('.key-word').val(),
-                tradeId = this.$('.key-word-trade-id').val(),
-                nick = this.$('.key-word-nick').val(),
-                state = this.$('.key-word-state').val();
+        searchOrder: function(){
+            var name = this.$('.name').val();
 
-            router.navigate(String.format('/search/{0}/{1}/{2}/{3}/1', carWashName, tradeId, nick, state), {trigger: true});
+            router.navigate(String.format('/search/{0}/1', name), {trigger: true});
         },
 
         modifyOrder: function(sender){
@@ -157,61 +146,28 @@ $(document).ready(function(){
 
             router.navigate('/modify/' + orderId, {trigger: true});
         }
+        
     });
+    
 
-    // modifyView
     var ModifyView = Backbone.View.extend({
         
         el: '#modify_order',
 
         template: _.template($('#modify_order_template').html()),
 
+        itemsView: null,
+
         events: {
             'click .save': 'save'
         },
 
-        // 显示面板
         showPanel: function(){
-            $('.qx-nav-pills a[href="#modify_order"]').tab('show');
+            $('.orange-nav-pills a[href="#modify_order"]').tab('show');
         },
 
-        carWashTextBox: null,
-        initCarWashTextBox: function(name, value){
-            var me = this;
-
-            this.carWashTextBox = $.Global.TextboxList.create('#car_wash_modify', {
-                max: 1,
-                placeholder: '选择所属洗车行',
-                url: '/admin/car_wash/car_wash/get_car_washs_by_name',
-                param: 'car_wash_name',
-                loadPlaceholder: '正在加载...'
-            });
-            
-            if(value){
-                this.carWashTextBox.add(name, value);
-            }
-        },
-
-        userTextBox: null,
-        initUserTextBox: function(name, value){
-            var me = this;
-
-            this.userTextBox = $.Global.TextboxList.create('#user_modify', {
-                max: 1,
-                placeholder: '选择用户',
-                url: '/admin/user/user/get_user_by_nick',
-                param: 'nick',
-                loadPlaceholder: '正在加载...'
-            });
-
-            if(value){
-                this.userTextBox.add(name, value);
-            }
-            
-        },
-
-        initDate: function(){
-            $('#expiry_time_modify').datetimepicker({
+        initStartDate: function(){
+            $('#start_date_add').datetimepicker({
                 format: 'yyyy-mm-dd',
                 language: 'zh-CN',
                 minView: 2,
@@ -219,42 +175,73 @@ $(document).ready(function(){
             });
         },
 
-        // 渲染
+        initEndDate: function(){
+            $('#end_date_add').datetimepicker({
+                format: 'yyyy-mm-dd',
+                language: 'zh-CN',
+                minView: 2,
+                autoclose: true
+            });
+        },
+
+        companyTextBox: null,
+        initCompanyTextBox: function(name, value){
+            var me = this;
+
+            this.companyTextBox = $.Global.TextboxList.create('#company_modify', {
+                max: 1,
+                placeholder: '选择所属公司',
+                url: '/admin/company/get_companys_by_name',
+                param: 'company_name',
+                loadPlaceholder: '正在加载...'
+            });
+
+            if(value){
+                this.companyTextBox.add(name, value);
+            }
+        },
+
+        initOrderItems: function(items){
+            this.itemsView = new $.Global.ComponentView.ItemsView({el: "#items_view_modify"});
+            this.itemsView.render();
+            this.itemsView.loadItems(items);
+        },
+
         render: function(data){
             this.$el.html(this.template(data));
 
-            this.initCarWashTextBox(data.carWashName, data.carWashId);
-            this.initUserTextBox(data.userNick, data.userId);
-            this.initDate();
+            this.initCompanyTextBox(data.companyName, data.companyId);
+            this.initStartDate();
+            this.initEndDate();
+            this.initOrderItems(data.items);
         },
 
-        // 显示提问信息
         modifyOrder: function(orderId){
             var me = this;
 
             this.collection.getOne(orderId, function(data){
+
                 if(data){
                     me.render(data);
                     me.showPanel();
                 } else {
                     setTimeout(function(){history.go(-1);}, 3000);
-                    $.Global.Notice.ErrorTopNotice("没有找到对应的服务类型!");
+                    $.Global.Notice.ErrorTopNotice('没有找到对应的项目!');
                 }
             });
         },
 
-        // 保存
         save: function(){
             var orderId = this.$('form').data('order_id'),
                 me = this;
 
-            if(!me.$('form').valid()){
+            if(!this.$('form').valid()){
                 return;
             }
 
             me.collection.modifyOrder($.Global.Utils.formToDict(this.$('form')), function(data){
                 if(data.errcode == "0"){
-                    $.Global.Notice.SuccessTopNotice('操作成功!');
+                    $.Global.Notice.SuccessTopNotice('操作成功');
                     router.navigate('modify/' + orderId, {'trigger': true});
                 } else {
                     $.Global.Notice.ErrorTopNotice(data.errmsg);
@@ -262,75 +249,173 @@ $(document).ready(function(){
             })
         }
 
-
     });
 
     
-    // router
-    var Router = Backbone.Router.extend({
+    var AddView = Backbone.View.extend({
+        el: 'body',
 
-        routes: {
-            "":                     "search",
-            "modify/:orderId":       "modify",
-            "search/(:carWashName)/(:tradeId)/(:nick)/(:state)/:pageIndex":    "search",
+        template: _.template($('#add_order_template').html()),
+
+        itemsView: null,
+
+        showPanel: function(){
+            var me = this;
+
+            me.render();
         },
 
-        // 查询
-        search: function(carWashName, tradeId, nick, state, pageIndex){
-            orders.search(carWashName||'', tradeId||'', nick||'', state||-2, pageIndex||1);
+        initStartDate: function(){
+            $('#start_date_add').datetimepicker({
+                format: 'yyyy-mm-dd',
+                language: 'zh-CN',
+                minView: 2,
+                autoclose: true
+            });
         },
 
-        // 显示修改界面
-        modify: function(orderId){
-            modifyView.modifyOrder(orderId);
+        initEndDate: function(){
+            $('#end_date_add').datetimepicker({
+                format: 'yyyy-mm-dd',
+                language: 'zh-CN',
+                minView: 2,
+                autoclose: true
+            });
+        },
+
+        companyTextBox: null,
+        initCompanyTextBox: function(name, value){
+            var me = this;
+
+            this.companyTextBox = $.Global.TextboxList.create('#company_add', {
+                max: 1,
+                placeholder: '选择所属公司',
+                url: '/admin/company/get_companys_by_name',
+                param: 'company_name',
+                loadPlaceholder: '正在加载...'
+            });
+
+            if(value){
+                this.companyTextBox.add(name, value);
+            }
+        },
+
+        initOrderItems: function(){
+            this.itemsView = new $.Global.ComponentView.ItemsView({el: "#items_view_add"});
+            this.itemsView.render();
+        },
+
+        render: function(){
+            var me = this;
+
+            $('#add_order_modal').remove();
+            
+            $('body').append(this.template());
+
+            // 绑定事件
+            $('#add_order_modal .cancel').bind('click', function(){
+                history.go(-1);
+            });
+            $('#add_order_modal .ok').bind('click', function(){
+                me.addOrder();
+            });
+            
+            $('#add_order_modal').modal({'show': true, 'backdrop': 'static'});
+
+            me.initCompanyTextBox();
+            me.initStartDate();
+            me.initEndDate();
+            me.initOrderItems();
+        },
+
+        addOrder: function(){
+            var me = this;
+            
+            if(!$('#add_order_modal form').valid()){
+                return;
+            }
+
+            orders.addOrder($.Global.Utils.formToDict($('#add_order_modal form')), function(data){
+                if(data.errcode == "0"){
+                    router.navigate('modify/' + data.errmsg, {trigger: true});
+                    $('#add_order_modal').modal('hide');
+                    $.Global.Notice.SuccessTopNotice("操作成功");
+                } else {
+                    $.Global.Notice.ErrorTopNotice(data.errmsg);
+                }
+            })
         }
 
     });
-    
-    // 初始化
-    var orders = new Orders(),
-        listView = new ListView({'collection': orders}),
-        modifyView = new ModifyView({'collection': orders}),
-        router = new Router();
- 
-    Backbone.history.start();
 
+
+    var Router = Backbone.Router.extend({
+        routes: {
+            "":                             "search",
+            "search/(:name)/:pageIndex":    "search",
+            "modify/:orderId":               "modify",
+            "add":                          "add"
+        },
+
+        // 获取推荐用户
+        search: function(name, pageIndex){
+            orders.search(name, pageIndex);
+        },
+
+        modify: function(orderId){
+            modifyView.modifyOrder(orderId);
+        },
+
+        add: function(){
+            addView.showPanel();
+        }
+
+    });
+
+    var orders = new Orders(),
+        listView = new ListView({collection: orders}),
+        modifyView = new ModifyView({collection: orders}),
+        addView = new AddView(),
+        router = new Router();
+
+    Backbone.history.start();
 });
 
 </script>
 {% endblock %}
 
-{% block right %}
-<ul class="nav nav-pills pt-15 qx-nav-pills">
+{% block admin_main %}
+<ul class="nav nav-pills orange-nav-pills">
     <li class="active">
-        <a href="#order_list" class="black-blue" data-toggle="pill">订单列表</a>
+        <a href="#order_list" data-toggle="pill">
+            <i class="fa fa-list-ol pr-5"></i>
+            <span class="hidden-sm hidden-md hidden-lg">列表</span>
+            <span class="hidden-xs">订单列表</span>
+        </a>
     </li>
     <li>
-        <a href="#modify_order" class="black-blue" data-toggle="pill">修改订单</a>
+        <a href="#modify_order" data-toggle="pill">
+            <i class="fa fa-pencil-square-o pr-5"></i>
+            <span class="hidden-sm hidden-md hidden-lg">修改</span>
+            <span class="hidden-xs">修改订单信息</span>
+        </a>
+    </li>
+    <li class="pull-right">
+        <a href="#add">
+            <i class="fa fa-plus-circle pr-5"></i>
+            <span class="hidden-sm hidden-md hidden-lg">添加</span>
+            <span class="hidden-xs">添加订单</span>
+        </a>
     </li>
 </ul>
 
 <div class="tab-content">
-    <!-- 客户经理列表 -->
+    <!-- 用户列表 -->
     <div class="tab-pane fade pt-15 in active" id="order_list">
         <form action="." onsubmit="javascript: return false;">
-            <div class="col-sm-2 pl-0">
-                <select class="form-control input-sm key-word-state">
-                    <option value="-2">全部</option>
-                    {% for choice in order_state_choices %}
-                    <option value="{{choice.value}}">{{choice.name}}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="pl-0 pb-10 col-md-2">
-                <input type="text" class="input-sm form-control border-radius-0 key-word-trade-id" placeholder="输入订单号..." />
-            </div>
-            <div class="pl-0 pb-10 col-md-2">
-                <input type="text" class="input-sm form-control border-radius-0 key-word-nick" placeholder="输入用户呢称..." />
-            </div>
             <div class="pl-0 pb-10 col-md-3">
                 <div class="input-group input-group-sm">
-                    <input type="text" class="form-control border-radius-0 key-word" placeholder="输入洗车行名称..." />
+                    <input type="text" class="form-control name" placeholder="输入订单号..." />
                     <span class="input-group-btn">
                         <button class="btn btn-default search" type="submit">查询</button>
                     </span>
@@ -341,13 +426,11 @@ $(document).ready(function(){
             <thead>
                 <tr>
                     <th>#</th>
-                    <th>订单号</th>
-                    <th>所属洗车行</th>
-                    <th>购买数量</th>
-                    <th>使用优惠券</th>
-                    <th>总金额</th>
-                    <th>购买人</th>
-                    <th>支付时间</th>
+                    <th>套餐名称</th>
+                    <th class="hidden-xs">所属公司</th>
+                    <th class="hidden-xs">开始时间</th>
+                    <th class="hidden-xs">结束时间</th>
+                    <th>价格</th>
                     <th>状态</th>
                 </tr>
             </thead>
@@ -363,190 +446,154 @@ $(document).ready(function(){
         </div>
     </div>
 
-    <!-- 修改客户经理信息 -->
-    <div class="tab-pane fade" id="modify_order">
+    <!-- 修改用户信息 -->
+    <div class="tab-pane fade pt-15" id="modify_order">
         
     </div>
 </div>
 
-<!-- 客户经理列表 -->
-<script type="text/template" id="order_template">
-    <% _.each(orders, function(order){ %>
-        <tr class="pointer" data-order_id="<%= order.orderId %>">
-            <td><%= order.num %></td>
-            <td><%= order.tradeId %></td>
-            <td><%= order.carWashName %></td>
-            <td><%= order.count %></td>
-            <td><%= order.discountFee %></td>
-            <td><%= order.totalFee %></td>
-            <td><%= order.userNick %></td>
-            <td><%= order.payTime %></td>
-            <td>
-                {% for choice in order_state_choices %}
-                    <% if({{choice.value}} == order.state){ %>
-                        {{choice.name}}
-                    <% } %>
-                {% endfor %}
-            </td>
-        </tr>
-    <% }) %>
+<script type="text/template" id="order_list_template">
+<% _.each(orders, function(order){ %>
+    <tr class="pointer" data-order_id="<%= order.orderId %>">
+        <td><%= order.num %></td>
+        <td><%= order.name %></td>
+        <td class="hidden-xs"><%= order.companyName %></td>
+        <td class="hidden-xs"><%= order.startDate %></td>
+        <td class="hidden-xs"><%= order.endDate %></td>
+        <td><%= order.price %></td>
+        <td>
+        <% if(order.state == 1){ %>
+            <span class="fa fa-check co-3B99FC"></span>
+        <% } else { %>
+            <span class="fa fa-times co-C33333"></span>
+        <% } %>
+        </td>
+    </tr>
+<% }) %>
 </script>
 
-<!-- 修改问题模板 -->
 <script type="text/template" id="modify_order_template">
-    <form class="form-horizontal" data-order_id="<%= orderId %>" role="form" method="post" action="">
-        <input type="hidden" name="order_id" value="<%= orderId %>" />
-        <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
-            <label class="col-sm-2 control-label">订单号</label>
-            <div class="col-sm-3">
-                <p class="form-control-static"><%= tradeId %></p>
-            </div>
+<form class="form-horizontal" data-order_id='<%= orderId %>' role="form" method="post" action="">
+    <input type="hidden" name="order_id" value="<%= orderId %>" />
+    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+        <label class="col-sm-2 control-label">名称</label>
+        <div class="col-sm-5">
+            <input type="text" required class="form-control" name='name' value='<%= name %>'>
         </div>
-
-        <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
-            <label class="col-sm-2 control-label">购买人</label>
-            <div class="col-sm-3">
-                <p class="form-control-static"><%= userNick %></p>
-            </div>
+    </div>
+    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+        <label class="col-sm-2 control-label">所属公司</label>
+        <div class="col-sm-5">
+            <input type="text" id="company_modify" class="form-control" name='company' value=''>
         </div>
-
-        <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
-            <label class="col-sm-2 control-label">服务类型</label>
-            <div class="col-sm-3">
-                <p class="form-control-static"><%= serviceType %></p>
-            </div>
+    </div>
+    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+        <label class="col-sm-2 control-label">开始日期</label>
+        <div class="col-sm-2">
+            <input type="text" id="start_date_modify" required class="form-control date" name='start_date' value='<%= startDate %>'>
         </div>
-
-        <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
-            <label class="col-sm-2 control-label">售价</label>
-            <div class="col-sm-3">
-                <p class="form-control-static"><%= salePrice %></p>
-            </div>
+    </div>
+    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+        <label class="col-sm-2 control-label">结束日期</label>
+        <div class="col-sm-2">
+            <input type="text" id="end_date_modify" required class="form-control date" name='end_date' value='<%= endDate %>'>
         </div>
-
-        <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
-            <label class="col-sm-2 control-label">原价</label>
-            <div class="col-sm-3">
-                <p class="form-control-static"><%= originPrice %></p>
-            </div>
+    </div>
+    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+        <label class="col-sm-2 control-label">描述</label>
+        <div class="col-sm-6">
+            <textarea name="des" rows="6" class="form-control" placeholder=""><%= des %></textarea>
         </div>
-
-        <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
-            <label class="col-sm-2 control-label">和厂商结算价</label>
-            <div class="col-sm-3">
-                <p class="form-control-static"><%= clearPrice %></p>
-            </div>
+    </div>
+    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+        <label class="col-sm-2 control-label">套餐项目</label>
+        <div class="col-sm-6" id="items_view_modify">
+            
         </div>
-
-        <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
-            <label class="col-sm-2 control-label">所属洗车行</label>
-            <div class="col-sm-3">
-                <p class="form-control-static"><%= carWashName %></p>
-            </div>
+    </div>
+    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+        <label class="col-sm-2 control-label">价格</label>
+        <div class="col-sm-2">
+            <input type="text" required class="form-control" name='price' value='<%= price %>'>
         </div>
-
-        <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
-            <label class="col-sm-2 control-label">购买数量</label>
-            <div class="col-sm-3">
-                <p class="form-control-static"><%= count %></p>
-            </div>
+    </div>
+    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+        <label class="col-sm-2 control-label">状态</label>
+        <div class="col-sm-2">
+            <select name="state" class="form-control">
+                {% for state in states %}
+                <option value="{{state.value}}" <% if(state == {{state.value}}){ %>selected<% } %> >{{state.name}}</option>
+                {% endfor %}
+            </select>
         </div>
-
-        <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
-            <label class="col-sm-2 control-label">优惠券号</label>
-            <div class="col-sm-3">
-                <p class="form-control-static"><%= couponCode %></p>
-            </div>
+    </div>
+    <div class="form-group pt-20 pb-20 mb-0">
+        <div class="col-sm-12">
+            <button type="button" class="btn btn-primary save">提交你的修改</button>
         </div>
-
-        <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
-            <label class="col-sm-2 control-label">优惠券类型</label>
-            <div class="col-sm-3">
-                <p class="form-control-static"><%= couponType %></p>
-            </div>
-        </div>
-
-        <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
-            <label class="col-sm-2 control-label">优惠券价格</label>
-            <div class="col-sm-3">
-                <p class="form-control-static"><%= couponDiscount %></p>
-            </div>
-        </div>
-
-        <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
-            <label class="col-sm-2 control-label">总的结算金额</label>
-            <div class="col-sm-3">
-                <p class="form-control-static"><%= totalFee %></p>
-            </div>
-        </div>
-
-        <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
-            <label class="col-sm-2 control-label">优惠劵的优惠价格</label>
-            <div class="col-sm-3">
-                <p class="form-control-static"><%= discountFee %></p>
-            </div>
-        </div>
-
-        <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
-            <label class="col-sm-2 control-label">使用账户余额</label>
-            <div class="col-sm-3">
-                <p class="form-control-static"><%= userCashFee %></p>
-            </div>
-        </div>
-
-        <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
-            <label class="col-sm-2 control-label">实付金额</label>
-            <div class="col-sm-3">
-                <p class="form-control-static"><%= payFee %></p>
-            </div>
-        </div>
-
-        <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
-            <label class="col-sm-2 control-label">支付方式</label>
-            <div class="col-sm-3">
-                <p class="form-control-static">
-                    {% for choice in pay_type_choices %}
-                        <% if({{choice.value}} == payType){ %>
-                            {{choice.name}}
-                        <% } %>
-                    {% endfor %}
-                </p>
-            </div>
-        </div>
-
-        <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
-            <label class="col-sm-2 control-label">支付时间</label>
-            <div class="col-sm-3">
-                <p class="form-control-static"><%= payTime %></p>
-            </div>
-        </div>
-
-        <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
-            <label class="col-sm-2 control-label">支付信息</label>
-            <div class="col-sm-3">
-                <p class="form-control-static"><%= payInfo %></p>
-            </div>
-        </div>
-
-        <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
-            <label class="col-sm-2 control-label">订单状态</label>
-            <div class="col-sm-3">
-                <p class="form-control-static">
-                    {% for choice in order_state_choices %}
-                        <% if({{choice.value}} == state){ %>
-                            {{choice.name}}
-                        <% } %>
-                    {% endfor %}
-                </p>
-            </div>
-        </div>
-
-        <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee none">
-            <div class="col-sm-12">
-                <button type="button" class="btn btn-primary save">提交你的修改</button>
-            </div>
-        </div>
-    </form>
+    </div>
+</form>
 </script>
 
-{% endblock right %}
+<script type="text/template" id="add_order_template">
+<div class="modal fade" id="add_order_modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header pb-5">
+                <h4 class="modal-title">添加订单</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" role="form" method="post" action="">
+                    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+                        <label class="col-sm-2 control-label">名称</label>
+                        <div class="col-sm-8">
+                            <input type="text" required class="form-control" name='name' value=''>
+                        </div>
+                    </div>
+                    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+                        <label class="col-sm-2 control-label">所属公司</label>
+                        <div class="col-sm-8">
+                            <input type="text" id="company_add" class="form-control" name='company' value=''>
+                        </div>
+                    </div>
+                    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+                        <label class="col-sm-2 control-label">开始日期</label>
+                        <div class="col-sm-3">
+                            <input type="text" id="start_date_add" required class="form-control date" name='start_date' value='{{start_date}}'>
+                        </div>
+                    </div>
+                    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+                        <label class="col-sm-2 control-label">结束日期</label>
+                        <div class="col-sm-3">
+                            <input type="text" id="end_date_add" required class="form-control date" name='end_date' value='{{end_date}}'>
+                        </div>
+                    </div>
+                    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+                        <label class="col-sm-2 control-label">描述</label>
+                        <div class="col-sm-10">
+                            <textarea name="des" rows="6" class="form-control" placeholder=""></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+                        <label class="col-sm-2 control-label">套餐项目</label>
+                        <div class="col-sm-10" id="items_view_add">
+                            
+                        </div>
+                    </div>
+                    <div class="form-group pt-20 pb-20 mb-0">
+                        <label class="col-sm-2 control-label">价格</label>
+                        <div class="col-sm-3">
+                            <input type="text" required class="form-control" name='price' value='0'>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default cancel" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary ok">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+</script>
+{% endblock %}

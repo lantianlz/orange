@@ -56,11 +56,21 @@
     background-color: #F6F5F1;
     z-index: 1;
     border: 1px solid #ddd;
-    display: none;
+    visibility: hidden;
+    opacity: 0;
     border-radius: 1px;
+    -webkit-transition: all 0.5s;
+            transition: all 0.5s;
+    -webkit-transform: scale(0) rotateX(-180deg);
+            transform: scale(0) rotateX(-180deg);
+    -webkit-perspective: 500px;
+            perspective: 500px;
 }
 .employee:hover~.employee-des{
-    display: block;
+    visibility: visible;
+    opacity: 1;
+    -webkit-transform: scale(1) rotateX(0deg);
+            transform: scale(1) rotateX(0deg);
 }
 </style>
 {% endblock %}

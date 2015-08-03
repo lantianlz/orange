@@ -97,3 +97,11 @@ def add_item(request):
 
     flag, msg = ItemBase().add_item(name, item_type, spec, price, sort)
     return flag, msg.id if flag == 0 else msg
+
+@verify_permission('query_item')
+def get_items_by_name(request):
+    name = request.REQUEST.get('name')
+
+    data = format_item(ItemBase().get_items_by_name(name)[:10], 1)
+
+    return HttpResponse(json.dumps(data), mimetype='application/json')

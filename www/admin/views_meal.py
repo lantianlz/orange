@@ -8,13 +8,12 @@ from django.shortcuts import render_to_response
 from common import utils, page
 from misc.decorators import staff_required, common_ajax_response, verify_permission, member_required
 
-from www.company.interface import ItemBase
+from www.company.interface import MealBase, CompanyBase
 
 @verify_permission('')
 def meal(request, template_name='pc/admin/meal.html'):
-    from www.company.models import Item
-    states = [{'name': x[1], 'value': x[0]} for x in Item.state_choices]
-    types = [{'name': x[1], 'value': x[0]} for x in Item.type_choices]
+    from www.company.models import Meal
+    states = [{'name': x[1], 'value': x[0]} for x in Meal.state_choices]
 
     today = datetime.datetime.now()
     start_date = today.strftime('%Y-%m-%d')
@@ -23,42 +22,59 @@ def meal(request, template_name='pc/admin/meal.html'):
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
 
 
-def format_item(objs, num):
+def format_meal(objs, num, show_items=False):
     data = []
 
     for x in objs:
         num += 1
 
+        company = CompanyBase().get_company_by_id(x.company_id)
+        items = []
+        # 显示子项
+        if show_items:
+            for i in MealBase().get_items_of_meal(x.id):
+                items.append({
+                    'item_id': i.item.id,
+                    'name': i.item.name,
+                    'price': str(i.item.price),
+                    'item_type': i.item.item_type,
+                    'spec': i.item.spec,
+                    'code': i.item.code,
+                    'img': i.item.img,
+                    'amount': i.amount
+                })
+
         data.append({
             'num': num,
-            'item_id': x.id,
+            'meal_id': x.id,
+            'company_id': company.id if company else '',
+            'company_name': company.name if company else '',
             'name': x.name,
+            'des': x.des,
             'price': str(x.price),
-            'item_type': x.item_type,
-            'spec': x.spec,
+            'start_date': str(x.start_date),
+            'end_date': str(x.end_date),
             'state': x.state,
-            'code': x.code,
-            'img': x.img,
-            'sort': x.sort
+            'items': items
         })
 
     return data
 
 
-@verify_permission('query_item')
+@verify_permission('query_meal')
 def search(request):
     data = []
 
     name = request.REQUEST.get('name')
     page_index = int(request.REQUEST.get('page_index'))
 
-    objs = ItemBase().search_items_for_admin(name)
+    objs = MealBase().search_meals_for_admin(name)
 
     page_objs = page.Cpt(objs, count=10, page=page_index).info
 
     # 格式化json
     num = 10 * (page_index - 1)
-    data = format_item(page_objs[0], num)
+    data = format_meal(page_objs[0], num)
 
     return HttpResponse(
         json.dumps({'data': data, 'page_count': page_objs[4], 'total_count': page_objs[5]}),
@@ -66,38 +82,57 @@ def search(request):
     )
 
 
-@verify_permission('query_item')
-def get_item_by_id(request):
-    item_id = request.REQUEST.get('item_id')
+@verify_permission('query_meal')
+def get_meal_by_id(request):
+    meal_id = request.REQUEST.get('meal_id')
 
-    data = format_item([ItemBase().get_item_by_id(item_id)], 1)[0]
+    data = format_meal([MealBase().get_meal_by_id(meal_id)], 1, True)[0]
 
     return HttpResponse(json.dumps(data), mimetype='application/json')
 
 
-@verify_permission('modify_item')
+def _get_items(item_ids, item_amounts):
+
+    meal_items = []
+    for x in range(len(item_ids)):
+        meal_items.append({
+            'item_id': item_ids[x],
+            'amount': item_amounts[x]
+        })
+
+    return meal_items
+
+@verify_permission('modify_meal')
 @common_ajax_response
-def modify_item(request):
+def modify_meal(request):
 
-    item_id = request.POST.get('item_id')
+    meal_id = request.POST.get('meal_id')
+    company = request.POST.get('company')
     name = request.POST.get('name')
-    item_type = request.POST.get('item_type')
-    spec = request.POST.get('spec')
     price = request.POST.get('price')
-    sort = request.POST.get('sort')
-    state = request.POST.get('state')
-    # state = True if state == "1" else False
+    start_date = request.POST.get('start_date')
+    end_date = request.POST.get('end_date')
+    des = request.POST.get('des')
 
-    return ItemBase().modify_item(item_id, name, item_type, spec, price, sort, state)
+    # 套餐项目
+    item_ids = request.POST.getlist('item-ids')
+    item_amounts = request.POST.getlist('item-amounts')
 
-@verify_permission('add_item')
+    return MealBase().modify_meal(meal_id, company, name, price, start_date, end_date, des, _get_items(item_ids, item_amounts))
+
+@verify_permission('add_meal')
 @common_ajax_response
-def add_item(request):
+def add_meal(request):
+    company = request.POST.get('company')
     name = request.POST.get('name')
-    item_type = request.POST.get('item_type')
-    spec = request.POST.get('spec')
     price = request.POST.get('price')
-    sort = request.POST.get('sort')
+    start_date = request.POST.get('start_date')
+    end_date = request.POST.get('end_date')
+    des = request.POST.get('des')
 
-    flag, msg = ItemBase().add_item(name, item_type, spec, price, sort)
+    # 套餐项目
+    item_ids = request.POST.getlist('item-ids')
+    item_amounts = request.POST.getlist('item-amounts')
+
+    flag, msg = MealBase().add_meal(company, name, price, start_date, end_date, des, _get_items(item_ids, item_amounts))
     return flag, msg.id if flag == 0 else msg

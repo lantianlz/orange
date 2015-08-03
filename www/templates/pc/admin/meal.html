@@ -6,42 +6,37 @@
 {% block admin_title_m %}套餐管理{% endblock %}
 
 {% block css %}
-<link rel="stylesheet" type="text/css" href="{{MEDIA_URL}}js/jquery/jquery.autocomplete.js">
+<link rel="stylesheet" type="text/css" href="{{MEDIA_URL}}css/autocomplete/styles.css">
 <style type="text/css">
-.btn-search-item{
-    position: absolute;
-    top: 7px;
-    right: 15px;
-    font-size: 18px;
-    color: #999999;
-    cursor: pointer;
-}
+
 </style>
 {% endblock %}
 
 {% block javascript %}
+<script type="text/javascript" src="{{MEDIA_URL}}js/jquery/jquery.autocomplete.js"></script>
 <script type="text/javascript">
 $(document).ready(function(){
-    var Item = Backbone.Model.extend({
+    var Meal = Backbone.Model.extend({
         defaults: {
 
         }
     });
 
-    var Items = Backbone.Collection.extend({
-        model: Item,
+    var Meals = Backbone.Collection.extend({
+        model: Meal,
 
         _modelMaps: {
             'num': 'num',
-            'itemId': 'item_id',
+            'mealId': 'meal_id',
             'name': 'name',
+            'companyId': 'company_id',
+            'companyName': 'company_name',
+            'des': 'des',
             'price': 'price',
-            'itemType': 'item_type',
-            'spec': 'spec',
-            'state': 'state',
-            'code': 'code',
-            'img': 'img',
-            'sort': 'sort'
+            'startDate': 'start_date',
+            'endDate': 'end_date',
+            'items': 'items',
+            'state': 'state'
         },
 
         search: function(name, pageIndex){
@@ -50,7 +45,7 @@ $(document).ready(function(){
                 pageIndex = pageIndex || 1;
 
             ajaxSend(
-                "/admin/item/search", 
+                "/admin/meal/search", 
                 {'name': name, 'page_index': pageIndex}, 
                 function(data){
                     
@@ -63,12 +58,12 @@ $(document).ready(function(){
             );
         },
 
-        getOne: function(itemId, callback){
+        getOne: function(mealId, callback){
             var me = this;
 
             ajaxSend(
-                "/admin/item/get_item_by_id", 
-                {'item_id': itemId},
+                "/admin/meal/get_meal_by_id", 
+                {'meal_id': mealId},
                 function(data){
                     if(callback){
                         callback($.Global.Utils.dictMap(data, me._modelMaps));
@@ -77,12 +72,12 @@ $(document).ready(function(){
             );
         },
 
-        modifyItem: function(data, callback){
+        modifyMeal: function(data, callback){
             var me = this;
 
             ajaxSend(
-                "/admin/item/modify_item", 
-                data,
+                "/admin/meal/modify_meal", 
+                $.param(data, true),
                 function(data){
                     if(callback){
                         callback(data);
@@ -91,11 +86,11 @@ $(document).ready(function(){
             );
         },
 
-        addItem: function(data, callback){
+        addMeal: function(data, callback){
 
             ajaxSend(
-                "/admin/item/add_item", 
-                data,
+                "/admin/meal/add_meal", 
+                $.param(data, true),
                 function(response){
                     if(callback){
                         callback(response);
@@ -107,15 +102,15 @@ $(document).ready(function(){
     });
     
     var ListView = Backbone.View.extend({
-        el: '#item_list',
+        el: '#meal_list',
 
-        template: _.template($('#item_list_template').html()),
+        template: _.template($('#meal_list_template').html()),
 
         pagination: new $.Global.Pagination.PaginationView(),
 
         events: {
-            'click .search': 'searchItem',
-            'click .pointer': 'modifyItem'
+            'click .search': 'searchMeal',
+            'click .pointer': 'modifyMeal'
         },
 
         initialize: function(){
@@ -126,7 +121,7 @@ $(document).ready(function(){
             var data = this.collection.toJSON();
             
             this.showPanel();
-            this.$('tbody').html(this.template({'items': data}));
+            this.$('tbody').html(this.template({'meals': data}));
             this.pagination.render(
                 this.collection.pageIndex||1, 
                 this.collection.pageCount, 
@@ -136,20 +131,20 @@ $(document).ready(function(){
 
         // 显示面板
         showPanel: function(){
-            $('.orange-nav-pills a[href="#item_list"]').tab('show');
+            $('.orange-nav-pills a[href="#meal_list"]').tab('show');
         },
 
-        searchItem: function(){
+        searchMeal: function(){
             var name = this.$('.name').val();
 
             router.navigate(String.format('/search/{0}/1', name), {trigger: true});
         },
 
-        modifyItem: function(sender){
+        modifyMeal: function(sender){
             var target = $(sender.currentTarget),
-                itemId = target.data('item_id');
+                mealId = target.data('meal_id');
 
-            router.navigate('/modify/' + itemId, {trigger: true});
+            router.navigate('/modify/' + mealId, {trigger: true});
         }
         
     });
@@ -157,26 +152,74 @@ $(document).ready(function(){
 
     var ModifyView = Backbone.View.extend({
         
-        el: '#modify_item',
+        el: '#modify_meal',
 
-        template: _.template($('#modify_item_template').html()),
+        template: _.template($('#modify_meal_template').html()),
+
+        itemsView: null,
 
         events: {
             'click .save': 'save'
         },
 
         showPanel: function(){
-            $('.orange-nav-pills a[href="#modify_item"]').tab('show');
+            $('.orange-nav-pills a[href="#modify_meal"]').tab('show');
+        },
+
+        initStartDate: function(){
+            $('#start_date_add').datetimepicker({
+                format: 'yyyy-mm-dd',
+                language: 'zh-CN',
+                minView: 2,
+                autoclose: true
+            });
+        },
+
+        initEndDate: function(){
+            $('#end_date_add').datetimepicker({
+                format: 'yyyy-mm-dd',
+                language: 'zh-CN',
+                minView: 2,
+                autoclose: true
+            });
+        },
+
+        companyTextBox: null,
+        initCompanyTextBox: function(name, value){
+            var me = this;
+
+            this.companyTextBox = $.Global.TextboxList.create('#company_modify', {
+                max: 1,
+                placeholder: '选择所属公司',
+                url: '/admin/company/get_companys_by_name',
+                param: 'company_name',
+                loadPlaceholder: '正在加载...'
+            });
+
+            if(value){
+                this.companyTextBox.add(name, value);
+            }
+        },
+
+        initMealItems: function(items){
+            this.itemsView = new $.Global.ComponentView.ItemsView({el: "#items_view_modify"});
+            this.itemsView.render();
+            this.itemsView.loadItems(items);
         },
 
         render: function(data){
             this.$el.html(this.template(data));
+
+            this.initCompanyTextBox(data.companyName, data.companyId);
+            this.initStartDate();
+            this.initEndDate();
+            this.initMealItems(data.items);
         },
 
-        modifyItem: function(itemId){
+        modifyMeal: function(mealId){
             var me = this;
 
-            this.collection.getOne(itemId, function(data){
+            this.collection.getOne(mealId, function(data){
 
                 if(data){
                     me.render(data);
@@ -189,17 +232,17 @@ $(document).ready(function(){
         },
 
         save: function(){
-            var itemId = this.$('form').data('item_id'),
+            var mealId = this.$('form').data('meal_id'),
                 me = this;
 
             if(!this.$('form').valid()){
                 return;
             }
 
-            me.collection.modifyItem(this.$('form').serialize(), function(data){
+            me.collection.modifyMeal($.Global.Utils.formToDict(this.$('form')), function(data){
                 if(data.errcode == "0"){
                     $.Global.Notice.SuccessTopNotice('操作成功');
-                    router.navigate('modify/' + itemId, {'trigger': true});
+                    router.navigate('modify/' + mealId, {'trigger': true});
                 } else {
                     $.Global.Notice.ErrorTopNotice(data.errmsg);
                 }
@@ -212,7 +255,9 @@ $(document).ready(function(){
     var AddView = Backbone.View.extend({
         el: 'body',
 
-        template: _.template($('#add_item_template').html()),
+        template: _.template($('#add_meal_template').html()),
+
+        itemsView: null,
 
         showPanel: function(){
             var me = this;
@@ -256,42 +301,44 @@ $(document).ready(function(){
         },
 
         initMealItems: function(){
-            
+            this.itemsView = new $.Global.ComponentView.ItemsView({el: "#items_view_add"});
+            this.itemsView.render();
         },
 
         render: function(){
             var me = this;
 
-            $('#add_item_modal').remove();
+            $('#add_meal_modal').remove();
             
             $('body').append(this.template());
 
             // 绑定事件
-            $('#add_item_modal .cancel').bind('click', function(){
+            $('#add_meal_modal .cancel').bind('click', function(){
                 history.go(-1);
             });
-            $('#add_item_modal .ok').bind('click', function(){
-                me.addItem();
+            $('#add_meal_modal .ok').bind('click', function(){
+                me.addMeal();
             });
             
-            $('#add_item_modal').modal({'show': true, 'backdrop': 'static'});
+            $('#add_meal_modal').modal({'show': true, 'backdrop': 'static'});
 
             me.initCompanyTextBox();
             me.initStartDate();
             me.initEndDate();
+            me.initMealItems();
         },
 
-        addItem: function(){
+        addMeal: function(){
             var me = this;
             
-            if(!$('#add_item_modal form').valid()){
+            if(!$('#add_meal_modal form').valid()){
                 return;
             }
 
-            items.addItem($.Global.Utils.formToDict($('#add_item_modal form')), function(data){
+            meals.addMeal($.Global.Utils.formToDict($('#add_meal_modal form')), function(data){
                 if(data.errcode == "0"){
                     router.navigate('modify/' + data.errmsg, {trigger: true});
-                    $('#add_item_modal').modal('hide');
+                    $('#add_meal_modal').modal('hide');
                     $.Global.Notice.SuccessTopNotice("操作成功");
                 } else {
                     $.Global.Notice.ErrorTopNotice(data.errmsg);
@@ -306,17 +353,17 @@ $(document).ready(function(){
         routes: {
             "":                             "search",
             "search/(:name)/:pageIndex":    "search",
-            "modify/:itemId":               "modify",
+            "modify/:mealId":               "modify",
             "add":                          "add"
         },
 
         // 获取推荐用户
         search: function(name, pageIndex){
-            items.search(name, pageIndex);
+            meals.search(name, pageIndex);
         },
 
-        modify: function(itemId){
-            modifyView.modifyItem(itemId);
+        modify: function(mealId){
+            modifyView.modifyMeal(mealId);
         },
 
         add: function(){
@@ -325,9 +372,9 @@ $(document).ready(function(){
 
     });
 
-    var items = new Items(),
-        listView = new ListView({collection: items}),
-        modifyView = new ModifyView({collection: items}),
+    var meals = new Meals(),
+        listView = new ListView({collection: meals}),
+        modifyView = new ModifyView({collection: meals}),
         addView = new AddView(),
         router = new Router();
 
@@ -340,14 +387,14 @@ $(document).ready(function(){
 {% block admin_main %}
 <ul class="nav nav-pills orange-nav-pills">
     <li class="active">
-        <a href="#item_list" data-toggle="pill">
+        <a href="#meal_list" data-toggle="pill">
             <i class="fa fa-list-ol pr-5"></i>
             <span class="hidden-sm hidden-md hidden-lg">列表</span>
             <span class="hidden-xs">套餐列表</span>
         </a>
     </li>
     <li>
-        <a href="#modify_item" data-toggle="pill">
+        <a href="#modify_meal" data-toggle="pill">
             <i class="fa fa-pencil-square-o pr-5"></i>
             <span class="hidden-sm hidden-md hidden-lg">修改</span>
             <span class="hidden-xs">修改套餐信息</span>
@@ -364,7 +411,7 @@ $(document).ready(function(){
 
 <div class="tab-content">
     <!-- 用户列表 -->
-    <div class="tab-pane fade pt-15 in active" id="item_list">
+    <div class="tab-pane fade pt-15 in active" id="meal_list">
         <form action="." onsubmit="javascript: return false;">
             <div class="pl-0 pb-10 col-md-3">
                 <div class="input-group input-group-sm">
@@ -379,10 +426,11 @@ $(document).ready(function(){
             <thead>
                 <tr>
                     <th>#</th>
-                    <th>名称</th>
-                    <th>类型</th>
-                    <th>单价</th>
-                    <th class="hidden-xs">规格</th>
+                    <th>套餐名称</th>
+                    <th class="hidden-xs">所属公司</th>
+                    <th class="hidden-xs">开始时间</th>
+                    <th class="hidden-xs">结束时间</th>
+                    <th>价格</th>
                     <th>状态</th>
                 </tr>
             </thead>
@@ -399,27 +447,22 @@ $(document).ready(function(){
     </div>
 
     <!-- 修改用户信息 -->
-    <div class="tab-pane fade pt-15" id="modify_item">
+    <div class="tab-pane fade pt-15" id="modify_meal">
         
     </div>
 </div>
 
-<script type="text/template" id="item_list_template">
-<% _.each(items, function(item){ %>
-    <tr class="pointer" data-item_id="<%= item.itemId %>">
-        <td><%= item.num %></td>
-        <td><%= item.name %></td>
+<script type="text/template" id="meal_list_template">
+<% _.each(meals, function(meal){ %>
+    <tr class="pointer" data-meal_id="<%= meal.mealId %>">
+        <td><%= meal.num %></td>
+        <td><%= meal.name %></td>
+        <td class="hidden-xs"><%= meal.companyName %></td>
+        <td class="hidden-xs"><%= meal.startDate %></td>
+        <td class="hidden-xs"><%= meal.endDate %></td>
+        <td><%= meal.price %></td>
         <td>
-        {% for type in types %}
-            <% if(item.itemType == '{{type.value}}'){ %>
-            {{ type.name }}
-            <% } %>
-        {% endfor %}
-        </td>
-        <td><%= item.price %></td>
-        <td class="hidden-xs"><%= item.spec %></td>
-        <td>
-        <% if(item.state){ %>
+        <% if(meal.state == 1){ %>
             <span class="fa fa-check co-3B99FC"></span>
         <% } else { %>
             <span class="fa fa-times co-C33333"></span>
@@ -429,46 +472,54 @@ $(document).ready(function(){
 <% }) %>
 </script>
 
-<script type="text/template" id="modify_item_template">
-<form class="form-horizontal" data-item_id='<%= itemId %>' role="form" method="post" action="">
-    <input type="hidden" name="item_id" value="<%= itemId %>" />
+<script type="text/template" id="modify_meal_template">
+<form class="form-horizontal" data-meal_id='<%= mealId %>' role="form" method="post" action="">
+    <input type="hidden" name="meal_id" value="<%= mealId %>" />
     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
         <label class="col-sm-2 control-label">名称</label>
-        <div class="col-sm-3">
+        <div class="col-sm-5">
             <input type="text" required class="form-control" name='name' value='<%= name %>'>
         </div>
     </div>
     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
-        <label class="col-sm-2 control-label">类型</label>
-        <div class="col-sm-3">
-            <select name="item_type" class="form-control">
-                {% for type in types %}
-                <option value="{{type.value}}" <% if(itemType == {{type.value}}){ %>selected<% } %> >{{type.name}}</option>
-                {% endfor %}
-            </select>
+        <label class="col-sm-2 control-label">所属公司</label>
+        <div class="col-sm-5">
+            <input type="text" id="company_modify" class="form-control" name='company' value=''>
         </div>
     </div>
     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
-        <label class="col-sm-2 control-label">规格</label>
-        <div class="col-sm-3">
-            <input type="text" class="form-control" name='spec' value='<%= spec %>' placeholder="论斤 or 论个">
+        <label class="col-sm-2 control-label">开始日期</label>
+        <div class="col-sm-2">
+            <input type="text" id="start_date_modify" required class="form-control date" name='start_date' value='<%= startDate %>'>
         </div>
     </div>
     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
-        <label class="col-sm-2 control-label">单价</label>
-        <div class="col-sm-3">
+        <label class="col-sm-2 control-label">结束日期</label>
+        <div class="col-sm-2">
+            <input type="text" id="end_date_modify" required class="form-control date" name='end_date' value='<%= endDate %>'>
+        </div>
+    </div>
+    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+        <label class="col-sm-2 control-label">描述</label>
+        <div class="col-sm-6">
+            <textarea name="des" rows="6" class="form-control" placeholder=""><%= des %></textarea>
+        </div>
+    </div>
+    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+        <label class="col-sm-2 control-label">套餐项目</label>
+        <div class="col-sm-6" id="items_view_modify">
+            
+        </div>
+    </div>
+    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+        <label class="col-sm-2 control-label">价格</label>
+        <div class="col-sm-2">
             <input type="text" required class="form-control" name='price' value='<%= price %>'>
         </div>
     </div>
     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
-        <label class="col-sm-2 control-label">排序</label>
-        <div class="col-sm-3">
-            <input type="text" required class="form-control" name='sort' value='<%= sort %>'>
-        </div>
-    </div>
-    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
         <label class="col-sm-2 control-label">状态</label>
-        <div class="col-sm-3">
+        <div class="col-sm-2">
             <select name="state" class="form-control">
                 {% for state in states %}
                 <option value="{{state.value}}" <% if(state == {{state.value}}){ %>selected<% } %> >{{state.name}}</option>
@@ -484,8 +535,8 @@ $(document).ready(function(){
 </form>
 </script>
 
-<script type="text/template" id="add_item_template">
-<div class="modal fade" id="add_item_modal" tabindex="-1" role="dialog">
+<script type="text/template" id="add_meal_template">
+<div class="modal fade" id="add_meal_modal" tabindex="-1" role="dialog">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header pb-5">
@@ -495,29 +546,28 @@ $(document).ready(function(){
                 <form class="form-horizontal" role="form" method="post" action="">
                     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
                         <label class="col-sm-2 control-label">名称</label>
-                        <div class="col-sm-6">
+                        <div class="col-sm-8">
                             <input type="text" required class="form-control" name='name' value=''>
                         </div>
                     </div>
                     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
                         <label class="col-sm-2 control-label">所属公司</label>
-                        <div class="col-sm-6">
+                        <div class="col-sm-8">
                             <input type="text" id="company_add" class="form-control" name='company' value=''>
                         </div>
                     </div>
                     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
                         <label class="col-sm-2 control-label">开始日期</label>
                         <div class="col-sm-3">
-                            <input type="text" id="start_date_add" required class="form-control" name='start_date' value='{{start_date}}'>
+                            <input type="text" id="start_date_add" required class="form-control date" name='start_date' value='{{start_date}}'>
                         </div>
                     </div>
                     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
                         <label class="col-sm-2 control-label">结束日期</label>
                         <div class="col-sm-3">
-                            <input type="text" id="end_date_add" required class="form-control" name='end_date' value='{{end_date}}'>
+                            <input type="text" id="end_date_add" required class="form-control date" name='end_date' value='{{end_date}}'>
                         </div>
                     </div>
-                    
                     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
                         <label class="col-sm-2 control-label">描述</label>
                         <div class="col-sm-10">
@@ -526,55 +576,7 @@ $(document).ready(function(){
                     </div>
                     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
                         <label class="col-sm-2 control-label">套餐项目</label>
-                        <div class="col-sm-10" id="meal_item_add">
-
-                            <ul class="list-unstyled well">
-                                <div class="pb-15 border-bottom-1 bdc-e4e4e4 mb-15 pr">
-                                    <input type="text" class="form-control search-item" placeholder="输入茶点项目名字" value="">
-                                    <span class="btn-search-item"><i class="fa fa-search"></i></span>
-                                </div>
-                                <li class="pb-10">
-                                    <div class="row">
-                                        <div class="col-sm-5 pr-0">
-                                            <div class="input-group">
-                                                <span class="input-group-addon">苹果</span>
-                                                <input type="text" class="form-control" value="1">
-                                                <span class="input-group-addon">斤</span>
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-4 hide">
-                                            <div class="input-group">
-                                                <input type="text" class="form-control" value="20">
-                                                <span class="input-group-addon">元</span>
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-3">
-                                            <a class="btn btn-danger btn-remove-item" title="删除该项目">X</a>
-                                        </div>
-                                    </div>
-                                </li>
-
-                                <li class="pb-10">
-                                    <div class="row">
-                                        <div class="col-sm-5 pr-0">
-                                            <div class="input-group">
-                                                <span class="input-group-addon">火龙果</span>
-                                                <input type="text" class="form-control" value="1">
-                                                <span class="input-group-addon">斤</span>
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-4 hide">
-                                            <div class="input-group">
-                                                <input type="text" class="form-control" value="20">
-                                                <span class="input-group-addon">元</span>
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-3">
-                                            <a class="btn btn-danger btn-remove-item" title="删除该项目">X</a>
-                                        </div>
-                                    </div>
-                                </li>
-                            </ul>
+                        <div class="col-sm-10" id="items_view_add">
                             
                         </div>
                     </div>

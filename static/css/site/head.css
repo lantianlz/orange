@@ -109,3 +109,10 @@ body{
     color: #25A210;
     background-color: #ffffff;
 }
+
+.orange-wx{
+    display: none;
+}
+.contact-hover-weixin:hover~.orange-wx{
+    display: block;
+}

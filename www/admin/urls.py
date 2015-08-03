@@ -32,6 +32,7 @@ urlpatterns += patterns('www.admin.views_company',
 # 产品管理
 urlpatterns += patterns('www.admin.views_item',
 
+    url(r'^item/get_items_by_name$', 'get_items_by_name'),
     url(r'^item/add_item$', 'add_item'),
     url(r'^item/modify_item$', 'modify_item'),
     url(r'^item/get_item_by_id$', 'get_item_by_id'),
@@ -47,6 +48,16 @@ urlpatterns += patterns('www.admin.views_meal',
     url(r'^meal/get_meal_by_id$', 'get_meal_by_id'),
     url(r'^meal/search$', 'search'),
     url(r'^meal$', 'meal'),
+)
+
+# 订单管理
+urlpatterns += patterns('www.admin.views_order',
+
+    url(r'^order/add_order$', 'add_order'),
+    url(r'^order/modify_order$', 'modify_order'),
+    url(r'^order/get_order_by_id$', 'get_order_by_id'),
+    url(r'^order/search$', 'search'),
+    url(r'^order$', 'order'),
 )
 
 # 城市

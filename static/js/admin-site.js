@@ -402,6 +402,173 @@ if (!String.format) {
         };
     };
 
+    /*
+        组件view
+    */
+    $.Global.ComponentView = {
+        version: '1.0.0',
+        author: 'stranger',
+        description: '组件view'
+    }
+    /*
+        产品项目组件
+    */
+    $.Global.ComponentView.ItemsView = Backbone.View.extend({
+        el: '#items-view',
+
+        _html: [
+            '<ul class="list-unstyled items-view">',
+                '<div class="pb-15 border-bottom-1 bdc-e4e4e4 mb-15 pr">',
+                    '<input type="text" class="form-control search-item" placeholder="输入茶点项目名字" value="">',
+                    '<span class="btn-search-item"><i class="fa fa-search"></i></span>',
+                '</div>',
+            '</ul>'
+        ].join(''),
+
+        events: {
+            'click .btn-remove-item': 'removeItem',
+            'click .item': 'focusItem'
+        },
+
+        // 添加项目
+        addItem: function(_data){
+            var data = $.extend({
+                    value: '',
+                    data: '0',
+                    price: '0',
+                    itemType: '1',
+                    spec: '',
+                    amount: '0'
+                }, _data),
+                _itemHtml = [
+                    '<li class="pb-10" data-item_id="{0}">',
+                        '<div class="row">',
+                            '<div class="col-sm-5 pr-0 col-xs-9">',
+                                '<div class="input-group">',
+                                    '<span class="input-group-addon">{1}</span>',
+                                    '<input type="text" name="item-amounts" required class="form-control number item" value="{2}">',
+                                    '<input type="hidden" name="item-ids" value="{5}">',
+                                    '<span class="input-group-addon">{3}</span>',
+                                '</div>',
+                            '</div>',
+                            '<div class="col-sm-4 hide">',
+                                '<div class="input-group">',
+                                    '<input type="text" class="form-control" data-price="{4}" value="0">',
+                                    '<span class="input-group-addon">元</span>',
+                                '</div>',
+                            '</div>',
+                            '<div class="col-sm-2 col-xs-3">',
+                                '<a class="btn btn-danger btn-remove-item" title="删除该项目">X</a>',
+                            '</div>',
+                        '</div>',
+                    '</li>'
+                ].join(''),
+                _items = this.$('.items-view li'),
+                temp = _items.filter(function(i){return _items.eq(i).data('item_id') == _data.data});
+
+            // 是否已经存在
+            if(temp.length == 0){
+                this.$('.items-view').append(
+                    String.format(
+                        _itemHtml,
+                        data.data,
+                        data.value,
+                        data.amount,
+                        data.spec,
+                        data.price,
+                        data.data
+                    )
+                );
+            }
+
+        },
+
+        // 删除项目
+        removeItem: function(sender){
+            var target = $(sender.currentTarget);
+
+            target.parents('li').remove();
+        },
+
+        focusItem: function(sender){
+            var target = $(sender.currentTarget);
+
+            target[0].select();
+        },
+
+        loadItems: function(items){
+            var me = this;
+
+            $.map(items, function(item){
+                console.log(item)
+                me.addItem(
+                    $.Global.Utils.dictMap(item, {
+                        'value': 'name',
+                        'data': 'item_id',
+                        'price': 'price',
+                        'itemType': 'item_type',
+                        'spec': 'spec',
+                        'amount': 'amount'
+                    })
+                );
+            });
+        },
+
+        // 初始化项目产品自动补全下拉框
+        initItemAutocomplete: function(){
+            var me = this;
+
+            me.$('.search-item').autocomplete({
+                
+                serviceUrl: '/admin/item/get_items_by_name',
+                paramName: 'name',
+                isLocal: false,
+                triggerSelectOnValidInput: false,
+                deferRequestBy: 300,
+                transformResult: function(response) {
+                    
+                    var data = JSON.parse(response),
+                        result = [];
+
+                    if(data){
+
+                        result = $.Global.Utils.dictMapParse(data, {
+                            'value': 'name',
+                            'data': 'item_id',
+                            'price': 'price',
+                            'itemType': 'item_type',
+                            'spec': 'spec'
+                        });
+                    }
+                    
+                    return {
+                        suggestions: result
+                    };
+                },
+                onSelect: function(suggestion){
+                    // 添加项目
+                    me.addItem(suggestion);
+
+                },
+                formatResult: function(suggestion, value){
+                    return String.format(
+                        '<div class="suggestion-item">{0}<span class="pull-right">{1} / {2}</span></div>', 
+                        suggestion.value, 
+                        suggestion.price,
+                        suggestion.spec
+                    );
+                }
+            })
+        },
+
+        render: function(){
+
+            this.$el.html(this._html);
+
+            this.initItemAutocomplete();
+        }
+    });
+
 })(jQuery);
 
 
