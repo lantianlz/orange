@@ -28,30 +28,45 @@ $(document).ready(function(){
         _modelMaps: {
             'num': 'num',
             'orderId': 'order_id',
-            'name': 'name',
+            'mealId': 'meal_id',
+            'mealName': 'meal_name',
             'companyId': 'company_id',
             'companyName': 'company_name',
-            'des': 'des',
-            'price': 'price',
-            'startDate': 'start_date',
-            'endDate': 'end_date',
-            'items': 'items',
+            'orderNo': 'order_no',
+            'createOperatorId': 'create_operator_id',
+            'createOperatorName': 'create_operator_name',
+            'createTime': 'create_time',
+            'distributeOperatorId': 'distribute_operator_id',
+            'distributeOperatorName': 'distribute_operator_name',
+            'distributeTime': 'distribute_time',
+            'confirmOperatorId': 'confirm_operator_id',
+            'confirmOperatorName': 'confirm_operator_name',
+            'confirmTime': 'confirm_time',
+            'totalPrice': 'total_price',
+            'note': 'note',
+            'isTest': 'is_test',
             'state': 'state'
         },
 
-        search: function(name, pageIndex){
+        search: function(startDate, endDate, state, orderNo, pageIndex){
             var me = this,
-                name = name || '',
+                startDate = startDate || '',
+                endDate = endDate || '',
+                state = state || '-1',
+                orderNo = orderNo || '',
                 pageIndex = pageIndex || 1;
 
             ajaxSend(
                 "/admin/order/search", 
-                {'name': name, 'page_index': pageIndex}, 
+                {'state': state, 'start_date': startDate, 'end_date': endDate, 'order_no': orderNo, 'page_index': pageIndex}, 
                 function(data){
                     
                     me.pageIndex = pageIndex;
                     me.pageCount = data.page_count;
-                    me.name = name;
+                    me.startDate = startDate;
+                    me.endDate = endDate;
+                    me.state = state;
+                    me.orderNo = orderNo;
 
                     me.reset($.Global.Utils.dictMapParse(data.data, me._modelMaps));
                 }
@@ -97,6 +112,18 @@ $(document).ready(function(){
                     }
                 }
             );
+        },
+
+        getMeal: function(meal_id, callback){
+            ajaxSend(
+                "/admin/meal/get_meal_by_id", 
+                {'meal_id': meal_id},
+                function(response){
+                    if(callback){
+                        callback(response);
+                    }
+                }
+            );
         }
 
     });
@@ -125,7 +152,7 @@ $(document).ready(function(){
             this.pagination.render(
                 this.collection.pageIndex||1, 
                 this.collection.pageCount, 
-                'search/' + this.collection.name
+                String.format('search/{0}/{1}/{2}/{3}', this.collection.startDate, this.collection.endDate, this.collection.state, this.collection.orderNo)
             );
         },
 
@@ -135,16 +162,26 @@ $(document).ready(function(){
         },
 
         searchOrder: function(){
-            var name = this.$('.name').val();
+            var startDate = this.$('#start_date_search').val(),
+                endDate = this.$('#end_date_search').val(),
+                state = this.$('.state').val(),
+                orderNo = this.$('.order-no').val();
 
-            router.navigate(String.format('/search/{0}/1', name), {trigger: true});
+            router.navigate(String.format('/search/{0}/{1}/{2}/{3}/1', startDate, endDate, state, orderNo), {trigger: true});
         },
 
         modifyOrder: function(sender){
             var target = $(sender.currentTarget),
-                orderId = target.data('order_id');
+                orderId = target.data('order_id'),
+                mealId = target.data('meal_id'),
+                mealName = target.data('meal_name')
 
-            router.navigate('/modify/' + orderId, {trigger: true});
+            if(orderId){
+                router.navigate('/modify/' + orderId, {trigger: true});
+            } else {
+                router.navigate('/add/' + mealId + '/' + mealName, {trigger: true});
+            }
+            
         }
         
     });
@@ -166,54 +203,8 @@ $(document).ready(function(){
             $('.orange-nav-pills a[href="#modify_order"]').tab('show');
         },
 
-        initStartDate: function(){
-            $('#start_date_add').datetimepicker({
-                format: 'yyyy-mm-dd',
-                language: 'zh-CN',
-                minView: 2,
-                autoclose: true
-            });
-        },
-
-        initEndDate: function(){
-            $('#end_date_add').datetimepicker({
-                format: 'yyyy-mm-dd',
-                language: 'zh-CN',
-                minView: 2,
-                autoclose: true
-            });
-        },
-
-        companyTextBox: null,
-        initCompanyTextBox: function(name, value){
-            var me = this;
-
-            this.companyTextBox = $.Global.TextboxList.create('#company_modify', {
-                max: 1,
-                placeholder: '选择所属公司',
-                url: '/admin/company/get_companys_by_name',
-                param: 'company_name',
-                loadPlaceholder: '正在加载...'
-            });
-
-            if(value){
-                this.companyTextBox.add(name, value);
-            }
-        },
-
-        initOrderItems: function(items){
-            this.itemsView = new $.Global.ComponentView.ItemsView({el: "#items_view_modify"});
-            this.itemsView.render();
-            this.itemsView.loadItems(items);
-        },
-
         render: function(data){
             this.$el.html(this.template(data));
-
-            this.initCompanyTextBox(data.companyName, data.companyId);
-            this.initStartDate();
-            this.initEndDate();
-            this.initOrderItems(data.items);
         },
 
         modifyOrder: function(orderId){
@@ -259,45 +250,45 @@ $(document).ready(function(){
 
         itemsView: null,
 
-        showPanel: function(){
+        showPanel: function(mealId, mealName){
             var me = this;
 
-            me.render();
+            me.render(mealId, mealName);
         },
 
-        initStartDate: function(){
-            $('#start_date_add').datetimepicker({
-                format: 'yyyy-mm-dd',
-                language: 'zh-CN',
-                minView: 2,
-                autoclose: true
-            });
-        },
-
-        initEndDate: function(){
-            $('#end_date_add').datetimepicker({
-                format: 'yyyy-mm-dd',
-                language: 'zh-CN',
-                minView: 2,
-                autoclose: true
-            });
-        },
-
-        companyTextBox: null,
-        initCompanyTextBox: function(name, value){
+        mealTextBox: null,
+        initMealTextBox: function(name, value){
             var me = this;
 
-            this.companyTextBox = $.Global.TextboxList.create('#company_add', {
+            me.mealTextBox = $.Global.TextboxList.create('#meal_add', {
                 max: 1,
-                placeholder: '选择所属公司',
-                url: '/admin/company/get_companys_by_name',
-                param: 'company_name',
+                placeholder: '选择套餐',
+                url: '/admin/meal/get_meals_by_name',
+                param: 'meal_name',
                 loadPlaceholder: '正在加载...'
             });
+            
+             // 选择套餐之后导入套餐项目
+            me.mealTextBox.target.onAdd = function(target){
+                var meal_id = target.getValue()[0];
+
+                me.loadMealItems(meal_id);
+            }
 
             if(value){
-                this.companyTextBox.add(name, value);
+                me.mealTextBox.add(name, value);
             }
+        },
+
+        // 加载套餐下的项目
+        loadMealItems: function(meal_id){
+            
+            var me = this;
+
+            orders.getMeal(meal_id, function(data){
+                me.itemsView.loadItems(data.items, true);
+                me.$('#meal_id_add').val(meal_id);
+            });
         },
 
         initOrderItems: function(){
@@ -305,7 +296,7 @@ $(document).ready(function(){
             this.itemsView.render();
         },
 
-        render: function(){
+        render: function(mealId, mealName){
             var me = this;
 
             $('#add_order_modal').remove();
@@ -322,10 +313,10 @@ $(document).ready(function(){
             
             $('#add_order_modal').modal({'show': true, 'backdrop': 'static'});
 
-            me.initCompanyTextBox();
-            me.initStartDate();
-            me.initEndDate();
+            me.initMealTextBox(mealName, mealId);
             me.initOrderItems();
+
+            
         },
 
         addOrder: function(){
@@ -352,22 +343,22 @@ $(document).ready(function(){
     var Router = Backbone.Router.extend({
         routes: {
             "":                             "search",
-            "search/(:name)/:pageIndex":    "search",
-            "modify/:orderId":               "modify",
-            "add":                          "add"
+            "search/(:startDate)/(:endDate)/(:state)/(:orderNo)/:pageIndex":    "search",
+            "modify/:orderId":              "modify",
+            "add/(:mealId)/(:mealName)":                          "add"
         },
 
         // 获取推荐用户
-        search: function(name, pageIndex){
-            orders.search(name, pageIndex);
+        search: function(startDate, endDate, state, orderNo, pageIndex){
+            orders.search(startDate, endDate, state, orderNo, pageIndex);
         },
 
         modify: function(orderId){
             modifyView.modifyOrder(orderId);
         },
 
-        add: function(){
-            addView.showPanel();
+        add: function(mealId, mealName){
+            addView.showPanel(mealId, mealName);
         }
 
     });
@@ -379,6 +370,20 @@ $(document).ready(function(){
         router = new Router();
 
     Backbone.history.start();
+
+    $('#start_date_search').datetimepicker({
+        format: 'yyyy-mm-dd',
+        language: 'zh-CN',
+        minView: 2,
+        autoclose: true
+    });
+
+    $('#end_date_search').datetimepicker({
+        format: 'yyyy-mm-dd',
+        language: 'zh-CN',
+        minView: 2,
+        autoclose: true
+    });
 });
 
 </script>
@@ -401,7 +406,7 @@ $(document).ready(function(){
         </a>
     </li>
     <li class="pull-right">
-        <a href="#add">
+        <a href="#add//">
             <i class="fa fa-plus-circle pr-5"></i>
             <span class="hidden-sm hidden-md hidden-lg">添加</span>
             <span class="hidden-xs">添加订单</span>
@@ -412,25 +417,41 @@ $(document).ready(function(){
 <div class="tab-content">
     <!-- 用户列表 -->
     <div class="tab-pane fade pt-15 in active" id="order_list">
-        <form action="." onsubmit="javascript: return false;">
-            <div class="pl-0 pb-10 col-md-3">
-                <div class="input-group input-group-sm">
-                    <input type="text" class="form-control name" placeholder="输入订单号..." />
-                    <span class="input-group-btn">
-                        <button class="btn btn-default search" type="submit">查询</button>
-                    </span>
-                </div>
+        <form action="." class="form-inline" onsubmit="javascript: return false;">
+            <div class="input-group input-group-sm pb-10">
+                <span class="input-group-addon">开始日期</span>
+                <input type="text" class="form-control" id="start_date_search" value="{{start_date}}"  />
+            </div>
+            <div class="input-group input-group-sm pb-10">
+                <span class="input-group-addon">结束日期</span>
+                <input type="text" class="form-control" id="end_date_search" value="{{start_date}}"  />
+            </div>
+            <div class="input-group input-group-sm pb-10">
+                <span class="input-group-addon">订单状态</span>
+                <select class="form-control state">
+                    {% for state in all_states %}
+                    <option value="{{state.value}}">{{state.name}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="input-group input-group-sm pb-10">
+                <span class="input-group-addon">订单号</span>
+                <input type="text" class="form-control order-no" placeholder="输入订单号..." />
+                <span class="input-group-btn">
+                    <button class="btn btn-default search bgc-eeeeee" type="submit">查询</button>
+                </span>
             </div>
         </form>
         <table class="table table-hover">
             <thead>
                 <tr>
                     <th>#</th>
+                    <th>订单号</th>
                     <th>套餐名称</th>
                     <th class="hidden-xs">所属公司</th>
-                    <th class="hidden-xs">开始时间</th>
-                    <th class="hidden-xs">结束时间</th>
+                    <th class="hidden-xs">创建时间</th>
                     <th>价格</th>
+                    <th>是否试吃</th>
                     <th>状态</th>
                 </tr>
             </thead>
@@ -454,19 +475,24 @@ $(document).ready(function(){
 
 <script type="text/template" id="order_list_template">
 <% _.each(orders, function(order){ %>
-    <tr class="pointer" data-order_id="<%= order.orderId %>">
+    <tr class="pointer" data-order_id="<%= order.orderId %>" data-meal_id="<%= order.mealId %>" data-meal_name="<%= order.mealName %>">
         <td><%= order.num %></td>
-        <td><%= order.name %></td>
+        <td><%= order.orderNo %></td>
+        <td><%= order.mealName %></td>
         <td class="hidden-xs"><%= order.companyName %></td>
-        <td class="hidden-xs"><%= order.startDate %></td>
-        <td class="hidden-xs"><%= order.endDate %></td>
-        <td><%= order.price %></td>
+        <td class="hidden-xs"><%= order.createTime %></td>
+        <td><%= order.totalPrice %></td>
         <td>
-        <% if(order.state == 1){ %>
-            <span class="fa fa-check co-3B99FC"></span>
-        <% } else { %>
-            <span class="fa fa-times co-C33333"></span>
-        <% } %>
+        <% if(order.isTest){ %>
+                <span class="fa fa-check co-3B99FC"></span>
+            <% } else { %>
+                <span class="fa fa-times co-C33333"></span>
+            <% } %>
+        </td>
+        <td>
+        {% for state in all_states %}
+            <% if({{state.value}} == order.state){ %>{{state.name}}<% } %>
+        {% endfor %}
         </td>
     </tr>
 <% }) %>
@@ -476,45 +502,75 @@ $(document).ready(function(){
 <form class="form-horizontal" data-order_id='<%= orderId %>' role="form" method="post" action="">
     <input type="hidden" name="order_id" value="<%= orderId %>" />
     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
-        <label class="col-sm-2 control-label">名称</label>
+        <label class="col-sm-2 control-label">订单号</label>
         <div class="col-sm-5">
-            <input type="text" required class="form-control" name='name' value='<%= name %>'>
+            <p class="form-control-static"><%= orderNo %></p>
+        </div>
+    </div>
+    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+        <label class="col-sm-2 control-label">套餐</label>
+        <div class="col-sm-5">
+            <p class="form-control-static"><%= mealName %></p>
         </div>
     </div>
     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
         <label class="col-sm-2 control-label">所属公司</label>
         <div class="col-sm-5">
-            <input type="text" id="company_modify" class="form-control" name='company' value=''>
+            <p class="form-control-static"><%= companyName %></p>
         </div>
     </div>
     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
-        <label class="col-sm-2 control-label">开始日期</label>
-        <div class="col-sm-2">
-            <input type="text" id="start_date_modify" required class="form-control date" name='start_date' value='<%= startDate %>'>
+        <label class="col-sm-2 control-label">订单价格</label>
+        <div class="col-sm-5">
+            <p class="form-control-static"><%= totalPrice %></p>
         </div>
     </div>
     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
-        <label class="col-sm-2 control-label">结束日期</label>
-        <div class="col-sm-2">
-            <input type="text" id="end_date_modify" required class="form-control date" name='end_date' value='<%= endDate %>'>
+        <label class="col-sm-2 control-label">订单创建人</label>
+        <div class="col-sm-5">
+            <p class="form-control-static"><%= createOperatorName %></p>
         </div>
     </div>
     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
-        <label class="col-sm-2 control-label">描述</label>
-        <div class="col-sm-6">
-            <textarea name="des" rows="6" class="form-control" placeholder=""><%= des %></textarea>
+        <label class="col-sm-2 control-label">订单创建时间</label>
+        <div class="col-sm-5">
+            <p class="form-control-static"><%= createTime %></p>
         </div>
     </div>
     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
-        <label class="col-sm-2 control-label">套餐项目</label>
-        <div class="col-sm-6" id="items_view_modify">
-            
+        <label class="col-sm-2 control-label">订单配送人</label>
+        <div class="col-sm-5">
+            <p class="form-control-static"><%= distributeOperatorName %></p>
         </div>
     </div>
     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
-        <label class="col-sm-2 control-label">价格</label>
-        <div class="col-sm-2">
-            <input type="text" required class="form-control" name='price' value='<%= price %>'>
+        <label class="col-sm-2 control-label">订单配送时间</label>
+        <div class="col-sm-5">
+            <p class="form-control-static"><%= distributeTime %></p>
+        </div>
+    </div>
+    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+        <label class="col-sm-2 control-label">订单确认人</label>
+        <div class="col-sm-5">
+            <p class="form-control-static"><%= confirmOperatorName %></p>
+        </div>
+    </div>
+    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+        <label class="col-sm-2 control-label">订单确认时间</label>
+        <div class="col-sm-5">
+            <p class="form-control-static"><%= confirmTime %></p>
+        </div>
+    </div>
+    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+        <label class="col-sm-2 control-label">是否试吃</label>
+        <div class="col-sm-5">
+            <p class="form-control-static"><% if(isTest == 1){ %>是<% } else { %>否<% } %></p>
+        </div>
+    </div>
+    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+        <label class="col-sm-2 control-label">备注</label>
+        <div class="col-sm-5">
+            <p class="form-control-static"><%= note %></p>
         </div>
     </div>
     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
@@ -545,45 +601,39 @@ $(document).ready(function(){
             <div class="modal-body">
                 <form class="form-horizontal" role="form" method="post" action="">
                     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
-                        <label class="col-sm-2 control-label">名称</label>
-                        <div class="col-sm-8">
-                            <input type="text" required class="form-control" name='name' value=''>
-                        </div>
-                    </div>
-                    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
-                        <label class="col-sm-2 control-label">所属公司</label>
-                        <div class="col-sm-8">
-                            <input type="text" id="company_add" class="form-control" name='company' value=''>
-                        </div>
-                    </div>
-                    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
-                        <label class="col-sm-2 control-label">开始日期</label>
-                        <div class="col-sm-3">
-                            <input type="text" id="start_date_add" required class="form-control date" name='start_date' value='{{start_date}}'>
-                        </div>
-                    </div>
-                    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
-                        <label class="col-sm-2 control-label">结束日期</label>
-                        <div class="col-sm-3">
-                            <input type="text" id="end_date_add" required class="form-control date" name='end_date' value='{{end_date}}'>
-                        </div>
-                    </div>
-                    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
-                        <label class="col-sm-2 control-label">描述</label>
+                        <label class="col-sm-2 control-label">套餐</label>
                         <div class="col-sm-10">
-                            <textarea name="des" rows="6" class="form-control" placeholder=""></textarea>
+                            <input type="text" id="meal_add" class="form-control" name='meal' value=''>
                         </div>
                     </div>
                     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+                        <input type="hidden" id="meal_id_add" value="" />
                         <label class="col-sm-2 control-label">套餐项目</label>
                         <div class="col-sm-10" id="items_view_add">
                             
                         </div>
                     </div>
-                    <div class="form-group pt-20 pb-20 mb-0">
+                    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
                         <label class="col-sm-2 control-label">价格</label>
                         <div class="col-sm-3">
-                            <input type="text" required class="form-control" name='price' value='0'>
+                            <input type="text" required class="form-control" name='total_price' value='0'>
+                        </div>
+                    </div>
+                    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+                        <label class="col-sm-2 control-label">描述</label>
+                        <div class="col-sm-10">
+                            <textarea name="note" rows="6" class="form-control" placeholder=""></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group pt-20 pb-20 mb-0">
+                        <label class="col-sm-2 control-label">是否试吃</label>
+                        <div class="col-sm-10">
+                            <label class="radio-inline">
+                                <input type="radio" name="is_test" value="0" checked> 否
+                            </label>
+                            <label class="radio-inline">
+                                <input type="radio" name="is_test" value="1"> 是
+                            </label>
                         </div>
                     </div>
                 </form>

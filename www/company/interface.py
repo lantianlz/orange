@@ -3,6 +3,8 @@
 import datetime
 import logging
 import time
+import random
+import decimal
 from django.db import transaction
 from django.utils.encoding import smart_unicode
 from django.conf import settings
@@ -11,7 +13,7 @@ from common import utils, debug, validators, cache, raw_sql
 from www.misc.decorators import cache_required
 from www.misc import consts
 
-from models import Item, Company, Meal, MealItem
+from models import Item, Company, Meal, MealItem, Order, OrderItem
 
 DEFAULT_DB = 'default'
 
@@ -26,6 +28,16 @@ dict_err = {
 dict_err.update(consts.G_DICT_ERROR)
 
 class ItemBase(object):
+
+    def generate_item_code(self, item_type):
+        '''
+        自动生成货号
+        '''
+        word = Item.code_dict[int(item_type)]
+        count = Item.objects.filter(item_type=item_type).count() + 1
+        count = '%03d' % count
+
+        return word + count
 
     def get_all_item(self, state=None):
         objs = Item.objects.all()
@@ -49,7 +61,8 @@ class ItemBase(object):
                 item_type = item_type,
                 spec = spec,
                 price = price,
-                sort = sort
+                sort = sort,
+                code = self.generate_item_code(item_type)
             )
 
         except Exception, e:
@@ -262,7 +275,7 @@ class MealBase(object):
 
             # 套餐下的项目
             MealItem.objects.filter(meal=obj).delete()
-            print meal_items
+
             for x in meal_items:
                 MealItem.objects.create(
                     meal = obj,
@@ -306,14 +319,117 @@ class MealBase(object):
     def get_items_of_meal(self, meal_id):
         return MealItem.objects.filter(meal_id=meal_id)
 
+    def get_meals_by_name(self, name=""):
+        objs = self.get_all_meal()
 
+        if name:
+            objs = objs.filter(name__contains=name)
 
+        return objs[:10]
 
+class OrderBase(object):
 
+    def generate_order_no(self, pr):
+        """
+        @note: 生成订单的id，传入不同前缀来区分订单类型
+        """
+        postfix = '%s' % datetime.datetime.now().strftime('%Y%m%d%H%M%S%f')[:-3]  # 纯数字
+        if pr:
+            postfix = '%s%s%02d' % (pr, postfix, random.randint(0, 99))
+        return postfix
 
+    @transaction.commit_manually(using=DEFAULT_DB)
+    def add_order(self, meal_id, create_operator, total_price, order_items, is_test=False, note=''):
+        
+        if not (meal_id and create_operator and total_price and order_items):
+            return 99800, dict_err.get(99800)
 
+        meal = MealBase().get_meal_by_id(meal_id)            
+        if not meal:
+            return 20302, dict_err.get(20302)
 
+        if not CompanyBase().get_company_by_id(meal.company_id):
+            return 20202, dict_err.get(20202)
 
+        try:
+            # 订单
+            obj = Order.objects.create(
+                meal_id = meal.id,
+                company_id = meal.company_id,
+                order_no = self.generate_order_no("T"),
+                create_operator = create_operator,
+                total_price = total_price,
+                is_test = is_test,
+                note = note
+            )
+
+            # 订单下的项目
+            for x in order_items:
+
+                item = ItemBase().get_item_by_id(x['item_id'])
+
+                OrderItem.objects.create(
+                    order = obj,
+                    item_id = x['item_id'],
+                    amount = x['amount'],
+                    price = item.price,
+                    total_price = item.price * decimal.Decimal(x['amount'])
+                )
+            
+            transaction.commit(using=DEFAULT_DB)
+
+        except Exception, e:
+            debug.get_debug_detail_and_send_email(e)
+            transaction.rollback(using=DEFAULT_DB)
+            return 99900, dict_err.get(99900)
+
+        return 0, obj
+
+    def get_all_order(self, state=None):
+        objs = Order.objects.all()
+
+        if state != None:
+            objs = objs.filter(state=state)
+
+        return objs
+
+    def search_orders_for_admin(self, start_date, end_date, state, order_no):
+
+        if order_no:
+            objs = self.get_all_order().filter(order_no=order_no)
+        else:
+            objs = self.get_all_order(state).filter(
+                create_time__range = (start_date, end_date)
+            )
+
+        return objs
+
+    def search_uncreate_orders_for_admin(self, start_date, end_date):
+        # 查询出日期需要配送的套餐
+        objs = MealBase().get_all_meal(state=1).filter(
+            end_date__gt = end_date
+        )
+        meal_ids = [x.id for x in objs]
+
+        # 查询日期已经配送的订单
+        orders = Order.objects.filter(
+            create_time__range = (start_date, end_date),
+            meal_id__in = meal_ids
+        )
+        except_meal_ids = [x.meal_id for x in orders]
+        
+        # 排除掉已经送出的订单
+        objs = objs.exclude(id__in = except_meal_ids)
+
+        return objs
+
+    def get_order_by_id(self, order_id):
+        try:
+            ps = dict(id=order_id)
+
+            return Order.objects.get(**ps)
+        except Meal.DoesNotExist:
+            return ""
 
 
 

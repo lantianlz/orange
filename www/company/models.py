@@ -108,8 +108,10 @@ class Item(models.Model):
     @note: 单项
     '''
     state_choices = ((0, u"停用"), (1, u"正常"))
-    type_choices = ((1, u"水果"), (2, u"糕点"))
+    type_choices = ((1, u"水果"), (2, u"点心"), (3, u"一次性耗材"), (4, u"盛装容器"))
+    code_dict = {1: 'F', 2: 'C', 3: 'S', 4: 'R'}
 
+    code = models.CharField(verbose_name=u"货号", max_length=32, unique=True)
     name = models.CharField(verbose_name=u"名称", max_length=128, unique=True)
     price = models.DecimalField(verbose_name=u"单价", max_digits=10, decimal_places=2, default=0)
     item_type = models.IntegerField(verbose_name=u"类型", default=1, choices=type_choices)
@@ -117,8 +119,7 @@ class Item(models.Model):
     spec = models.CharField(verbose_name=u"规格", max_length=32, null=True)
     sort = models.IntegerField(verbose_name=u"排序", default=0, choices=type_choices)
     create_time = models.DateTimeField(auto_now_add=True, db_index=True)
-
-    code = models.CharField(verbose_name=u"货号", max_length=32, null=True)
+    
     img = models.CharField(verbose_name=u"图片", max_length=128, null=True)
 
     class Meta:
@@ -163,11 +164,13 @@ class Order(models.Model):
     order_no = models.CharField(verbose_name=u"订单号", max_length=32, db_index=True)
     create_operator = models.CharField(verbose_name=u"订单创建人", max_length=32)
     create_time = models.DateTimeField(verbose_name=u"订单创建时间", auto_now_add=True, db_index=True)
-    distribute_operator = models.CharField(verbose_name=u"订单配送人", max_length=32)
-    distribute_time = models.DateTimeField(verbose_name=u"订单配送时间", auto_now_add=True)
-    confirm_operator = models.CharField(verbose_name=u"订单确认人", max_length=32)
-    confirm_time = models.DateTimeField(verbose_name=u"订单确认时间", auto_now_add=True)
+    distribute_operator = models.CharField(verbose_name=u"订单配送人", max_length=32, null=True)
+    distribute_time = models.DateTimeField(verbose_name=u"订单配送时间", null=True)
+    confirm_operator = models.CharField(verbose_name=u"订单确认人", max_length=32, null=True)
+    confirm_time = models.DateTimeField(verbose_name=u"订单确认时间", null=True)
     total_price = models.DecimalField(verbose_name=u"订单价格", max_digits=10, decimal_places=2, default=0)
+    note = models.TextField(verbose_name=u"备注", null=True)
+    is_test = models.BooleanField(verbose_name=u"是否试吃", default=False)
     state = models.IntegerField(verbose_name=u"状态", default=1, choices=state_choices, db_index=True)
     
 
@@ -176,13 +179,11 @@ class OrderItem(models.Model):
     '''
     @note: 每日订单下的项目
     '''
-    type_choices = ((0, u"套餐项目"), (1, u"非套餐项目"))
-
     order = models.ForeignKey("Order")
     item = models.ForeignKey("Item")
     amount = models.FloatField(verbose_name=u"数量", default=0)
-    price = models.DecimalField(verbose_name=u"价格", max_digits=10, decimal_places=2, default=0)
-    item_type = models.IntegerField(verbose_name=u"项目状态", default=0, choices=type_choices)
+    price = models.DecimalField(verbose_name=u"单价", max_digits=10, decimal_places=2, default=0)
+    total_price = models.DecimalField(verbose_name=u"总价", max_digits=10, decimal_places=2, default=0)
 
 
 class Invoice(models.Model):

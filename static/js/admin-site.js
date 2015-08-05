@@ -94,6 +94,19 @@ if (!String.format) {
     };
 
     /*
+        格式化价格
+        price: 要格式化的价格
+        num: 保留几位小数
+
+        用例:
+        $.Global.Utils.formatPrice(1.23456);
+    */
+    $.Global.Utils.formatPrice = function(price, num){
+        var _num = num || 2;
+        return parseFloat(price).toFixed(_num);
+    };
+
+    /*
         格式化日期
         返回字符串  可带格式 y-m-d、h:m:s、y-m-d h:m:s
 
@@ -418,16 +431,18 @@ if (!String.format) {
 
         _html: [
             '<ul class="list-unstyled items-view">',
-                '<div class="pb-15 border-bottom-1 bdc-e4e4e4 mb-15 pr">',
+                '<div class="pb-15 border-bottom-1 bdc-e4e4e4 mb-15 pr item-header">',
                     '<input type="text" class="form-control search-item" placeholder="输入茶点项目名字" value="">',
                     '<span class="btn-search-item"><i class="fa fa-search"></i></span>',
                 '</div>',
+                '<div class="border-top-1 bdc-e4e4e4 text-right mt-5 pt-10 item-footer">总价: <span class="sum fb">0</span> 元</div>',
             '</ul>'
         ].join(''),
 
         events: {
             'click .btn-remove-item': 'removeItem',
-            'click .item': 'focusItem'
+            'click .item': 'focusItem',
+            'input .item': 'changeAmount'
         },
 
         // 添加项目
@@ -435,29 +450,23 @@ if (!String.format) {
             var data = $.extend({
                     value: '',
                     data: '0',
-                    price: '0',
+                    price: 0,
                     itemType: '1',
                     spec: '',
-                    amount: '0'
+                    amount: 0
                 }, _data),
                 _itemHtml = [
                     '<li class="pb-10" data-item_id="{0}">',
                         '<div class="row">',
-                            '<div class="col-sm-5 pr-0 col-xs-9">',
+                            '<div class="col-sm-10 pr-0 col-xs-9">',
                                 '<div class="input-group">',
                                     '<span class="input-group-addon">{1}</span>',
-                                    '<input type="text" name="item-amounts" required class="form-control number item" value="{2}">',
+                                    '<input type="text" name="item-amounts" data-item_price="{6}" required class="form-control number item" value="{2}">',
+                                    '<span class="input-group-addon">{3}, <span class="total-price">{4}</span> 元</span>',
                                     '<input type="hidden" name="item-ids" value="{5}">',
-                                    '<span class="input-group-addon">{3}</span>',
                                 '</div>',
                             '</div>',
-                            '<div class="col-sm-4 hide">',
-                                '<div class="input-group">',
-                                    '<input type="text" class="form-control" data-price="{4}" value="0">',
-                                    '<span class="input-group-addon">元</span>',
-                                '</div>',
-                            '</div>',
-                            '<div class="col-sm-2 col-xs-3">',
+                            '<div class="col-sm-2 col-xs-3 text-right">',
                                 '<a class="btn btn-danger btn-remove-item" title="删除该项目">X</a>',
                             '</div>',
                         '</div>',
@@ -468,17 +477,20 @@ if (!String.format) {
 
             // 是否已经存在
             if(temp.length == 0){
-                this.$('.items-view').append(
-                    String.format(
-                        _itemHtml,
-                        data.data,
-                        data.value,
-                        data.amount,
-                        data.spec,
-                        data.price,
-                        data.data
-                    )
-                );
+                $(String.format(
+                    _itemHtml,
+                    data.data,      // 0.item_id
+                    data.value,     // 1.名称
+                    data.amount,    // 2.数量
+                    data.spec,      // 3.规格
+                    $.Global.Utils.formatPrice(
+                        parseFloat(data.price) * parseFloat(data.amount)
+                    ),     // 4.价格
+                    data.data,      // 5.隐藏域
+                    data.price      // 6.单价
+                )).insertBefore(this.$('.item-footer'));
+
+                this.calculatePrice();
             }
 
         },
@@ -488,19 +500,52 @@ if (!String.format) {
             var target = $(sender.currentTarget);
 
             target.parents('li').remove();
+
+            this.calculatePrice();
         },
 
+        // 点击选中
         focusItem: function(sender){
             var target = $(sender.currentTarget);
 
             target[0].select();
         },
 
-        loadItems: function(items){
+        // 价格变动
+        changeAmount: function(sender){
+            var target = $(sender.currentTarget),
+                price = parseFloat(target.data("item_price")),
+                amount = parseFloat(target.val()),
+                totalPrice = $.Global.Utils.formatPrice(
+                    price * amount
+                );
+
+            target.parents('li').find('.total-price').html(totalPrice);
+            this.calculatePrice();
+        },
+
+        // 计算总价
+        calculatePrice: function(){
+            var sum = 0;
+
+            $.map(this.$('.total-price'), function(price){
+                sum += parseFloat(price.innerHTML);
+            })
+
+            this.$('.sum').html($.Global.Utils.formatPrice(sum));
+        },
+
+        // 加载项目
+        loadItems: function(items, clear){
             var me = this;
 
+            // 是否清除已有项目
+            if(clear){
+                this.$(".items-view li").remove();
+            }
+
             $.map(items, function(item){
-                console.log(item)
+                
                 me.addItem(
                     $.Global.Utils.dictMap(item, {
                         'value': 'name',

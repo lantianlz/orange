@@ -329,6 +329,7 @@ $(document).ready(function(){
             <thead>
                 <tr>
                     <th>#</th>
+                    <th class="hidden-xs">货号</th>
                     <th>名称</th>
                     <th>类型</th>
                     <th>单价</th>
@@ -358,6 +359,7 @@ $(document).ready(function(){
 <% _.each(items, function(item){ %>
     <tr class="pointer" data-item_id="<%= item.itemId %>">
         <td><%= item.num %></td>
+        <td><%= item.code %></td>
         <td><%= item.name %></td>
         <td>
         {% for type in types %}
@@ -382,6 +384,12 @@ $(document).ready(function(){
 <script type="text/template" id="modify_item_template">
 <form class="form-horizontal" data-item_id='<%= itemId %>' role="form" method="post" action="">
     <input type="hidden" name="item_id" value="<%= itemId %>" />
+    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+        <label class="col-sm-2 control-label">货号</label>
+        <div class="col-sm-5">
+            <p class="form-control-static"><%= code %></p>
+        </div>
+    </div>
     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
         <label class="col-sm-2 control-label">名称</label>
         <div class="col-sm-3">

@@ -43,6 +43,7 @@ urlpatterns += patterns('www.admin.views_item',
 # 套餐管理
 urlpatterns += patterns('www.admin.views_meal',
 
+    url(r'^meal/get_meals_by_name$', 'get_meals_by_name'),
     url(r'^meal/add_meal$', 'add_meal'),
     url(r'^meal/modify_meal$', 'modify_meal'),
     url(r'^meal/get_meal_by_id$', 'get_meal_by_id'),

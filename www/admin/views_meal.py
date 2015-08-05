@@ -118,7 +118,10 @@ def modify_meal(request):
     item_ids = request.POST.getlist('item-ids')
     item_amounts = request.POST.getlist('item-amounts')
 
-    return MealBase().modify_meal(meal_id, company, name, price, start_date, end_date, des, _get_items(item_ids, item_amounts))
+    return MealBase().modify_meal(
+        meal_id, company, name, price, start_date, 
+        end_date, des, _get_items(item_ids, item_amounts)
+    )
 
 @verify_permission('add_meal')
 @common_ajax_response
@@ -134,5 +137,26 @@ def add_meal(request):
     item_ids = request.POST.getlist('item-ids')
     item_amounts = request.POST.getlist('item-amounts')
 
-    flag, msg = MealBase().add_meal(company, name, price, start_date, end_date, des, _get_items(item_ids, item_amounts))
+    flag, msg = MealBase().add_meal(
+        company, name, price, start_date, end_date, des, 
+        _get_items(item_ids, item_amounts)
+    )
     return flag, msg.id if flag == 0 else msg
+
+
+@member_required
+def get_meals_by_name(request):
+    '''
+    根据名字查询公司
+    '''
+    meal_name = request.REQUEST.get('meal_name')
+
+    result = []
+
+    meals = MealBase().get_meals_by_name(meal_name)
+
+    if meals:
+        for x in meals:
+            result.append([x.id, u'%s [¥%s]' % (x.name, x.price), None, u'%s [¥%s]' % (x.name, x.price)])
+
+    return HttpResponse(json.dumps(result), mimetype='application/json')
