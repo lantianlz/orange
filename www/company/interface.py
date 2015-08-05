@@ -20,10 +20,14 @@ DEFAULT_DB = 'default'
 dict_err = {
     20101: u'茶点产品名重复',
     20102: u'没有找到对应的茶点产品',
+
     20201: u'公司名称重复',
     20202: u'没有找到对应的公司',
+
     20301: u'套餐名称重复',
     20302: u'没有找到对应的套餐',
+
+    20401: u'没有找到对应的订单',
 }
 dict_err.update(consts.G_DICT_ERROR)
 
@@ -71,9 +75,12 @@ class ItemBase(object):
 
         return 0, item
 
-    def search_items_for_admin(self, name):
+    def search_items_for_admin(self, item_type, name):
         objs = self.get_all_item()
         
+        if item_type != -1:
+            objs = objs.filter(item_type=item_type)
+
         if name:
             objs = objs.filter(name__contains=name)
         
@@ -149,7 +156,7 @@ class CompanyBase(object):
         except Company.DoesNotExist:
             return ""
 
-    def add_company(self, name, staff_name, mobile, tel, addr, city_id, sort, des):
+    def add_company(self, name, staff_name, mobile, tel, addr, city_id, sort, des, person_count):
 
         if not (name and staff_name and mobile and addr and city_id):
             return 99800, dict_err.get(99800)
@@ -166,7 +173,8 @@ class CompanyBase(object):
                 addr = addr,
                 city_id = city_id,
                 sort = sort,
-                des = des
+                des = des,
+                person_count = person_count
             )
         except Exception, e:
             debug.get_debug_detail_and_send_email(e)
@@ -174,7 +182,7 @@ class CompanyBase(object):
 
         return 0, obj
 
-    def modify_company(self, company_id, name, staff_name, mobile, tel, addr, city_id, sort, des, state):
+    def modify_company(self, company_id, name, staff_name, mobile, tel, addr, city_id, sort, des, state, person_count):
         if not (name and staff_name and mobile and addr and city_id):
             return 99800, dict_err.get(99800)
 
@@ -195,6 +203,7 @@ class CompanyBase(object):
             obj.sort = sort
             obj.des = des
             obj.state = state
+            obj.person_count = person_count
             obj.save()
         except Exception, e:
             debug.get_debug_detail_and_send_email(e)
@@ -415,9 +424,9 @@ class OrderBase(object):
         orders = Order.objects.filter(
             create_time__range = (start_date, end_date),
             meal_id__in = meal_ids
-        )
+        ).exclude(state=0)
         except_meal_ids = [x.meal_id for x in orders]
-        
+
         # 排除掉已经送出的订单
         objs = objs.exclude(id__in = except_meal_ids)
 
@@ -431,7 +440,57 @@ class OrderBase(object):
         except Meal.DoesNotExist:
             return ""
 
+    def distribute_order(self, order_id, distribute_operator):
 
+        obj = self.get_order_by_id(order_id)
+        if not obj:
+            return 20401, dict_err.get(20401)
+
+        try:
+            obj.state = 2
+            obj.distribute_operator = distribute_operator
+            obj.distribute_time = datetime.datetime.now()
+            obj.save()
+        except Exception, e:
+            debug.get_debug_detail_and_send_email(e)
+            return 99900, dict_err.get(99900)
+
+        return 0, dict_err.get(0)
+
+    def confirm_order(self, order_id, confirm_operator):
+
+        obj = self.get_order_by_id(order_id)
+        if not obj:
+            return 20401, dict_err.get(20401)
+
+        try:
+            obj.state = 3
+            obj.confirm_operator = confirm_operator
+            obj.confirm_time = datetime.datetime.now()
+            obj.save()
+        except Exception, e:
+            debug.get_debug_detail_and_send_email(e)
+            return 99900, dict_err.get(99900)
+
+        return 0, dict_err.get(0)
+
+    def drop_order(self, order_id):
+
+        obj = self.get_order_by_id(order_id)
+        if not obj:
+            return 20401, dict_err.get(20401)
+
+        try:
+            obj.state = 0
+            obj.save()
+        except Exception, e:
+            debug.get_debug_detail_and_send_email(e)
+            return 99900, dict_err.get(99900)
+
+        return 0, dict_err.get(0)
+
+    def get_items_of_order(self, order_id):
+        return OrderItem.objects.filter(order_id=order_id)
 
 
 

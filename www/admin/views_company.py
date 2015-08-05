@@ -90,12 +90,13 @@ def modify_company(request):
     tel = request.REQUEST.get('tel')
     addr = request.REQUEST.get('addr')
     city_id = request.REQUEST.get('city_id')
+    person_count = request.REQUEST.get('person_count')
     sort = request.REQUEST.get('sort')
     des = request.REQUEST.get('des')
     state = request.REQUEST.get('state')
 
     return CompanyBase().modify_company(
-        company_id, name, staff_name, mobile, tel, addr, city_id, sort, des, state
+        company_id, name, staff_name, mobile, tel, addr, city_id, sort, des, state, person_count
     )
 
 
@@ -108,10 +109,11 @@ def add_company(request):
     tel = request.REQUEST.get('tel')
     addr = request.REQUEST.get('addr')
     city_id = request.REQUEST.get('city_id')
+    person_count = request.REQUEST.get('person_count')
     sort = request.REQUEST.get('sort')
     des = request.REQUEST.get('des')
 
-    flag, msg = CompanyBase().add_company(name, staff_name, mobile, tel, addr, city_id, sort, des)
+    flag, msg = CompanyBase().add_company(name, staff_name, mobile, tel, addr, city_id, sort, des, person_count)
 
     return flag, msg.id if flag == 0 else msg
 

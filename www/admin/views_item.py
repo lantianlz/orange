@@ -15,6 +15,8 @@ def item(request, template_name='pc/admin/item.html'):
     from www.company.models import Item
     states = [{'name': x[1], 'value': x[0]} for x in Item.state_choices]
     types = [{'name': x[1], 'value': x[0]} for x in Item.type_choices]
+    all_types = [{'name': x[1], 'value': x[0]} for x in Item.type_choices]
+    all_types.insert(0, {'value': -1, 'name': u"全部"})
     
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
 
@@ -46,9 +48,11 @@ def search(request):
     data = []
 
     name = request.REQUEST.get('name')
+    item_type = request.REQUEST.get('item_type')
+    item_type = int(item_type)
     page_index = int(request.REQUEST.get('page_index'))
 
-    objs = ItemBase().search_items_for_admin(name)
+    objs = ItemBase().search_items_for_admin(item_type, name)
 
     page_objs = page.Cpt(objs, count=10, page=page_index).info
 

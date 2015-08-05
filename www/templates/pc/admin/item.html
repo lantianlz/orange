@@ -36,19 +36,21 @@ $(document).ready(function(){
             'sort': 'sort'
         },
 
-        search: function(name, pageIndex){
+        search: function(itemType, name, pageIndex){
             var me = this,
                 name = name || '',
+                itemType = itemType || -1,
                 pageIndex = pageIndex || 1;
 
             ajaxSend(
                 "/admin/item/search", 
-                {'name': name, 'page_index': pageIndex}, 
+                {'item_type': itemType, 'name': name, 'page_index': pageIndex}, 
                 function(data){
                     
                     me.pageIndex = pageIndex;
                     me.pageCount = data.page_count;
                     me.name = name;
+                    me.itemType = itemType;
 
                     me.reset($.Global.Utils.dictMapParse(data.data, me._modelMaps));
                 }
@@ -122,7 +124,7 @@ $(document).ready(function(){
             this.pagination.render(
                 this.collection.pageIndex||1, 
                 this.collection.pageCount, 
-                'search/' + this.collection.name
+                'search/' + this.collection.itemType + '/' + this.collection.name
             );
         },
 
@@ -132,9 +134,10 @@ $(document).ready(function(){
         },
 
         searchItem: function(){
-            var name = this.$('.name').val();
+            var itemType = this.$('.item-type').val(),
+                name = this.$('.name').val();
 
-            router.navigate(String.format('/search/{0}/1', name), {trigger: true});
+            router.navigate(String.format('/search/{0}/{1}/1', itemType, name), {trigger: true});
         },
 
         modifyItem: function(sender){
@@ -255,14 +258,14 @@ $(document).ready(function(){
     var Router = Backbone.Router.extend({
         routes: {
             "":                             "search",
-            "search/(:name)/:pageIndex":    "search",
+            "search/(:itemType)/(:name)/:pageIndex":    "search",
             "modify/:itemId":               "modify",
             "add":                          "add"
         },
 
         // 获取推荐用户
-        search: function(name, pageIndex){
-            items.search(name, pageIndex);
+        search: function(itemType, name, pageIndex){
+            items.search(itemType, name, pageIndex);
         },
 
         modify: function(itemId){
@@ -315,15 +318,31 @@ $(document).ready(function(){
 <div class="tab-content">
     <!-- 用户列表 -->
     <div class="tab-pane fade pt-15 in active" id="item_list">
-        <form action="." onsubmit="javascript: return false;">
-            <div class="pl-0 pb-10 col-md-3">
+        <form action="." class="form-inline" onsubmit="javascript: return false;">
+            <div class="input-group input-group-sm pb-10">
+                <span class="input-group-addon">产品类型</span>
+                <select class="form-control item-type">
+                    {% for type in all_types %}
+                    <option value="{{type.value}}">{{type.name}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="input-group input-group-sm pb-10">
+                <span class="input-group-addon">产品名称</span>
+                <input type="text" class="form-control name" placeholder="输入产品名称..." />
+                <span class="input-group-btn">
+                    <button class="btn btn-default search bgc-eeeeee" type="submit">查询</button>
+                </span>
+            </div>
+
+            <!-- <div class="pl-0 pb-10 col-md-3">
                 <div class="input-group input-group-sm">
                     <input type="text" class="form-control name" placeholder="输入产品名称..." />
                     <span class="input-group-btn">
                         <button class="btn btn-default search" type="submit">查询</button>
                     </span>
                 </div>
-            </div>
+            </div> -->
         </form>
         <table class="table table-hover">
             <thead>
@@ -359,10 +378,10 @@ $(document).ready(function(){
 <% _.each(items, function(item){ %>
     <tr class="pointer" data-item_id="<%= item.itemId %>">
         <td><%= item.num %></td>
-        <td><%= item.code %></td>
+        <td class="hidden-xs"><%= item.code %></td>
         <td><%= item.name %></td>
         <td>
-        {% for type in types %}
+        {% for type in all_types %}
             <% if(item.itemType == '{{type.value}}'){ %>
             {{ type.name }}
             <% } %>

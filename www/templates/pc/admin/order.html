@@ -87,12 +87,40 @@ $(document).ready(function(){
             );
         },
 
-        modifyOrder: function(data, callback){
+        distributeOrder: function(orderId, callback){
             var me = this;
 
             ajaxSend(
-                "/admin/order/modify_order", 
-                $.param(data, true),
+                "/admin/order/distribute_order", 
+                {'order_id': orderId},
+                function(data){
+                    if(callback){
+                        callback(data);
+                    }
+                }
+            );
+        },
+
+        confirmOrder: function(orderId, callback){
+            var me = this;
+
+            ajaxSend(
+                "/admin/order/confirm_order", 
+                {'order_id': orderId},
+                function(data){
+                    if(callback){
+                        callback(data);
+                    }
+                }
+            );
+        },
+
+        dropOrder: function(orderId, callback){
+            var me = this;
+
+            ajaxSend(
+                "/admin/order/drop_order", 
+                {'order_id': orderId},
                 function(data){
                     if(callback){
                         callback(data);
@@ -196,7 +224,9 @@ $(document).ready(function(){
         itemsView: null,
 
         events: {
-            'click .save': 'save'
+            'click .distribute': 'distributeOrder',
+            'click .confirm': 'confirmOrder',
+            'click .drop': 'dropOrder'
         },
 
         showPanel: function(){
@@ -222,18 +252,42 @@ $(document).ready(function(){
             });
         },
 
-        save: function(){
+        distributeOrder: function(){
             var orderId = this.$('form').data('order_id'),
                 me = this;
 
-            if(!this.$('form').valid()){
-                return;
-            }
-
-            me.collection.modifyOrder($.Global.Utils.formToDict(this.$('form')), function(data){
+            me.collection.distributeOrder(orderId, function(data){
                 if(data.errcode == "0"){
                     $.Global.Notice.SuccessTopNotice('操作成功');
-                    router.navigate('modify/' + orderId, {'trigger': true});
+                    me.modifyOrder(orderId);
+                } else {
+                    $.Global.Notice.ErrorTopNotice(data.errmsg);
+                }
+            })
+        },
+
+        confirmOrder: function(){
+            var orderId = this.$('form').data('order_id'),
+                me = this;
+
+            me.collection.confirmOrder(orderId, function(data){
+                if(data.errcode == "0"){
+                    $.Global.Notice.SuccessTopNotice('操作成功');
+                    me.modifyOrder(orderId);
+                } else {
+                    $.Global.Notice.ErrorTopNotice(data.errmsg);
+                }
+            })
+        },
+
+        dropOrder: function(){
+            var orderId = this.$('form').data('order_id'),
+                me = this;
+
+            me.collection.dropOrder(orderId, function(data){
+                if(data.errcode == "0"){
+                    $.Global.Notice.SuccessTopNotice('操作成功');
+                    me.modifyOrder(orderId);
                 } else {
                     $.Global.Notice.ErrorTopNotice(data.errmsg);
                 }
@@ -288,6 +342,7 @@ $(document).ready(function(){
             orders.getMeal(meal_id, function(data){
                 me.itemsView.loadItems(data.items, true);
                 me.$('#meal_id_add').val(meal_id);
+                me.$('.total-price').val(data.price);
             });
         },
 
@@ -315,7 +370,6 @@ $(document).ready(function(){
 
             me.initMealTextBox(mealName, mealId);
             me.initOrderItems();
-
             
         },
 
@@ -446,12 +500,12 @@ $(document).ready(function(){
             <thead>
                 <tr>
                     <th>#</th>
-                    <th>订单号</th>
+                    <th class="hidden-xs">订单号</th>
                     <th>套餐名称</th>
                     <th class="hidden-xs">所属公司</th>
                     <th class="hidden-xs">创建时间</th>
                     <th>价格</th>
-                    <th>是否试吃</th>
+                    <th>试吃</th>
                     <th>状态</th>
                 </tr>
             </thead>
@@ -477,7 +531,7 @@ $(document).ready(function(){
 <% _.each(orders, function(order){ %>
     <tr class="pointer" data-order_id="<%= order.orderId %>" data-meal_id="<%= order.mealId %>" data-meal_name="<%= order.mealName %>">
         <td><%= order.num %></td>
-        <td><%= order.orderNo %></td>
+        <td class="hidden-xs"><%= order.orderNo %></td>
         <td><%= order.mealName %></td>
         <td class="hidden-xs"><%= order.companyName %></td>
         <td class="hidden-xs"><%= order.createTime %></td>
@@ -486,7 +540,7 @@ $(document).ready(function(){
         <% if(order.isTest){ %>
                 <span class="fa fa-check co-3B99FC"></span>
             <% } else { %>
-                <span class="fa fa-times co-C33333"></span>
+                <!-- <span class="fa fa-times co-C33333"></span> -->
             <% } %>
         </td>
         <td>
@@ -576,16 +630,25 @@ $(document).ready(function(){
     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
         <label class="col-sm-2 control-label">状态</label>
         <div class="col-sm-2">
-            <select name="state" class="form-control">
+            <p class="form-control-static">
                 {% for state in states %}
-                <option value="{{state.value}}" <% if(state == {{state.value}}){ %>selected<% } %> >{{state.name}}</option>
+                <% if(state == {{state.value}}){ %>{{state.name}}<% } %>
                 {% endfor %}
-            </select>
+            </p>
         </div>
     </div>
     <div class="form-group pt-20 pb-20 mb-0">
         <div class="col-sm-12">
-            <button type="button" class="btn btn-primary save">提交你的修改</button>
+            <% if(state == 1){ %>
+            <button type="button" class="btn btn-primary distribute">配送订单</button>
+            <% } %>
+            <% if(state == 2){ %>
+            <button type="button" class="btn btn-success confirm ml-25">完成订单</button>
+            <% } %>
+            <% if(state == 1 || state == 2){ %>
+            <button type="button" class="btn btn-danger drop ml-25">作废订单</button>
+            <% } %>
+            <a target="_blank" href="/admin/order/print_order?order_id=<%= orderId %>" class="btn btn-info print-order ml-25">打印配送单</a>
         </div>
     </div>
 </form>
@@ -616,7 +679,7 @@ $(document).ready(function(){
                     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
                         <label class="col-sm-2 control-label">价格</label>
                         <div class="col-sm-3">
-                            <input type="text" required class="form-control" name='total_price' value='0'>
+                            <input type="text" required class="form-control total-price" name='total_price' value='0'>
                         </div>
                     </div>
                     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">

@@ -1,0 +1,154 @@
+{% extends "pc/base/base_admin.html" %}
+{% block title %} 订单 {% endblock %}
+
+{% block base_css %}
+<style type="text/css">
+.container{
+	width: 900px;
+	padding-top: 30px;
+}
+.logo{
+	width: 31px;
+	position: absolute;
+	left: 15px;
+	top: 0px;
+}
+.logo-text{
+	font-size: 30px;
+	padding-left: 40px;
+}
+</style>
+{% endblock %}
+
+{% block base_js %}
+{% endblock %}
+
+{% block base_container %}
+<div class="container">
+	<div class="row">
+		<div class="col-md-12 pr">
+			<img class="logo" src="{{MEDIA_URL}}img/logo.png">
+			<span class="logo-text">三点十分</span>
+		</div>
+
+		<div class="col-md-12 pt-15">
+			收货方: {{order.company.name}} ( {{order.company.person_count}}人 )
+		</div>
+
+		<div class="col-md-6 pt-5">
+			联系人: {{order.company.staff_name}} ( {{order.company.mobile}} )
+		</div>
+		<div class="col-md-6 pt-5 text-right">
+			订单日期: {{order.create_time}}
+		</div>
+
+		<div class="col-md-6 pt-5">
+			收货地址: {{order.company.addr}}
+		</div>
+		<div class="col-md-6 pt-5 text-right">
+			订单号: {{order.order_no}}
+		</div>
+
+		<div class="col-md-12 pt-20">
+			<table class="table">
+			    <thead>
+		          	<tr>
+		            	<th>产品编号</th>
+		            	<th>产品名称</th>
+		            	<th>数量</th>
+		            	<th>规格</th>
+		            	<th>类别</th>
+		          	</tr>
+		        </thead>
+		        <tbody>
+		        	{% if data.1 %}
+		        	<tr>
+		        		<td colspan="5" class="fb fi border-bottom-2 bdc-dddddd">水果</td>
+		        	</tr>
+		        	{% for per in data.1 %}
+		        	<tr>
+			            <td>{{per.code}}</td>
+			            <td>{{per.name}}</td>
+			            <td>{{per.amount}}</td>
+			            <td>{{per.spec}}</td>
+			            <td>{{per.type}}</td>
+		          	</tr>
+		        	{% endfor %}
+		        	{% endif %}
+
+		        	{% if data.2 %}
+		          	<tr>
+		        		<td colspan="5" class="fb fi border-bottom-2 bdc-dddddd">点心</td>
+		        	</tr>
+		          	{% for per in data.2 %}
+		        	<tr>
+			            <td>{{per.code}}</td>
+			            <td>{{per.name}}</td>
+			            <td>{{per.amount}}</td>
+			            <td>{{per.spec}}</td>
+			            <td>{{per.type}}</td>
+		          	</tr>
+		        	{% endfor %}
+		        	{% endif %}
+
+		        	{% if data.3 %}
+		          	<tr>
+		        		<td colspan="5" class="fb fi border-bottom-2 bdc-dddddd">一次性耗材</td>
+		        	</tr>
+		          	{% for per in data.3 %}
+		        	<tr>
+			            <td>{{per.code}}</td>
+			            <td>{{per.name}}</td>
+			            <td>{{per.amount}}</td>
+			            <td>{{per.spec}}</td>
+			            <td>{{per.type}}</td>
+		          	</tr>
+		        	{% endfor %}
+		        	{% endif %}
+
+		        	{% if data.4 %}
+		          	<tr>
+		        		<td colspan="5" class="fb fi border-bottom-2 bdc-dddddd">盛装容器</td>
+		        	</tr>
+		          	{% for per in data.4 %}
+		        	<tr>
+			            <td>{{per.code}}</td>
+			            <td>{{per.name}}</td>
+			            <td>{{per.amount}}</td>
+			            <td>{{per.spec}}</td>
+			            <td>{{per.type}}</td>
+		          	</tr>
+		        	{% endfor %}
+		        	{% endif %}
+		        </tbody>
+		    </table>
+		</div>
+		<div class="col-md-12 pt-30">
+			<div class="col-md-3 border-top-2 bdc-dddddd pt-10 pl-0">
+				客户确认签字:
+			</div>
+			{% if order.is_test %}
+			<div class="col-md-3 border-top-2 bdc-dddddd pt-10 pr-0 text-right">
+				<div class="checkbox mb-0 mt-0">
+					<label>
+					  	<input checked type="checkbox"> 试吃订单
+					</label>
+				</div>
+			</div>
+			<div class="col-md-3 border-top-2 bdc-dddddd pt-10 pr-0 text-right">
+				订单原价: <span class="fb">{{order.total_price}}</span> 元
+			</div>
+			<div class="col-md-3 border-top-2 bdc-dddddd pt-10 pr-0 text-right">
+				订单总价: <span class="fb">0.00</span> 元
+			</div>
+			{% else %}
+			<div class="col-md-9 border-top-2 bdc-dddddd pt-10 pr-0 text-right">
+				订单总价: <span class="fb">{{order.total_price}}</span> 元
+			</div>
+			{% endif %}
+		</div>
+	</div>
+</div>
+{% endblock %}
+
+{% block footer %}{% endblock %}

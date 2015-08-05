@@ -131,22 +131,26 @@ def get_order_by_id(request):
     return HttpResponse(json.dumps(data), mimetype='application/json')
 
 
-@verify_permission('modify_coupon')
+@verify_permission('modify_order')
 @common_ajax_response
-def modify_coupon(request):
-    coupon_id = request.REQUEST.get('coupon_id')
-    coupon_type = request.REQUEST.get('coupon_type')
-    discount = request.REQUEST.get('discount')
-    expiry_time = request.REQUEST.get('expiry_time')
-    expiry_time = datetime.datetime.strptime(expiry_time, '%Y-%m-%d')
-    user_id = request.REQUEST.get('user_id')
-    minimum_amount = request.REQUEST.get('minimum_amount')
-    car_wash_id = request.REQUEST.get('car_wash_id')
+def distribute_order(request):
+    order_id = request.POST.get('order_id')
 
-    return CouponBase().modify_coupon(
-        coupon_id, coupon_type, discount, expiry_time, 
-        user_id, minimum_amount, car_wash_id
-    )
+    return OrderBase().distribute_order(order_id, request.user.id)
+
+@verify_permission('modify_order')
+@common_ajax_response
+def confirm_order(request):
+    order_id = request.POST.get('order_id')
+
+    return OrderBase().confirm_order(order_id, request.user.id)
+
+@verify_permission('modify_order')
+@common_ajax_response
+def drop_order(request):
+    order_id = request.POST.get('order_id')
+
+    return OrderBase().drop_order(order_id)
 
 def _get_items(item_ids, item_amounts):
 
@@ -179,3 +183,26 @@ def add_order(request):
 
     return flag, msg.id if flag == 0 else msg
 
+@verify_permission('')
+def print_order(request, template_name='pc/admin/print_order.html'):
+    order_id = request.REQUEST.get('order_id')
+
+    order = OrderBase().get_order_by_id(order_id)
+    items = OrderBase().get_items_of_order(order_id)
+
+    data = {}
+    for item in items:
+
+        key = item.item.item_type
+        if not data.has_key(key):
+            data[key] = []
+
+        data[key].append({
+            'code': item.item.code,
+            'name': item.item.name,
+            'amount': item.amount,
+            'spec': item.item.spec,
+            'type': item.item.get_item_type_display
+        })
+
+    return render_to_response(template_name, locals(), context_instance=RequestContext(request))

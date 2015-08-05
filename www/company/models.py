@@ -18,9 +18,9 @@ class Company(models.Model):
     mobile = models.CharField(verbose_name=u"手机", max_length=32, null=True)
     tel = models.CharField(verbose_name=u"座机", max_length=32, null=True)
     addr = models.CharField(verbose_name=u"地址", max_length=256, null=True)
+    person_count = models.IntegerField(verbose_name=u"员工总数", default=0)
 
     city_id = models.IntegerField(verbose_name=u"所属城市", default=0)
-    person_count = models.IntegerField(verbose_name=u"员工总数", default=0)
     source = models.IntegerField(verbose_name=u"来源", default=0, choices=source_choices)
     state = models.IntegerField(verbose_name=u"状态", default=1, db_index=True, choices=state_choices)
     sort = models.IntegerField(verbose_name=u"排序", default=0)

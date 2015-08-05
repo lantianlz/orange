@@ -435,6 +435,10 @@ if (!String.format) {
                     '<input type="text" class="form-control search-item" placeholder="输入茶点项目名字" value="">',
                     '<span class="btn-search-item"><i class="fa fa-search"></i></span>',
                 '</div>',
+                '<div class="fb fi pb-5 type-1">水果</div>',
+                '<div class="fb fi pb-5 pt-15 type-2">点心</div>',
+                '<div class="fb fi pb-5 pt-15 type-3">一次性耗材</div>',
+                '<div class="fb fi pb-5 pt-15 type-4">盛装容器</div>',
                 '<div class="border-top-1 bdc-e4e4e4 text-right mt-5 pt-10 item-footer">总价: <span class="sum fb">0</span> 元</div>',
             '</ul>'
         ].join(''),
@@ -458,15 +462,15 @@ if (!String.format) {
                 _itemHtml = [
                     '<li class="pb-10" data-item_id="{0}">',
                         '<div class="row">',
-                            '<div class="col-sm-10 pr-0 col-xs-9">',
+                            '<div class="col-sm-10 pr-0 col-xs-10">',
                                 '<div class="input-group">',
                                     '<span class="input-group-addon">{1}</span>',
                                     '<input type="text" name="item-amounts" data-item_price="{6}" required class="form-control number item" value="{2}">',
-                                    '<span class="input-group-addon">{3}, <span class="total-price">{4}</span> 元</span>',
                                     '<input type="hidden" name="item-ids" value="{5}">',
+                                    '<span class="input-group-addon">{3}, <span class="total-price">{4}</span> 元</span>',
                                 '</div>',
                             '</div>',
-                            '<div class="col-sm-2 col-xs-3 text-right">',
+                            '<div class="col-sm-2 col-xs-2 text-right">',
                                 '<a class="btn btn-danger btn-remove-item" title="删除该项目">X</a>',
                             '</div>',
                         '</div>',
@@ -488,7 +492,7 @@ if (!String.format) {
                     ),     // 4.价格
                     data.data,      // 5.隐藏域
                     data.price      // 6.单价
-                )).insertBefore(this.$('.item-footer'));
+                )).insertAfter(this.$('.type-'+data.itemType));
 
                 this.calculatePrice();
             }
