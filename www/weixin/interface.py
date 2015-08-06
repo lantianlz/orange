@@ -98,9 +98,9 @@ class WexinBase(object):
         return base_xml % dict(to_user=from_user, from_user=to_user, timestamp=int(time.time()), content=error_info)
 
     def get_subscribe_event_response(self, to_user, from_user):
-        content = (u'三点十分，下午茶点服务专家；\n'
-                   u'我们专注于为企业提供按需定制的下午茶点服务，每天按时配送上门，简单为你；\n'
-                   u'新鲜的水果，可口的点心，尽在三点十分'
+        content = (u'三点十分，下午茶点服务专家；'
+                   u'我们专注于为企业提供按需定制的下午茶点服务，免费配送上门。\n'
+                   u'新鲜的水果，可口的点心，尽在三点十分，欢迎立即免费试吃体验。'
                    )
         return self.get_base_content_response(to_user, from_user, content=content)
 
