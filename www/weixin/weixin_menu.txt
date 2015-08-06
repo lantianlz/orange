@@ -28,17 +28,17 @@
         {
             "type": "view", 
             "name": "产品介绍", 
-            "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx0d227d4f9b19658a&redirect_uri=http%3A%2F%2Fwww.3-10.cc%2Faccount%2Foauth%2Fweixin&response_type=code&scope=snsapi_base&state=introduction#wechat_redirect"
+            "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxd6922b078dff1607&redirect_uri=http%3A%2F%2Fwww.3-10.cc%2Faccount%2Foauth%2Fweixin&response_type=code&scope=snsapi_base&state=introduction#wechat_redirect"
         }, 
         {
             "type": "view", 
             "name": "免费试吃", 
-            "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx0d227d4f9b19658a&redirect_uri=http%3A%2F%2F1www.3-10.cc%%2Faccount%2Foauth%2Fweixin&response_type=code&scope=snsapi_base&state=booking#wechat_redirect"
+            "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxd6922b078dff1607&redirect_uri=http%3A%2F%2F1www.3-10.cc%%2Faccount%2Foauth%2Fweixin&response_type=code&scope=snsapi_base&state=booking#wechat_redirect"
         }, 
         {
             "type": "view", 
             "name": "推荐有礼", 
-            "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx0d227d4f9b19658a&redirect_uri=http%3A%2F%2Fwww.3-10.cc%%2Faccount%2Foauth%2Fweixin&response_type=code&scope=snsapi_base&state=recommend#wechat_redirect"
+            "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxd6922b078dff1607&redirect_uri=http%3A%2F%2Fwww.3-10.cc%%2Faccount%2Foauth%2Fweixin&response_type=code&scope=snsapi_base&state=recommend#wechat_redirect"
         },
     ]
 }
