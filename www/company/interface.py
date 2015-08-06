@@ -13,7 +13,7 @@ from common import utils, debug, validators, cache, raw_sql
 from www.misc.decorators import cache_required
 from www.misc import consts
 
-from models import Item, Company, Meal, MealItem, Order, OrderItem
+from models import Item, Company, Meal, MealItem, Order, OrderItem, Booking
 
 DEFAULT_DB = 'default'
 
@@ -28,6 +28,9 @@ dict_err = {
     20302: u'没有找到对应的套餐',
 
     20401: u'没有找到对应的订单',
+
+    20501: u'该手机号已经预约',
+    20502: u'没有找到对应的预约信息',
 }
 dict_err.update(consts.G_DICT_ERROR)
 
@@ -491,6 +494,75 @@ class OrderBase(object):
 
     def get_items_of_order(self, order_id):
         return OrderItem.objects.filter(order_id=order_id)
+
+
+class BookingBase(object):
+
+    def get_booking_by_id(self, booking_id):
+        try:
+            ps = dict(id=booking_id)
+
+            return Booking.objects.get(**ps)
+        except Booking.DoesNotExist:
+            return ""
+
+    def add_booking(self, company_name, staff_name, mobile, source=1):
+
+        if not (company_name and staff_name and mobile):
+            return 99800, dict_err.get(99800)
+
+        if Booking.objects.filter(mobile=mobile):
+            return 20501, dict_err.get(20501)
+
+        try:
+            obj = Booking.objects.create(
+                company_name = company_name,
+                staff_name = staff_name,
+                mobile = mobile,
+                source = source
+            )
+        except Exception, e:
+            debug.get_debug_detail_and_send_email(e)
+            return 99900, dict_err.get(99900)
+
+        return 0, obj
+
+    def modify_booking(self, booking_id, operator_id, state, note=''):
+
+        if not (booking_id and operator_id and state):
+            return 99800, dict_err.get(99800)
+
+        obj = self.get_booking_by_id(booking_id)
+        if not obj:
+            return 20502, dict_err.get(20502)
+
+        try:
+
+            obj.note = note
+            obj.state = state
+            obj.operator_id = operator_id
+            obj.operation_time = datetime.datetime.now()
+            obj.save()
+
+        except Exception, e:
+            import traceback
+            traceback.print_exc()
+            # debug.get_debug_detail_and_send_email(e)
+            return 99900, dict_err.get(99900)
+
+        return 0, dict_err.get(0)
+
+    def search_bookings_for_admin(self, state):
+        return Booking.objects.filter(state=state)
+
+
+
+
+
+
+
+
+
 
 
 

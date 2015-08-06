@@ -84,22 +84,23 @@ class RechargeOrder(models.Model):
         ordering = ['-id', ]
 
 
-class BookInfo(models.Model):
+class Booking(models.Model):
 
     '''
     @note: 企业预留预订信息
     '''
     state_choices = ((0, u"未处理"), (1, u"已处理"))
-    source_choices = ((0, u"官网"), (1, u"IT桔子"), (1, u"拉勾网"), (1, u"推事本"), )
+    source_choices = ((0, u"官网"), (1, u"IT桔子"), (2, u"拉勾网"))
 
-    company_name = models.CharField(max_length=64)
-    staff_name = models.CharField(max_length=16)     # 企业联系人
-    mobile = models.CharField(max_length=32)
-    source = models.IntegerField(default=0, choices=source_choices)
-
-    state = models.IntegerField(default=0, choices=state_choices)
-    operation_user_id = models.IntegerField(null=True)
-    note = models.CharField(max_length=512)
+    company_name = models.CharField(verbose_name=u"公司名称", max_length=64)
+    staff_name = models.CharField(verbose_name=u"企业联系人", max_length=16)
+    mobile = models.CharField(verbose_name=u"企业联系人电话", max_length=32)
+    source = models.IntegerField(verbose_name=u"来源", default=0, choices=source_choices)
+    state = models.IntegerField(verbose_name=u"状态", default=0, choices=state_choices)
+    operator_id = models.CharField(verbose_name=u"处理人", max_length=32, null=True)
+    operation_time = models.DateTimeField(verbose_name=u"处理时间", null=True)
+    note = models.CharField(verbose_name=u"备注", max_length=512, null=True)
+    create_time = models.DateTimeField(verbose_name=u"预约时间", auto_now_add=True, db_index=True)
 
 
 class Item(models.Model):

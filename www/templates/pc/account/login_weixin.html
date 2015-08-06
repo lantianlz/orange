@@ -4,10 +4,14 @@
 
 {% block base_css %}
 <style type="text/css">
-body{
+body, html{
     background-color: #41464A;
+    height: 100%;
 }
 
+.login:hover, .login:active, .login:focus{
+    color: #EF7B32;
+}
 </style>
 {% endblock %}
 
@@ -60,8 +64,8 @@ $(document).ready(function(){
 {% block header %}{% endblock header %}
 
 {% block base_container %}
-<div class="container">
-    <div class="row">
+<div class="container h">
+    <div class="row h">
         <div class="col-md-offset-4 col-md-4 text-center">
 
             {% if 'is_shop' in request.GET or 'shop' in request.GET.next_url %}
@@ -75,39 +79,42 @@ $(document).ready(function(){
                 </div>
             </div>
             {% else %}
-            <div class="pt-30">
-                <img class="w100" src="{{MEDIA_URL}}img/logo_white.png">
+            <div class="pt-40">
+                <img class="w45" src="{{MEDIA_URL}}img/logo_white.png">
+            </div>
+            <div class="pt-5 text-center co-ffffff f15">
+                三点十分
             </div>
             {% endif %}
 
-            <div class="pt-20">
+            <div class="pt-25">
                 <img style="box-shadow: 0px 3px 6px #252424; width: 300px;" src="https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket={{ticket}}">
             </div>
             <div class="pt-20 pb-20">
-                <div class="co12 f13">请使用微信扫描二维码登录</div>
+                <div class="co-ffffff f13">请使用微信扫描二维码登录</div>
             </div>
             <div class="pt-0 pl-30 pr-30">
-                <div class="co10 f13 success none bdr-4 border-1 bdc-333 bgc-333333 pt-5 pb-5 pl-10 pr-10">
+                <div class="co-19BA40 f13 success none bdr-4 border-1 bdc-333333 bgc-333333 pt-5 pb-5 pl-10 pr-10">
                     <i class="fa fa-check pr-3 f15"></i>扫码登录成功，页面跳转中...
                 </div>
             </div>
             <div class="pt-0 pl-30 pr-30">
-                <div class="co8 f13 tips none bdr-4 border-1 bdc-333 bgc-333333 pt-5 pb-5 pl-10 pr-10">
+                <div class="co-EF7B32 f13 tips none bdr-4 border-1 bdc-333333 bgc-333333 pt-5 pb-5 pl-10 pr-10">
                     <i class="fa fa-exclamation-circle pr-3 f15"></i>当前二维码已过期，请刷新页面后重试
                 </div>
             </div>
             <div class="pt-0 pl-30 pr-30">
-                <div class="co8 f13 notice none bdr-4 border-1 bdc-333 bgc-333333 pt-5 pb-5 pl-10 pr-10">
+                <div class="co-EF7B32 f13 notice none bdr-4 border-1 bdc-333333 bgc-333333 pt-5 pb-5 pl-10 pr-10">
                 </div>
             </div>
         </div>
     </div>
 </div>
-<div class="text-center w pf" style="bottom: 60px; ">
-    <a href="/login_w?next_url={{next_url}}">使用帐号登录<i class="fa fa-sign-in pl-3 f15"></i></a>
+<div class="text-center w pf" style="bottom: 70px; ">
+    <a class="co-EF7B32 login" href="/login?next_url={{next_url}}">使用帐号登录<i class="fa fa-sign-in pl-3 f15"></i></a>
 </div>
-<div class="text-center w pf" style="bottom: 20px; ">
-    <div class="co13 f13">Copyright &copy; {% if YEAR == "2014" %}{{YEAR}}{% else %}2014 - {{YEAR}}{% endif %} 3-10.cc. All Rights Reserved.</div>
+<div class="text-center co-888888 f12" style="margin-top: -50px;">
+    Copyright &copy; {% if YEAR == "2015" %}{{YEAR}}{% else %}2015 - {{YEAR}}{% endif %} 大橙科技. All Rights Reserved.
 </div>
 {% endblock %}
 {% block footer %}{% endblock %}

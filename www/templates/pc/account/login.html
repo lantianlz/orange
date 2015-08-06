@@ -1,6 +1,6 @@
 {% extends "pc/base/base.html" %}
 
-{% block title %}商户平台登录{% endblock %}
+{% block title %}账号登录{% endblock %}
 
 {% block base_css %}
 <style type="text/css">
@@ -48,17 +48,17 @@ label.error{
     border-color: #EF7B32;
     outline: 0;
     -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(233, 148, 102, 0.6);
-    box-shadow: inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(233, 148, 102, 0.6);
+            box-shadow: inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(233, 148, 102, 0.6);
 }
 </style>
 {% endblock %}
 
 {% block base_js %}
 <script type="text/javascript">
-    $(document).ready(function(){
-        // 表单验证
-        $('.login-main').validate();
-    });
+$(document).ready(function(){
+    // 表单验证
+    $('.login-main').validate();
+});
 </script>
 {% endblock %}
 
@@ -70,7 +70,7 @@ label.error{
         <div class="col-md-offset-3 col-md-6 col-xs-12 pt-40">
             <div class="pt-40 pr row">
                 <div class="col-md-offset-2 col-md-8 text-center pr">
-                    <img class="mt--5" style="width: 30px;" src="{{MEDIA_URL}}img/logo.png">
+                    <img class="mt--5" style="width: 30px;" src="{{MEDIA_URL}}img/logo_white.png">
                     <span class="inline-block pl-10 co-ffffff f20 pl-10">三点十分</span>
                 </div>
             </div>
@@ -93,10 +93,11 @@ label.error{
             </form>
             <div class="row login-type pb-30">
                 <div class="col-md-offset-2 col-md-4 col-xs-6 text-left">
-                    <!-- <a href="#"><i class="fa fa-qrcode pr-3"></i></a> -->
+                    
                 </div>
                 <div class="col-md-4 col-xs-6 text-right pl-0">
-                    <a href="/forget_pwd">忘记密码?</a>
+                    <!-- <a href="/forget_pwd">忘记密码?</a> -->
+                    <!-- <a href="/login_weixin"><i class="fa fa-qrcode pr-3 f15"></i>扫描二维码登录</a> -->
                 </div>
             </div>
         </div>

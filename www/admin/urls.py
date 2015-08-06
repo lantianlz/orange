@@ -64,6 +64,15 @@ urlpatterns += patterns('www.admin.views_order',
     url(r'^order$', 'order'),
 )
 
+# 产品管理
+urlpatterns += patterns('www.admin.views_booking',
+
+    url(r'^booking/modify_booking$', 'modify_booking'),
+    url(r'^booking/get_booking_by_id$', 'get_booking_by_id'),
+    url(r'^booking/search$', 'search'),
+    url(r'^booking$', 'booking'),
+)
+
 # 城市
 urlpatterns += patterns('www.admin.views_city',
 

@@ -412,14 +412,13 @@ $(document).ready(function(){
 <div class="tab-content">
     <!-- 用户列表 -->
     <div class="tab-pane fade pt-15 in active" id="meal_list">
-        <form action="." onsubmit="javascript: return false;">
-            <div class="pl-0 pb-10 col-md-3">
-                <div class="input-group input-group-sm">
-                    <input type="text" class="form-control name" placeholder="输入套餐名称..." />
-                    <span class="input-group-btn">
-                        <button class="btn btn-default search" type="submit">查询</button>
-                    </span>
-                </div>
+        <form action="." class="form-inline" onsubmit="javascript: return false;">
+            <div class="input-group input-group-sm pb-10">
+                <span class="input-group-addon">套餐名称</span>
+                <input type="text" class="form-control name" placeholder="" />
+                <span class="input-group-btn">
+                    <button class="btn btn-default search bgc-eeeeee" type="submit">查询</button>
+                </span>
             </div>
         </form>
         <table class="table table-hover">

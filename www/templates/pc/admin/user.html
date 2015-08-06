@@ -166,7 +166,7 @@ $(document).ready(function(){
         },
 
         searchUser: function(){
-            var userNick = this.$('.key-word').val(),
+            var userNick = this.$('.name').val(),
                 email = this.$('.email').val();
 
             router.navigate(String.format('/search/{0}/{1}/1', email, userNick), {trigger: true});
@@ -422,17 +422,17 @@ $(document).ready(function(){
 <div class="tab-content">
     <!-- 用户列表 -->
     <div class="tab-pane fade pt-15 in active" id="user_list">
-        <form action="." onsubmit="javascript: return false;">
-            <div class="pl-0 pb-10 col-md-3">
-                <input type="text" class="form-control email input-sm" placeholder="输入用户邮箱..." />
+        <form action="." class="form-inline" onsubmit="javascript: return false;">
+            <div class="input-group input-group-sm pb-10">
+                <span class="input-group-addon">用户邮箱</span>
+                <input type="text" class="form-control email" placeholder="" />
             </div>
-            <div class="pl-0 pb-10 col-md-3">
-                <div class="input-group input-group-sm">
-                    <input type="text" class="form-control border-radius-0 key-word" placeholder="输入用户呢称..." />
-                    <span class="input-group-btn">
-                        <button class="btn btn-default search-user" type="submit">查询</button>
-                    </span>
-                </div>
+            <div class="input-group input-group-sm pb-10">
+                <span class="input-group-addon">用户呢称</span>
+                <input type="text" class="form-control name" placeholder="" />
+                <span class="input-group-btn">
+                    <button class="btn btn-default search-user bgc-eeeeee" type="submit">查询</button>
+                </span>
             </div>
         </form>
         <table class="table table-hover">

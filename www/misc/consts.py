@@ -42,6 +42,11 @@ PERMISSIONS = [
     {'code': 'query_order', 'name': u'查询订单', 'parent': 'order_manage'},
     {'code': 'modify_order', 'name': u'修改订单', 'parent': 'order_manage'},
 
+    {'code': 'booking_manage', 'name': u'预订管理', 'parent': None},
+    # {'code': 'add_booking', 'name': u'添加预订', 'parent': 'booking_manage'},
+    {'code': 'query_booking', 'name': u'查询预订', 'parent': 'booking_manage'},
+    {'code': 'modify_booking', 'name': u'修改预订', 'parent': 'booking_manage'},
+
     {'code': 'city_manage', 'name': u'城市管理', 'parent': None},
     #{'code': 'add_city', 'name': u'添加城市', 'parent': 'city_manage'},
     {'code': 'query_city', 'name': u'查询城市', 'parent': 'city_manage'},

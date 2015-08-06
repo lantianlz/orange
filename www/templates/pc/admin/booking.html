@@ -1,0 +1,405 @@
+{% extends "pc/admin/home.html" %}
+{% load custom_tags %}
+{% load custom_filters %}
+{% block title %}预约信息管理{% endblock %}
+{% block admin_title %}预约信息管理{% endblock %}
+{% block admin_title_m %}预约信息管理{% endblock %}
+
+{% block css %}
+<style type="text/css">
+
+</style>
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript">
+$(document).ready(function(){
+    var Booking = Backbone.Model.extend({
+        defaults: {
+
+        }
+    });
+
+    var Bookings = Backbone.Collection.extend({
+        model: Booking,
+
+        _modelMaps: {
+            'num': 'num',
+            'bookingId': 'booking_id',
+            'companyName': 'company_name',
+            'staffName': 'staff_name',
+            'mobile': 'mobile',
+            'source': 'source',
+            'state': 'state',
+            'operatorId': 'operator_id',
+            'operatorName': 'operator_name',
+            'operationTime': 'operation_time',
+            'note': 'note',
+            'createTime': 'create_time'
+        },
+
+        search: function(state, pageIndex){
+            var me = this,
+                state = state || 0,
+                pageIndex = pageIndex || 1;
+
+            ajaxSend(
+                "/admin/booking/search", 
+                {'state': state, 'page_index': pageIndex}, 
+                function(data){
+                    
+                    me.pageIndex = pageIndex;
+                    me.pageCount = data.page_count;
+                    me.state = state;
+
+                    me.reset($.Global.Utils.dictMapParse(data.data, me._modelMaps));
+                }
+            );
+        },
+
+        getOne: function(bookingId, callback){
+            var me = this;
+
+            ajaxSend(
+                "/admin/booking/get_booking_by_id", 
+                {'booking_id': bookingId},
+                function(data){
+                    if(callback){
+                        callback($.Global.Utils.dictMap(data, me._modelMaps));
+                    }
+                }
+            );
+        },
+
+        modifyBooking: function(data, callback){
+            var me = this;
+
+            ajaxSend(
+                "/admin/booking/modify_booking", 
+                data,
+                function(data){
+                    if(callback){
+                        callback(data);
+                    }
+                }
+            );
+        },
+
+        addBooking: function(data, callback){
+
+            ajaxSend(
+                "/admin/booking/add_booking", 
+                data,
+                function(response){
+                    if(callback){
+                        callback(response);
+                    }
+                }
+            );
+        }
+
+    });
+    
+    var ListView = Backbone.View.extend({
+        el: '#booking_list',
+
+        template: _.template($('#booking_list_template').html()),
+
+        pagination: new $.Global.Pagination.PaginationView(),
+
+        events: {
+            'click .search': 'searchBooking',
+            'click .pointer': 'modifyBooking'
+        },
+
+        initialize: function(){
+            this.listenTo(this.collection, 'reset', this.render);
+        },
+
+        render: function(){
+            var data = this.collection.toJSON();
+            
+            this.showPanel();
+            this.$('tbody').html(this.template({'bookings': data}));
+            this.pagination.render(
+                this.collection.pageIndex||1, 
+                this.collection.pageCount, 
+                'search/' + this.collection.state
+            );
+        },
+
+        // 显示面板
+        showPanel: function(){
+            $('.orange-nav-pills a[href="#booking_list"]').tab('show');
+        },
+
+        searchBooking: function(){
+            var state = this.$('.state').val();
+
+            router.navigate(String.format('/search/{0}/1', state), {trigger: true});
+        },
+
+        modifyBooking: function(sender){
+            var target = $(sender.currentTarget),
+                bookingId = target.data('booking_id');
+
+            router.navigate('/modify/' + bookingId, {trigger: true});
+        }
+        
+    });
+    
+
+    var ModifyView = Backbone.View.extend({
+        
+        el: '#modify_booking',
+
+        template: _.template($('#modify_booking_template').html()),
+
+        events: {
+            'click .save': 'save'
+        },
+
+        showPanel: function(){
+            $('.orange-nav-pills a[href="#modify_booking"]').tab('show');
+        },
+
+        render: function(data){
+            this.$el.html(this.template(data));
+        },
+
+        modifyBooking: function(bookingId){
+            var me = this;
+
+            this.collection.getOne(bookingId, function(data){
+
+                if(data){
+                    me.render(data);
+                    me.showPanel();
+                } else {
+                    setTimeout(function(){history.go(-1);}, 3000);
+                    $.Global.Notice.ErrorTopNotice('没有找到对应的项目!');
+                }
+            });
+        },
+
+        save: function(){
+            var bookingId = this.$('form').data('booking_id'),
+                me = this;
+
+            if(!this.$('form').valid()){
+                return;
+            }
+
+            me.collection.modifyBooking(this.$('form').serialize(), function(data){
+                if(data.errcode == "0"){
+                    $.Global.Notice.SuccessTopNotice('操作成功');
+                    router.navigate('modify/' + bookingId, {'trigger': true});
+                } else {
+                    $.Global.Notice.ErrorTopNotice(data.errmsg);
+                }
+            })
+        }
+
+    });
+
+
+    var Router = Backbone.Router.extend({
+        routes: {
+            "":                             "search",
+            "search/(:state)/:pageIndex":    "search",
+            "modify/:bookingId":               "modify",
+            "add":                          "add"
+        },
+
+        // 获取推荐用户
+        search: function(state, pageIndex){
+            bookings.search(state, pageIndex);
+        },
+
+        modify: function(bookingId){
+            modifyView.modifyBooking(bookingId);
+        },
+
+        add: function(){
+            addView.showPanel();
+        }
+
+    });
+
+    var bookings = new Bookings(),
+        listView = new ListView({collection: bookings}),
+        modifyView = new ModifyView({collection: bookings}),
+        router = new Router();
+
+    Backbone.history.start();
+});
+
+</script>
+{% endblock %}
+
+{% block admin_main %}
+<ul class="nav nav-pills orange-nav-pills">
+    <li class="active">
+        <a href="#booking_list" data-toggle="pill">
+            <i class="fa fa-list-ol pr-5"></i>
+            <span class="hidden-sm hidden-md hidden-lg">列表</span>
+            <span class="hidden-xs">预约列表</span>
+        </a>
+    </li>
+    <li>
+        <a href="#modify_booking" data-toggle="pill">
+            <i class="fa fa-pencil-square-o pr-5"></i>
+            <span class="hidden-sm hidden-md hidden-lg">修改</span>
+            <span class="hidden-xs">修改预约信息</span>
+        </a>
+    </li>
+</ul>
+
+<div class="tab-content">
+    <!-- 用户列表 -->
+    <div class="tab-pane fade pt-15 in active" id="booking_list">
+        <form action="." class="form-inline" onsubmit="javascript: return false;">
+            <div class="input-group input-group-sm pb-10">
+                <span class="input-group-addon">预约状态</span>
+                <select class="form-control state">
+                    {% for state in states %}
+                    <option value="{{state.value}}">{{state.name}}</option>
+                    {% endfor %}
+                </select>
+                <span class="input-group-btn">
+                    <button class="btn btn-default search bgc-eeeeee" type="submit">查询</button>
+                </span>
+            </div>
+        </form>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th class="hidden-xs">公司名称</th>
+                    <th>联系人</th>
+                    <th>电话</th>
+                    <th>预约时间</th>
+                    <th class="hidden-xs">来源</th>
+                    <th>状态</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+            </tbody>
+        </table>
+
+        <div class="text-center">
+            <ul class="pagination pagination-sm qx-pagination">
+                
+            </ul>
+        </div>
+    </div>
+
+    <!-- 修改用户信息 -->
+    <div class="tab-pane fade pt-15" id="modify_booking">
+        
+    </div>
+</div>
+
+<script type="text/template" id="booking_list_template">
+<% _.each(bookings, function(booking){ %>
+    <tr class="pointer" data-booking_id="<%= booking.bookingId %>">
+        <td><%= booking.num %></td>
+        <td class="hidden-xs"><%= booking.companyName %></td>
+        <td><%= booking.staffName %></td>
+        <td><%= booking.mobile %></td>
+        <td><%= booking.createTime %></td>
+        <td>
+        {% for source in sources %}
+            <% if(booking.source == '{{source.value}}'){ %>
+            {{ source.name }}
+            <% } %>
+        {% endfor %}
+        </td>
+        <td>
+        <% if(booking.state){ %>
+            <span class="fa fa-check co-3B99FC"></span>
+        <% } else { %>
+            <span class="fa fa-times co-C33333"></span>
+        <% } %>
+        </td>
+    </tr>
+<% }) %>
+</script>
+
+<script type="text/template" id="modify_booking_template">
+<form class="form-horizontal" data-booking_id='<%= bookingId %>' role="form" method="post" action="">
+    <input type="hidden" name="booking_id" value="<%= bookingId %>" />
+    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+        <label class="col-sm-2 control-label">公司名称</label>
+        <div class="col-sm-5">
+            <p class="form-control-static"><%= companyName %></p>
+        </div>
+    </div>
+    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+        <label class="col-sm-2 control-label">企业联系人</label>
+        <div class="col-sm-5">
+            <p class="form-control-static"><%= staffName %></p>
+        </div>
+    </div>
+    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+        <label class="col-sm-2 control-label">电话</label>
+        <div class="col-sm-5">
+            <p class="form-control-static"><%= mobile %></p>
+        </div>
+    </div>
+    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+        <label class="col-sm-2 control-label">来源</label>
+        <div class="col-sm-5">
+            <p class="form-control-static">
+                {% for source in sources %}
+                    <% if(source == '{{source.value}}'){ %>
+                    {{ source.name }}
+                    <% } %>
+                {% endfor %}
+            </p>
+        </div>
+    </div>
+    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+        <label class="col-sm-2 control-label">预约时间</label>
+        <div class="col-sm-5">
+            <p class="form-control-static"><%= createTime %></p>
+        </div>
+    </div>
+    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+        <label class="col-sm-2 control-label">处理人</label>
+        <div class="col-sm-5">
+            <p class="form-control-static"><%= operatorName %></p>
+        </div>
+    </div>
+    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+        <label class="col-sm-2 control-label">处理时间</label>
+        <div class="col-sm-5">
+            <p class="form-control-static"><%= operationTime %></p>
+        </div>
+    </div>
+    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+        <label class="col-sm-2 control-label">备注</label>
+        <div class="col-sm-6">
+            <textarea name="note" rows="6" class="form-control" placeholder=""><%= note %></textarea>
+        </div>
+    </div>
+    
+    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+        <label class="col-sm-2 control-label">状态</label>
+        <div class="col-sm-2">
+            <select name="state" class="form-control">
+                {% for state in states %}
+                <option value="{{state.value}}" <% if(state == {{state.value}}){ %>selected<% } %> >{{state.name}}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    <div class="form-group pt-20 pb-20 mb-0">
+        <div class="col-sm-12">
+            <button type="button" class="btn btn-primary save">提交你的修改</button>
+        </div>
+    </div>
+</form>
+</script>
+{% endblock %}

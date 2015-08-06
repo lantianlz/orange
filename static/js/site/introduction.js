@@ -61,4 +61,36 @@ $(document).ready(function(){
             $('.name').focus();
         }, 300);
     });
+
+    var is_ajaxing = false;
+    // 预约
+    $('.btn-booking-2').on('click', function(){
+
+        var name = $('.name').val(),
+            company = $('.company').val(),
+            mobile = $('.mobile').val();
+
+        if($.trim(name) == "" || $.trim(company) == "" || $.trim(mobile) == ""){
+            $.Global.Notice.InfoTopNotice("请输入完整的信息");
+            return;
+        }
+
+        if(is_ajaxing){
+            return;
+        }
+        is_ajaxing = true;
+
+        ajaxSend(
+            "/booking",
+            {'name': name, 'company': company, 'mobile': mobile, 'source': 0}, 
+            function(data){
+                if(data.errcode == "0"){
+                    $.Global.Notice.SuccessTopNotice('预约成功，稍后市场专员将与您联系');
+                } else {
+                    $.Global.Notice.InfoTopNotice(data.errmsg);
+                }
+                is_ajaxing = false;
+            }
+        )
+    });
 });

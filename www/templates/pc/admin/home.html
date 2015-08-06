@@ -410,8 +410,8 @@ $(document).ready(function(){
             <li class="list-group-item {% if '/order' in request.path %}active{% endif %}">
                 <a href="/admin/order"><i class="fa fa-list-alt pr-3"></i>订单管理</a>
             </li>
-            <li class="list-group-item">
-                <a href="#"><i class="fa fa-shopping-cart pr-3"></i>在线预订信息管理</a>
+            <li class="list-group-item {% if '/booking' in request.path %}active{% endif %}">
+                <a href="/admin/booking"><i class="fa fa-shopping-cart pr-3"></i>预约信息管理</a>
             </li>
             <li class="list-group-item">
                 <a href="#"><i class="fa fa-newspaper-o pr-3"></i>发票管理</a>
