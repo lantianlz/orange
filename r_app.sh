@@ -9,3 +9,4 @@ do
     /opt/python2.7.2/bin/supervisorctl restart $port
 done
 supervisorctl restart www_worker:
+supervisorctl restart email_worker:
