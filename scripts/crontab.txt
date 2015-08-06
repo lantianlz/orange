@@ -1,0 +1,4 @@
+00 03 * * * root /var/www/orange/r_app.sh www
+
+05 * * * * root /opt/python2.7.2/bin/python /var/www/orange/scripts/crontab/analyze_nginx_log.py 1000
+05 * * * * root /opt/python2.7.2/bin/python /var/www/orange/scripts/crontab/worker_delay_monitor.py

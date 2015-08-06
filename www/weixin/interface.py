@@ -157,7 +157,7 @@ class WexinBase(object):
                 #     % (content, url, 'http://static.3-10.cc/img/using_guide.jpg')
                 # self.send_msg_to_weixin(content, from_user, app_key, msg_type='news', img_info=img_info)
 
-                # return self.get_subscribe_event_response(to_user, from_user)
+                return self.get_subscribe_event_response(to_user, from_user)
             elif event in ('click', ):
                 event_key = jq('eventkey')[0].text.lower()
                 if event_key == 'hotest':
