@@ -521,6 +521,15 @@ class BookingBase(object):
                 mobile = mobile,
                 source = source
             )
+
+            # 发送邮件提醒
+            from www.tasks import async_send_email
+
+            sources = dict(Booking.source_choices)
+            title = u'诸位，订单来了'
+            content = u'「%s」的「%s」通过「%s」申请预订，联系电话「%s」' % (company_name, staff_name, sources.get(int(source), u'未知'), mobile)
+            async_send_email("vip@3-10.cc", title, content)
+
         except Exception, e:
             debug.get_debug_detail_and_send_email(e)
             return 99900, dict_err.get(99900)
