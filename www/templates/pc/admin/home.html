@@ -365,7 +365,7 @@ $(document).ready(function(){
         </span>
 
         <span class="f18">{% block admin_title_m %}{% endblock %}</span>
-        <img class="user-avatar avatar-30 pa" style="right: 20px; top: 12px;" src="http://tp1.sinaimg.cn/1613200184/180/1286542530/1">
+        <img class="user-avatar avatar-30 pa" style="right: 20px; top: 12px;" src="{{request.user.get_avatar_100}}">
         <ul class="dropdown-menu pa co-222222" style="right: 1px; left: auto; top: 52px; max-width: 160px;">
             <li>
                 <a href="#"><i class="fa fa-user pr-5"></i>半夜没事瞎溜达</a>
@@ -464,7 +464,7 @@ $(document).ready(function(){
                 <span class="f22 co-8CA0B4">{% block admin_title %}{% endblock %}</span>
             </div>
             <div class="col-md-6 col-sm-6 text-right">
-                <img class="avatar-30" src="http://tp1.sinaimg.cn/1613200184/180/1286542530/1">
+                <img class="avatar-30" src="{{request.user.get_avatar_100}}">
                 <span>{{request.user.nick}}，</span>
                 <a href="/logout"><i class="fa fa-sign-out pr-3"></i>退出</a>
             </div>

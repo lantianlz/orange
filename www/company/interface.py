@@ -29,7 +29,7 @@ dict_err = {
 
     20401: u'没有找到对应的订单',
 
-    20501: u'该手机号已经预约',
+    20501: u'已预约，请勿重复提交',
     20502: u'没有找到对应的预约信息',
 }
 dict_err.update(consts.G_DICT_ERROR)
@@ -511,7 +511,7 @@ class BookingBase(object):
         if not (company_name and staff_name and mobile):
             return 99800, dict_err.get(99800)
 
-        if Booking.objects.filter(mobile=mobile):
+        if Booking.objects.filter(mobile=mobile) or Booking.objects.filter(company_name=company_name):
             return 20501, dict_err.get(20501)
 
         try:
@@ -554,9 +554,7 @@ class BookingBase(object):
             obj.save()
 
         except Exception, e:
-            import traceback
-            traceback.print_exc()
-            # debug.get_debug_detail_and_send_email(e)
+            debug.get_debug_detail_and_send_email(e)
             return 99900, dict_err.get(99900)
 
         return 0, dict_err.get(0)

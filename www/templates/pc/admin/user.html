@@ -471,9 +471,7 @@ $(document).ready(function(){
     <tr>
         <td><%= user.num %></td>
         <td>
-            <a target="_blank" href="/p/<%= user.userId %>">
-                <img src="<%= user.userAvatar %>" class="avatar-35 avatar-circle" >
-            </a>
+            <img src="<%= user.userAvatar %>" class="w35 avatar-circle" >
         </td>
         <td class="pointer modify-user" data-user_id="<%= user.userId %>"><%= user.userNick %></td>
         <td class="hidden-xs">

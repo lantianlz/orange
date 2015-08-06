@@ -96,12 +96,14 @@ class Booking(models.Model):
     staff_name = models.CharField(verbose_name=u"企业联系人", max_length=16)
     mobile = models.CharField(verbose_name=u"企业联系人电话", max_length=32)
     source = models.IntegerField(verbose_name=u"来源", default=0, choices=source_choices)
-    state = models.IntegerField(verbose_name=u"状态", default=0, choices=state_choices)
+    state = models.IntegerField(verbose_name=u"状态", default=0, choices=state_choices, db_index=True)
     operator_id = models.CharField(verbose_name=u"处理人", max_length=32, null=True)
     operation_time = models.DateTimeField(verbose_name=u"处理时间", null=True)
     note = models.CharField(verbose_name=u"备注", max_length=512, null=True)
     create_time = models.DateTimeField(verbose_name=u"预约时间", auto_now_add=True, db_index=True)
 
+    class Meta:
+        ordering = ["-create_time"]
 
 class Item(models.Model):
 
@@ -143,6 +145,8 @@ class Meal(models.Model):
     state = models.IntegerField(verbose_name=u"状态", default=1, choices=state_choices)
     create_time = models.DateTimeField(verbose_name=u"创建时间", auto_now_add=True, db_index=True)
 
+    class Meta:
+        ordering = ["-create_time"]
 
 class MealItem(models.Model):
 
@@ -152,6 +156,9 @@ class MealItem(models.Model):
     meal = models.ForeignKey("Meal")
     item = models.ForeignKey("Item")
     amount = models.FloatField(verbose_name=u"数量", default=0)
+
+    class Meta:
+        unique_together = [("meal", "item"), ]
 
 
 class Order(models.Model):
@@ -175,6 +182,8 @@ class Order(models.Model):
     is_test = models.BooleanField(verbose_name=u"是否试吃", default=False)
     state = models.IntegerField(verbose_name=u"状态", default=1, choices=state_choices, db_index=True)
 
+    class Meta:
+        ordering = ["-create_time"]
 
 class OrderItem(models.Model):
 
@@ -187,6 +196,8 @@ class OrderItem(models.Model):
     price = models.DecimalField(verbose_name=u"单价", max_digits=10, decimal_places=2, default=0)
     total_price = models.DecimalField(verbose_name=u"总价", max_digits=10, decimal_places=2, default=0)
 
+    class Meta:
+        unique_together = [("order", "item"), ]
 
 class Invoice(models.Model):
 
