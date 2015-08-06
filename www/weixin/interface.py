@@ -20,17 +20,17 @@ dict_err.update(consts.G_DICT_ERROR)
 weixin_api_url = 'https://api.weixin.qq.com'
 dict_weixin_app = {
     'orange_test': {
-        'app_id': 'wx0d227d4f9b19658a', 
-        'app_secret': '513bdaf5b6022df4913f4cb5543fa688', 
+        'app_id': 'wx0d227d4f9b19658a',
+        'app_secret': '513bdaf5b6022df4913f4cb5543fa688',
         'app_type': 'gh_65671b9fff9d',
-        'token': 'orange_test', 
+        'token': 'orange_test',
         'url': ''
     },
     'orange': {
-        'app_id': 'wx23cca542b396c669', 
-        'app_secret': 'dd8cc9591fa32514eed8876e652e6260', 
-        'app_type': 'gh_de7e674b94d4',
-        'token': 'orange', 
+        'app_id': 'wxd6922b078dff1607',
+        'app_secret': '',
+        'app_type': 'gh_6830b9f3748d',
+        'token': 'orange',
         'url': ''
     },
 }
@@ -98,9 +98,9 @@ class WexinBase(object):
         return base_xml % dict(to_user=from_user, from_user=to_user, timestamp=int(time.time()), content=error_info)
 
     def get_subscribe_event_response(self, to_user, from_user):
-        content = (u'我们已经恭候您多时了！洗车的时候能想到三点十分，人家真是幸福呢...\n'
-                   u'三点十分是专属于年轻人的洗车平台，汇聚你身边的洗车行，为你提供最优惠、最便捷、最时尚的洗车服务\n'
-                   u'洗车用三点十分，就对了！'
+        content = (u'三点十分，下午茶点服务专家；\n'
+                   u'我们专注于为企业提供按需定制的下午茶点服务，每天按时配送上门，简单为你；\n'
+                   u'新鲜的水果，可口的点心，尽在三点十分'
                    )
         return self.get_base_content_response(to_user, from_user, content=content)
 
@@ -148,15 +148,16 @@ class WexinBase(object):
                     errcode, errmsg = UserBase().login_by_weixin_qr_code(ticket, from_user, app_key)
                     return self.get_base_content_response(to_user, from_user, errmsg)
             if event in ('subscribe',):
+                pass
 
                 # 发送客服消息通知用户
-                content = u"欢迎使用三点十分，第一次总会很紧张...\n不怕，看看指南便知一二"
-                url = u'http://mp.weixin.qq.com/s?__biz=MjM5OTc2NzM0OQ==&mid=203091966&idx=1&sn=9cb0a17772932e0d4564aeaa62286dd1#rd'
-                img_info = u'[{"title": "洗车之前，看看咋用", "description": "%s", "url": "%s", "picurl": "%s"}]' \
-                    % (content, url, 'http://static.3-10.cc/img/using_guide.jpg')
-                self.send_msg_to_weixin(content, from_user, app_key, msg_type='news', img_info=img_info)
+                # content = u"欢迎使用三点十分，第一次总会很紧张...\n不怕，看看指南便知一二"
+                # url = u'http://mp.weixin.qq.com/s?__biz=MjM5OTc2NzM0OQ==&mid=203091966&idx=1&sn=9cb0a17772932e0d4564aeaa62286dd1#rd'
+                # img_info = u'[{"title": "洗车之前，看看咋用", "description": "%s", "url": "%s", "picurl": "%s"}]' \
+                #     % (content, url, 'http://static.3-10.cc/img/using_guide.jpg')
+                # self.send_msg_to_weixin(content, from_user, app_key, msg_type='news', img_info=img_info)
 
-                return self.get_subscribe_event_response(to_user, from_user)
+                # return self.get_subscribe_event_response(to_user, from_user)
             elif event in ('click', ):
                 event_key = jq('eventkey')[0].text.lower()
                 if event_key == 'hotest':

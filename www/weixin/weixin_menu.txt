@@ -3,94 +3,25 @@
     "button": [
         {
             "type": "view", 
-            "name": "立即洗车", 
-            "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx0d227d4f9b19658a&redirect_uri=http%3A%2F%2F192.168.99.106%3A8002%2Faccount%2Foauth%2Fweixin&response_type=code&scope=snsapi_base&state=home#wechat_redirect"
+            "name": "产品介绍", 
+            "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx0d227d4f9b19658a&redirect_uri=http%3A%2F%2F192.168.99.249%3A8000%2Faccount%2Foauth%2Fweixin&response_type=code&scope=snsapi_base&state=introduction#wechat_redirect"
         }, 
         {
             "type": "view", 
-            "name": "我的洗车码", 
-            "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx0d227d4f9b19658a&redirect_uri=http%3A%2F%2F192.168.99.106%3A8002%2Faccount%2Foauth%2Fweixin&response_type=code&scope=snsapi_base&state=order_code#wechat_redirect"
+            "name": "免费试吃", 
+            "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx0d227d4f9b19658a&redirect_uri=http%3A%2F%2F192.168.99.249%3A8000%2Faccount%2Foauth%2Fweixin&response_type=code&scope=snsapi_base&state=booking#wechat_redirect"
         }, 
         {
-            "name": "更多", 
-            "sub_button": [
-                {
-                    "type": "view", 
-                    "name": "充值", 
-                    "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx0d227d4f9b19658a&redirect_uri=http%3A%2F%2F192.168.99.106%3A8002%2Faccount%2Foauth%2Fweixin&response_type=code&scope=snsapi_base&state=recharge#wechat_redirect"
-                },
-                {
-                    "type": "view", 
-                    "name": "我的优惠券", 
-                    "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx0d227d4f9b19658a&redirect_uri=http%3A%2F%2F192.168.99.106%3A8002%2Faccount%2Foauth%2Fweixin&response_type=code&scope=snsapi_base&state=coupon#wechat_redirect"
-                },
-                {
-                    "type": "view", 
-                    "name": "新手指南", 
-                    "url": "http://mp.weixin.qq.com/s?__biz=MjM5OTc2NzM0OQ==&mid=203091966&idx=1&sn=9cb0a17772932e0d4564aeaa62286dd1#rd"
-                },
-                {
-                    "type": "view", 
-                    "name": "关于我们", 
-                    "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx0d227d4f9b19658a&redirect_uri=http%3A%2F%2F192.168.99.106%3A8002%2Faccount%2Foauth%2Fweixin&response_type=code&scope=snsapi_base&state=about#wechat_redirect"
-                },
-                {
-                    "type": "view", 
-                    "name": "商户登陆", 
-                    "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx0d227d4f9b19658a&redirect_uri=http%3A%2F%2F192.168.99.106%3A8002%2Faccount%2Foauth%2Fweixin&response_type=code&scope=snsapi_base&state=shop#wechat_redirect"
-                },
-            ]
-        }
+            "type": "view", 
+            "name": "推荐有礼", 
+            "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx0d227d4f9b19658a&redirect_uri=http%3A%2F%2F192.168.99.249%3A8000%2Faccount%2Foauth%2Fweixin&response_type=code&scope=snsapi_base&state=recommend#wechat_redirect"
+        },
     ]
 }
 
 
 
 二、正式菜单
-{
-    "button": [
-        {
-            "type": "view", 
-            "name": "立即洗车", 
-            "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx23cca542b396c669&redirect_uri=http%3A%2F%2Fwww.3-10.cc%2Faccount%2Foauth%2Fweixin&response_type=code&scope=snsapi_base&state=home#wechat_redirect"
-        }, 
-        {
-            "type": "view", 
-            "name": "我的洗车码", 
-            "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx23cca542b396c669&redirect_uri=http%3A%2F%2Fwww.3-10.cc%2Faccount%2Foauth%2Fweixin&response_type=code&scope=snsapi_base&state=order_code#wechat_redirect"
-        }, 
-        {
-            "name": "更多", 
-            "sub_button": [
-                {
-                    "type": "view", 
-                    "name": "充值", 
-                    "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx23cca542b396c669&redirect_uri=http%3A%2F%2Fwww.3-10.cc%2Faccount%2Foauth%2Fweixin&response_type=code&scope=snsapi_base&state=recharge#wechat_redirect"
-                },
-                {
-                    "type": "view", 
-                    "name": "我的优惠券", 
-                    "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx23cca542b396c669&redirect_uri=http%3A%2F%2Fwww.3-10.cc%2Faccount%2Foauth%2Fweixin&response_type=code&scope=snsapi_base&state=coupon#wechat_redirect"
-                },
-                {
-                    "type": "view", 
-                    "name": "新手指南", 
-                    "url": "http://mp.weixin.qq.com/s?__biz=MjM5OTc2NzM0OQ==&mid=203091966&idx=1&sn=9cb0a17772932e0d4564aeaa62286dd1#rd"
-                },
-                {
-                    "type": "view", 
-                    "name": "关于我们", 
-                    "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx23cca542b396c669&redirect_uri=http%3A%2F%2Fwww.3-10.cc%2Faccount%2Foauth%2Fweixin&response_type=code&scope=snsapi_base&state=about#wechat_redirect"
-                },
-                {
-                    "type": "view", 
-                    "name": "商户登陆", 
-                    "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx23cca542b396c669&redirect_uri=http%3A%2F%2Fwww.3-10.cc%2Faccount%2Foauth%2Fweixin&response_type=code&scope=snsapi_base&state=shop#wechat_redirect"
-                },
-            ]
-        }
-    ]
-}
 
 
 

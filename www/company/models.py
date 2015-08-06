@@ -90,7 +90,7 @@ class Booking(models.Model):
     @note: 企业预留预订信息
     '''
     state_choices = ((0, u"未处理"), (1, u"已处理"))
-    source_choices = ((0, u"官网"), (1, u"IT桔子"), (2, u"拉勾网"))
+    source_choices = ((0, u"官网"), (1, u"微信"), (2, u"IT桔子"), (3, u"拉勾网"))
 
     company_name = models.CharField(verbose_name=u"公司名称", max_length=64)
     staff_name = models.CharField(verbose_name=u"企业联系人", max_length=16)
@@ -120,11 +120,12 @@ class Item(models.Model):
     spec = models.CharField(verbose_name=u"规格", max_length=32, null=True)
     sort = models.IntegerField(verbose_name=u"排序", default=0, choices=type_choices)
     create_time = models.DateTimeField(auto_now_add=True, db_index=True)
-    
+
     img = models.CharField(verbose_name=u"图片", max_length=128, null=True)
 
     class Meta:
         ordering = ["sort", "-create_time"]
+
 
 class Meal(models.Model):
 
@@ -173,7 +174,7 @@ class Order(models.Model):
     note = models.TextField(verbose_name=u"备注", null=True)
     is_test = models.BooleanField(verbose_name=u"是否试吃", default=False)
     state = models.IntegerField(verbose_name=u"状态", default=1, choices=state_choices, db_index=True)
-    
+
 
 class OrderItem(models.Model):
 
@@ -208,9 +209,3 @@ class InvoiceRecord(models.Model):
     invoice_amount = models.DecimalField(verbose_name=u"发票金额", max_digits=10, decimal_places=2, default=0)
     operator = models.CharField(verbose_name=u"开票人", max_length=32)
     create_time = models.DateTimeField(verbose_name=u"创建时间", auto_now_add=True, db_index=True)
-
-
-
-
-
-
