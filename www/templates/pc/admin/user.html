@@ -514,19 +514,19 @@ $(document).ready(function(){
             <input type="text" class="form-control" name='nick' value='<%= userNick %>'>
         </div>
     </div>
-    
-    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
-        <label class="col-sm-2 control-label">用户手机</label>
-        <div class="col-sm-5">
-            <p class="form-control-static"><%= userMobilenumber %></p>
-        </div>
-    </div>
     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
         <label class="col-sm-2 control-label">用户邮箱</label>
         <div class="col-sm-5">
-            <p class="form-control-static"><%= userEmail %></p>
+            <input type="text" class="form-control" name='email' value='<%= userEmail %>'>
         </div>
     </div>
+    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+        <label class="col-sm-2 control-label">用户手机</label>
+        <div class="col-sm-5">
+            <input type="text" required class="form-control" name='mobilenumber' value='<%= userMobilenumber %>'>
+        </div>
+    </div>
+
     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
         <label class="col-sm-2 control-label">用户性别</label>
         <div class="col-sm-2">

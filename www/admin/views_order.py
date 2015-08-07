@@ -200,7 +200,7 @@ def print_order(request, template_name='pc/admin/print_order.html'):
         data[key].append({
             'code': item.item.code,
             'name': item.item.name,
-            'amount': item.amount,
+            'amount': item.amount if key == 1 else int(item.amount), # 非水果类 数量转为int
             'spec': item.item.spec,
             'type': item.item.get_item_type_display
         })

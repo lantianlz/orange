@@ -102,12 +102,14 @@ def modify_user(request):
     nick = request.REQUEST.get('nick')
     gender = request.REQUEST.get('gender')
     birthday = request.REQUEST.get('birthday')
+    email = request.REQUEST.get('email')
+    mobile = request.REQUEST.get('mobilenumber')
     des = request.REQUEST.get('des')
     state = int(request.REQUEST.get('state'))
 
     user = UserBase().get_user_by_id(user_id)
 
-    return UserBase().change_profile(user, nick, gender, birthday, des, state)
+    return UserBase().change_profile(user, nick, gender, birthday, email, mobile, des, state)
 
 @verify_permission('add_user')
 @common_ajax_response

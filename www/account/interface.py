@@ -168,12 +168,12 @@ class UserBase(object):
             transaction.rollback(using=ACCOUNT_DB)
             return 99900, dict_err.get(99900)
 
-    def change_profile(self, user, nick, gender, birthday, des=None, state=None):
+    def change_profile(self, user, nick, gender, birthday, email, mobilenumber, des=None, state=None):
         '''
         @note: 资料修改
         '''
         user_id = user.id
-        if not (user_id and nick and gender and birthday):
+        if not (user_id and nick and gender and birthday and email and mobilenumber):
             return 99800, dict_err.get(99800)
 
         try:
@@ -191,6 +191,14 @@ class UserBase(object):
         errcode, errmsg = self.check_birthday(birthday)
         if errcode != 0:
             return errcode, errmsg
+
+        temp = self.get_user_by_email(email)
+        if temp and temp.id != user.id:
+            return 10100, dict_err.get(10100)
+
+        temp = self.get_user_by_mobilenumber(mobilenumber)
+        if temp and temp.id != user.id:
+            return 10102, dict_err.get(10102)
 
         user = self.get_user_by_id(user_id)
         user.nick = nick
