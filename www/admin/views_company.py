@@ -12,6 +12,7 @@ from common import utils, page
 
 from www.company.interface import CompanyBase
 from www.city.interface import CityBase
+from www.account.interface import UserBase
 
 @verify_permission('')
 def company(request, template_name='pc/admin/company.html'):
@@ -27,6 +28,7 @@ def format_company(objs, num):
         num += 1
 
         city = CityBase().get_city_by_id(x.city_id)
+        invite = UserBase().get_user_by_id(x.invite_by) if x.invite_by else ''
 
         data.append({
             'num': num,
@@ -40,6 +42,8 @@ def format_company(objs, num):
             'addr': x.addr,
             'city_id': x.city_id,
             'city_name': city.city if city else '',
+            'invite_id': invite.id if invite else '',
+            'invite_name': invite.nick if invite else '',
             'person_count': x.person_count,
             'source': x.source,
             'state': x.state,
@@ -93,10 +97,12 @@ def modify_company(request):
     person_count = request.REQUEST.get('person_count')
     sort = request.REQUEST.get('sort')
     des = request.REQUEST.get('des')
+    invite = request.REQUEST.get('invite_by')
     state = request.REQUEST.get('state')
 
     return CompanyBase().modify_company(
-        company_id, name, staff_name, mobile, tel, addr, city_id, sort, des, state, person_count
+        company_id, name, staff_name, mobile, tel, addr, 
+        city_id, sort, des, state, person_count, invite
     )
 
 
@@ -112,8 +118,10 @@ def add_company(request):
     person_count = request.REQUEST.get('person_count')
     sort = request.REQUEST.get('sort')
     des = request.REQUEST.get('des')
+    invite = request.REQUEST.get('invite_by')
 
-    flag, msg = CompanyBase().add_company(name, staff_name, mobile, tel, addr, city_id, sort, des, person_count)
+    flag, msg = CompanyBase().add_company(name, staff_name, 
+        mobile, tel, addr, city_id, sort, des, person_count, invite)
 
     return flag, msg.id if flag == 0 else msg
 

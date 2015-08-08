@@ -81,7 +81,7 @@ $(document).ready(function(){
         is_ajaxing = true;
 
         ajaxSend(
-            "/booking",
+            "/company/get_booking",
             {'name': name, 'company': company, 'mobile': mobile, 'source': 0}, 
             function(data){
                 if(data.errcode == "0"){

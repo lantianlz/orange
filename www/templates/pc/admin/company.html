@@ -41,6 +41,8 @@ $(document).ready(function(){
             'cityId': 'city_id',
             'cityName': 'city_name',
             'personCount': 'person_count',
+            'inviteId': 'invite_id',
+            'inviteName': 'invite_name',
             'source': 'source',
             'state': 'state',
             'sort': 'sort',
@@ -192,11 +194,30 @@ $(document).ready(function(){
             }
         },
 
+        inviteTextBox: null,
+        initInviteTextBox: function(name, value){
+            var me = this;
+
+            this.inviteTextBox = $.Global.TextboxList.create('#invite_modify', {
+                max: 1,
+                placeholder: '选择邀请人',
+                url: '/admin/user/get_user_by_nick',
+                param: 'nick',
+                loadPlaceholder: '正在加载...'
+            });
+
+            if(value){
+                this.inviteTextBox.add(name, value);
+            }
+            
+        },
+
         // 渲染
         render: function(data){
             this.$el.html(this.template(data));
 
             this.initCityTextBox(data.cityName, data.cityId);
+            this.initInviteTextBox(data.inviteName, data.inviteId);
         },
 
         // 显示提问信息
@@ -262,6 +283,24 @@ $(document).ready(function(){
             
         },
 
+        inviteTextBox: null,
+        initInviteTextBox: function(name, value){
+            var me = this;
+
+            this.inviteTextBox = $.Global.TextboxList.create('#invite_add', {
+                max: 1,
+                placeholder: '选择邀请人',
+                url: '/admin/user/get_user_by_nick',
+                param: 'nick',
+                loadPlaceholder: '正在加载...'
+            });
+
+            if(value){
+                this.inviteTextBox.add(name, value);
+            }
+            
+        },
+
         render: function(){
             var me = this;
 
@@ -280,6 +319,7 @@ $(document).ready(function(){
             $('#add_company_modal').modal({'show': true, 'backdrop': 'static'});
 
             me.initCityTextBox();
+            me.initInviteTextBox();
         },
 
         addCompany: function(){
@@ -389,6 +429,7 @@ $(document).ready(function(){
                     <th>联系人手机</th>
                     <th class="hidden-xs">座机</th>
                     <th class="hidden-xs">所属城市</th>
+                    <th class="hidden-xs">邀请人</th>
                     <th>状态</th>
                 </tr>
             </thead>
@@ -420,6 +461,7 @@ $(document).ready(function(){
             <td><%= company.mobile %></td>
             <td class="hidden-xs"><%= company.tel %></td>
             <td class="hidden-xs"><%= company.cityName %></td>
+            <td class="hidden-xs"><%= company.inviteName %></td>
             <td>
                 <% if(company.state){ %>
                     <span class="fa fa-check co-3B99FC"></span>
@@ -469,6 +511,12 @@ $(document).ready(function(){
             <label class="col-sm-2 control-label">所属城市</label>
             <div class="col-sm-6">
                 <input type="text" class="form-control" id="city_modify" required name="city_id" value=''>
+            </div>
+        </div>
+        <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+            <label class="col-sm-2 control-label">邀请人</label>
+            <div class="col-sm-3">
+                <input type="text" id="invite_modify" class="form-control" required name="invite_by" value=''>
             </div>
         </div>
         <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
@@ -552,6 +600,12 @@ $(document).ready(function(){
                         <label class="col-sm-3 control-label">所属城市</label>
                         <div class="col-sm-6">
                             <input type="text" id="city_add" class="form-control" required name="city_id" value=''>
+                        </div>
+                    </div>
+                    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+                        <label class="col-sm-3 control-label">邀请人</label>
+                        <div class="col-sm-6">
+                            <input type="text" id="invite_add" class="form-control" required name="invite_by" value=''>
                         </div>
                     </div>
                     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">

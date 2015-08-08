@@ -27,6 +27,7 @@ def format_booking(objs, num):
         num += 1
 
         user = UserBase().get_user_by_id(x.operator_id) if x.operator_id else ''
+        invite = UserBase().get_user_by_id(x.invite_by) if x.invite_by else ''
 
         data.append({
             'num': num,
@@ -35,6 +36,8 @@ def format_booking(objs, num):
             'staff_name': x.staff_name,
             'mobile': x.mobile,
             'source': x.source,
+            'invite_id': invite.id if invite else '',
+            'invite_name': invite.nick if invite else '',
             'state': x.state,
             'operator_id': user.id if user else '',
             'operator_name': user.nick if user else '',

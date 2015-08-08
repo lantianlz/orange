@@ -1,0 +1,122 @@
+{% extends "mobile/base.html" %}
+
+{% block title %}预约试吃{% endblock title %}
+
+{% block base_css %}
+<style type="text/css">
+html,body{
+	height: 100%;
+    background: -webkit-linear-gradient(left top, #243337, #668A8D);
+    background: -moz-linear-gradient(left top, #ace, #f96);
+    background: -ms-linear-gradient(left top, #ace, #f96);
+    background: linear-gradient(left top, #ace, #f96);
+}
+
+.logo{
+	width: 20%
+}
+
+.label{
+	color: #72898C;
+}
+
+.form-control{
+	color: #f1f1f1;
+	background-color: transparent;
+    border: 0;
+    padding-left: 45px;
+    border-bottom: 1px solid #567578;
+    border-radius: 0;
+    -webkit-box-shadow: none; 
+    		box-shadow: none; 
+}
+.form-control:focus{
+	border-color: #66afe9;
+    outline: 0;
+    -webkit-box-shadow: none;
+    		box-shadow: none;
+}
+
+.btn-default, .btn-default:hover, .btn-default:active, .btn-default:focus{
+	background-color: #A7B6B8;
+	color: #567578;
+	border-color: #A7B6B8;
+}
+
+.placeholder { color: #e1e1e1; }
+</style>
+{% endblock %}
+
+{% block base_js %}
+<script type="text/javascript">
+$(document).ready(function(){
+	var is_ajaxing = false;
+    // 预约
+    $('.btn-booking').on('click', function(){
+
+        var name = $('.name').val(),
+            company = $('.company').val(),
+            mobile = $('.mobile').val();
+
+        if($.trim(name) == "" || $.trim(company) == "" || $.trim(mobile) == ""){
+            $.Global.Notice.InfoTopNotice("请输入完整的信息");
+            return;
+        }
+
+        if(is_ajaxing){
+            return;
+        }
+        is_ajaxing = true;
+
+        ajaxSend(
+            "/company/get_booking",
+            {'name': name, 'company': company, 'mobile': mobile, 'source': 1, 'invite_by': '{{invite.id}}'}, 
+            function(data){
+                if(data.errcode == "0"){
+                    $.Global.Notice.SuccessTopNotice('预约成功，稍后市场专员将与您联系');
+                } else {
+                    $.Global.Notice.InfoTopNotice(data.errmsg);
+                }
+                is_ajaxing = false;
+            }
+        )
+    });
+});
+</script>
+{% endblock %}
+
+{% block body %}
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-xs-12 text-center pt-55">
+			<img class="logo" src="{{MEDIA_URL}}img/logo_white.png">
+		</div>
+		<div class="col-xs-10 col-xs-offset-1 f20 text-center pt-10 co-ffffff">
+			三点十分
+		</div>
+		<div class="col-xs-10 col-xs-offset-1 pr pt-40">
+			{% if invite %}
+			<div class="pa w text-center co-ADADAD" style="left: 0; top: 5px;">
+				你的好友「{{ invite.nick }}」邀请你试吃
+			</div>
+			{% endif %}
+			<i class="fa fa-building pa" style="top: 49px; left: 18px; font-size: 25px; color: #72898C;"></i>
+			<input type="text" class="form-control input-lg name" placeholder="公司名称" />
+		</div>
+		<div class="col-xs-10 col-xs-offset-1 pr pt-20">
+			<i class="fa fa-user pa" style="top: 29px; left: 18px; font-size: 25px; color: #72898C;"></i>
+			<input type="text" class="form-control input-lg company" placeholder="联系人" />
+		</div>
+		<div class="col-xs-10 col-xs-offset-1 pr pt-20">
+			<i class="fa fa-mobile pa" style="top: 23px; left: 20px; font-size: 37px; color: #72898C;"></i>
+			<input type="text" class="form-control input-lg mobile" placeholder="联系方式" />
+		</div>
+		<div class="col-xs-10 col-xs-offset-1 pr pt-30">
+			<a class="btn btn-default btn-lg btn-block btn-wave btn-booking">预约试吃</a>
+		</div>
+		<div class="col-xs-10 col-xs-offset-1 pr pt-20 co-ADADAD">
+			预约成功之后，我们的市场专员会在24小时内与你联系，符合要求的企业可免费试吃一次
+		</div>
+	</div>
+</div>
+{% endblock %}

@@ -19,12 +19,11 @@ urlpatterns = patterns('',
                        # url(r'^p/(?P<user_id>\w+)?$', 'www.account.views.user_journey'),
                        # url(r'^p/(?P<user_id>\w+)/user_answer$', 'www.account.views.user_answer'),
 
-                       url(r'^booking', 'www.company.views.booking'),
-
                        url(r'^$', 'www.account.views.home_welcome'),
                        url(r'^admin/', include('www.admin.urls')),
                        url(r'^account/', include('www.account.urls')),
                        url(r'^weixin/', include('www.weixin.urls')),
+                       url(r'^company/', include('www.company.urls')),
 
                        url(r'^(?P<txt_file_name>\w+)\.txt$', 'www.misc.views.txt_view'),
                        url(r'^s/(?P<template_name>.*)$', 'www.misc.views.static_view'),

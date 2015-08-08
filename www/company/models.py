@@ -19,6 +19,7 @@ class Company(models.Model):
     tel = models.CharField(verbose_name=u"座机", max_length=32, null=True)
     addr = models.CharField(verbose_name=u"地址", max_length=256, null=True)
     person_count = models.IntegerField(verbose_name=u"员工总数", default=0)
+    invite_by = models.CharField(verbose_name=u"邀请人", max_length=32, null=True)
 
     city_id = models.IntegerField(verbose_name=u"所属城市", default=0)
     source = models.IntegerField(verbose_name=u"来源", default=0, choices=source_choices)
@@ -96,6 +97,7 @@ class Booking(models.Model):
     staff_name = models.CharField(verbose_name=u"企业联系人", max_length=16)
     mobile = models.CharField(verbose_name=u"企业联系人电话", max_length=32)
     source = models.IntegerField(verbose_name=u"来源", default=0, choices=source_choices)
+    invite_by = models.CharField(verbose_name=u"邀请人", max_length=32, null=True)
     state = models.IntegerField(verbose_name=u"状态", default=0, choices=state_choices, db_index=True)
     operator_id = models.CharField(verbose_name=u"处理人", max_length=32, null=True)
     operation_time = models.DateTimeField(verbose_name=u"处理时间", null=True)

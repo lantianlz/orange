@@ -13,6 +13,7 @@ from common import utils, debug, validators, cache, raw_sql
 from www.misc.decorators import cache_required
 from www.misc import consts
 
+from www.account.interface import UserBase
 from models import Item, Company, Meal, MealItem, Order, OrderItem, Booking
 
 DEFAULT_DB = 'default'
@@ -159,13 +160,17 @@ class CompanyBase(object):
         except Company.DoesNotExist:
             return ""
 
-    def add_company(self, name, staff_name, mobile, tel, addr, city_id, sort, des, person_count):
+    def add_company(self, name, staff_name, mobile, tel, addr, city_id, sort, des, person_count, invite_by):
 
         if not (name and staff_name and mobile and addr and city_id):
             return 99800, dict_err.get(99800)
 
         if Company.objects.filter(name=name):
             return 20201, dict_err.get(20201)
+
+        invite = None
+        if invite_by:
+            invite = UserBase().get_user_by_id(invite_by)
 
         try:
             obj = Company.objects.create(
@@ -177,7 +182,8 @@ class CompanyBase(object):
                 city_id = city_id,
                 sort = sort,
                 des = des,
-                person_count = person_count
+                person_count = person_count,
+                invite_by = invite.id
             )
         except Exception, e:
             debug.get_debug_detail_and_send_email(e)
@@ -185,7 +191,7 @@ class CompanyBase(object):
 
         return 0, obj
 
-    def modify_company(self, company_id, name, staff_name, mobile, tel, addr, city_id, sort, des, state, person_count):
+    def modify_company(self, company_id, name, staff_name, mobile, tel, addr, city_id, sort, des, state, person_count, invite_by):
         if not (name and staff_name and mobile and addr and city_id):
             return 99800, dict_err.get(99800)
 
@@ -196,6 +202,10 @@ class CompanyBase(object):
         if obj.name != name and Company.objects.filter(name=name):
             return 20201, dict_err.get(20201)
 
+        invite = None
+        if invite_by:
+            invite = UserBase().get_user_by_id(invite_by)
+            
         try:
             obj.name = name
             obj.staff_name = staff_name
@@ -207,6 +217,7 @@ class CompanyBase(object):
             obj.des = des
             obj.state = state
             obj.person_count = person_count
+            obj.invite_by = invite.id
             obj.save()
         except Exception, e:
             debug.get_debug_detail_and_send_email(e)
@@ -506,7 +517,7 @@ class BookingBase(object):
         except Booking.DoesNotExist:
             return ""
 
-    def add_booking(self, company_name, staff_name, mobile, source=1):
+    def add_booking(self, company_name, staff_name, mobile, source=0, invite_by=None):
 
         if not (company_name and staff_name and mobile):
             return 99800, dict_err.get(99800)
@@ -514,12 +525,18 @@ class BookingBase(object):
         if Booking.objects.filter(mobile=mobile) or Booking.objects.filter(company_name=company_name):
             return 20501, dict_err.get(20501)
 
+        # 邀请人
+        invite = None
+        if invite_by:
+            invite = UserBase().get_user_by_id(invite_by)
+
         try:
             obj = Booking.objects.create(
                 company_name = company_name,
                 staff_name = staff_name,
                 mobile = mobile,
-                source = source
+                source = source,
+                invite_by = invite.id if invite else None
             )
 
             # 发送邮件提醒

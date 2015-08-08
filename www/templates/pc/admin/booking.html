@@ -30,6 +30,8 @@ $(document).ready(function(){
             'staffName': 'staff_name',
             'mobile': 'mobile',
             'source': 'source',
+            'inviteId': 'invite_id',
+            'inviteName': 'invite_name',
             'state': 'state',
             'operatorId': 'operator_id',
             'operatorName': 'operator_name',
@@ -275,10 +277,11 @@ $(document).ready(function(){
             <thead>
                 <tr>
                     <th>#</th>
-                    <th class="hidden-xs">公司名称</th>
+                    <th>公司名称</th>
                     <th>联系人</th>
                     <th>电话</th>
-                    <th>预约时间</th>
+                    <th class="hidden-xs">预约时间</th>
+                    <th class="hidden-xs">邀请人</th>
                     <th class="hidden-xs">来源</th>
                     <th>状态</th>
                 </tr>
@@ -305,11 +308,12 @@ $(document).ready(function(){
 <% _.each(bookings, function(booking){ %>
     <tr class="pointer" data-booking_id="<%= booking.bookingId %>">
         <td><%= booking.num %></td>
-        <td class="hidden-xs"><%= booking.companyName %></td>
+        <td><%= booking.companyName %></td>
         <td><%= booking.staffName %></td>
         <td><%= booking.mobile %></td>
-        <td><%= booking.createTime %></td>
-        <td>
+        <td  class="hidden-xs"><%= booking.createTime %></td>
+        <td  class="hidden-xs"><%= booking.inviteName %></td>
+        <td  class="hidden-xs">
         {% for source in sources %}
             <% if(booking.source == '{{source.value}}'){ %>
             {{ source.name }}
@@ -358,6 +362,12 @@ $(document).ready(function(){
                     <% } %>
                 {% endfor %}
             </p>
+        </div>
+    </div>
+    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+        <label class="col-sm-2 control-label">邀请人</label>
+        <div class="col-sm-5">
+            <p class="form-control-static"><%= inviteName %></p>
         </div>
     </div>
     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
