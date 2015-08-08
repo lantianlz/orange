@@ -75,7 +75,7 @@ class Profile(models.Model):
         if self.avatar:
             return '%s%s' % (self.avatar, ('!%s' % key) if key else '')
         else:
-            return '%simg/default_avatar.png' % settings.MEDIA_URL
+            return '%simg/logo_white.png' % settings.MEDIA_URL
 
     def get_avatar_600(self):
         return self.get_avatar(key='600m0')
