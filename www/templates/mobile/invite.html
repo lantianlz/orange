@@ -1,0 +1,131 @@
+{% extends "mobile/base.html" %}
+
+{% block title %}预约试吃{% endblock title %}
+
+{% block base_css %}
+<style type="text/css">
+html,body{
+	height: 100%;
+    background: -webkit-linear-gradient(left top, #243337, #668A8D);
+    background: -moz-linear-gradient(left top, #ace, #f96);
+    background: -ms-linear-gradient(left top, #ace, #f96);
+    background: linear-gradient(left top, #ace, #f96);
+}
+
+.logo{
+	width: 20%
+}
+
+.label{
+	color: #72898C;
+}
+
+.form-control{
+	color: #f1f1f1;
+	background-color: transparent;
+    border: 0;
+    padding-left: 45px;
+    border-bottom: 1px solid #567578;
+    border-radius: 0;
+    -webkit-box-shadow: none; 
+    		box-shadow: none; 
+}
+.form-control:focus{
+	border-color: #66afe9;
+    outline: 0;
+    -webkit-box-shadow: none;
+    		box-shadow: none;
+}
+
+.btn-default, .btn-default:hover, .btn-default:active, .btn-default:focus{
+	background-color: #A7B6B8;
+	color: #567578;
+	border-color: #A7B6B8;
+}
+
+</style>
+{% endblock %}
+
+{% block base_js %}
+<script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+	/*
+		微信接口
+	*/
+	wx.config({
+	    debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+	    appId: 'wxd6922b078dff1607', // 必填，公众号的唯一标识
+	    timestamp: '{{sign_dict.timestamp}}', // 必填，生成签名的时间戳
+	    nonceStr: '{{sign_dict.nonceStr}}', // 必填，生成签名的随机串
+	    signature: '{{sign_dict.signature}}',// 必填，签名，见附录1
+	    jsApiList: ['onMenuShareTimeline', 'onMenuShareAppMessage'] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
+	});
+
+	wx.ready(function(){
+		wx.onMenuShareAppMessage({
+			title: '三点十分免费试吃',
+			desc: '填写完整信息，即可获得免费试吃一次机会',
+			link: 'http://www.3-10.cc/company/booking?invite_by={{request.user.id}}',
+			imgUrl: 'http://static.3-10.cc/img/logo.png',
+			trigger: function (res) {
+				// alert('用户点击发送给朋友');
+			},
+			success: function (res) {
+				// alert('已分享');
+			},
+			cancel: function (res) {
+				// alert('已取消');
+			},
+			fail: function (res) {
+				// alert(JSON.stringify(res));
+			}
+		});
+		
+		wx.onMenuShareTimeline({
+			title: '三点十分免费试吃',
+			desc: '填写完整信息，即可获得免费试吃一次机会',
+			link: 'http://www.3-10.cc/company/booking?invite_by={{request.user.id}}',
+			imgUrl: 'http://static.3-10.cc/img/logo.png',
+			trigger: function (res) {
+				// alert('用户点击分享到朋友圈');
+			},
+			success: function (res) {
+				// alert('已分享');
+			},
+			cancel: function (res) {
+				// alert('已取消');
+			},
+			fail: function (res) {
+				// alert(JSON.stringify(res));
+			}
+		});
+		
+	});
+
+	if('{{request.user.id}}' == ''){
+		$.Global.Notice.WarningTopNotice("请点击公众号[ 推荐有礼 ]菜单进入本页面");
+	}
+	
+});
+</script>
+{% endblock %}
+
+{% block body %}
+<div class="container-fluid">
+	<div class="row pr">
+		<div class="col-xs-12 text-center pt-55">
+			<img class="logo" src="{{MEDIA_URL}}img/logo_white.png">
+		</div>
+		<div class="col-xs-10 col-xs-offset-1 f20 text-center pt-10 co-ffffff">
+			三点十分
+		</div>
+		<div class="col-xs-10 col-xs-offset-1 pr pt-30">
+			<a class="btn btn-default btn-lg btn-block btn-wave btn-booking">分享有好礼</a>
+		</div>
+		<div class="col-xs-10 col-xs-offset-1 pr pt-20 co-ADADAD">
+			分享有好礼
+		</div>
+	</div>
+</div>
+{% endblock %}

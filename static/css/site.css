@@ -6,7 +6,7 @@ a:focus {outline: none; -moz-outline: none;}
 
 .line-through{text-decoration: line-through;}
 .no-underline{text-decoration: none;}
-.no-underline:hover{text-decoration: none;}
+.no-underline:hover, .no-underline:active, .no-underline:focus{text-decoration: none;}
 
 .line-height-20{line-height: 20px;}
 .line-height-23{line-height: 23px;}

@@ -13,10 +13,7 @@ from www.weixin.interface import WeixinBase, Sign
 
 def booking(request, template_name='mobile/booking.html'):
     
-    # 微信key
-    url = 'http://%s%s' % (request.META['HTTP_HOST'], request.path)
-    sign = Sign(WeixinBase().get_weixin_jsapi_ticket(WeixinBase().init_app_key()), url)
-    sign_dict = sign.sign()
+    
 
     invite_by = request.REQUEST.get('invite_by')
     if invite_by:
@@ -34,3 +31,13 @@ def get_booking(request):
     invite_by = request.REQUEST.get('invite_by')
 
     return BookingBase().add_booking(company_name, staff_name, mobile, source, invite_by)
+
+
+def invite(request, template_name='mobile/invite.html'):
+
+    # 微信key
+    url = 'http://www.3-10.cc/company/invite'
+    sign = Sign(WeixinBase().get_weixin_jsapi_ticket(WeixinBase().init_app_key()), url)
+    sign_dict = sign.sign()
+
+    return render_to_response(template_name, locals(), context_instance=RequestContext(request))
