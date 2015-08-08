@@ -6,7 +6,7 @@ import time
 from django.http import HttpResponse
 from django.utils.encoding import smart_str
 
-from www.weixin.interface import dict_weixin_app, WexinBase
+from www.weixin.interface import dict_weixin_app, WeixinBase
 
 
 def weixin_signature_required(func):
@@ -17,7 +17,7 @@ def weixin_signature_required(func):
         timestamp = request.GET.get('timestamp', '') or '0'
         nonce = request.GET.get('nonce', '')
         signature = request.GET.get('signature', '')
-        token = dict_weixin_app[WexinBase().init_app_key()]['token']
+        token = dict_weixin_app[WeixinBase().init_app_key()]['token']
         lst_sig = [timestamp, nonce, token]
         lst_sig.sort()
         if hashlib.sha1(''.join(lst_sig)).hexdigest() == signature and abs(int(time.time()) - int(timestamp)) < 3600:
@@ -34,7 +34,7 @@ def index(request):
     logging.error('post info is:%s' % smart_str(data))
 
     if data:
-        xml = WexinBase().get_response(data) or '<xml></xml>'
+        xml = WeixinBase().get_response(data) or '<xml></xml>'
         return HttpResponse(xml, mimetype='application/xml')
     else:
         return HttpResponse(request.REQUEST.get('echostr'))  # 修改微信配置url时和微信服务器鉴权

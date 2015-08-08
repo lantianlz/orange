@@ -43,13 +43,6 @@ html,body{
 	border-color: #A7B6B8;
 }
 
-.btn-share{
-	position: absolute;
-	right: 8%;
-	top: 20px;
-    background-color: transparent;
-    color: #adadad;
-}
 </style>
 {% endblock %}
 
@@ -63,34 +56,50 @@ $(document).ready(function(){
 	wx.config({
 	    debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
 	    appId: 'wxd6922b078dff1607', // 必填，公众号的唯一标识
-	    timestamp: , // 必填，生成签名的时间戳
-	    nonceStr: '', // 必填，生成签名的随机串
-	    signature: '',// 必填，签名，见附录1
-	    jsApiList: [] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
+	    timestamp: '{{sign_dict.timestamp}}', // 必填，生成签名的时间戳
+	    nonceStr: '{{sign_dict.nonceStr}}', // 必填，生成签名的随机串
+	    signature: '{{sign_dict.signature}}',// 必填，签名，见附录1
+	    jsApiList: ['onMenuShareTimeline', 'onMenuShareAppMessage'] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
 	});
 
 	wx.ready(function(){
-		$('.btn-share').on('click', function(){
-			wx.onMenuShareAppMessage({
-				title: '三点十分免费试吃',
-				desc: '填写完整信息，即可获得免费试吃一次机会',
-				link: 'http://www.3-10.cc/company/booking',
-				imgUrl: 'http://demo.open.weixin.qq.com/jssdk/images/p2166127561.jpg',
-				trigger: function (res) {
-					alert('用户点击发送给朋友');
-				},
-				success: function (res) {
-					alert('已分享');
-				},
-				cancel: function (res) {
-					alert('已取消');
-				},
-				fail: function (res) {
-					alert(JSON.stringify(res));
-				}
-			});
-			alert('已注册获取“发送给朋友”状态事件');
-		}
+		wx.onMenuShareAppMessage({
+			title: '三点十分免费试吃',
+			desc: '填写完整信息，即可获得免费试吃一次机会',
+			link: 'http://www.3-10.cc/company/booking',
+			imgUrl: 'http://demo.open.weixin.qq.com/jssdk/images/p2166127561.jpg',
+			trigger: function (res) {
+				alert('用户点击发送给朋友');
+			},
+			success: function (res) {
+				alert('已分享');
+			},
+			cancel: function (res) {
+				alert('已取消');
+			},
+			fail: function (res) {
+				alert(JSON.stringify(res));
+			}
+		});
+		
+		wx.onMenuShareTimeline({
+			title: '互联网之子',
+			link: 'http://www.3-10.cc/company/booking',
+			imgUrl: 'http://demo.open.weixin.qq.com/jssdk/images/p2166127561.jpg',
+			trigger: function (res) {
+				alert('用户点击分享到朋友圈');
+			},
+			success: function (res) {
+				alert('已分享');
+			},
+			cancel: function (res) {
+				alert('已取消');
+			},
+			fail: function (res) {
+				alert(JSON.stringify(res));
+			}
+		});
+		
 	});
 
 
@@ -133,7 +142,6 @@ $(document).ready(function(){
 {% block body %}
 <div class="container-fluid">
 	<div class="row pr">
-		<a class="btn btn-default btn-share"><i class="fa fa-share-square-o pr-3"></i>分享</a>
 		<div class="col-xs-12 text-center pt-55">
 			<img class="logo" src="{{MEDIA_URL}}img/logo_white.png">
 		</div>

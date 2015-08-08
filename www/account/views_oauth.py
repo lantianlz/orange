@@ -88,10 +88,10 @@ def oauth_sina(request):
 def oauth_weixin(request):
     import logging
     from www.misc.oauth2.weixin import Consumer
-    from www.weixin.interface import dict_weixin_app, WexinBase
+    from www.weixin.interface import dict_weixin_app, WeixinBase
     from www.tasks import async_change_profile_from_weixin
 
-    app_key = WexinBase().init_app_key()
+    app_key = WeixinBase().init_app_key()
     client = Consumer(app_key)
 
     code = request.REQUEST.get('code')

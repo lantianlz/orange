@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-
+import random
+import string
+import hashlib
 import time
 import requests
 import json
@@ -36,7 +38,7 @@ dict_weixin_app = {
 }
 
 
-class WexinBase(object):
+class WeixinBase(object):
 
     def __init__(self):
         self.cache = cache.Cache()
@@ -350,3 +352,63 @@ class WexinBase(object):
         ''' % dict(product_type=product_type, name=name, time=time, remark=remark)
 
         return self.send_template_msg(app_key, openid, content, template_id)
+
+
+    def get_weixin_jsapi_ticket(self, app_key):
+        # 本地调试模式不走缓存
+        if not settings.LOCAL_FLAG:
+            key = 'weixin_jsapi_ticket_for_%s' % app_key
+            ticket = self.cache.get(key)
+            if ticket is None:
+                ticket, expires_in = self.get_weixin_jsapi_ticket_directly(app_key)
+                if ticket:
+                    self.cache.set(key, ticket, int(expires_in))
+        else:
+            ticket, expires_in = self.get_weixin_jsapi_ticket_directly(app_key)
+        return ticket
+
+    def get_weixin_jsapi_ticket_directly(self, app_key):
+        ticket, expires_in = '', 0
+        content = ''
+        
+        url = '%s/cgi-bin/ticket/getticket?access_token=%s&type=jsapi' % (weixin_api_url, self.get_weixin_access_token(app_key))
+        try:
+            r = requests.get(url, timeout=20, verify=False)
+            content = r.content
+            r.raise_for_status()
+            content = json.loads(content)
+            ticket = content['ticket']
+            expires_in = content['expires_in']
+        except Exception, e:
+            logging.error(u'get_weixin_jsapi_ticket rep is %s' % content)
+            debug.get_debug_detail(e)
+        assert ticket
+        return ticket, expires_in
+
+
+
+
+class Sign(object):
+    def __init__(self, jsapi_ticket, url):
+        self.ret = {
+            'nonceStr': self.__create_nonce_str(),
+            'jsapi_ticket': jsapi_ticket,
+            'timestamp': self.__create_timestamp(),
+            'url': url
+        }
+
+    def __create_nonce_str(self):
+        return ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(15))
+
+    def __create_timestamp(self):
+        return int(time.time())
+
+    def sign(self):
+        string = '&'.join(['%s=%s' % (key.lower(), self.ret[key]) for key in sorted(self.ret)])
+        self.ret['signature'] = hashlib.sha1(string).hexdigest()
+        return self.ret
+
+if __name__ == '__main__':
+    # 注意 URL 一定要动态获取，不能 hardcode
+    sign = Sign('jsapi_ticket', 'http://example.com')
+    print sign.sign()

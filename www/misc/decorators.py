@@ -25,7 +25,7 @@ def member_required(func):
     """
     def _decorator(request, *args, **kwargs):
         from www.misc.oauth2.weixin import Consumer
-        from www.weixin.interface import WexinBase
+        from www.weixin.interface import WeixinBase
 
         if not (hasattr(request, 'user') and request.user.is_authenticated()):
             if request.is_ajax():
@@ -34,7 +34,7 @@ def member_required(func):
                 user_agent = request.META.get("HTTP_USER_AGENT", "").lower()
 
                 if "micromessenger" in user_agent:  # 微信端自动登录
-                    return HttpResponseRedirect(Consumer(WexinBase().init_app_key()).authorize())
+                    return HttpResponseRedirect(Consumer(WeixinBase().init_app_key()).authorize())
 
                 if "android" in user_agent or "iphone" in user_agent:   # 手机浏览器端需要处理
                     err_msg = u'需要登陆后进行操作<br /><br />请在微信中搜索公众号「三点十分」，关注后通过菜单访问'

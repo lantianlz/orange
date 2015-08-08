@@ -19,11 +19,11 @@ def main():
     import datetime
     from django.conf import settings
     from common import utils
-    from www.weixin.interface import WexinBase
+    from www.weixin.interface import WeixinBase
     from www.tasks import async_send_email
     from pprint import pprint
 
-    wb = WexinBase()
+    wb = WeixinBase()
     app_key = "orange_test"
     to_user = 'oZy3hskE524Y2QbLgY2h3VnI3Im8'
 

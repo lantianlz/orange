@@ -9,9 +9,15 @@ from django.shortcuts import render_to_response
 from misc.decorators import common_ajax_response
 from www.company.interface import BookingBase
 from www.account.interface import UserBase
+from www.weixin.interface import WeixinBase, Sign
 
 def booking(request, template_name='mobile/booking.html'):
     
+    # 微信key
+    url = 'http://%s%s' % (request.META['HTTP_HOST'], request.path)
+    sign = Sign(WeixinBase().get_weixin_jsapi_ticket(WeixinBase().init_app_key()), url)
+    sign_dict = sign.sign()
+
     invite_by = request.REQUEST.get('invite_by')
     if invite_by:
         invite = UserBase().get_user_by_id(invite_by)

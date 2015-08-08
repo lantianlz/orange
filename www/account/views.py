@@ -44,15 +44,15 @@ def login(request, template_name='pc/account/login.html'):
 
 
 def login_weixin(request, template_name='pc/account/login_weixin.html'):
-    from www.weixin.interface import WexinBase
+    from www.weixin.interface import WeixinBase
 
     # 从REUQEST中或者HTTP_REFERER中获取
     next_url = utils.get_next_url(request)
     if next_url:
         request.session['next_url'] = urllib.unquote_plus(next_url)
 
-    wb = WexinBase()
-    ticket_info = WexinBase().get_qr_code_ticket(wb.init_app_key())
+    wb = WeixinBase()
+    ticket_info = WeixinBase().get_qr_code_ticket(wb.init_app_key())
     if not ticket_info:
         raise Exception, u"获取微信登陆二维码异常"
     ticket = ticket_info["ticket"]
