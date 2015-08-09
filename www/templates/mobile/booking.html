@@ -7,9 +7,7 @@
 html,body{
 	height: 100%;
     background: -webkit-linear-gradient(left top, #243337, #668A8D);
-    background: -moz-linear-gradient(left top, #ace, #f96);
-    background: -ms-linear-gradient(left top, #ace, #f96);
-    background: linear-gradient(left top, #ace, #f96);
+    background: linear-gradient(left top, #243337, #668A8D);
 }
 
 .logo{
@@ -47,14 +45,16 @@ html,body{
 {% endblock %}
 
 {% block base_js %}
-<script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+<script type="text/javascript" src="{{MEDIA_URL}}js/jquery/fastclick.js"></script>
 <script type="text/javascript">
 $(document).ready(function(){
+
+	FastClick.attach(document.body);
 
 	var is_ajaxing = false;
     // 预约
     $('.btn-booking').on('click', function(){
-
+    	
         var name = $('.name').val(),
             company = $('.company').val(),
             mobile = $('.mobile').val();
@@ -81,6 +81,7 @@ $(document).ready(function(){
                 is_ajaxing = false;
             }
         )
+        
     });
 });
 </script>
@@ -113,7 +114,7 @@ $(document).ready(function(){
 			<input type="text" class="form-control input-lg mobile" placeholder="联系方式" />
 		</div>
 		<div class="col-xs-10 col-xs-offset-1 pr pt-30">
-			<a class="btn btn-default btn-lg btn-block btn-wave btn-booking">预约试吃</a>
+			<a href="#" class="btn btn-default btn-lg btn-block btn-wave btn-booking">预约试吃</a>
 		</div>
 		<div class="col-xs-10 col-xs-offset-1 pr pt-20 co-ADADAD">
 			预约成功之后，我们的市场专员会在24小时内与你联系，符合要求的企业可免费试吃一次

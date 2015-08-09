@@ -12,8 +12,6 @@ from www.account.interface import UserBase
 from www.weixin.interface import WeixinBase, Sign
 
 def booking(request, template_name='mobile/booking.html'):
-    
-    
 
     invite_by = request.REQUEST.get('invite_by')
     if invite_by:
