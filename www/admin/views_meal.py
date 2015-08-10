@@ -14,6 +14,8 @@ from www.company.interface import MealBase, CompanyBase
 def meal(request, template_name='pc/admin/meal.html'):
     from www.company.models import Meal
     states = [{'name': x[1], 'value': x[0]} for x in Meal.state_choices]
+    all_states = [{'name': x[1], 'value': x[0]} for x in Meal.state_choices]
+    all_states.insert(0, {'name': u'全部', 'value': -1})
 
     today = datetime.datetime.now()
     start_date = today.strftime('%Y-%m-%d')
@@ -68,9 +70,11 @@ def search(request):
     data = []
 
     name = request.REQUEST.get('name')
+    state = request.REQUEST.get('state')
+    state = None if state == "-1" else state
     page_index = int(request.REQUEST.get('page_index'))
 
-    objs = MealBase().search_meals_for_admin(name)
+    objs = MealBase().search_meals_for_admin(state, name)
 
     page_objs = page.Cpt(objs, count=10, page=page_index).info
 
@@ -115,6 +119,7 @@ def modify_meal(request):
     start_date = request.POST.get('start_date')
     end_date = request.POST.get('end_date')
     des = request.POST.get('des')
+    state = request.POST.get('state')
 
     # 套餐项目
     item_ids = request.POST.getlist('item-ids')
@@ -122,7 +127,7 @@ def modify_meal(request):
 
     return MealBase().modify_meal(
         meal_id, company, name, price, start_date, 
-        end_date, des, _get_items(item_ids, item_amounts)
+        end_date, state, des, _get_items(item_ids, item_amounts)
     )
 
 @verify_permission('add_meal')

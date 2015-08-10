@@ -276,7 +276,7 @@ class MealBase(object):
         return 0, meal
 
     @transaction.commit_manually(using=DEFAULT_DB)
-    def modify_meal(self, meal_id, company_id, name, price, start_date, end_date, des='', meal_items=[]):
+    def modify_meal(self, meal_id, company_id, name, price, start_date, end_date, state, des='', meal_items=[]):
         if not (company_id and name and price and start_date and end_date):
             return 99800, dict_err.get(99800)
 
@@ -298,6 +298,7 @@ class MealBase(object):
             obj.start_date = start_date
             obj.end_date = end_date
             obj.des = des
+            obj.state = state
             obj.save()
 
             # 套餐下的项目
@@ -327,8 +328,8 @@ class MealBase(object):
 
         return objs
 
-    def search_meals_for_admin(self, name):
-        objs = self.get_all_meal()
+    def search_meals_for_admin(self, state, name):
+        objs = self.get_all_meal(state)
 
         if name:
             objs = objs.filter(name__contains=name)

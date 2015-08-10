@@ -39,18 +39,20 @@ $(document).ready(function(){
             'state': 'state'
         },
 
-        search: function(name, pageIndex){
+        search: function(state, name, pageIndex){
             var me = this,
+                state = state || 1,
                 name = name || '',
                 pageIndex = pageIndex || 1;
 
             ajaxSend(
                 "/admin/meal/search", 
-                {'name': name, 'page_index': pageIndex}, 
+                {'state': state, 'name': name, 'page_index': pageIndex}, 
                 function(data){
                     
                     me.pageIndex = pageIndex;
                     me.pageCount = data.page_count;
+                    me.state = state;
                     me.name = name;
 
                     me.reset($.Global.Utils.dictMapParse(data.data, me._modelMaps));
@@ -125,7 +127,7 @@ $(document).ready(function(){
             this.pagination.render(
                 this.collection.pageIndex||1, 
                 this.collection.pageCount, 
-                'search/' + this.collection.name
+                'search/' + this.collection.state + '/' + this.collection.name
             );
         },
 
@@ -135,9 +137,10 @@ $(document).ready(function(){
         },
 
         searchMeal: function(){
-            var name = this.$('.name').val();
+            var state = this.$('.state').val(),
+                name = this.$('.name').val();
 
-            router.navigate(String.format('/search/{0}/1', name), {trigger: true});
+            router.navigate(String.format('/search/{0}/{1}/1', state, name), {trigger: true});
         },
 
         modifyMeal: function(sender){
@@ -363,14 +366,14 @@ $(document).ready(function(){
     var Router = Backbone.Router.extend({
         routes: {
             "":                             "search",
-            "search/(:name)/:pageIndex":    "search",
+            "search/(:state)/(:name)/:pageIndex":    "search",
             "modify/:mealId":               "modify",
             "add":                          "add"
         },
 
         // 获取推荐用户
-        search: function(name, pageIndex){
-            meals.search(name, pageIndex);
+        search: function(state, name, pageIndex){
+            meals.search(state, name, pageIndex);
         },
 
         modify: function(mealId){
@@ -424,6 +427,14 @@ $(document).ready(function(){
     <!-- 用户列表 -->
     <div class="tab-pane fade pt-15 in active" id="meal_list">
         <form action="." class="form-inline" onsubmit="javascript: return false;">
+            <div class="input-group input-group-sm pb-10">
+                <span class="input-group-addon">状态</span>
+                <select class="form-control state">
+                    {% for state in all_states %}
+                    <option value="{{state.value}}" {% if state.value == 1 %}selected{% endif %} >{{state.name}}</option>
+                    {% endfor %}
+                </select>
+            </div>
             <div class="input-group input-group-sm pb-10">
                 <span class="input-group-addon">套餐名称</span>
                 <input type="text" class="form-control name" placeholder="" />
