@@ -17,6 +17,8 @@ def item(request, template_name='pc/admin/item.html'):
     types = [{'name': x[1], 'value': x[0]} for x in Item.type_choices]
     all_types = [{'name': x[1], 'value': x[0]} for x in Item.type_choices]
     all_types.insert(0, {'value': -1, 'name': u"全部"})
+    specs = [{'name': x[1], 'value': x[0]} for x in Item.spec_choices]
+    integers = [{'name': x[1], 'value': x[0]} for x in Item.integer_choices]
     
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
 
@@ -34,9 +36,12 @@ def format_item(objs, num):
             'price': str(x.price),
             'item_type': x.item_type,
             'spec': x.spec,
+            'spec_text': x.get_spec_display(),
             'state': x.state,
             'code': x.code,
             'img': x.img,
+            'integer': x.integer,
+            'sale_price': str(x.sale_price),
             'sort': x.sort
         })
 
@@ -84,11 +89,13 @@ def modify_item(request):
     item_type = request.POST.get('item_type')
     spec = request.POST.get('spec')
     price = request.POST.get('price')
+    integer = request.POST.get('integer')
+    sale_price = request.POST.get('sale_price')
     sort = request.POST.get('sort')
     state = request.POST.get('state')
     # state = True if state == "1" else False
 
-    return ItemBase().modify_item(item_id, name, item_type, spec, price, sort, state)
+    return ItemBase().modify_item(item_id, name, item_type, spec, price, sort, state, integer, sale_price)
 
 @verify_permission('add_item')
 @common_ajax_response
@@ -98,8 +105,10 @@ def add_item(request):
     spec = request.POST.get('spec')
     price = request.POST.get('price')
     sort = request.POST.get('sort')
+    integer = request.POST.get('integer')
+    sale_price = request.POST.get('sale_price')
 
-    flag, msg = ItemBase().add_item(name, item_type, spec, price, sort)
+    flag, msg = ItemBase().add_item(name, item_type, spec, price, sort, integer, sale_price)
     return flag, msg.id if flag == 0 else msg
 
 @verify_permission('query_item')

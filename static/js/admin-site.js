@@ -428,7 +428,8 @@ if (!String.format) {
     */
     $.Global.ComponentView.ItemsView = Backbone.View.extend({
         el: '#items-view',
-
+        // 售价  初始化时传入,核算毛利使用
+        totalSalePrice: 0,
         _html: [
             '<ul class="list-unstyled items-view">',
                 '<div class="pb-15 border-bottom-1 bdc-e4e4e4 mb-15 pr item-header">',
@@ -439,7 +440,10 @@ if (!String.format) {
                 '<div class="fb fi pb-5 pt-15 type-2">点心</div>',
                 '<div class="fb fi pb-5 pt-15 type-3">一次性耗材</div>',
                 '<div class="fb fi pb-5 pt-15 type-4">盛装容器</div>',
-                '<div class="border-top-1 bdc-e4e4e4 text-right mt-5 pt-10 item-footer">总价: <span class="sum fb">0</span> 元</div>',
+                '<div class="border-top-1 bdc-e4e4e4 text-right mt-5 pt-10 item-footer">',
+                    '<span>成本总价: <span class="sum fb">0</span> 元，</span>',
+                    '<span>毛利: <span class="rate">0</span>%</span>',
+                '</div>',
             '</ul>'
         ].join(''),
 
@@ -455,8 +459,10 @@ if (!String.format) {
                     value: '',
                     data: '0',
                     price: 0,
+                    salePrice: 0,
                     itemType: '1',
                     spec: '',
+                    specText: '',
                     amount: 0
                 }, _data),
                 _itemHtml = [
@@ -467,7 +473,7 @@ if (!String.format) {
                                     '<span class="input-group-addon">{1}</span>',
                                     '<input type="text" name="item-amounts" data-item_price="{6}" required class="form-control number item" value="{2}">',
                                     '<input type="hidden" name="item-ids" value="{5}">',
-                                    '<span class="input-group-addon">{3}, <span class="total-price">{4}</span> 元</span>',
+                                    '<span class="input-group-addon">{3}, <span class="total-price">{4}</span> 元</span></span>',
                                 '</div>',
                             '</div>',
                             '<div class="col-sm-2 col-xs-2 text-right">',
@@ -481,17 +487,19 @@ if (!String.format) {
 
             // 是否已经存在
             if(temp.length == 0){
+                
                 $(String.format(
                     _itemHtml,
                     data.data,      // 0.item_id
                     data.value,     // 1.名称
                     data.amount,    // 2.数量
-                    data.spec,      // 3.规格
+                    data.specText,      // 3.规格
                     $.Global.Utils.formatPrice(
                         parseFloat(data.price) * parseFloat(data.amount)
-                    ),     // 4.价格
+                    ),     // 4.总价
                     data.data,      // 5.隐藏域
-                    data.price      // 6.单价
+                    data.price      // 6.成本价
+                   
                 )).insertAfter(this.$('.type-'+data.itemType));
 
                 this.calculatePrice();
@@ -523,20 +531,23 @@ if (!String.format) {
                 totalPrice = $.Global.Utils.formatPrice(
                     price * amount
                 );
-
+                
             target.parents('li').find('.total-price').html(totalPrice);
             this.calculatePrice();
         },
 
         // 计算总价
         calculatePrice: function(){
-            var sum = 0;
+            var sum = 0, rate = 0;
 
             $.map(this.$('.total-price'), function(price){
                 sum += parseFloat(price.innerHTML);
-            })
+            });
 
             this.$('.sum').html($.Global.Utils.formatPrice(sum));
+
+            rate = this.totalSalePrice > 0 ? Math.round((1-sum/this.totalSalePrice)*10000)/100 : 0;
+            this.$('.rate').html(rate);
         },
 
         // 加载项目
@@ -555,8 +566,10 @@ if (!String.format) {
                         'value': 'name',
                         'data': 'item_id',
                         'price': 'price',
+                        'salePrice': 'sale_price',
                         'itemType': 'item_type',
                         'spec': 'spec',
+                        'specText': 'spec_text',
                         'amount': 'amount'
                     })
                 );
@@ -585,8 +598,10 @@ if (!String.format) {
                             'value': 'name',
                             'data': 'item_id',
                             'price': 'price',
+                            'salePrice': 'sale_price',
                             'itemType': 'item_type',
-                            'spec': 'spec'
+                            'spec': 'spec',
+                            'specText': 'spec_text',
                         });
                     }
                     
@@ -604,7 +619,7 @@ if (!String.format) {
                         '<div class="suggestion-item">{0}<span class="pull-right">{1} / {2}</span></div>', 
                         suggestion.value, 
                         suggestion.price,
-                        suggestion.spec
+                        suggestion.specText
                     );
                 }
             })

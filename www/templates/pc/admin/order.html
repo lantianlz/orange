@@ -343,6 +343,10 @@ $(document).ready(function(){
                 me.itemsView.loadItems(data.items, true);
                 me.$('#meal_id_add').val(meal_id);
                 me.$('.total-price').val(data.price);
+
+                // 计算毛利
+                me.itemsView.totalSalePrice = parseFloat(me.$('.total-price').val());
+                me.itemsView.calculatePrice();
             });
         },
 
@@ -364,6 +368,10 @@ $(document).ready(function(){
             });
             $('#add_order_modal .ok').bind('click', function(){
                 me.addOrder();
+            });
+            $('#add_order_modal .total-price').on('input', function(){
+                me.itemsView.totalSalePrice = parseFloat($(this).val());
+                me.itemsView.calculatePrice();
             });
             
             $('#add_order_modal').modal({'show': true, 'backdrop': 'static'});

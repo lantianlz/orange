@@ -37,8 +37,10 @@ def format_meal(objs, num, show_items=False):
                     'item_id': i.item.id,
                     'name': i.item.name,
                     'price': str(i.item.price),
+                    'sale_price': str(i.item.sale_price),
                     'item_type': i.item.item_type,
                     'spec': i.item.spec,
+                    'spec_text': i.item.get_spec_display(),
                     'code': i.item.code,
                     'img': i.item.img,
                     'amount': i.amount

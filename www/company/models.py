@@ -114,15 +114,20 @@ class Item(models.Model):
     '''
     state_choices = ((0, u"停用"), (1, u"正常"))
     type_choices = ((1, u"水果"), (2, u"点心"), (3, u"一次性耗材"), (4, u"盛装容器"))
+    spec_choices = ((1, u"斤"), (2, u"个"), (3, u"盒"))
+    integer_choices = ((1, u"整数"), (2, u"保留小数"))
+
     code_dict = {1: 'F', 2: 'C', 3: 'S', 4: 'R'}
 
     code = models.CharField(verbose_name=u"货号", max_length=32, unique=True)
     name = models.CharField(verbose_name=u"名称", max_length=128, unique=True)
-    price = models.DecimalField(verbose_name=u"单价", max_digits=10, decimal_places=2, default=0)
+    price = models.DecimalField(verbose_name=u"成本价", max_digits=10, decimal_places=2, default=0)
+    sale_price = models.DecimalField(verbose_name=u"售价", max_digits=10, decimal_places=2, default=0)
     item_type = models.IntegerField(verbose_name=u"类型", default=1, choices=type_choices)
     state = models.IntegerField(verbose_name=u"状态", default=1, choices=state_choices)
-    spec = models.CharField(verbose_name=u"规格", max_length=32, null=True)
+    spec = models.IntegerField(verbose_name=u"规格", default=1, choices=spec_choices)
     sort = models.IntegerField(verbose_name=u"排序", default=0, choices=type_choices)
+    integer = models.IntegerField(verbose_name=u"是否整数", default=1, choices=integer_choices)
     create_time = models.DateTimeField(auto_now_add=True, db_index=True)
 
     img = models.CharField(verbose_name=u"图片", max_length=128, null=True)
@@ -195,8 +200,10 @@ class OrderItem(models.Model):
     order = models.ForeignKey("Order")
     item = models.ForeignKey("Item")
     amount = models.FloatField(verbose_name=u"数量", default=0)
-    price = models.DecimalField(verbose_name=u"单价", max_digits=10, decimal_places=2, default=0)
-    total_price = models.DecimalField(verbose_name=u"总价", max_digits=10, decimal_places=2, default=0)
+    price = models.DecimalField(verbose_name=u"成本价", max_digits=10, decimal_places=2, default=0)
+    sale_price = models.DecimalField(verbose_name=u"售价", max_digits=10, decimal_places=2, default=0)
+    total_price = models.DecimalField(verbose_name=u"成本总价", max_digits=10, decimal_places=2, default=0)
+    total_sale_price = models.DecimalField(verbose_name=u"销售总价", max_digits=10, decimal_places=2, default=0)
 
     class Meta:
         unique_together = [("order", "item"), ]

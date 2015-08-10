@@ -55,7 +55,7 @@ class ItemBase(object):
 
         return objs
 
-    def add_item(self, name, item_type, spec, price, sort):
+    def add_item(self, name, item_type, spec, price, sort, integer, sale_price):
 
         if not (name and item_type and price):
             return 99800, dict_err.get(99800)
@@ -70,6 +70,8 @@ class ItemBase(object):
                 spec = spec,
                 price = price,
                 sort = sort,
+                integer = integer,
+                sale_price = sale_price,
                 code = self.generate_item_code(item_type)
             )
 
@@ -98,7 +100,7 @@ class ItemBase(object):
 
         return obj
 
-    def modify_item(self, item_id, name, item_type, spec, price, sort, state):
+    def modify_item(self, item_id, name, item_type, spec, price, sort, state, integer, sale_price):
         
         if not (name and item_type and price):
             return 99800, dict_err.get(99800)
@@ -119,6 +121,8 @@ class ItemBase(object):
             obj.price = price
             obj.sort = sort
             obj.state = state
+            obj.integer = integer
+            obj.sale_price = sale_price
             obj.save()
         except Exception, e:
             debug.get_debug_detail_and_send_email(e)
@@ -183,7 +187,7 @@ class CompanyBase(object):
                 sort = sort,
                 des = des,
                 person_count = person_count,
-                invite_by = invite.id
+                invite_by = invite.id if invite else None
             )
         except Exception, e:
             debug.get_debug_detail_and_send_email(e)
@@ -396,7 +400,9 @@ class OrderBase(object):
                     item_id = x['item_id'],
                     amount = x['amount'],
                     price = item.price,
-                    total_price = item.price * decimal.Decimal(x['amount'])
+                    sale_price = item.sale_price,
+                    total_price = item.price * decimal.Decimal(x['amount']),
+                    total_sale_price = item.sale_price * decimal.Decimal(x['amount'])
                 )
             
             transaction.commit(using=DEFAULT_DB)

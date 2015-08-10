@@ -28,11 +28,13 @@ $(document).ready(function(){
             'itemId': 'item_id',
             'name': 'name',
             'price': 'price',
+            'salePrice': 'sale_price',
             'itemType': 'item_type',
             'spec': 'spec',
             'state': 'state',
             'code': 'code',
             'img': 'img',
+            'integer': 'integer',
             'sort': 'sort'
         },
 
@@ -342,7 +344,7 @@ $(document).ready(function(){
                     <th class="hidden-xs">货号</th>
                     <th>名称</th>
                     <th>类型</th>
-                    <th>单价</th>
+                    <th>成本价</th>
                     <th class="hidden-xs">规格</th>
                     <th>状态</th>
                 </tr>
@@ -379,7 +381,13 @@ $(document).ready(function(){
         {% endfor %}
         </td>
         <td><%= item.price %></td>
-        <td class="hidden-xs"><%= item.spec %></td>
+        <td class="hidden-xs">
+        {% for spec in specs %}
+            <% if(item.spec == '{{spec.value}}'){ %>
+            {{ spec.name }}
+            <% } %>
+        {% endfor %}
+        </td>
         <td>
         <% if(item.state){ %>
             <span class="fa fa-check co-3B99FC"></span>
@@ -419,13 +427,33 @@ $(document).ready(function(){
     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
         <label class="col-sm-2 control-label">规格</label>
         <div class="col-sm-3">
-            <input type="text" class="form-control" name='spec' value='<%= spec %>' placeholder="论斤 or 论个">
+            <select name="spec" class="form-control">
+                {% for spec in specs %}
+                <option value="{{spec.value}}" <% if(spec == {{spec.value}}){ %>selected<% } %> >{{spec.name}}</option>
+                {% endfor %}
+            </select>
         </div>
     </div>
     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
-        <label class="col-sm-2 control-label">单价</label>
+        <label class="col-sm-2 control-label">是否整数</label>
+        <div class="col-sm-3">
+            <select name="integer" class="form-control">
+                {% for integer in integers %}
+                <option value="{{integer.value}}" <% if(integer == {{integer.value}}){ %>selected<% } %> >{{integer.name}}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+        <label class="col-sm-2 control-label">成本价</label>
         <div class="col-sm-3">
             <input type="text" required class="form-control" name='price' value='<%= price %>'>
+        </div>
+    </div>
+    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+        <label class="col-sm-2 control-label">售价</label>
+        <div class="col-sm-3">
+            <input type="text" required class="form-control" name='sale_price' value='<%= salePrice %>'>
         </div>
     </div>
     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
@@ -480,13 +508,33 @@ $(document).ready(function(){
                     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
                         <label class="col-sm-2 control-label">规格</label>
                         <div class="col-sm-3">
-                            <input type="text" class="form-control" name='spec' value='' placeholder="论斤 or 论个">
+                            <select name="spec" class="form-control">
+                                {% for spec in specs %}
+                                <option value="{{spec.value}}">{{spec.name}}</option>
+                                {% endfor %}
+                            </select>
                         </div>
                     </div>
                     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
-                        <label class="col-sm-2 control-label">单价</label>
+                        <label class="col-sm-2 control-label">是否整数</label>
+                        <div class="col-sm-3">
+                            <select name="integer" class="form-control">
+                                {% for integer in integers %}
+                                <option value="{{integer.value}}">{{integer.name}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+                        <label class="col-sm-2 control-label">成本价</label>
                         <div class="col-sm-3">
                             <input type="text" required class="form-control" name='price' value='0'>
+                        </div>
+                    </div>
+                    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+                        <label class="col-sm-2 control-label">售价</label>
+                        <div class="col-sm-3">
+                            <input type="text" required class="form-control" name='sale_price' value='0'>
                         </div>
                     </div>
                     <div class="form-group pt-20 pb-20 mb-0">

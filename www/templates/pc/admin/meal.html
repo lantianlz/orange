@@ -159,7 +159,8 @@ $(document).ready(function(){
         itemsView: null,
 
         events: {
-            'click .save': 'save'
+            'click .save': 'save',
+            'input .sale-price': 'calculateRate'
         },
 
         showPanel: function(){
@@ -205,6 +206,12 @@ $(document).ready(function(){
             this.itemsView = new $.Global.ComponentView.ItemsView({el: "#items_view_modify"});
             this.itemsView.render();
             this.itemsView.loadItems(items);
+            this.calculateRate();
+        },
+
+        calculateRate: function(){
+            this.itemsView.totalSalePrice = parseFloat(this.$('.sale-price').val());
+            this.itemsView.calculatePrice();
         },
 
         render: function(data){
@@ -318,6 +325,10 @@ $(document).ready(function(){
             });
             $('#add_meal_modal .ok').bind('click', function(){
                 me.addMeal();
+            });
+            $('#add_meal_modal .sale-price').on('input', function(){
+                me.itemsView.totalSalePrice = parseFloat($(this).val());
+                me.itemsView.calculatePrice();
             });
             
             $('#add_meal_modal').modal({'show': true, 'backdrop': 'static'});
@@ -513,7 +524,7 @@ $(document).ready(function(){
     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
         <label class="col-sm-2 control-label">价格</label>
         <div class="col-sm-2">
-            <input type="text" required class="form-control" name='price' value='<%= price %>'>
+            <input type="text" required class="form-control sale-price" name='price' value='<%= price %>'>
         </div>
     </div>
     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
@@ -582,7 +593,7 @@ $(document).ready(function(){
                     <div class="form-group pt-20 pb-20 mb-0">
                         <label class="col-sm-2 control-label">价格</label>
                         <div class="col-sm-3">
-                            <input type="text" required class="form-control" name='price' value='0'>
+                            <input type="text" required class="form-control sale-price" name='price' value='0'>
                         </div>
                     </div>
                 </form>
