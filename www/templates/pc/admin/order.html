@@ -44,6 +44,7 @@ $(document).ready(function(){
             'confirmTime': 'confirm_time',
             'totalPrice': 'total_price',
             'note': 'note',
+            'rate': 'rate',
             'isTest': 'is_test',
             'state': 'state'
         },
@@ -585,6 +586,12 @@ $(document).ready(function(){
         <label class="col-sm-2 control-label">订单价格</label>
         <div class="col-sm-5">
             <p class="form-control-static"><%= totalPrice %></p>
+        </div>
+    </div>
+    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+        <label class="col-sm-2 control-label">订单毛利</label>
+        <div class="col-sm-5">
+            <p class="form-control-static"><%= rate %>%</p>
         </div>
     </div>
     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">

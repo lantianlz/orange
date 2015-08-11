@@ -19,7 +19,7 @@ def meal(request, template_name='pc/admin/meal.html'):
 
     today = datetime.datetime.now()
     start_date = today.strftime('%Y-%m-%d')
-    end_date = (today + datetime.timedelta(days=90)).strftime('%Y-%m-%d')
+    end_date = (today + datetime.timedelta(days=365)).strftime('%Y-%m-%d')
     
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
 

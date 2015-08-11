@@ -6,14 +6,24 @@
 <style type="text/css">
 html,body{
 	height: 100%;
-    background: -webkit-linear-gradient(left top, #243337, #668A8D);
-    background: linear-gradient(left top, #243337, #668A8D);
+    background: -webkit-linear-gradient(left top, #e8711c, #f09a5d);
+    background: linear-gradient(left top, #e8711c, #f09a5d);
+}
+
+.form-control::-webkit-input-placeholder {
+    color: #f0a46c;
 }
 
 .logo{
-	width: 20%
+	width: 20%;
 }
-
+.invite-logo{
+	width: 20%;
+	background-color: #fff;
+	border-radius: 50%;
+	padding: 7px;
+	border: #F6BE96 2px solid;
+}
 .label{
 	color: #72898C;
 }
@@ -23,22 +33,77 @@ html,body{
 	background-color: transparent;
     border: 0;
     padding-left: 45px;
-    border-bottom: 1px solid #567578;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 0;
     -webkit-box-shadow: none; 
     		box-shadow: none; 
 }
 .form-control:focus{
-	border-color: #66afe9;
+	border-color: #f1f1f1;
     outline: 0;
     -webkit-box-shadow: none;
     		box-shadow: none;
 }
 
 .btn-default, .btn-default:hover, .btn-default:active, .btn-default:focus{
-	background-color: #A7B6B8;
-	color: #567578;
-	border-color: #A7B6B8;
+    background-color: #F2DED6;
+    color: #E87B4A;
+    border-color: #F2DED6;
+}
+.invite-avatar{
+	border-radius: 50%;
+    border: #F6BE96 2px solid;
+    width: 20%;
+}
+.little-points{
+	position: relative;
+	display: inline-block;
+	height: 20px;
+	margin: 0 5px;
+}
+.little-point{
+	background-color: #fff;
+	width: 10px;
+	height: 10px;
+	border: 2px solid #E58153;
+	display: inline-block;
+	border-radius: 50%;
+	/*-webkit-transition: border-width 0.3s ease-out;
+			transition: border-width 0.3s ease-out;*/
+	-webkit-animation: littlePoint 1.5s linear both infinite;
+            animation: littlePoint 1.5s linear both infinite;
+}
+@-webkit-keyframes littlePoint {
+    0% {
+        border-width: 2px;
+    }
+    12% {
+        border-width: 0px;
+    }
+    24% {
+        border-width: 2px;
+    }
+    100% {
+        border-width: 2px;
+    }
+}
+@keyframes littlePoint {
+    0% {
+        border-width: 2px;
+    }
+    12% {
+        border-width: 0px;
+    }
+    24% {
+        border-width: 2px;
+    }
+    100% {
+        border-width: 2px;
+    }
+}
+.little-point.active{
+	border-width: 0;
+	/*border: 2px solid #E58153;*/
 }
 
 </style>
@@ -90,33 +155,48 @@ $(document).ready(function(){
 {% block body %}
 <div class="container-fluid">
 	<div class="row pr">
+		{% if invite %}
+		<div class="col-xs-12 text-center pt-55 pr pb-30">
+			<img class="invite-avatar" src="http://tp1.sinaimg.cn/1613200184/180/1286542530/1">
+			<!-- <img class="invite-avatar" src="{{invite.get_avatar_65}}"> -->
+			<span class="little-points">
+				<span class="little-point"></span>
+				<span class="little-point" style="animation-delay: 0.1s; -webkit-animation-delay: 0.1s"></span>
+				<span class="little-point" style="animation-delay: 0.2s; -webkit-animation-delay: 0.2s"></span>
+				<span class="little-point" style="animation-delay: 0.3s; -webkit-animation-delay: 0.3s"></span>
+				<span class="little-point" style="animation-delay: 0.4s; -webkit-animation-delay: 0.4s"></span>
+				<span class="little-point" style="animation-delay: 0.5s; -webkit-animation-delay: 0.5s"></span>
+			</span>
+			<img class="invite-logo" src="{{MEDIA_URL}}img/logo.png">
+
+			<div class="pa w text-center co-ffffff" style="left: 0; bottom: -5px;">
+				你的好友「{{ invite.nick }}」邀请你试吃
+			</div>
+		</div>
+		{% else %}
 		<div class="col-xs-12 text-center pt-55">
 			<img class="logo" src="{{MEDIA_URL}}img/logo_white.png">
 		</div>
 		<div class="col-xs-10 col-xs-offset-1 f20 text-center pt-10 co-ffffff">
 			三点十分
 		</div>
-		<div class="col-xs-10 col-xs-offset-1 pr pt-40">
-			{% if invite %}
-			<div class="pa w text-center co-ADADAD" style="left: 0; top: 5px;">
-				你的好友「{{ invite.nick }}」邀请你试吃
-			</div>
-			{% endif %}
-			<i class="fa fa-building pa" style="top: 49px; left: 18px; font-size: 25px; color: #72898C;"></i>
+		{% endif %}
+		<div class="col-xs-10 col-xs-offset-1 pr pt-45">
+			<i class="fa fa-building pa" style="top: 54px; left: 18px; font-size: 25px; color: #ffffff;"></i>
 			<input type="text" class="form-control input-lg name" placeholder="公司名称" />
 		</div>
 		<div class="col-xs-10 col-xs-offset-1 pr pt-20">
-			<i class="fa fa-user pa" style="top: 29px; left: 18px; font-size: 25px; color: #72898C;"></i>
+			<i class="fa fa-user pa" style="top: 29px; left: 18px; font-size: 25px; color: #ffffff;"></i>
 			<input type="text" class="form-control input-lg company" placeholder="联系人" />
 		</div>
 		<div class="col-xs-10 col-xs-offset-1 pr pt-20">
-			<i class="fa fa-mobile pa" style="top: 23px; left: 20px; font-size: 37px; color: #72898C;"></i>
+			<i class="fa fa-mobile pa" style="top: 23px; left: 20px; font-size: 37px; color: #ffffff;"></i>
 			<input type="text" class="form-control input-lg mobile" placeholder="联系方式" />
 		</div>
 		<div class="col-xs-10 col-xs-offset-1 pr pt-30">
 			<a href="#" class="btn btn-default btn-lg btn-block btn-wave btn-booking">预约试吃</a>
 		</div>
-		<div class="col-xs-10 col-xs-offset-1 pr pt-20 co-ADADAD">
+		<div class="col-xs-10 col-xs-offset-1 pr pt-20 co-ffffff">
 			预约成功之后，我们的市场专员会在24小时内与你联系，符合要求的企业可免费试吃一次
 		</div>
 	</div>

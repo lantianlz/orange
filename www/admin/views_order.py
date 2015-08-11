@@ -57,6 +57,7 @@ def format_order(objs, num):
             'confirm_time': str(x.confirm_time) if x.confirm_time else '',
             'total_price': str(x.total_price),
             'note': x.note,
+            'rate': str(x.rate),
             'is_test': x.is_test,
             'state': x.state
         })
@@ -169,6 +170,7 @@ def add_order(request):
     meal_id = request.POST.get('meal')
     total_price = request.POST.get('total_price')
     is_test = request.POST.get('is_test')
+    is_test = True if is_test == "1" else False
     note = request.POST.get('note')
     create_operator = request.user.id
 

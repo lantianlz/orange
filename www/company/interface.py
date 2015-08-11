@@ -221,7 +221,7 @@ class CompanyBase(object):
             obj.des = des
             obj.state = state
             obj.person_count = person_count
-            obj.invite_by = invite.id
+            obj.invite_by = invite.id if invite else None
             obj.save()
         except Exception, e:
             debug.get_debug_detail_and_send_email(e)
@@ -380,6 +380,7 @@ class OrderBase(object):
             return 20202, dict_err.get(20202)
 
         try:
+            
             # 订单
             obj = Order.objects.create(
                 meal_id = meal.id,
@@ -391,10 +392,15 @@ class OrderBase(object):
                 note = note
             )
 
+            temp = decimal.Decimal(0)
+
             # 订单下的项目
             for x in order_items:
 
                 item = ItemBase().get_item_by_id(x['item_id'])
+
+                # 计算成本价
+                temp += item.price * decimal.Decimal(x['amount'])
 
                 OrderItem.objects.create(
                     order = obj,
@@ -406,6 +412,10 @@ class OrderBase(object):
                     total_sale_price = item.sale_price * decimal.Decimal(x['amount'])
                 )
             
+            # 计算毛利
+            obj.rate = round((1 - (temp / decimal.Decimal(total_price))) * 100, 2)
+            obj.save()
+
             transaction.commit(using=DEFAULT_DB)
 
         except Exception, e:

@@ -173,7 +173,7 @@ class UserBase(object):
         @note: 资料修改
         '''
         user_id = user.id
-        if not (user_id and nick and gender and birthday and email and mobilenumber):
+        if not (user_id and nick and gender and birthday and email):
             return 99800, dict_err.get(99800)
 
         try:
@@ -206,13 +206,14 @@ class UserBase(object):
         user.birthday = birthday
         if des:
             user.des = utils.filter_script(des)[:128]
-
-        if state is not None:
-            user_login = self.get_user_login_by_id(user.id)
-            user_login.state = state
-            user_login.save()
-
         user.save()
+        
+        user_login = self.get_user_login_by_id(user.id)
+        user_login.email = email
+        user_login.mobilenumber = mobilenumber
+        if state is not None:
+            user_login.state = state
+        user_login.save()
 
         # 更新缓存
         self.get_user_by_id(user.id, must_update_cache=True)

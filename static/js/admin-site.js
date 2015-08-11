@@ -436,10 +436,10 @@ if (!String.format) {
                     '<input type="text" class="form-control search-item" placeholder="输入茶点项目名字" value="">',
                     '<span class="btn-search-item"><i class="fa fa-search"></i></span>',
                 '</div>',
-                '<div class="fb fi pb-5 type-1">水果</div>',
-                '<div class="fb fi pb-5 pt-15 type-2">点心</div>',
-                '<div class="fb fi pb-5 pt-15 type-3">一次性耗材</div>',
-                '<div class="fb fi pb-5 pt-15 type-4">盛装容器</div>',
+                '<div class="fb fi pb-5 type-1">水果 ( 总价: <span class="sum-1">22.4</span> )</div>',
+                '<div class="fb fi pb-5 pt-15 type-2">点心 ( 总价: <span class="sum-2">22.4</span> )</div>',
+                '<div class="fb fi pb-5 pt-15 type-3">一次性耗材 ( 总价: <span class="sum-3">22.4</span> )</div>',
+                '<div class="fb fi pb-5 pt-15 type-4">盛装容器 ( 总价: <span class="sum-4">22.4</span> )</div>',
                 '<div class="border-top-1 bdc-e4e4e4 text-right mt-5 pt-10 item-footer">',
                     '<span>成本总价: <span class="sum fb">0</span> 元，</span>',
                     '<span>毛利: <span class="rate">0</span>%</span>',
@@ -466,7 +466,7 @@ if (!String.format) {
                     amount: 0
                 }, _data),
                 _itemHtml = [
-                    '<li class="pb-10" data-item_id="{0}">',
+                    '<li class="pb-10 item-type-{7}" data-item_id="{0}">',
                         '<div class="row">',
                             '<div class="col-sm-10 pr-0 col-xs-10">',
                                 '<div class="input-group">',
@@ -498,7 +498,8 @@ if (!String.format) {
                         parseFloat(data.price) * parseFloat(data.amount)
                     ),     // 4.总价
                     data.data,      // 5.隐藏域
-                    data.price      // 6.成本价
+                    data.price,     // 6.成本价
+                    data.itemType   // 7.类型
                    
                 )).insertAfter(this.$('.type-'+data.itemType));
 
@@ -536,9 +537,25 @@ if (!String.format) {
             this.calculatePrice();
         },
 
+        // 计算分类总价
+        calculateTypePrice: function(typeId){
+            var sum = 0;
+
+            $.map(this.$('.item-type-'+typeId+' .total-price'), function(price){
+                sum += parseFloat(price.innerHTML);
+            });
+
+            this.$('.sum-' + typeId).html($.Global.Utils.formatPrice(sum));
+        },
+
         // 计算总价
         calculatePrice: function(){
             var sum = 0, rate = 0;
+
+            this.calculateTypePrice(1);
+            this.calculateTypePrice(2);
+            this.calculateTypePrice(3);
+            this.calculateTypePrice(4);
 
             $.map(this.$('.total-price'), function(price){
                 sum += parseFloat(price.innerHTML);
