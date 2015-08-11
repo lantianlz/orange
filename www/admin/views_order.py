@@ -56,8 +56,9 @@ def format_order(objs, num):
             'confirm_operator_name': confirm_operator.nick if confirm_operator else '',
             'confirm_time': str(x.confirm_time) if x.confirm_time else '',
             'total_price': str(x.total_price),
+            'cost_price': str(x.cost_price),
             'note': x.note,
-            'rate': str(x.rate),
+            'rate': x.rate(),
             'is_test': x.is_test,
             'state': x.state
         })

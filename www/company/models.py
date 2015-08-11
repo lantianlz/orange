@@ -187,8 +187,12 @@ class Order(models.Model):
     total_price = models.DecimalField(verbose_name=u"订单价格", max_digits=10, decimal_places=2, default=0)
     note = models.TextField(verbose_name=u"备注", null=True)
     is_test = models.BooleanField(verbose_name=u"是否试吃", default=False)
-    rate = models.DecimalField(verbose_name=u"毛利", max_digits=10, decimal_places=2, default=0)
+    cost_price = models.DecimalField(verbose_name=u"成本价", max_digits=10, decimal_places=2, default=0)
     state = models.IntegerField(verbose_name=u"状态", default=1, choices=state_choices, db_index=True)
+
+    # 毛利
+    def rate(self):
+        return round((1 - (self.cost_price / self.total_price)) * 100, 2)
 
     class Meta:
         ordering = ["-create_time"]

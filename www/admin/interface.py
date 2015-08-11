@@ -32,7 +32,7 @@ class PermissionBase(object):
         '''
         根据用户id 获取此用户所有权限
         '''
-        return [x.permission.code for x in UserPermission.objects.filter(user_id=user_id)]
+        return [x.permission.code for x in UserPermission.objects.select_related('permission').filter(user_id=user_id)]
 
     def get_all_administrators(self):
         '''

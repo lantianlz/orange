@@ -413,7 +413,7 @@ class OrderBase(object):
                 )
             
             # 计算毛利
-            obj.rate = round((1 - (temp / decimal.Decimal(total_price))) * 100, 2)
+            obj.cost_price = temp
             obj.save()
 
             transaction.commit(using=DEFAULT_DB)
