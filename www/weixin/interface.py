@@ -162,8 +162,11 @@ class WeixinBase(object):
                 return self.get_subscribe_event_response(to_user, from_user)
             elif event in ('click', ):
                 event_key = jq('eventkey')[0].text.lower()
-                if event_key == 'hotest':
-                    pass
+                if event_key == 'feedback':
+                    content = (u'欢迎小伙伴们踊跃反馈意见，你的意见一经采纳，必有好礼相送。\n'
+                               u'反馈方法：直接在此微信服务号中输入你的金玉良言即可，客服人员会及时跟进哦'
+                               )
+                    return self.get_base_content_response(to_user, from_user, content=content)
 
         # 文字识别
         msg_types = jq('msgtype')
@@ -353,7 +356,6 @@ class WeixinBase(object):
 
         return self.send_template_msg(app_key, openid, content, template_id)
 
-
     def get_weixin_jsapi_ticket(self, app_key):
         # 本地调试模式不走缓存
         if not settings.LOCAL_FLAG:
@@ -370,7 +372,7 @@ class WeixinBase(object):
     def get_weixin_jsapi_ticket_directly(self, app_key):
         ticket, expires_in = '', 0
         content = ''
-        
+
         url = '%s/cgi-bin/ticket/getticket?access_token=%s&type=jsapi' % (weixin_api_url, self.get_weixin_access_token(app_key))
         try:
             r = requests.get(url, timeout=20, verify=False)
@@ -386,9 +388,8 @@ class WeixinBase(object):
         return ticket, expires_in
 
 
-
-
 class Sign(object):
+
     def __init__(self, jsapi_ticket, url):
         self.ret = {
             'nonceStr': self.__create_nonce_str(),

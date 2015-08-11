@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-import json, time
+import json
+import time
 
 from django.http import HttpResponse
 from django.template import RequestContext
@@ -11,13 +12,15 @@ from www.company.interface import BookingBase
 from www.account.interface import UserBase
 from www.weixin.interface import WeixinBase, Sign
 
+
 def booking(request, template_name='mobile/booking.html'):
 
     invite_by = request.REQUEST.get('invite_by')
     if invite_by:
         invite = UserBase().get_user_by_id(invite_by)
-        
+
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
+
 
 @common_ajax_response
 def get_booking(request):
@@ -30,7 +33,8 @@ def get_booking(request):
 
     return BookingBase().add_booking(company_name, staff_name, mobile, source, invite_by)
 
-@member_required
+
+# @member_required
 def invite(request, template_name='mobile/invite.html'):
 
     # 微信key

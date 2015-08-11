@@ -129,7 +129,8 @@ def oauth_weixin(request):
             else:
                 async_change_profile_from_weixin.delay(user, app_key, openid)
 
-            dict_next = {"introduction": "/s/introduction", "booking": "/s/booking",  "recommend": "/s/recommend"}
+            dict_next = {"introduction": "/", "booking": "/company/booking",
+                         "recommend": "/company/invite", "contact": "/s/contact_us_m"}
             next_url = dict_next.get(weixin_state, dict_next["recommend"])
 
             return HttpResponseRedirect(next_url)

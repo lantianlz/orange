@@ -1,27 +1,4 @@
-一、测试菜单
-{
-    "button": [
-        {
-            "type": "view", 
-            "name": "产品介绍", 
-            "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx0d227d4f9b19658a&redirect_uri=http%3A%2F%2F192.168.99.249%3A8000%2Faccount%2Foauth%2Fweixin&response_type=code&scope=snsapi_base&state=introduction#wechat_redirect"
-        }, 
-        {
-            "type": "view", 
-            "name": "免费试吃", 
-            "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx0d227d4f9b19658a&redirect_uri=http%3A%2F%2F192.168.99.249%3A8000%2Faccount%2Foauth%2Fweixin&response_type=code&scope=snsapi_base&state=booking#wechat_redirect"
-        }, 
-        {
-            "type": "view", 
-            "name": "推荐有礼", 
-            "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx0d227d4f9b19658a&redirect_uri=http%3A%2F%2F192.168.99.249%3A8000%2Faccount%2Foauth%2Fweixin&response_type=code&scope=snsapi_base&state=recommend#wechat_redirect"
-        },
-    ]
-}
-
-
-
-二、正式菜单
+一、正式菜单
 
 {
     "button": [
@@ -36,10 +13,25 @@
             "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxd6922b078dff1607&redirect_uri=http%3A%2F%2Fwww.3-10.cc%2Faccount%2Foauth%2Fweixin&response_type=code&scope=snsapi_base&state=booking#wechat_redirect"
         }, 
         {
-            "type": "view", 
-            "name": "推荐有礼", 
-            "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxd6922b078dff1607&redirect_uri=http%3A%2F%2Fwww.3-10.cc%2Faccount%2Foauth%2Fweixin&response_type=code&scope=snsapi_base&state=recommend#wechat_redirect"
-        },
+            "name": "联系我们", 
+            "sub_button": [
+                {
+                    "type": "view", 
+                    "name": "联系我们", 
+                    "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx0d227d4f9b19658a&redirect_uri=http%3A%2F%2F192.168.99.106%3A8002%2Faccount%2Foauth%2Fweixin&response_type=code&scope=snsapi_base&state=contact#wechat_redirect"
+                },
+                {
+                    "type": "click", 
+                    "name": "意见反馈", 
+                    "key": "feedback"
+                },
+                {
+                    "type": "view", 
+                    "name": "推荐有礼", 
+                    "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxd6922b078dff1607&redirect_uri=http%3A%2F%2Fwww.3-10.cc%2Faccount%2Foauth%2Fweixin&response_type=code&scope=snsapi_base&state=recommend#wechat_redirect"
+                },
+            ]
+        }
     ]
 }
 
