@@ -70,8 +70,8 @@ html,body{
 	border-radius: 50%;
 	/*-webkit-transition: border-width 0.3s ease-out;
 			transition: border-width 0.3s ease-out;*/
-	-webkit-animation: littlePoint 1.5s linear both infinite;
-            animation: littlePoint 1.5s linear both infinite;
+	-webkit-animation: littlePoint 2s linear both infinite;
+            animation: littlePoint 2s linear both infinite;
 }
 @-webkit-keyframes littlePoint {
     0% {
@@ -91,10 +91,10 @@ html,body{
     0% {
         border-width: 2px;
     }
-    12% {
+    10% {
         border-width: 0px;
     }
-    24% {
+    20% {
         border-width: 2px;
     }
     100% {
@@ -157,15 +157,15 @@ $(document).ready(function(){
 	<div class="row pr">
 		{% if invite %}
 		<div class="col-xs-12 text-center pt-55 pr pb-30">
-			<img class="invite-avatar" src="http://tp1.sinaimg.cn/1613200184/180/1286542530/1">
-			<!-- <img class="invite-avatar" src="{{invite.get_avatar_65}}"> -->
+			<!-- <img class="invite-avatar" src="http://tp1.sinaimg.cn/1613200184/180/1286542530/1"> -->
+			<img class="invite-avatar" src="{{invite.get_avatar_65}}">
 			<span class="little-points">
 				<span class="little-point"></span>
-				<span class="little-point" style="animation-delay: 0.1s; -webkit-animation-delay: 0.1s"></span>
-				<span class="little-point" style="animation-delay: 0.2s; -webkit-animation-delay: 0.2s"></span>
-				<span class="little-point" style="animation-delay: 0.3s; -webkit-animation-delay: 0.3s"></span>
-				<span class="little-point" style="animation-delay: 0.4s; -webkit-animation-delay: 0.4s"></span>
-				<span class="little-point" style="animation-delay: 0.5s; -webkit-animation-delay: 0.5s"></span>
+				<span class="little-point" style="animation-delay: 0.13s; -webkit-animation-delay: 0.1s"></span>
+				<span class="little-point" style="animation-delay: 0.26s; -webkit-animation-delay: 0.2s"></span>
+				<span class="little-point" style="animation-delay: 0.39s; -webkit-animation-delay: 0.3s"></span>
+				<span class="little-point" style="animation-delay: 0.42s; -webkit-animation-delay: 0.4s"></span>
+				<span class="little-point" style="animation-delay: 0.55s; -webkit-animation-delay: 0.5s"></span>
 			</span>
 			<img class="invite-logo" src="{{MEDIA_URL}}img/logo.png">
 

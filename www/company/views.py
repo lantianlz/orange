@@ -6,7 +6,7 @@ from django.http import HttpResponse
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 
-from misc.decorators import common_ajax_response
+from misc.decorators import common_ajax_response, member_required
 from www.company.interface import BookingBase
 from www.account.interface import UserBase
 from www.weixin.interface import WeixinBase, Sign
@@ -30,7 +30,7 @@ def get_booking(request):
 
     return BookingBase().add_booking(company_name, staff_name, mobile, source, invite_by)
 
-
+@member_required
 def invite(request, template_name='mobile/invite.html'):
 
     # 微信key
