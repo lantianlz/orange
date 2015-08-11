@@ -521,7 +521,7 @@ class OrderBase(object):
         return 0, dict_err.get(0)
 
     def get_items_of_order(self, order_id):
-        return OrderItem.objects.filter(order_id=order_id)
+        return OrderItem.objects.select_related('item').filter(order_id=order_id)
 
 
 class BookingBase(object):
