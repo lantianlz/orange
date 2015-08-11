@@ -1,0 +1,64 @@
+{% extends "mobile/base.html" %}
+
+{% block title %}联系我们{% endblock title %}
+
+{% block base_css %}
+<style type="text/css">
+.bg{
+    background: -webkit-linear-gradient(left top, #e8711c, #f09a5d);
+    background: linear-gradient(left top, #e8711c, #f09a5d);
+}
+.logo{
+    width: 45px;
+    top: 55px;
+    left: -15%;
+}
+.title{
+    font-size: 18px;
+    padding-bottom: 5px;
+    padding-top: 20px;
+    color: #EF7B32;
+    border-bottom: 1px solid rgba(239, 123, 50, 0.3);
+}
+</style>
+{% endblock %}
+
+{% block base_js %}
+{% endblock %}
+
+{% block body %}
+<div class="container-fluid">
+    <div class="row bg">
+        <div class="col-xs-8 col-xs-offset-4 pt-55 pb-30 pr">
+            <img class="logo pa" src="{{MEDIA_URL}}img/logo_white.png">
+            <div class="f20 co-ffffff">三点十分</div>
+            <div class="">
+                <img class="" style="width: 110px;" alt="下午茶点服务专家" src="{{MEDIA_URL}}img/slogan_white.png">
+            </div>
+        </div>
+        <div class="col-xs-10 col-xs-offset-1 co-ffffff pb-30">
+            <p>
+                三点十分是一家专注于企业下午茶点服务的互联网公司，下午茶O2O服务领跑者
+            </p>
+            <p>
+                按需定制企业下午茶套餐，免费配送上门，由资深互联网团队倾心打造，一流的水果供应商和行业领先的食品加工厂联手为企业带来新鲜的水果金额可口的点心，资深营养师为呢精心搭配，确保营养均衡
+            </p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-10 col-xs-offset-1 title">联系我们</div>
+        <div class="col-xs-10 col-xs-offset-1 pt-10 info">
+            <i class="fa fa-chrome pr-15 f18 co-EF7B32"></i>www.3-10.cc
+        </div>
+        <div class="col-xs-10 col-xs-offset-1 pt-10 info">
+            <i class="fa fa-envelope pr-15 f18 co-EF7B32"></i>lz@3-10.cc
+        </div>
+        <div class="col-xs-10 col-xs-offset-1 pt-10 info">
+            <i class="fa fa-phone-square pr-15 f18 co-EF7B32" style="padding-left:1px;"></i>4008 - 920 - 310
+        </div>
+        <div class="col-xs-10 col-xs-offset-1 pt-10 info">
+            <i class="fa fa-map-marker pr-15 f18 co-EF7B32" style="padding-left:3px; padding-right: 18px;"></i>成都市益州大道1800号移动互联创业大厦
+        </div>
+    </div>
+</div>
+{% endblock %}
