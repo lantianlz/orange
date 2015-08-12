@@ -296,6 +296,12 @@ body{
   margin-left: 0px;
 }
 
+.home{
+    color: #EF7B32;
+}
+.home:hover, .home:focus{
+    color: #EF7B32;
+}
 </style>
 {% block css %}{% endblock %}
 {% endblock %}
@@ -332,6 +338,9 @@ $(document).ready(function(){
         // e.preventDefault();
 
     });
+    $('.sub-nav>.list-group-item').on('click', function(e){
+        $(this).children()[0].click();
+    })
 
     $('.sub-nav>.list-group-item.active').parents('li').addClass('active');
     // 将子菜单打开
@@ -463,10 +472,11 @@ $(document).ready(function(){
             <div class="col-md-6 col-sm-6 pl-30">
                 <span class="f22 co-8CA0B4">{% block admin_title %}{% endblock %}</span>
             </div>
-            <div class="col-md-6 col-sm-6 text-right">
+            <div class="col-md-6 col-sm-6 text-right pr">
                 <img class="avatar-30" src="{{request.user.get_avatar_100}}">
                 <span>{{request.user.nick}}，</span>
-                <a href="/logout"><i class="fa fa-sign-out pr-3"></i>退出</a>
+                <a class="pr-10" href="/logout"><i class="fa fa-sign-out pr-3"></i>退出</a>
+                <a class="home" href="/" target="_blank"><i class="fa fa-home pr-3"></i>首页</a>
             </div>
         </div>
 
