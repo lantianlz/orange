@@ -387,7 +387,9 @@ $(document).ready(function(){
     </div>
     <div class="admin-left">
         <div class="co-ffffff pr pt-20 pb-20">
-            <img class="pa" style="left: 22px; top: 16px; width: 30px; " src="{{MEDIA_URL}}img/logo.png?v=1">
+            <a href="/" target="_blank">
+                <img class="pa" style="left: 22px; top: 16px; width: 30px; " src="{{MEDIA_URL}}img/logo.png?v=1">
+            </a>
             <span class="f18 pl-65">三点十分 后台管理</span>
         </div>
         <ul class="list-group p-nav">
@@ -476,7 +478,6 @@ $(document).ready(function(){
                 <img class="avatar-30" src="{{request.user.get_avatar_100}}">
                 <span>{{request.user.nick}}，</span>
                 <a class="pr-10" href="/logout"><i class="fa fa-sign-out pr-3"></i>退出</a>
-                <a class="home" href="/" target="_blank"><i class="fa fa-home pr-3"></i>首页</a>
             </div>
         </div>
 

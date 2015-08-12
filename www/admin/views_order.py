@@ -19,6 +19,7 @@ def order(request, template_name='pc/admin/order.html'):
     states = [{'value': x[0], 'name': x[1]} for x in Order.state_choices]
     all_states = [{'value': x[0], 'name': x[1]} for x in Order.state_choices]
     all_states.insert(0, {'value': -1, 'name': u"待创建"})
+    all_states.append({'value': -2, 'name': u"全部有效订单"})
 
     today = datetime.datetime.now()
     start_date = today.strftime('%Y-%m-%d')

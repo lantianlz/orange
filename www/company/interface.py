@@ -438,7 +438,15 @@ class OrderBase(object):
         if order_no:
             objs = self.get_all_order().filter(order_no=order_no)
         else:
-            objs = self.get_all_order(state).filter(
+            # 是否查询所有有效订单
+            if state == -2:
+                objs = Order.objects.filter(
+                    state__in = (1,2,3)
+                )
+            else:
+                objs = self.get_all_order(state)
+
+            objs = objs.filter(
                 create_time__range = (start_date, end_date)
             )
 
