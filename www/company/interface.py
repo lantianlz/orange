@@ -57,7 +57,7 @@ class ItemBase(object):
 
         return objs
 
-    def add_item(self, name, item_type, spec, price, sort, integer, sale_price):
+    def add_item(self, name, item_type, spec, price, sort, integer, sale_price, init_add):
 
         if not (name and item_type and price):
             return 99800, dict_err.get(99800)
@@ -74,6 +74,7 @@ class ItemBase(object):
                 sort = sort,
                 integer = integer,
                 sale_price = sale_price,
+                init_add = init_add,
                 code = self.generate_item_code(item_type)
             )
 
@@ -102,7 +103,7 @@ class ItemBase(object):
 
         return obj
 
-    def modify_item(self, item_id, name, item_type, spec, price, sort, state, integer, sale_price):
+    def modify_item(self, item_id, name, item_type, spec, price, sort, state, integer, sale_price, init_add):
         
         if not (name and item_type and price):
             return 99800, dict_err.get(99800)
@@ -124,6 +125,7 @@ class ItemBase(object):
             obj.sort = sort
             obj.state = state
             obj.integer = integer
+            obj.init_add = init_add
             obj.sale_price = sale_price
             obj.save()
         except Exception, e:
@@ -133,12 +135,16 @@ class ItemBase(object):
         return 0, dict_err.get(0)
 
     def get_items_by_name(self, name):
-        objs = self.get_all_item(1)
+        objs = self.get_all_item(True)
         
         if name:
             objs = objs.filter(name__contains=name)
         
         return objs
+
+    def get_init_add_items(self):
+        return self.get_all_item(True).filter(init_add=1)
+
 
 class CompanyBase(object):
 

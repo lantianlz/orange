@@ -430,6 +430,7 @@ if (!String.format) {
         el: '#items-view',
         // 售价  初始化时传入,核算毛利使用
         totalSalePrice: 0,
+
         _html: [
             '<ul class="list-unstyled items-view">',
                 '<div class="pb-15 border-bottom-1 bdc-e4e4e4 mb-15 pr item-header">',
@@ -446,6 +447,17 @@ if (!String.format) {
                 '</div>',
             '</ul>'
         ].join(''),
+
+        _modelMaps: {
+            'value': 'name',
+            'data': 'item_id',
+            'price': 'price',
+            'salePrice': 'sale_price',
+            'itemType': 'item_type',
+            'spec': 'spec',
+            'specText': 'spec_text',
+            'amount': 'amount'
+        },
 
         events: {
             'click .btn-remove-item': 'removeItem',
@@ -567,6 +579,29 @@ if (!String.format) {
             this.$('.rate').html(rate);
         },
 
+        // 初始化项目
+        initItems: function(itemIds){
+            var me = this;
+
+            $.map(itemIds, function(itemId){
+
+                ajaxSend(
+                    "/admin/item/get_item_by_id", 
+                    {'item_id': itemId},
+                    function(data){
+                        // 添加项目
+                        me.addItem(
+                            $.Global.Utils.dictMap(data, me._modelMaps)
+                        );
+
+                    }
+                );
+
+            });
+
+            
+        },
+
         // 加载项目
         loadItems: function(items, clear){
             var me = this;
@@ -579,16 +614,7 @@ if (!String.format) {
             $.map(items, function(item){
                 
                 me.addItem(
-                    $.Global.Utils.dictMap(item, {
-                        'value': 'name',
-                        'data': 'item_id',
-                        'price': 'price',
-                        'salePrice': 'sale_price',
-                        'itemType': 'item_type',
-                        'spec': 'spec',
-                        'specText': 'spec_text',
-                        'amount': 'amount'
-                    })
+                    $.Global.Utils.dictMap(item, me._modelMaps)
                 );
             });
         },
@@ -610,16 +636,7 @@ if (!String.format) {
                         result = [];
 
                     if(data){
-
-                        result = $.Global.Utils.dictMapParse(data, {
-                            'value': 'name',
-                            'data': 'item_id',
-                            'price': 'price',
-                            'salePrice': 'sale_price',
-                            'itemType': 'item_type',
-                            'spec': 'spec',
-                            'specText': 'spec_text',
-                        });
+                        result = $.Global.Utils.dictMapParse(data, me._modelMaps);
                     }
                     
                     return {

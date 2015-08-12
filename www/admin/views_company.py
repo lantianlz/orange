@@ -138,6 +138,6 @@ def get_companys_by_name(request):
 
     if companys:
         for x in companys:
-            result.append([x.id, x.name, None, x.name])
+            result.append([x.id, u'%s [%s人]' % (x.name, x.person_count), None, u'%s [%s人]' % (x.name, x.person_count)])
 
     return HttpResponse(json.dumps(result), mimetype='application/json')

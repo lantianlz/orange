@@ -8,7 +8,7 @@ from django.shortcuts import render_to_response
 from common import utils, page
 from misc.decorators import staff_required, common_ajax_response, verify_permission, member_required
 
-from www.company.interface import MealBase, CompanyBase
+from www.company.interface import MealBase, CompanyBase, ItemBase
 
 @verify_permission('')
 def meal(request, template_name='pc/admin/meal.html'):
@@ -16,6 +16,8 @@ def meal(request, template_name='pc/admin/meal.html'):
     states = [{'name': x[1], 'value': x[0]} for x in Meal.state_choices]
     all_states = [{'name': x[1], 'value': x[0]} for x in Meal.state_choices]
     all_states.insert(0, {'name': u'全部', 'value': -1})
+    
+    init_add_item_ids = json.dumps([x.id for x in ItemBase().get_init_add_items()])
 
     today = datetime.datetime.now()
     start_date = today.strftime('%Y-%m-%d')
@@ -154,7 +156,7 @@ def add_meal(request):
 @member_required
 def get_meals_by_name(request):
     '''
-    根据名字查询公司
+    根据名字查询套餐
     '''
     meal_name = request.REQUEST.get('meal_name')
 

@@ -313,6 +313,7 @@ $(document).ready(function(){
         initMealItems: function(){
             this.itemsView = new $.Global.ComponentView.ItemsView({el: "#items_view_add"});
             this.itemsView.render();
+            this.itemsView.initItems({{ init_add_item_ids }});
         },
 
         render: function(){

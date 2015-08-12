@@ -35,6 +35,7 @@ $(document).ready(function(){
             'code': 'code',
             'img': 'img',
             'integer': 'integer',
+            'initAdd': 'init_add',
             'sort': 'sort'
         },
 
@@ -445,6 +446,16 @@ $(document).ready(function(){
         </div>
     </div>
     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+        <label class="col-sm-2 control-label">是否默认添加</label>
+        <div class="col-sm-3">
+            <select name="init_add" class="form-control">
+                {% for init_add in init_adds %}
+                <option value="{{init_add.value}}" <% if(initAdd == {{init_add.value}}){ %>selected<% } %> >{{init_add.name}}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
         <label class="col-sm-2 control-label">成本价</label>
         <div class="col-sm-3">
             <input type="text" required class="form-control" name='price' value='<%= price %>'>
@@ -490,13 +501,13 @@ $(document).ready(function(){
             <div class="modal-body">
                 <form class="form-horizontal" role="form" method="post" action="">
                     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
-                        <label class="col-sm-2 control-label">名称</label>
+                        <label class="col-sm-3 control-label">名称</label>
                         <div class="col-sm-5">
                             <input type="text" required class="form-control" name='name' value=''>
                         </div>
                     </div>
                     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
-                        <label class="col-sm-2 control-label">类型</label>
+                        <label class="col-sm-3 control-label">类型</label>
                         <div class="col-sm-3">
                             <select name="item_type" class="form-control">
                                 {% for type in types %}
@@ -506,7 +517,7 @@ $(document).ready(function(){
                         </div>
                     </div>
                     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
-                        <label class="col-sm-2 control-label">规格</label>
+                        <label class="col-sm-3 control-label">规格</label>
                         <div class="col-sm-3">
                             <select name="spec" class="form-control">
                                 {% for spec in specs %}
@@ -516,7 +527,7 @@ $(document).ready(function(){
                         </div>
                     </div>
                     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
-                        <label class="col-sm-2 control-label">是否整数</label>
+                        <label class="col-sm-3 control-label">是否整数</label>
                         <div class="col-sm-3">
                             <select name="integer" class="form-control">
                                 {% for integer in integers %}
@@ -526,19 +537,29 @@ $(document).ready(function(){
                         </div>
                     </div>
                     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
-                        <label class="col-sm-2 control-label">成本价</label>
+                        <label class="col-sm-3 control-label">是否默认添加</label>
+                        <div class="col-sm-3">
+                            <select name="init_add" class="form-control">
+                                {% for init_add in init_adds %}
+                                <option value="{{init_add.value}}">{{init_add.name}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+                        <label class="col-sm-3 control-label">成本价</label>
                         <div class="col-sm-3">
                             <input type="text" required class="form-control" name='price' value='0'>
                         </div>
                     </div>
                     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
-                        <label class="col-sm-2 control-label">售价</label>
+                        <label class="col-sm-3 control-label">售价</label>
                         <div class="col-sm-3">
                             <input type="text" required class="form-control" name='sale_price' value='0'>
                         </div>
                     </div>
                     <div class="form-group pt-20 pb-20 mb-0">
-                        <label class="col-sm-2 control-label">排序</label>
+                        <label class="col-sm-3 control-label">排序</label>
                         <div class="col-sm-3">
                             <input type="text" required class="form-control" name='sort' value='0'>
                         </div>

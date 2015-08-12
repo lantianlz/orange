@@ -121,8 +121,9 @@ class Item(models.Model):
     '''
     state_choices = ((0, u"停用"), (1, u"正常"))
     type_choices = ((1, u"水果"), (2, u"点心"), (3, u"一次性耗材"), (4, u"盛装容器"))
-    spec_choices = ((1, u"斤"), (2, u"个"), (3, u"盒"))
+    spec_choices = ((1, u"斤"), (2, u"个"), (3, u"盒"), (4, u"袋"))
     integer_choices = ((1, u"整数"), (2, u"保留小数"))
+    add_choices = ((1, u"添加"), (2, u"不添加"))
 
     code_dict = {1: 'F', 2: 'C', 3: 'S', 4: 'R'}
 
@@ -135,6 +136,7 @@ class Item(models.Model):
     spec = models.IntegerField(verbose_name=u"规格", default=1, choices=spec_choices)
     sort = models.IntegerField(verbose_name=u"排序", default=0, choices=type_choices)
     integer = models.IntegerField(verbose_name=u"是否整数", default=1, choices=integer_choices)
+    init_add = models.IntegerField(verbose_name=u"是否默认添加", default=2, choices=add_choices)
     create_time = models.DateTimeField(auto_now_add=True, db_index=True)
 
     img = models.CharField(verbose_name=u"图片", max_length=128, null=True)
@@ -199,7 +201,7 @@ class Order(models.Model):
 
     # 毛利
     def rate(self):
-        return round((1 - (self.cost_price / self.total_price)) * 100, 2)
+        return round((1 - (self.cost_price / self.total_price)) * 100, 2) if self.total_price else 0
 
     class Meta:
         ordering = ["-create_time"]
