@@ -2,6 +2,8 @@
 {% load custom_tags %}
 {% load custom_filters %}
 {% block title %}公司管理员管理{% endblock %}
+{% block admin_title %}公司管理员管理{% endblock %}
+{% block admin_title_m %}公司管理员管理{% endblock %}
 
 {% block css %}
 <style type="text/css">
@@ -41,7 +43,7 @@ $(document).ready(function(){
             var me = this;
 
             ajaxSend(
-                "/admin/company/manager/search", 
+                "/admin/company_manager/search", 
                 {'company_name': name||'', 'page_index': pageIndex||1}, 
                 function(data){
                     me.pageIndex = pageIndex||1;
@@ -58,7 +60,7 @@ $(document).ready(function(){
             var me = this;
 
             ajaxSend(
-                "/admin/company/manager/get_manager_by_id", 
+                "/admin/company_manager/get_manager_by_id", 
                 {'manager_id': managerId},
                 function(data){
                     if(callback){
@@ -68,24 +70,10 @@ $(document).ready(function(){
             );
         },
 
-        //
-        modifyManager: function(data, callback){
-
-            ajaxSend(
-                "/admin/company/manager/modify_manager", 
-                data,
-                function(response){
-                    if(callback){
-                        callback(response);
-                    }
-                }
-            );
-        },
-
         addManager: function(data, callback){
 
             ajaxSend(
-                "/admin/company/manager/add_manager", 
+                "/admin/company_manager/add_manager", 
                 data,
                 function(response){
                     if(callback){
@@ -98,7 +86,7 @@ $(document).ready(function(){
         deleteManager: function(managerId, callback){
 
             ajaxSend(
-                "/admin/company/manager/delete_manager", 
+                "/admin/company_manager/delete_manager", 
                 {'manager_id': managerId},
                 function(response){
                     if(callback){
@@ -144,7 +132,7 @@ $(document).ready(function(){
 
         // 显示面板
         showPanel: function(){
-            $('.qx-nav-pills a[href="#manager_list"]').tab('show');
+            $('.orange-nav-pills a[href="#manager_list"]').tab('show');
         },
 
         search: function(){
@@ -174,7 +162,7 @@ $(document).ready(function(){
 
         // 显示面板
         showPanel: function(){
-            $('.qx-nav-pills a[href="#modify_manager"]').tab('show');
+            $('.orange-nav-pills a[href="#modify_manager"]').tab('show');
         },
 
         // 渲染
@@ -287,7 +275,7 @@ $(document).ready(function(){
             this.companyTextBox = $.Global.TextboxList.create('#company_add', {
                 max: 1,
                 placeholder: '选择所属公司',
-                url: '/admin/company/company/get_companys_by_name',
+                url: '/admin/company/get_companys_by_name',
                 param: 'company_name',
                 loadPlaceholder: '正在加载...'
             });
@@ -301,7 +289,7 @@ $(document).ready(function(){
             this.userTextBox = $.Global.TextboxList.create('#manager_add', {
                 max: 1,
                 placeholder: '选择管理员',
-                url: '/admin/user/user/get_user_by_nick',
+                url: '/admin/user/get_user_by_nick',
                 param: 'nick',
                 loadPlaceholder: '正在加载...'
             });
@@ -390,16 +378,28 @@ $(document).ready(function(){
 </script>
 {% endblock %}
 
-{% block right %}
-<ul class="nav nav-pills pt-15 qx-nav-pills">
+{% block admin_main %}
+<ul class="nav nav-pills pt-15 orange-nav-pills">
     <li class="active">
-        <a href="#manager_list" class="black-blue" data-toggle="pill">公司管理员列表</a>
+        <a href="#manager_list" data-toggle="pill">
+            <i class="fa fa-list-ol pr-5"></i>
+            <span class="hidden-sm hidden-md hidden-lg">列表</span>
+            <span class="hidden-xs">公司管理员列表</span>
+        </a>
     </li>
     <li>
-        <a href="#modify_manager" class="black-blue" data-toggle="pill">修改公司管理员</a>
+        <a href="#modify_manager" data-toggle="pill">
+            <i class="fa fa-pencil-square-o pr-5"></i>
+            <span class="hidden-sm hidden-md hidden-lg">修改</span>
+            <span class="hidden-xs">修改公司管理员</span>
+        </a>
     </li>
     <li class="pull-right">
-        <a href="#add" class="black-blue">添加公司管理员</a>
+        <a href="#add">
+            <i class="fa fa-plus-circle pr-5"></i>
+            <span class="hidden-sm hidden-md hidden-lg">添加</span>
+            <span class="hidden-xs">添加公司管理员</span>
+        </a>
     </li>
 </ul>
 
@@ -457,14 +457,14 @@ $(document).ready(function(){
 <script type="text/template" id="modify_manager_template">
     <form class="form-horizontal" data-manager_id="<%= managerId %>" role="form" method="post" action="">
         <input type="hidden" name="manager_id" value="<%= managerId %>" />
-        <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
+        <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
             <label class="col-sm-2 control-label">公司</label>
             <div class="col-sm-8">
                 <!-- <input type="text" class="form-control" id="company_modify" required name="car_wash_id" value=''> -->
                 <p class="form-control-static"><%= companyName %></p>
             </div>
         </div>
-        <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
+        <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
             <label class="col-sm-2 control-label">管理员</label>
             <div class="col-sm-8">
                 <!-- <input type="text" class="form-control" id="user_modify" required name="manager" value=''> -->
@@ -491,7 +491,7 @@ $(document).ready(function(){
             </div>
             <div class="modal-body">
                 <form class="form-horizontal" role="form" method="post" action="">
-                    <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
+                    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
                         <label class="col-sm-2 control-label">公司</label>
                         <div class="col-sm-8">
                             <input type="text" class="form-control" id="company_add" required name="company_id" value=''>
@@ -514,4 +514,4 @@ $(document).ready(function(){
 </div>
 </script>
 
-{% endblock right %}
+{% endblock %}

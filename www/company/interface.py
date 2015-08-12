@@ -14,7 +14,7 @@ from www.misc.decorators import cache_required
 from www.misc import consts
 
 from www.account.interface import UserBase
-from models import Item, Company, Meal, MealItem, Order, OrderItem, Booking
+from models import Item, Company, Meal, MealItem, Order, OrderItem, Booking, CompanyManager
 
 DEFAULT_DB = 'default'
 
@@ -32,6 +32,8 @@ dict_err = {
 
     20501: u'已预约，请勿重复提交',
     20502: u'没有找到对应的预约信息',
+
+    20601: u'该管理员已存在，请勿重复添加',
 }
 dict_err.update(consts.G_DICT_ERROR)
 
@@ -605,6 +607,61 @@ class BookingBase(object):
         return Booking.objects.filter(state=state)
 
 
+class CompanyManagerBase(object):
+
+    def get_cm_by_user_id(self, user_id):
+        """
+        @note: 获取用户管理的第一个公司，用于自动跳转到管理的公司
+        """
+        cms = list(CompanyManager.objects.select_related("company").filter(user_id=user_id))
+        if cms:
+            return cms[0]
+
+    def check_user_is_cm(self, company_id, user):
+        """
+        @note: 判断用户是否是某个公司管理员
+        """
+        if isinstance(user, (str, unicode)):
+            user = UserBase().get_user_by_id(user)
+
+        cm = CompanyManager.objects.filter(company__id=company_id, user_id=user.id)
+
+        return True if (cm or user.is_staff()) else False
+
+    def add_company_manager(self, company_id, user_id):
+        if user_id and not UserBase().get_user_login_by_id(user_id):
+            return 99600, dict_err.get(99600)
+
+        if CompanyManager.objects.filter(user_id=user_id, company__id=company_id):
+            return 20601, dict_err.get(20601)
+
+        cm = CompanyManager.objects.create(user_id=user_id, company_id=company_id)
+        return 0, cm
+
+    def search_managers_for_admin(self, company_name):
+        objs = CompanyManager.objects.select_related("company").all()
+
+        if company_name:
+            objs = objs.filter(company__name__contains=company_name)
+
+        return objs
+
+    def get_manager_by_id(self, manager_id):
+        try:
+            return CompanyManager.objects.select_related("company").get(id=manager_id)
+        except CompanyManager.DoesNotExist:
+            pass
+
+    def delete_company_manager(self, manager_id):
+        if not manager_id:
+            return 99800, dict_err.get(99800)
+
+        try:
+            CompanyManager.objects.get(id=manager_id).delete()
+        except Exception:
+            return 99900, dict_err.get(99900)
+
+        return 0, dict_err.get(0)
 
 
 

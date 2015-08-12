@@ -29,6 +29,16 @@ urlpatterns += patterns('www.admin.views_company',
     url(r'^company$', 'company'),
 )
 
+# 公司管理员
+urlpatterns += patterns('www.admin.views_company_manager',
+    url(r'^company_manager/delete_manager$', 'delete_manager'),
+    url(r'^company_manager/add_manager$', 'add_manager'),
+    url(r'^company_manager/modify_manager$', 'modify_manager'),
+    url(r'^company_manager/get_manager_by_id$', 'get_manager_by_id'),
+    url(r'^company_manager/search$', 'search'),
+    url(r'^company_manager$', 'company_manager'),
+)
+
 # 产品管理
 urlpatterns += patterns('www.admin.views_item',
 

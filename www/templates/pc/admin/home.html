@@ -295,13 +295,6 @@ body{
   margin-right: 0px;
   margin-left: 0px;
 }
-
-.home{
-    color: #EF7B32;
-}
-.home:hover, .home:focus{
-    color: #EF7B32;
-}
 </style>
 {% block css %}{% endblock %}
 {% endblock %}
@@ -366,7 +359,6 @@ $(document).ready(function(){
 {% block base_container %}
 <div class="container-fluid pr-0 pl-0">
     <div class="admin-top">
-        <!-- <i class="fa fa-bars pa" style="left: 20px; top: 15px;"></i> -->
         <span class="sidebar">
             <span class="sidebar-line sidebar-line-1"></span>
             <span class="sidebar-line sidebar-line-2"></span>
@@ -399,8 +391,11 @@ $(document).ready(function(){
             <li class="list-group-item">
                 <a><i class="fa fa-users pr-3"></i>公司管理</a>
                 <ul class="list-group sub-nav">
-                    <li class="list-group-item {% if '/company' in request.path %}active{% endif %}">
+                    <li class="list-group-item {% if '/admin/company' = request.path %}active{% endif %}">
                         <a href="/admin/company"><i class="point"></i>公司信息管理</a>
+                    </li>
+                    <li class="list-group-item {% if '/company_manager' in request.path %}active{% endif %}">
+                        <a href="/admin/company_manager"><i class="point"></i>公司管理员管理</a>
                     </li>
                     <li class="list-group-item">
                         <a href="#"><i class="point"></i>公司现金账户管理</a>

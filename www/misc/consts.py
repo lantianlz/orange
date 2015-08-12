@@ -27,6 +27,12 @@ PERMISSIONS = [
     {'code': 'query_company', 'name': u'查询公司', 'parent': 'company_manage'},
     {'code': 'modify_company', 'name': u'修改公司', 'parent': 'company_manage'},
 
+    {'code': 'company_manager_manage', 'name': u'公司管理员管理', 'parent': None},
+    {'code': 'add_company_manager', 'name': u'添加公司管理员', 'parent': 'company_manager_manage'},
+    {'code': 'query_company_manager', 'name': u'查询公司管理员', 'parent': 'company_manager_manage'},
+    {'code': 'modify_company_manager', 'name': u'修改公司管理员', 'parent': 'company_manager_manage'},
+    {'code': 'remove_company_manager', 'name': u'删除公司管理员', 'parent': 'company_manager_manage'},
+
     {'code': 'item_manage', 'name': u'产品管理', 'parent': None},
     {'code': 'add_item', 'name': u'添加产品', 'parent': 'item_manage'},
     {'code': 'query_item', 'name': u'查询产品', 'parent': 'item_manage'},

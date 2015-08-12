@@ -27,6 +27,13 @@ class Company(models.Model):
     sort = models.IntegerField(verbose_name=u"排序", default=0)
     create_time = models.DateTimeField(verbose_name=u"创建时间", auto_now_add=True, db_index=True)
 
+class CompanyManager(models.Model):
+    company = models.ForeignKey("Company")
+    user_id = models.CharField(verbose_name=u"管理员id", max_length=32, db_index=True)
+    role = models.IntegerField(verbose_name=u"角色", default=0, db_index=True)
+
+    class Meta:
+        unique_together = [("company", "user_id"), ]
 
 class CashAccount(models.Model):
 

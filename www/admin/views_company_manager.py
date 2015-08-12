@@ -10,11 +10,11 @@ from www.misc.decorators import staff_required, common_ajax_response, verify_per
 from www.misc import qiniu_client
 from common import utils, page
 
-from www.car_wash.interface import CompanyManagerBase
+from www.company.interface import CompanyManagerBase
 from www.account.interface import UserBase
 
 @verify_permission('')
-def manager(request, template_name='pc/admin/company_manager.html'):
+def company_manager(request, template_name='pc/admin/company_manager.html'):
 
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
 
