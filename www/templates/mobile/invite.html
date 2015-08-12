@@ -111,6 +111,8 @@ $(document).ready(function(){
     if('{{request.user.id}}' == ''){
         $.Global.Notice.WarningTopNotice("请点击公众号[ 推荐有礼 ]菜单进入本页面");
     }
+
+    $('body').height($(document).height());
     
 });
 </script>
@@ -130,9 +132,9 @@ $(document).ready(function(){
         </div>
         <div class="col-xs-10 col-xs-offset-1 pr pt-10 co-ffffff">
             <p>凡是所推荐的公司免费试吃后，正式采购三点十分下午茶点服务的:</p>
-            <p>单次订单金额在 200 元以上，推荐人可获得<span class="fi fb pl-5 pr-5">100</span>元现金红包奖励</p>
-            <p>单次订单金额在 200 元以下，推荐人可获得<span class="fi fb pl-5 pr-5">50</span>元现金红包奖励</p>
-            <p>推荐成功的，公司负责人或直接微信给你发红包哦，简单粗暴有没有</p>
+            <p>单次订单金额在 200 元以上，推荐人可获得<span class="fi fb pl-5 pr-5">100</span>元微信红包奖励</p>
+            <p>单次订单金额在 200 元以下，推荐人可获得<span class="fi fb pl-5 pr-5">50</span>元微信红包奖励</p>
+            <!-- <p>推荐成功的，公司负责人或直接微信给你发红包哦，简单粗暴有没有</p> -->
         </div>
         <div class="col-xs-10 col-xs-offset-1 title">
             <i class="fa fa-share-square-o pr-5 f18"></i>推荐方法

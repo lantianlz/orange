@@ -15,7 +15,7 @@ html,body{
 }
 
 .logo{
-	width: 20%;
+	width: 65px;
 }
 .invite-logo{
 	width: 20%;
@@ -105,7 +105,22 @@ html,body{
 	border-width: 0;
 	/*border: 2px solid #E58153;*/
 }
-
+.about{
+	padding: 3px;
+	border: 1px solid #ffffff;
+	position: absolute;
+	right: 10px;
+	top: 10px;
+	border-radius: 2px;
+	color: #ffffff;
+	z-index: 99;
+	text-decoration: none;
+	font-size: 12px;
+}
+.about:hover, .about:focus, .about:visited{
+    color: #ffffff;
+    text-decoration: none;
+}
 </style>
 {% endblock %}
 
@@ -113,6 +128,8 @@ html,body{
 <script type="text/javascript" src="{{MEDIA_URL}}js/jquery/fastclick.js"></script>
 <script type="text/javascript">
 $(document).ready(function(){
+
+	$('body').height($(document).height());
 
 	FastClick.attach(document.body);
 
@@ -155,8 +172,9 @@ $(document).ready(function(){
 {% block body %}
 <div class="container-fluid">
 	<div class="row pr">
+		<a href="http://chuye.cloud7.com.cn/8594976" class="about"><i class="fa fa-paper-plane pr-5"></i>了解三点十分</a>
 		{% if invite %}
-		<div class="col-xs-12 text-center pt-55 pr pb-30">
+		<div class="col-xs-12 text-center pt-65 pr pb-30">
 			<!-- <img class="invite-avatar" src="http://tp1.sinaimg.cn/1613200184/180/1286542530/1"> -->
 			<img class="invite-avatar" src="{{invite.get_avatar_65}}">
 			<span class="little-points">
@@ -169,8 +187,9 @@ $(document).ready(function(){
 			</span>
 			<img class="invite-logo" src="{{MEDIA_URL}}img/logo.png">
 
-			<div class="pa w text-center co-ffffff" style="left: 0; bottom: -5px;">
-				你的好友「{{ invite.nick }}」邀请贵公司免费体验三点十分的下午茶点服务
+			<div class="pa w text-center co-ffffff" style="left: 0; bottom: -20px;">
+				你的好友「{{ invite.nick }}」邀请贵公司<br>
+				免费体验三点十分的下午茶点服务
 			</div>
 		</div>
 		{% else %}
@@ -178,7 +197,7 @@ $(document).ready(function(){
 			<img class="logo" src="{{MEDIA_URL}}img/logo_white.png">
 		</div>
 		<div class="col-xs-10 col-xs-offset-1 f20 text-center pt-10 co-ffffff">
-			欢迎免费体验三点十分的下午茶点服务
+			三点十分
 		</div>
 		{% endif %}
 		<div class="col-xs-10 col-xs-offset-1 pr pt-45">
@@ -194,11 +213,13 @@ $(document).ready(function(){
 			<input type="text" class="form-control input-lg mobile" placeholder="联系方式" />
 		</div>
 		<div class="col-xs-10 col-xs-offset-1 pr pt-30">
-			<a href="#" class="btn btn-default btn-lg btn-block btn-wave btn-booking">预约试吃</a>
+			<a href="#" class="btn btn-default btn-lg btn-block btn-wave btn-booking">预约免费试吃</a>
 		</div>
 		<div class="col-xs-10 col-xs-offset-1 pr pt-20 co-ffffff">
-			预约成功之后，我们的市场专员会在24小时内与你联系，符合要求的企业可免费试吃一次 <br /><br />
-			ps:一切不以订购三点十分的下午茶点服务为目的的免费试吃都是耍流氓
+			预约成功之后，我们的市场专员会在24小时内与你联系，符合要求的企业可免费试吃一次
+		</div>
+		<div class="col-xs-10 col-xs-offset-1 pr pt-20 co-ffffff fi f13 text-center">
+			<i class="fa fa-exclamation-circle pr-5 f18"></i>一切不以订购为目的的试吃都是耍流氓
 		</div>
 	</div>
 </div>

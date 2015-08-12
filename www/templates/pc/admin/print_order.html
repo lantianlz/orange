@@ -26,30 +26,30 @@
 {% block base_container %}
 <div class="container">
 	<div class="row">
-		<div class="col-md-12 pr">
+		<div class="col-md-12 col-xs-12 pr">
 			<img class="logo" src="{{MEDIA_URL}}img/logo.png">
 			<span class="logo-text">三点十分</span>
 		</div>
 
-		<div class="col-md-12 pt-15">
+		<div class="col-md-12 col-xs-12 pt-15">
 			收货方: {{order.company.name}} ( {{order.company.person_count}}人 )
 		</div>
 
-		<div class="col-md-6 pt-5">
+		<div class="col-md-6 col-xs-6 pt-5">
 			联系人: {{order.company.staff_name}} ( {{order.company.mobile}} )
 		</div>
-		<div class="col-md-6 pt-5 text-right">
+		<div class="col-md-6 col-xs-6 pt-5 text-right">
 			订单日期: {{order.create_time}}
 		</div>
 
-		<div class="col-md-8 pt-5">
+		<div class="col-md-8 col-xs-8 pt-5">
 			收货地址: {{order.company.addr}}
 		</div>
-		<div class="col-md-4 pt-5 text-right">
+		<div class="col-md-4 col-xs-4 pt-5 text-right">
 			订单号: {{order.order_no}}
 		</div>
 
-		<div class="col-md-12 pt-20">
+		<div class="col-md-12 col-xs-12 pt-20">
 			<table class="table">
 			    <thead>
 		          	<tr>
@@ -123,26 +123,26 @@
 		        </tbody>
 		    </table>
 		</div>
-		<div class="col-md-12 pt-30">
-			<div class="col-md-3 border-top-2 bdc-dddddd pt-10 pl-0">
+		<div class="col-md-12 col-xs-12 pt-30">
+			<div class="col-md-3 col-xs-3 border-top-2 bdc-dddddd pt-10 pl-0">
 				客户确认签字:
 			</div>
 			{% if order.is_test %}
-			<div class="col-md-3 border-top-2 bdc-dddddd pt-10 pr-0 text-right">
+			<div class="col-md-3 col-xs-3 border-top-2 bdc-dddddd pt-10 pr-0 text-right">
 				<div class="checkbox mb-0 mt-0">
 					<label>
 					  	<input checked type="checkbox"> 试吃订单
 					</label>
 				</div>
 			</div>
-			<div class="col-md-3 border-top-2 bdc-dddddd pt-10 pr-0 text-right">
+			<div class="col-md-3 col-xs-3 border-top-2 bdc-dddddd pt-10 pr-0 text-right">
 				订单总价: <span class="fb">{{order.total_price}}</span> 元
 			</div>
-			<div class="col-md-3 border-top-2 bdc-dddddd pt-10 pr-0 text-right">
+			<div class="col-md-3 col-xs-3 border-top-2 bdc-dddddd pt-10 pr-0 text-right">
 				应付金额: <span class="fb">0.00</span> 元
 			</div>
 			{% else %}
-			<div class="col-md-9 border-top-2 bdc-dddddd pt-10 pr-0 text-right">
+			<div class="col-md-9 col-xs-9 border-top-2 bdc-dddddd pt-10 pr-0 text-right hide">
 				应付金额: <span class="fb">{{order.total_price}}</span> 元
 			</div>
 			{% endif %}
