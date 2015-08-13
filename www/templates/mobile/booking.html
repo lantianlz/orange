@@ -5,7 +5,7 @@
 {% block base_css %}
 <style type="text/css">
 html,body{
-	height: 100%;
+	min-height: 100%;
     background: -webkit-linear-gradient(left top, #e8711c, #f09a5d);
     background: linear-gradient(left top, #e8711c, #f09a5d);
 }
@@ -128,8 +128,6 @@ html,body{
 <script type="text/javascript" src="{{MEDIA_URL}}js/jquery/fastclick.js"></script>
 <script type="text/javascript">
 $(document).ready(function(){
-
-	$('body').height($(document).height());
 
 	FastClick.attach(document.body);
 
