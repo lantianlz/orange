@@ -71,7 +71,7 @@ $(document).ready(function(){
         wx.onMenuShareAppMessage({
             title: '三点十分 - 免费试吃',
             desc: '提交申请即可欢迎免费体验三点十分的下午茶点服务',
-            link: 'http://www.3-10.cc/company/booking?invite_by={{request.user.id}}',
+            link: 'http://www.3-10.cc/company/booking?invite_by={{request.user.id|default:""}}',
             imgUrl: 'http://static.3-10.cc/img/logo.jpg',
             trigger: function (res) {
                 // alert('用户点击发送给朋友');
@@ -108,7 +108,7 @@ $(document).ready(function(){
         
     });
 
-    if('{{request.user.id}}' == ''){
+    if('{{request.user.id|default:""}}' == ''){
         $.Global.Notice.WarningTopNotice("请点击公众号[ 推荐有礼 ]菜单进入本页面");
     }
 
