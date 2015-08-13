@@ -10,7 +10,7 @@ from www.misc.decorators import staff_required, common_ajax_response, verify_per
 from www.misc import qiniu_client
 from common import utils, page
 
-from www.company.models import Order
+from www.company.models import Order, Item
 from www.company.interface import OrderBase, MealBase, CompanyBase
 from www.account.interface import UserBase
 
@@ -25,7 +25,6 @@ def order(request, template_name='pc/admin/order.html'):
     start_date = today.strftime('%Y-%m-%d')
 
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
-
 
 def format_order(objs, num):
     data = []
@@ -210,3 +209,69 @@ def print_order(request, template_name='pc/admin/print_order.html'):
         })
 
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
+
+
+@verify_permission('query_order')
+def purchase(request, template_name='pc/admin/purchase.html'):
+    states = [{'value': x[0], 'name': x[1]} for x in Order.state_choices if x[0] != 0]
+    states.append({'value': -2, 'name': u"全部有效订单"})
+    
+    types_json = json.dumps(dict(Item.type_choices))
+    specs_json = json.dumps(dict(Item.spec_choices))
+    types = [{'value': x[0], 'name': x[1]} for x in Item.type_choices]
+
+    today = datetime.datetime.now()
+    start_date = today.strftime('%Y-%m-%d')
+
+    return render_to_response(template_name, locals(), context_instance=RequestContext(request))
+
+@verify_permission('query_order')
+def get_purchase(request):
+
+    start_date = request.POST.get('start_date')
+    start_date = start_date or datetime.datetime.now().strftime('%Y-%m-%d')
+    start_date += " 00:00:00"
+    start_date = datetime.datetime.strptime(start_date, '%Y-%m-%d %H:%M:%S')
+    end_date = request.POST.get('end_date', datetime.datetime.now().strftime('%Y-%m-%d'))
+    end_date = end_date or datetime.datetime.now().strftime('%Y-%m-%d')
+    end_date += " 23:59:59"
+    end_date = datetime.datetime.strptime(end_date, '%Y-%m-%d %H:%M:%S')
+    state = request.POST.get('state', '-1')
+    state = int(state)
+
+    data = OrderBase().get_purchase(start_date, end_date, state)
+
+    result = {}
+    for x in data:
+
+        key = x['item__code']
+        order_key = x['order__order_no']
+
+        if not result.has_key(key):
+            result[key] = {
+                'code': x['item__code'],
+                'name': x['item__name'],
+                'amount': 0,
+                'spec': x['item__spec'],
+                'item_type': x['item__item_type'],
+                'orders': {}
+            }
+
+        # 汇总数量
+        result[key]['amount'] += x['amount']
+
+        if not result[key]['orders'].has_key(order_key):
+            result[key]['orders'][order_key] = {
+                'order_no': order_key,
+                'company': x['order__company__name'],
+                'amount': x['amount']
+            }
+
+    result = result.values()
+
+    return HttpResponse(json.dumps(result), mimetype='application/json')
+
+@verify_permission('')
+def print_purchase(request, template_name='pc/admin/print_purchase.html'):
+    return render_to_response(template_name, locals(), context_instance=RequestContext(request))
+

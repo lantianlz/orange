@@ -1,0 +1,210 @@
+{% extends "pc/admin/home.html" %}
+{% load custom_tags %}
+{% load custom_filters %}
+{% block title %}采购汇总{% endblock %}
+{% block admin_title %}采购汇总{% endblock %}
+{% block admin_title_m %}采购汇总{% endblock %}
+
+{% block css %}{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript">
+$(document).ready(function(){
+
+    $('#start_date_search').datetimepicker({
+        format: 'yyyy-mm-dd',
+        language: 'zh-CN',
+        minView: 2,
+        autoclose: true
+    });
+
+    $('#end_date_search').datetimepicker({
+        format: 'yyyy-mm-dd',
+        language: 'zh-CN',
+        minView: 2,
+        autoclose: true
+    });
+
+    $('.search').on('click', function(){
+
+        ajaxSend(
+            "/admin/purchase/get_purchase", 
+            $.Global.Utils.formToDict($('form')), 
+            function(data){
+                renderData(data);
+            }
+        );
+
+    });
+
+    // 渲染数据
+    var DATA = {},
+        types = {{types_json|safe}},
+        specs = {{specs_json|safe}},
+
+        // 添加项目
+        addItem = function(code, name, amount, spec, itemType, orders){
+                
+            $(String.format([
+                '<tr class="pointer show-order">',
+                    '<td>{0}</td>',
+                    '<td class="hidden-xs">{1}</td>',
+                    '<td>{2}</td>',
+                    '<td>{3}</td>',
+                    '<td>{4}</td>',
+                    '<td>{5}</td>',
+                '</tr>'
+            ].join(''), '', code, name, amount, specs[spec], types[itemType]))
+            .insertAfter($('#order_list .item_type_' + itemType));
+
+            DATA[code] = orders;
+        },
+
+        // 设置编号
+        setIndex = function(){
+            var trs = $('#order_list tbody>tr').filter(function(){return !$(this).hasClass('item_type')});
+            
+            $.map(trs, function(per, index){
+                $(per).children().eq(0).html(index+1);
+            });
+        },
+
+        // 显示订单
+        showOrder = function(code){
+            
+            var html = [
+            '<div class="modal fade" id="order_modal" tabindex="-1" role="dialog">',
+                '<div class="modal-dialog">',
+                    '<div class="modal-content">',
+                        '<div class="modal-header pb-5">',
+                            '<h4 class="modal-title">数量详情</h4>',
+                        '</div>',
+                    '<div class="modal-body">',
+                        '<table class="table table-hover">',
+                            '<thead>',
+                                '<tr>',
+                                    '<th class="hidden-xs">订单编号</th>',
+                                    '<th>所属公司</th>',
+                                    '<th>项目数量</th>',
+                                '</tr>',
+                            '</thead>',
+                            '<tbody>',
+
+                            '</tbody>',
+                        '</table>',
+                    '</div>',
+                '</div>',
+            '</div>'
+            ].join('');
+
+            $('#order_modal').remove()
+
+            $("body").append(html);
+
+
+            $.each(DATA[code], function(k, v){
+                $('#order_modal tbody').append(
+                    String.format([
+                        '<tr>',
+                            '<td class="hidden-xs">{0}</td>',
+                            '<td>{1}</td>',
+                            '<td>{2}</td>',
+                        '</tr>'
+                    ].join(''), v.order_no, v.company, v.amount)
+                );
+            });
+
+            $('#order_modal').modal({'show': true});
+
+        },
+
+        renderData = function(data){
+
+            // 清除
+            DATA = {};
+            $('#order_list tbody>tr').filter(function(){return !$(this).hasClass('item_type')}).remove();
+
+            // 添加项目
+            $.map(data, function(per){
+                addItem(per.code, per.name, per.amount, per.spec, per.item_type, per.orders);
+            });
+
+            setIndex();
+
+        };
+
+    // 绑定显示详细订单事件
+    $('.show-order').live('click', function(){
+        showOrder($(this).children().eq(1).html());
+    });
+
+    $('.search').click();
+    
+});
+</script>
+{% endblock %}
+
+{% block admin_main %}
+<ul class="nav nav-pills orange-nav-pills">
+    <li class="active">
+        <a href="#order_list" data-toggle="pill">
+            <i class="fa fa-list-ol pr-5"></i>
+            <span class="hidden-sm hidden-md hidden-lg">列表</span>
+            <span class="hidden-xs">采购列表</span>
+        </a>
+    </li>
+    <li class="pull-right">
+        <a href="#add//">
+            <i class="fa fa-print pr-5"></i>
+            <span class="hidden-sm hidden-md hidden-lg">打印</span>
+            <span class="hidden-xs">打印采购单</span>
+        </a>
+    </li>
+</ul>
+
+<div class="tab-content">
+    <!-- 用户列表 -->
+    <div class="tab-pane fade pt-15 in active" id="order_list">
+        <form action="." class="form-inline" onsubmit="javascript: return false;">
+            <div class="input-group input-group-sm pb-10">
+                <span class="input-group-addon">开始日期</span>
+                <input type="text" class="form-control" name="start_date" id="start_date_search" value="{{start_date}}"  />
+            </div>
+            <div class="input-group input-group-sm pb-10">
+                <span class="input-group-addon">结束日期</span>
+                <input type="text" class="form-control" name="end_date" id="end_date_search" value="{{start_date}}"  />
+            </div>
+            <div class="input-group input-group-sm pb-10">
+                <span class="input-group-addon">订单状态</span>
+                <select class="form-control state" name="state">
+                    {% for state in states %}
+                    <option value="{{state.value}}">{{state.name}}</option>
+                    {% endfor %}
+                </select>
+                <span class="input-group-btn">
+                    <button class="btn btn-default search bgc-eeeeee" type="submit">查询</button>
+                </span>
+            </div>
+        </form>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th class="hidden-xs">产品编号</th>
+                    <th>产品名称</th>
+                    <th>数量</th>
+                    <th>规格</th>
+                    <th>类别</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for type in types %}
+                <tr class="item_type item_type_{{type.value}}">
+                    <td colspan="6" class="fb fi border-bottom-2 bdc-dddddd">{{type.name}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

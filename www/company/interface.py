@@ -449,7 +449,7 @@ class OrderBase(object):
             # 是否查询所有有效订单
             if state == -2:
                 objs = Order.objects.filter(
-                    state__in = (1,2,3)
+                    state__in = (1, 2, 3)
                 )
             else:
                 objs = self.get_all_order(state)
@@ -488,7 +488,9 @@ class OrderBase(object):
             return ""
 
     def distribute_order(self, order_id, distribute_operator):
-
+        '''
+        配送订单
+        '''
         obj = self.get_order_by_id(order_id)
         if not obj:
             return 20401, dict_err.get(20401)
@@ -505,7 +507,9 @@ class OrderBase(object):
         return 0, dict_err.get(0)
 
     def confirm_order(self, order_id, confirm_operator):
-
+        '''
+        确认订单
+        '''
         obj = self.get_order_by_id(order_id)
         if not obj:
             return 20401, dict_err.get(20401)
@@ -522,7 +526,9 @@ class OrderBase(object):
         return 0, dict_err.get(0)
 
     def drop_order(self, order_id):
-
+        '''
+        作废订单
+        '''
         obj = self.get_order_by_id(order_id)
         if not obj:
             return 20401, dict_err.get(20401)
@@ -537,7 +543,32 @@ class OrderBase(object):
         return 0, dict_err.get(0)
 
     def get_items_of_order(self, order_id):
+        '''
+        获取订单下的项目
+        '''
         return OrderItem.objects.select_related('item').filter(order_id=order_id)
+
+    def get_purchase(self, start_date, end_date, state):
+        objs = []
+
+        states = []
+        # 是否查询所有有效订单
+        if state == -2: 
+            states = [1, 2, 3]
+        else:
+            states = [state]
+
+        objs = OrderItem.objects.select_related('order', 'item', 'order__company').filter(
+            order__state__in = states,
+            order__create_time__range = (start_date, end_date)
+        ).values(
+            'order__order_no', 'order__create_time', 
+            'order__company__name', 'item__code', 
+            'item__name', 'amount',
+            'item__spec', 'item__item_type'
+        )
+
+        return objs
 
 
 class BookingBase(object):

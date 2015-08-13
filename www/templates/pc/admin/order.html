@@ -258,6 +258,10 @@ $(document).ready(function(){
             var orderId = this.$('form').data('order_id'),
                 me = this;
 
+            if(!confirm('确认配送订单?')){
+                return;
+            }
+
             me.collection.distributeOrder(orderId, function(data){
                 if(data.errcode == "0"){
                     $.Global.Notice.SuccessTopNotice('操作成功');
@@ -272,6 +276,10 @@ $(document).ready(function(){
             var orderId = this.$('form').data('order_id'),
                 me = this;
 
+            if(!confirm('确认完成订单?')){
+                return;
+            }
+
             me.collection.confirmOrder(orderId, function(data){
                 if(data.errcode == "0"){
                     $.Global.Notice.SuccessTopNotice('操作成功');
@@ -285,6 +293,10 @@ $(document).ready(function(){
         dropOrder: function(){
             var orderId = this.$('form').data('order_id'),
                 me = this;
+
+            if(!confirm('确认作废订单?')){
+                return;
+            }
 
             me.collection.dropOrder(orderId, function(data){
                 if(data.errcode == "0"){

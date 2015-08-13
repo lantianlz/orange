@@ -64,6 +64,10 @@ urlpatterns += patterns('www.admin.views_meal',
 # 订单管理
 urlpatterns += patterns('www.admin.views_order',
 
+    url(r'^purchase/print_purchase$', 'print_purchase'),
+    url(r'^purchase/get_purchase$', 'get_purchase'),
+    url(r'^purchase$', 'purchase'),
+
     url(r'^order/print_order$', 'print_order'),
     url(r'^order/add_order$', 'add_order'),
     url(r'^order/distribute_order$', 'distribute_order'),

@@ -413,8 +413,16 @@ $(document).ready(function(){
                     </li>
                 </ul>
             </li>
-            <li class="list-group-item {% if '/order' in request.path %}active{% endif %}">
-                <a href="/admin/order"><i class="fa fa-list-alt pr-3"></i>订单管理</a>
+            <li class="list-group-item">
+                <a><i class="fa fa-archive pr-3"></i>订单采购管理</a>
+                <ul class="list-group sub-nav">
+                    <li class="list-group-item {% if '/order' in request.path %}active{% endif %}">
+                        <a href="/admin/order"><i class="point"></i>订单管理</a>
+                    </li>
+                    <li class="list-group-item {% if '/purchase' in request.path %}active{% endif %}">
+                        <a href="/admin/purchase"><i class="point"></i>采购汇总</a>
+                    </li>
+                </ul>
             </li>
             <li class="list-group-item {% if '/booking' in request.path %}active{% endif %}">
                 <a href="/admin/booking"><i class="fa fa-shopping-cart pr-3"></i>预约信息管理</a>
