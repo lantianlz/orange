@@ -5,7 +5,7 @@
 {% block base_css %}
 <style type="text/css">
 html,body{
-    height: 100%;
+    min-height: 100%;
     background: -webkit-linear-gradient(left top, #e8711c, #f09a5d);
     background: linear-gradient(left top, #e8711c, #f09a5d);
 }
@@ -111,8 +111,6 @@ $(document).ready(function(){
     if('{{request.user.id|default:""}}' == ''){
         $.Global.Notice.WarningTopNotice("请点击公众号[ 推荐有礼 ]菜单进入本页面");
     }
-
-    $('body').height($(document).height());
     
 });
 </script>
