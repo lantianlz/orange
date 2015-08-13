@@ -34,7 +34,7 @@ def get_booking(request):
     return BookingBase().add_booking(company_name, staff_name, mobile, source, invite_by)
 
 
-# @member_required
+@member_required
 def invite(request, template_name='mobile/invite.html'):
 
     # 微信key

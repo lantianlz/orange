@@ -207,10 +207,10 @@ class UserBase(object):
         if des:
             user.des = utils.filter_script(des)[:128]
         user.save()
-        
+
         user_login = self.get_user_login_by_id(user.id)
         user_login.email = email
-        user_login.mobilenumber = mobilenumber
+        user_login.mobilenumber = mobilenumber or None
         if state is not None:
             user_login.state = state
         user_login.save()
@@ -594,7 +594,7 @@ class UserBase(object):
                     self.get_user_by_id(user.id, must_update_cache=True)
             return 0, user
         except Exception, e:
-            debug.get_debug_detail(e)
+            debug.get_debug_detail_and_send_email(e)
 
     def login_by_weixin_qr_code(self, ticket, openid, app_key):
         """
