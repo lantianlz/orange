@@ -33,6 +33,14 @@ PERMISSIONS = [
     {'code': 'modify_company_manager', 'name': u'修改公司管理员', 'parent': 'company_manager_manage'},
     {'code': 'remove_company_manager', 'name': u'删除公司管理员', 'parent': 'company_manager_manage'},
 
+    {'code': 'cash_account_manage', 'name': u'现金账户管理', 'parent': None},
+    {'code': 'query_cash_account', 'name': u'查询现金账户', 'parent': 'cash_account_manage'},
+    {'code': 'modify_cash_account', 'name': u'修改现金账户', 'parent': 'cash_account_manage'},
+
+    {'code': 'cash_record_manage', 'name': u'现金流水管理', 'parent': None},
+    {'code': 'add_cash_record', 'name': u'添加现金流水', 'parent': 'cash_record_manage'},
+    {'code': 'query_cash_record', 'name': u'查询现金流水', 'parent': 'cash_record_manage'},
+
     {'code': 'item_manage', 'name': u'产品管理', 'parent': None},
     {'code': 'add_item', 'name': u'添加产品', 'parent': 'item_manage'},
     {'code': 'query_item', 'name': u'查询产品', 'parent': 'item_manage'},

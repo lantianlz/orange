@@ -41,8 +41,8 @@ class CashAccount(models.Model):
     @note: 现金账户
     '''
     company = models.ForeignKey("Company", unique=True)
-    balance = models.DecimalField(max_digits=20, decimal_places=2, default=0, db_index=True)    # 最新余额
-    max_overdraft = models.DecimalField(max_digits=20, decimal_places=2, default=0, db_index=True)  # 最大透支额
+    balance = models.DecimalField(verbose_name=u"最新余额", max_digits=20, decimal_places=2, default=0, db_index=True)
+    max_overdraft = models.DecimalField(verbose_name=u"最大透支额", max_digits=20, decimal_places=2, default=1000, db_index=True)
 
 
 class CashRecord(models.Model):
@@ -53,12 +53,12 @@ class CashRecord(models.Model):
     operation_choices = ((0, u"转入"), (1, u"转出"))
 
     cash_account = models.ForeignKey("CashAccount")
-    value = models.DecimalField(max_digits=20, decimal_places=2, db_index=True)
-    current_balance = models.DecimalField(max_digits=20, decimal_places=2, db_index=True)
-    operation = models.IntegerField(choices=operation_choices, db_index=True)  # 转入or转出
-    notes = models.CharField(max_length=256)    # 流水介绍
-    ip = models.CharField(max_length=32, null=True)
-    create_time = models.DateTimeField(auto_now_add=True, db_index=True)  # 创建时间
+    value = models.DecimalField(verbose_name=u"操作金额", max_digits=20, decimal_places=2, db_index=True)
+    current_balance = models.DecimalField(verbose_name=u"当时余额", max_digits=20, decimal_places=2, db_index=True)
+    operation = models.IntegerField(verbose_name=u"操作类型", choices=operation_choices, db_index=True)
+    notes = models.CharField(verbose_name=u"备注", max_length=256)
+    ip = models.CharField(verbose_name=u"ip", max_length=32, null=True)
+    create_time = models.DateTimeField(verbose_name=u"流水时间", auto_now_add=True, db_index=True) 
 
     class Meta:
         ordering = ['-id']

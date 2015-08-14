@@ -51,15 +51,17 @@ $(document).ready(function(){
 
         // 查询
         search: function(name, pageIndex){
-            var me = this;
+            var me = this,
+                name = name||'',
+                pageIndex = pageIndex||1;
 
             ajaxSend(
                 "/admin/company/search", 
-                {'name': name||'', 'page_index': pageIndex||1}, 
+                {'name': name, 'page_index': pageIndex}, 
                 function(data){
-                    me.pageIndex = pageIndex||1;
+                    me.pageIndex = pageIndex;
                     me.pageCount = data.page_count;
-                    me.name = name||'';
+                    me.name = name;
 
                     me.reset($.Global.Utils.dictMapParse(data.data, me._modelMaps));
                 }

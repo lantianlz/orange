@@ -39,6 +39,21 @@ urlpatterns += patterns('www.admin.views_company_manager',
     url(r'^company_manager$', 'company_manager'),
 )
 
+# 现金账户
+urlpatterns += patterns('www.admin.views_cash_account',
+    url(r'^cash_account/modify_cash_account$', 'modify_cash_account'),
+    url(r'^cash_account/get_cash_account_by_id$', 'get_cash_account_by_id'),
+    url(r'^cash_account/search$', 'search'),
+    url(r'^cash_account$', 'cash_account'),
+)
+
+# 现金流水
+urlpatterns += patterns('www.admin.views_cash_record',
+    url(r'^cash_record/add_cash_account$', 'add_cash_record'),
+    url(r'^cash_record/search$', 'search'),
+    url(r'^cash_record$', 'cash_record'),
+)
+
 # 产品管理
 urlpatterns += patterns('www.admin.views_item',
 

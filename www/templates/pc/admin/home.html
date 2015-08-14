@@ -397,8 +397,11 @@ $(document).ready(function(){
                     <li class="list-group-item {% if '/company_manager' in request.path %}active{% endif %}">
                         <a href="/admin/company_manager"><i class="point"></i>公司管理员管理</a>
                     </li>
-                    <li class="list-group-item">
-                        <a href="#"><i class="point"></i>公司现金账户管理</a>
+                    <li class="list-group-item {% if '/cash_account' in request.path %}active{% endif %}">
+                        <a href="/admin/cash_account"><i class="point"></i>公司现金账户</a>
+                    </li>
+                    <li class="list-group-item {% if '/cash_record' in request.path %}active{% endif %}">
+                        <a href="/admin/cash_record"><i class="point"></i>公司现金流水</a>
                     </li>
                 </ul>
             </li>

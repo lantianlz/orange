@@ -68,8 +68,8 @@ a:focus {outline: none; -moz-outline: none;}
 .co-EF7B32{color: #EF7B32;}
 .co-555555{color: #555555;}
 .co-84CCC7{color: #84CCC7;}
-.co-C33333{color: #C33333;}
-.co-19BA40{color: #19BA40;}
+.co-C33333{color: #C33333;}/*红*/
+.co-19BA40{color: #19BA40;}/*绿*/
 .co-e1e1e1{color: #e1e1e1;}
 
 .border-1{border: 1px solid;}

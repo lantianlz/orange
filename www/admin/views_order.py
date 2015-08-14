@@ -144,8 +144,8 @@ def distribute_order(request):
 @common_ajax_response
 def confirm_order(request):
     order_id = request.POST.get('order_id')
-
-    return OrderBase().confirm_order(order_id, request.user.id)
+    ip = utils.get_clientip(request)
+    return OrderBase().confirm_order(order_id, request.user.id, ip)
 
 @verify_permission('modify_order')
 @common_ajax_response

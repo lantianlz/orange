@@ -14,7 +14,7 @@ from www.misc.decorators import cache_required
 from www.misc import consts
 
 from www.account.interface import UserBase
-from models import Item, Company, Meal, MealItem, Order, OrderItem, Booking, CompanyManager
+from models import Item, Company, Meal, MealItem, Order, OrderItem, Booking, CompanyManager, CashAccount, CashRecord
 
 DEFAULT_DB = 'default'
 
@@ -34,6 +34,9 @@ dict_err = {
     20502: u'没有找到对应的预约信息',
 
     20601: u'该管理员已存在，请勿重复添加',
+
+    20701: u'没有找到对应的账户信息',
+    20702: u'账户余额不足',
 }
 dict_err.update(consts.G_DICT_ERROR)
 
@@ -197,6 +200,9 @@ class CompanyBase(object):
                 person_count = person_count,
                 invite_by = invite.id if invite else None
             )
+
+            CashAccount.objects.create(company=obj, max_overdraft=1000)
+
         except Exception, e:
             debug.get_debug_detail_and_send_email(e)
             return 99900, dict_err.get(99900)
@@ -506,7 +512,9 @@ class OrderBase(object):
 
         return 0, dict_err.get(0)
 
-    def confirm_order(self, order_id, confirm_operator):
+
+    @transaction.commit_manually(using=DEFAULT_DB)
+    def confirm_order(self, order_id, confirm_operator, ip=None):
         '''
         确认订单
         '''
@@ -519,7 +527,24 @@ class OrderBase(object):
             obj.confirm_operator = confirm_operator
             obj.confirm_time = datetime.datetime.now()
             obj.save()
+
+            # 操作账户
+            code, msg = CashRecordBase().add_cash_record(
+                obj.company_id, 
+                obj.total_price, 
+                1,  
+                u"来自订单「%s」确认" % obj.order_no,
+                ip
+            )
+
+            if code == 0:
+                transaction.commit()
+            else:
+                transaction.rollback()
+                return code, dict_err.get(code)
+
         except Exception, e:
+            transaction.rollback()
             debug.get_debug_detail_and_send_email(e)
             return 99900, dict_err.get(99900)
 
@@ -687,7 +712,7 @@ class CompanyManagerBase(object):
         try:
             return CompanyManager.objects.select_related("company").get(id=manager_id)
         except CompanyManager.DoesNotExist:
-            pass
+            return ''
 
     def delete_company_manager(self, manager_id):
         if not manager_id:
@@ -699,6 +724,134 @@ class CompanyManagerBase(object):
             return 99900, dict_err.get(99900)
 
         return 0, dict_err.get(0)
+
+
+
+class CashAccountBase(object):
+    '''
+    '''
+
+    def get_all_accounts(self):
+        return CashAccount.objects.all()
+
+    def get_accounts_for_admin(self, name):
+        objs = self.get_all_accounts()
+
+        if name:
+            objs = objs.select_related('company').filter(company__name__contains=name)
+
+        return objs
+
+    def get_cash_account_by_id(self, account_id):
+        try:
+            return CashAccount.objects.select_related("company").get(id=account_id)
+        except CashAccount.DoesNotExist:
+            return ''
+
+
+    def modify_cash_account(self, account_id, max_overdraft):
+
+        obj = self.get_cash_account_by_id(account_id)
+        if not obj:
+            return 20701, dict_err.get(20701)
+
+        try:
+            obj.max_overdraft = max_overdraft
+            obj.save()
+        except Exception:
+            return 99900, dict_err.get(99900)
+
+        return 0, dict_err.get(0)
+
+
+
+class CashRecordBase(object):
+
+    def get_all_records(self):
+        return CashRecord.objects.all()
+
+    def get_records_for_admin(self, name):
+        objs = self.get_all_records()
+
+        if name:
+            objs = objs.filter(cash_account__company__name__contains=name)
+
+        return objs
+
+    def validate_record_info(self, company_id, value, operation, notes):
+        value = float(value)
+        operation = int(operation)
+        company = CompanyBase().get_company_by_id(company_id)
+        assert operation in (0, 1)
+        assert value > 0 and notes and company
+
+    @transaction.commit_manually(using=DEFAULT_DB)
+    def add_cash_record_with_transaction(self, company_id, value, operation, notes, ip=None):
+        try:
+            errcode, errmsg = self.add_cash_record(company_id, value, operation, notes, ip)
+            if errcode == 0:
+                transaction.commit(using=DEFAULT_DB)
+            else:
+                transaction.rollback(using=DEFAULT_DB)
+            return errcode, errmsg
+        except Exception, e:
+            debug.get_debug_detail(e)
+            transaction.rollback(using=DEFAULT_DB)
+            return 99900, dict_err.get(99900)
+
+    def add_cash_record(self, company_id, value, operation, notes, ip=None):
+        try:
+            try:
+                value = decimal.Decimal(value)
+                operation = int(operation)
+                self.validate_record_info(company_id, value, operation, notes)
+            except Exception, e:
+                return 99801, dict_err.get(99801)
+
+            account, created = CashAccount.objects.get_or_create(company_id=company_id)
+
+            # 转出时判断是否超过透支额  发送邮件提醒
+            if operation == 1 and abs(account.balance - value) >= account.max_overdraft:
+                
+                from www.tasks import async_send_email
+                title = u'账户已达最大透支额'
+                content = u'账户「%s」已达最大透支额' % (account.company.name)
+                async_send_email("vip@3-10.cc", title, content)
+
+            # 当前余额
+            current_balance = account.balance
+
+            if operation == 0:
+                account.balance += value
+            elif operation == 1:
+                account.balance -= value
+            account.save()
+
+            CashRecord.objects.create(
+                cash_account = account, 
+                value = value, 
+                current_balance = current_balance,
+                operation = operation, 
+                notes = notes, 
+                ip = ip
+            )
+
+            return 0, dict_err.get(0)
+        except Exception, e:
+            debug.get_debug_detail_and_send_email(e)
+            return 99900, dict_err.get(99900)
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
