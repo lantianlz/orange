@@ -37,6 +37,13 @@ $(document).ready(function(){
 
     });
 
+    // 打印
+    $('.print-purchase').on('click', function(){
+        var url = $.param($.Global.Utils.formToDict($('form')));
+
+        window.open("/admin/purchase/print_purchase?" + url);
+    });
+
     // 渲染数据
     var DATA = {},
         types = {{types_json|safe}},
@@ -101,7 +108,7 @@ $(document).ready(function(){
 
             $("body").append(html);
 
-
+            // 添加订单信息
             $.each(DATA[code], function(k, v){
                 $('#order_modal tbody').append(
                     String.format([
@@ -154,7 +161,7 @@ $(document).ready(function(){
         </a>
     </li>
     <li class="pull-right">
-        <a href="#add//">
+        <a href="#" class="print-purchase">
             <i class="fa fa-print pr-5"></i>
             <span class="hidden-sm hidden-md hidden-lg">打印</span>
             <span class="hidden-xs">打印采购单</span>

@@ -1,0 +1,117 @@
+{% extends "pc/base/base_admin.html" %}
+{% block title %} 采购单 {% endblock %}
+
+{% block base_css %}
+<style type="text/css">
+.container{
+	width: 900px;
+	padding-top: 30px;
+}
+.logo{
+	width: 37px;
+	position: absolute;
+	left: 15px;
+	top: 0px;
+}
+.logo-text{
+	font-size: 30px;
+	padding-left: 40px;
+}
+</style>
+{% endblock %}
+
+{% block base_js %}
+<script type="text/javascript">
+$(document).ready(function(){
+	// ajaxSend(
+ //        "/admin/purchase/get_purchase", 
+ //        $.Global.Utils.formToDict($('form')), 
+ //        function(data){
+ //            renderData(data);
+ //        }
+ //    );
+
+	// 渲染数据
+    var types = {{types_json|safe}},
+        specs = {{specs_json|safe}},
+
+        // 添加项目
+        addItem = function(code, name, amount, spec, itemType){
+            console.log(code, name, amount, spec, itemType)
+            $(String.format([
+                '<tr>',
+                    '<td>{0}</td>',
+                    '<td class="hidden-xs">{1}</td>',
+                    '<td>{2}</td>',
+                    '<td>{3}</td>',
+                    '<td>{4}</td>',
+                    '<td>{5}</td>',
+                '</tr>'
+            ].join(''), '', code, name, amount, specs[spec], types[itemType]))
+            .insertAfter($('.item_type_' + itemType));
+        },
+
+        // 设置编号
+        setIndex = function(){
+            var trs = $('tbody>tr').filter(function(){return !$(this).hasClass('item_type')});
+            
+            $.map(trs, function(per, index){
+                $(per).children().eq(0).html(index+1);
+            });
+        },
+
+       
+        renderData = function(data){
+
+            // 添加项目
+            $.map(data, function(per){
+                addItem(per.code, per.name, per.amount, per.spec, per.item_type);
+            });
+
+            setIndex();
+
+        };
+
+    renderData({{data_json|safe}});
+
+});
+</script>
+{% endblock %}
+
+{% block base_container %}
+<div class="container">
+	<div class="row">
+		<div class="col-md-3 col-xs-3 pr">
+			<img class="logo" src="{{MEDIA_URL}}img/logo.png">
+			<span class="logo-text">三点十分</span>
+		</div>
+		<div class="col-md-6 col-xs-6 f30 text-center">
+			{{end_date}}采购单
+		</div>
+
+		<div class="col-md-12 col-xs-12 pt-20">
+			<table class="table">
+	            <thead>
+	                <tr>
+	                    <th>#</th>
+	                    <th class="hidden-xs">产品编号</th>
+	                    <th>产品名称</th>
+	                    <th>数量</th>
+	                    <th>规格</th>
+	                    <th>类别</th>
+	                </tr>
+	            </thead>
+	            <tbody>
+	                {% for type in types %}
+	                <tr class="item_type item_type_{{type.value}}">
+	                    <td colspan="6" class="fb fi border-bottom-2 bdc-dddddd">{{type.name}}</td>
+	                </tr>
+	                {% endfor %}
+	            </tbody>
+	        </table>
+		</div>
+	</div>
+</div>
+{% endblock %}
+
+{% block footer %}{% endblock %}

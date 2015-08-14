@@ -225,18 +225,15 @@ def purchase(request, template_name='pc/admin/purchase.html'):
 
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
 
-@verify_permission('query_order')
-def get_purchase(request):
 
-    start_date = request.POST.get('start_date')
+def _get_purchase_data(start_date, end_date, state, show_order=False):
+
     start_date = start_date or datetime.datetime.now().strftime('%Y-%m-%d')
     start_date += " 00:00:00"
     start_date = datetime.datetime.strptime(start_date, '%Y-%m-%d %H:%M:%S')
-    end_date = request.POST.get('end_date', datetime.datetime.now().strftime('%Y-%m-%d'))
     end_date = end_date or datetime.datetime.now().strftime('%Y-%m-%d')
     end_date += " 23:59:59"
     end_date = datetime.datetime.strptime(end_date, '%Y-%m-%d %H:%M:%S')
-    state = request.POST.get('state', '-1')
     state = int(state)
 
     data = OrderBase().get_purchase(start_date, end_date, state)
@@ -260,18 +257,39 @@ def get_purchase(request):
         # 汇总数量
         result[key]['amount'] += x['amount']
 
-        if not result[key]['orders'].has_key(order_key):
-            result[key]['orders'][order_key] = {
-                'order_no': order_key,
-                'company': x['order__company__name'],
-                'amount': x['amount']
-            }
+        if show_order:
+            if not result[key]['orders'].has_key(order_key):
+                result[key]['orders'][order_key] = {
+                    'order_no': order_key,
+                    'company': x['order__company__name'],
+                    'amount': x['amount']
+                }
 
-    result = result.values()
+    return result.values()
 
-    return HttpResponse(json.dumps(result), mimetype='application/json')
+
+@verify_permission('query_order')
+def get_purchase(request):
+
+    start_date = request.POST.get('start_date')
+    end_date = request.POST.get('end_date')
+    state = request.POST.get('state', '-1')
+
+    data = _get_purchase_data(start_date, end_date, state, True)
+
+    return HttpResponse(json.dumps(data), mimetype='application/json')
 
 @verify_permission('')
 def print_purchase(request, template_name='pc/admin/print_purchase.html'):
+    types_json = json.dumps(dict(Item.type_choices))
+    specs_json = json.dumps(dict(Item.spec_choices))
+    types = [{'value': x[0], 'name': x[1]} for x in Item.type_choices]
+
+    start_date = request.REQUEST.get('start_date')
+    end_date = request.REQUEST.get('end_date')
+    state = request.REQUEST.get('state', '-1')
+
+    data = _get_purchase_data(start_date, end_date, state)
+    data_json = json.dumps(data)
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
 

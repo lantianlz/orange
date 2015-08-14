@@ -353,7 +353,7 @@ class MealBase(object):
             return ""
 
     def get_items_of_meal(self, meal_id):
-        return MealItem.objects.filter(meal_id=meal_id)
+        return MealItem.objects.select_related('item').filter(meal_id=meal_id)
 
     def get_meals_by_name(self, name=""):
         objs = self.get_all_meal()
