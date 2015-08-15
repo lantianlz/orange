@@ -417,7 +417,7 @@ $(document).ready(function(){
                 </ul>
             </li>
             <li class="list-group-item">
-                <a><i class="fa fa-archive pr-3"></i>订单采购管理</a>
+                <a><i class="fa fa-list-alt pr-3"></i>订单采购管理</a>
                 <ul class="list-group sub-nav">
                     <li class="list-group-item {% if '/order' in request.path %}active{% endif %}">
                         <a href="/admin/order"><i class="point"></i>订单管理</a>
@@ -488,7 +488,7 @@ $(document).ready(function(){
         </div>
 
         <div class="content-main col-md-12 col-xs-12">
-            <div style="min-height: 500px;">
+            <div style="min-height: 700px;">
                 {% block admin_main %}{% endblock %}
             </div>
         </div>

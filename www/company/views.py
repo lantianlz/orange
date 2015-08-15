@@ -43,3 +43,10 @@ def invite(request, template_name='mobile/invite.html'):
     sign_dict = sign.sign()
 
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
+
+
+@member_required
+def orders(request, template_name='pc/company/orders.html'):
+
+    return render_to_response(template_name, locals(), context_instance=RequestContext(request))
+
