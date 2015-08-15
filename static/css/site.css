@@ -65,7 +65,7 @@ a:focus {outline: none; -moz-outline: none;}
 .co-888888{color: #888888;}
 .co-3B99FC{color: #3B99FC;}
 .co-ADADAD{color: #ADADAD;}
-.co-EF7B32{color: #EF7B32;}
+.co-EF7B32{color: #EF7B32;}/*主色*/
 .co-555555{color: #555555;}
 .co-84CCC7{color: #84CCC7;}
 .co-C33333{color: #C33333;}/*红*/
@@ -100,7 +100,7 @@ a:focus {outline: none; -moz-outline: none;}
 .bgc-3E445B{background-color: #3E445B;}
 .bgc-ffffff{background-color: #ffffff;}
 .bgc-84CCC7{background-color: #84CCC7;}
-.bgc-EE7A32{background-color: #EE7A32;}
+.bgc-EE7A32{background-color: #EE7A32;}/*主色*/
 .bgc-444B5C{background-color: #444B5C;}
 .bgc-FAE4D5{background-color: #FAE4D5;}
 .bgc-F6F5F1{background-color: #F6F5F1;}

@@ -201,7 +201,8 @@ class CompanyBase(object):
                 invite_by = invite.id if invite else None
             )
 
-            CashAccount.objects.create(company=obj, max_overdraft=1000)
+            # 创建公司对应的账户
+            CashAccount.objects.create(company=obj)
 
         except Exception, e:
             debug.get_debug_detail_and_send_email(e)
