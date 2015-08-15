@@ -124,7 +124,7 @@ $(document).ready(function(){
         },
 
         search: function(){
-            var name = this.$('.key-word').val();
+            var name = this.$('.name').val();
 
             router.navigate(String.format('/search/{0}/1', name), {trigger: true});
         },
@@ -289,16 +289,15 @@ $(document).ready(function(){
 <div class="tab-content">
     <!-- 客户经理列表 -->
     <div class="tab-pane fade pt-15 in active" id="account_list">
-        <div class="pl-0 pb-10 col-md-3">
-            <form onsubmit="javascript:return false;">
-                <div class="input-group input-group-sm">
-                    <input type="text" class="form-control border-radius-0 key-word" placeholder="输入公司名称..." />
-                    <span class="input-group-btn">
-                        <button class="btn btn-default search" type="submit">查询</button>
-                    </span>
-                </div>
-            </form>
-        </div>
+        <form action="." class="form-inline" onsubmit="javascript: return false;">
+            <div class="input-group input-group-sm pb-10">
+                <span class="input-group-addon">公司名称</span>
+                <input type="text" class="form-control name" placeholder="" />
+                <span class="input-group-btn">
+                    <button class="btn btn-default search bgc-eeeeee" type="submit">查询</button>
+                </span>
+            </div>
+        </form>
         <table class="table table-hover">
             <thead>
                 <tr>

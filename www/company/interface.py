@@ -533,7 +533,7 @@ class OrderBase(object):
             code, msg = CashRecordBase().add_cash_record(
                 obj.company_id, 
                 obj.total_price, 
-                1,  
+                1,
                 u"订单「%s」确认" % obj.order_no,
                 ip
             )

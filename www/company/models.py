@@ -50,7 +50,7 @@ class CashRecord(models.Model):
     '''
     @note: 现金账户流水
     '''
-    operation_choices = ((0, u"转入"), (1, u"转出"))
+    operation_choices = ((0, u"充值"), (1, u"消费"))
 
     cash_account = models.ForeignKey("CashAccount")
     value = models.DecimalField(verbose_name=u"操作金额", max_digits=20, decimal_places=2, db_index=True)
