@@ -59,7 +59,7 @@ def search(request):
     name = request.REQUEST.get('name')
     
     page_index = int(request.REQUEST.get('page_index'))
-    print start_date, end_date, name
+    
     objs = CashRecordBase().get_records_for_admin(start_date, end_date, name)
 
     page_objs = page.Cpt(objs, count=10, page=page_index).info
