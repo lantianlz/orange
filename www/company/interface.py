@@ -818,8 +818,8 @@ class CashRecordBase(object):
             if operation == 1 and abs(account.balance - value) >= account.max_overdraft:
                 
                 from www.tasks import async_send_email
-                title = u'账户已达最大透支额'
-                content = u'账户「%s」已达最大透支额' % (account.company.name)
+                title = u'账户已达最高透支额'
+                content = u'账户「%s」当前余额「%s」，已达「%s」最高透支额' % (account.company.name, account.balance - value, account.max_overdraft)
                 async_send_email("vip@3-10.cc", title, content)
 
             if operation == 0:
