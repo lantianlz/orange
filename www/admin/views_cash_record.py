@@ -16,6 +16,11 @@ from www.company.models import CashRecord
 @verify_permission('')
 def cash_record(request, template_name='pc/admin/cash_record.html'):
     operation_choices = [{'value': x[0], 'name': x[1]} for x in CashRecord.operation_choices]
+
+    today = datetime.datetime.now()
+    start_date= (today - datetime.timedelta(days=30)).strftime('%Y-%m-%d')
+    end_date = today.strftime('%Y-%m-%d')
+
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
 
 
@@ -48,11 +53,14 @@ def format_record(objs, num):
 def search(request):
     data = []
 
-    company_name = request.REQUEST.get('name')
+    start_date = request.POST.get('start_date')
+    end_date = request.POST.get('end_date')
+    start_date, end_date = utils.get_date_range(start_date, end_date)
+    name = request.REQUEST.get('name')
     
     page_index = int(request.REQUEST.get('page_index'))
-
-    objs = CashRecordBase().get_records_for_admin(company_name)
+    print start_date, end_date, name
+    objs = CashRecordBase().get_records_for_admin(start_date, end_date, name)
 
     page_objs = page.Cpt(objs, count=10, page=page_index).info
 

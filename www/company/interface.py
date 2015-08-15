@@ -534,7 +534,7 @@ class OrderBase(object):
                 obj.company_id, 
                 obj.total_price, 
                 1,  
-                u"来自订单「%s」确认" % obj.order_no,
+                u"订单「%s」确认" % obj.order_no,
                 ip
             )
 
@@ -771,8 +771,8 @@ class CashRecordBase(object):
     def get_all_records(self):
         return CashRecord.objects.all()
 
-    def get_records_for_admin(self, name):
-        objs = self.get_all_records()
+    def get_records_for_admin(self, start_date, end_date, name):
+        objs = self.get_all_records().filter(create_time__range = (start_date, end_date))
 
         if name:
             objs = objs.filter(cash_account__company__name__contains=name)

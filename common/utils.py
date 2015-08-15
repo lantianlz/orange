@@ -281,6 +281,17 @@ def exec_command(command, timeout=25):
     content = commands.getoutput(command)
     return True, content
 
+def get_date_range(start_date, end_date):
+
+    start_date = start_date or datetime.datetime.now().strftime('%Y-%m-%d')
+    start_date += " 00:00:00"
+    start_date = datetime.datetime.strptime(start_date, '%Y-%m-%d %H:%M:%S')
+    end_date = end_date or datetime.datetime.now().strftime('%Y-%m-%d')
+    end_date += " 23:59:59"
+    end_date = datetime.datetime.strptime(end_date, '%Y-%m-%d %H:%M:%S')
+
+    return start_date, end_date
+
 
 class DictLikeObject(dict):
 

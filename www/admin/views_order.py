@@ -94,13 +94,9 @@ def search(request):
     data = []
 
     start_date = request.POST.get('start_date')
-    start_date = start_date or datetime.datetime.now().strftime('%Y-%m-%d')
-    start_date += " 00:00:00"
-    start_date = datetime.datetime.strptime(start_date, '%Y-%m-%d %H:%M:%S')
-    end_date = request.POST.get('end_date', datetime.datetime.now().strftime('%Y-%m-%d'))
-    end_date = end_date or datetime.datetime.now().strftime('%Y-%m-%d')
-    end_date += " 23:59:59"
-    end_date = datetime.datetime.strptime(end_date, '%Y-%m-%d %H:%M:%S')
+    end_date = request.POST.get('end_date')
+    start_date, end_date = utils.get_date_range(start_date, end_date)
+
     state = request.POST.get('state', '-1')
     state = int(state)
     order_no = request.POST.get('order_no')
@@ -228,12 +224,7 @@ def purchase(request, template_name='pc/admin/purchase.html'):
 
 def _get_purchase_data(start_date, end_date, state, show_order=False):
 
-    start_date = start_date or datetime.datetime.now().strftime('%Y-%m-%d')
-    start_date += " 00:00:00"
-    start_date = datetime.datetime.strptime(start_date, '%Y-%m-%d %H:%M:%S')
-    end_date = end_date or datetime.datetime.now().strftime('%Y-%m-%d')
-    end_date += " 23:59:59"
-    end_date = datetime.datetime.strptime(end_date, '%Y-%m-%d %H:%M:%S')
+    start_date, end_date = utils.get_date_range(start_date, end_date)
     state = int(state)
 
     data = OrderBase().get_purchase(start_date, end_date, state)

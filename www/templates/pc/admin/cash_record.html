@@ -43,17 +43,21 @@ $(document).ready(function(){
         },
 
         // 查询
-        search: function(name, pageIndex){
+        search: function(start_date, end_date, name, pageIndex){
             var me = this,
+                start_date = start_date||'{{start_date}}',
+                end_date = end_date||'',
                 name = name||'',
                 pageIndex = pageIndex||1;
 
             ajaxSend(
                 "/admin/cash_record/search", 
-                {'name': name||'', 'page_index': pageIndex}, 
+                {'start_date': start_date, 'end_date': end_date, 'name': name, 'page_index': pageIndex}, 
                 function(data){
                     me.pageIndex = pageIndex;
                     me.pageCount = data.page_count;
+                    me.start_date = start_date;
+                    me.end_date = end_date;
                     me.name = name;
 
                     me.reset($.Global.Utils.dictMapParse(data.data, me._modelMaps));
@@ -103,7 +107,7 @@ $(document).ready(function(){
             this.pagination.render(
                 this.collection.pageIndex||1, 
                 this.collection.pageCount, 
-                'search/' + this.collection.nick
+                String.format('search/{0}/{1}/{2}', this.collection.startDate, this.collection.endDate, this.collection.name)
             );
         },
 
@@ -113,9 +117,11 @@ $(document).ready(function(){
         },
 
         search: function(){
-            var nick = this.$('.key-word').val();
+            var startDate = this.$('#start_date_search').val(),
+                endDate = this.$('#end_date_search').val(),
+                name = this.$('.name').val();
 
-            router.navigate(String.format('/search/{0}/1', nick), {trigger: true});
+            router.navigate(String.format('/search/{0}/{1}/{2}/1', startDate, endDate, name), {trigger: true});
         }
 
     });
@@ -194,12 +200,12 @@ $(document).ready(function(){
         routes: {
             "":                     "search",
             'add': 'add',
-            "search/(:nick)/:pageIndex":    "search",
+            "search/(:start_date)/(:end_date)/(:name)/:pageIndex":    "search",
         },
 
         // 查询
-        search: function(nick, pageIndex){
-            records.search(nick||'', pageIndex||1);
+        search: function(start_date, end_date, name, pageIndex){
+            records.search(start_date, end_date, name, pageIndex);
         },
 
         add: function(){
@@ -215,6 +221,20 @@ $(document).ready(function(){
         router = new Router();
  
     Backbone.history.start();
+
+    $('#start_date_search').datetimepicker({
+        format: 'yyyy-mm-dd',
+        language: 'zh-CN',
+        minView: 2,
+        autoclose: true
+    });
+
+    $('#end_date_search').datetimepicker({
+        format: 'yyyy-mm-dd',
+        language: 'zh-CN',
+        minView: 2,
+        autoclose: true
+    });
 
 });
 
@@ -242,14 +262,21 @@ $(document).ready(function(){
 <div class="tab-content">
     <!-- 客户经理列表 -->
     <div class="tab-pane fade pt-15 in active" id="record_list">
-        <form action="." onsubmit="javascript: return false;">
-            <div class="pl-0 pb-10 col-md-3">
-                <div class="input-group input-group-sm">
-                    <input type="text" class="form-control border-radius-0 key-word" placeholder="输入公司名称..." />
-                    <span class="input-group-btn">
-                        <button class="btn btn-default search" type="submit">查询</button>
-                    </span>
-                </div>
+        <form action="." class="form-inline" onsubmit="javascript: return false;">
+            <div class="input-group input-group-sm pb-10">
+                <span class="input-group-addon">开始日期</span>
+                <input type="text" class="form-control" id="start_date_search" value="{{start_date}}"  />
+            </div>
+            <div class="input-group input-group-sm pb-10">
+                <span class="input-group-addon">结束日期</span>
+                <input type="text" class="form-control" id="end_date_search" value="{{end_date}}"  />
+            </div>
+            <div class="input-group input-group-sm pb-10">
+                <span class="input-group-addon">公司名称</span>
+                <input type="text" class="form-control name" placeholder="" />
+                <span class="input-group-btn">
+                    <button class="btn btn-default search bgc-eeeeee" type="submit">查询</button>
+                </span>
             </div>
         </form>
         <table class="table table-hover">
@@ -287,9 +314,9 @@ $(document).ready(function(){
             <td><%= record.balance %></td>
             <td>
                 <% if(record.operation == 0){ %>
-                    <span class="co-19BA40">资金转入</span>
+                    <span class="co-19BA40">转入</span>
                 <% } else { %>
-                    <span class="co-C33333">资金转出</span>
+                    <span class="co-C33333">转出</span>
                 <% } %>
             </td>
             <td><%= record.value %></td>
