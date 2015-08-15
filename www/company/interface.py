@@ -529,20 +529,23 @@ class OrderBase(object):
             obj.confirm_time = datetime.datetime.now()
             obj.save()
 
-            # 操作账户
-            code, msg = CashRecordBase().add_cash_record(
-                obj.company_id, 
-                obj.total_price, 
-                1,
-                u"订单「%s」确认" % obj.order_no,
-                ip
-            )
-
-            if code == 0:
+            # 试吃订单不操作账户
+            if obj.is_test:
                 transaction.commit()
             else:
-                transaction.rollback()
-                return code, dict_err.get(code)
+                code, msg = CashRecordBase().add_cash_record(
+                    obj.company_id, 
+                    obj.total_price, 
+                    1,
+                    u"订单「%s」确认" % obj.order_no,
+                    ip
+                )
+
+                if code == 0:
+                    transaction.commit()
+                else:
+                    transaction.rollback()
+                    return code, dict_err.get(code)
 
         except Exception, e:
             transaction.rollback()
