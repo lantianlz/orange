@@ -284,10 +284,9 @@ $(document).ready(function(){
                 <tr>
                     <th>#</th>
                     <th>公司</th>
-                    <th>最新余额</th>
                     <th>操作类型</th>
                     <th>操作金额</th>
-                    <th>当时余额</th>
+                    <th>余额</th>
                     <th>操作时间</th>
                     <th>备注</th>
                 </tr>
@@ -311,7 +310,6 @@ $(document).ready(function(){
         <tr class="pointer" data-record_id="<%= record.recordId %>">
             <td><%= record.num %></td>
             <td><%= record.companyName %></td>
-            <td><%= record.balance %></td>
             <td>
                 <% if(record.operation == 0){ %>
                     <span class="co-19BA40">充值</span>
@@ -319,7 +317,13 @@ $(document).ready(function(){
                     <span class="co-C33333">消费</span>
                 <% } %>
             </td>
-            <td><%= record.value %></td>
+            <td>
+                <% if(record.operation == 0){ %>
+                    <span class="co-19BA40">+<%= record.value %></span>
+                <% } else { %>
+                    <span class="co-C33333">-<%= record.value %></span>
+                <% } %>
+            </td>
             <td><%= record.currentBalance %></td>
             <td><%= record.createTime %></td>
             <td><%= record.notes %></td>
@@ -362,7 +366,7 @@ $(document).ready(function(){
                     <div class="form-group pt-20 pb-20 mb-0">
                         <label class="col-sm-2 control-label">备注</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control" name="notes" value=''>
+                            <input type="text" required class="form-control" name="notes" value=''>
                         </div>
                     </div>
                 </form>

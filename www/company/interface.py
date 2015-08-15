@@ -822,9 +822,6 @@ class CashRecordBase(object):
                 content = u'账户「%s」已达最大透支额' % (account.company.name)
                 async_send_email("vip@3-10.cc", title, content)
 
-            # 当前余额
-            current_balance = account.balance
-
             if operation == 0:
                 account.balance += value
             elif operation == 1:
@@ -834,7 +831,7 @@ class CashRecordBase(object):
             CashRecord.objects.create(
                 cash_account = account, 
                 value = value, 
-                current_balance = current_balance,
+                current_balance = account.balance,
                 operation = operation, 
                 notes = notes, 
                 ip = ip
