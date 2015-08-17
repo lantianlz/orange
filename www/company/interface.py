@@ -790,7 +790,7 @@ class CashRecordBase(object):
             if to_user_openid:
                 WeixinBase().send_balance_insufficient_template_msg(
                     to_user_openid, u"账户已达「%s」元最高透支额，请联系充值" % max_overdraft, 
-                    company.name, balance + u" 元", 
+                    company.name, u"%s 元" % balance, 
                     u"感谢您的支持，祝工作愉快"
                 )
 
