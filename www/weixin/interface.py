@@ -356,6 +356,35 @@ class WeixinBase(object):
 
         return self.send_template_msg(app_key, openid, content, template_id)
 
+    def send_balance_insufficient_template_msg(self, openid, info, name, balance, remark, app_key=None):
+        '''
+        发送余额不足通知
+        '''
+        template_id = "uw0DFAED4ajczOZVUNHPAz3BKtSlgb8NUcb4F8FtEIc"
+        app_key = app_key or self.init_app_key()
+        content = u'''
+         {
+            "first": {
+                "value":"%(info)s",
+                "color":"#EF7B32"
+            },
+            "name": {
+                "keyword1":"%(name)s",
+                "color":"#000000"
+            },
+            "time":{
+                "keyword2":"%(balance)s",
+                "color":"#000000"
+            },
+            "remark":{
+                "value":"%(remark)s",
+                "color":"#000000"
+            }
+         }
+        ''' % dict(info=info, name=name, balance=balance, remark=remark)
+
+        return self.send_template_msg(app_key, openid, content, template_id)
+
     def get_weixin_jsapi_ticket(self, app_key):
         # 本地调试模式不走缓存
         if not settings.LOCAL_FLAG:
@@ -409,7 +438,3 @@ class Sign(object):
         self.ret['signature'] = hashlib.sha1(string).hexdigest()
         return self.ret
 
-if __name__ == '__main__':
-    # 注意 URL 一定要动态获取，不能 hardcode
-    sign = Sign('jsapi_ticket', 'http://example.com')
-    print sign.sign()
