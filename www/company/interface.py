@@ -13,7 +13,7 @@ from common import utils, debug, validators, cache, raw_sql
 from www.misc.decorators import cache_required
 from www.misc import consts
 
-from www.account.interface import UserBase
+from www.account.interface import UserBase, ExternalTokenBase
 from models import Item, Company, Meal, MealItem, Order, OrderItem, Booking, CompanyManager, CashAccount, CashRecord
 
 DEFAULT_DB = 'default'
@@ -731,6 +731,9 @@ class CompanyManagerBase(object):
 
         return 0, dict_err.get(0)
 
+    def get_managers_by_company(self, company_id):
+        return CompanyManager.objects.filter(company_id = company_id)
+
 
 class CashAccountBase(object):
 
@@ -770,6 +773,23 @@ class CashAccountBase(object):
 
 
 class CashRecordBase(object):
+
+    def send_notice(self, company, balance, max_overdraft):
+        # 发送邮件提醒
+        from www.tasks import async_send_email
+        title = u'账户已达最高透支额'
+        content = u'账户「%s」当前余额「%s」元，已达「%s」元最高透支额，请联系充值' % (company.name, balance, max_overdraft)
+        async_send_email("vip@3-10.cc", title, content)
+
+        # 发送微信提醒
+        for manager in CompanyManager.get_managers_by_company(company.id):
+            
+            to_user_appid = ExternalTokenBase().get_weixin_openid_by_user_id(manager.user_id)
+            wb.send_balance_insufficient_template_msg(
+                to_user_appid, u"账户已达「%s」元最高透支额，请联系充值" % max_overdraft, 
+                company.name, balance + u" 元", 
+                u"感谢您的支持，祝工作愉快"
+            )
 
     def get_all_records(self):
         return CashRecord.objects.all()
@@ -814,13 +834,9 @@ class CashRecordBase(object):
 
             account, created = CashAccount.objects.get_or_create(company_id=company_id)
 
-            # 转出时判断是否超过透支额  发送邮件提醒
+            # 转出时判断是否超过透支额  发送提醒
             if operation == 1 and abs(account.balance - value) >= account.max_overdraft:
-
-                from www.tasks import async_send_email
-                title = u'账户已达最高透支额'
-                content = u'账户「%s」当前余额「%s」元，已达「%s」元最高透支额，请联系充值' % (account.company.name, account.balance - value, account.max_overdraft)
-                async_send_email("vip@3-10.cc", title, content)
+                self.send_notice(account.company, account.balance - value, account.max_overdraft)
 
             if operation == 0:
                 account.balance += value
