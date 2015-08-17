@@ -368,12 +368,12 @@ class WeixinBase(object):
                 "value":"%(info)s",
                 "color":"#EF7B32"
             },
-            "name": {
-                "keyword1":"%(name)s",
+            "keyword1": {
+                "value":"%(name)s",
                 "color":"#000000"
             },
-            "time":{
-                "keyword2":"%(balance)s",
+            "keyword2":{
+                "value":"%(balance)s",
                 "color":"#000000"
             },
             "remark":{
