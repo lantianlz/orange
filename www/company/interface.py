@@ -372,6 +372,17 @@ class MealBase(object):
 
         return objs[:10]
 
+    def get_meal_by_company(self, company_id):
+        objs = self.get_all_meal(True).filter(company_id=company_id)
+        if objs:
+            return objs[0]
+
+    def get_items_of_meal(self, meal_id):
+        '''
+        获取订单下的项目
+        '''
+        return MealItem.objects.select_related('item').filter(meal_id=meal_id)
+
 
 class OrderBase(object):
 
@@ -598,6 +609,23 @@ class OrderBase(object):
             'item__name', 'amount',
             'item__spec', 'item__item_type'
         )
+
+        return objs
+
+
+    def search_orders_for_company(self, company_id, start_date, end_date, order_no):
+        '''
+        公司平台查询订单
+        '''
+        objs = Order.objects.filter(
+            company_id = company_id,
+            state__in=(1, 2, 3)
+        )
+
+        if order_no:
+            objs = objs.filter(order_no=order_no)
+        else:
+            objs = objs.filter(create_time__range=(start_date, end_date))
 
         return objs
 

@@ -201,7 +201,7 @@ def print_order(request, template_name='pc/admin/print_order.html'):
             'name': item.item.name,
             'amount': item.amount if item.item.integer == 2 else int(item.amount), # 非水果类 数量转为int
             'spec': item.item.get_spec_display(),
-            'type': item.item.get_item_type_display
+            'type': item.item.get_item_type_display()
         })
 
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))

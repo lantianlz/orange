@@ -200,3 +200,26 @@ def log_sensitive_operation(func):
         return func(request, *args, **kwargs)
 
     return wrapper
+
+
+def company_manager_required_for_request(func):
+    """
+    @note: 过滤器, 公司平台使用
+    """
+    def _decorator(request, company_id, *args, **kwargs):
+        from www.company.interface import CompanyBase, CompanyManagerBase
+
+        company = CompanyBase().get_company_by_id(company_id)
+        if not company:
+            raise Http404
+
+        is_cm = CompanyManagerBase().check_user_is_cm(company.id, request.user)
+        if not is_cm:
+            if request.is_ajax():
+                return HttpResponse('{}')
+            err_msg = u'权限不足，你还不是公司管理员，如有疑问请联系三点十分客服'
+            return render_to_response('error.html', locals(), context_instance=RequestContext(request))
+
+        request.company = company
+        return func(request, company_id, *args, **kwargs)
+    return _decorator
