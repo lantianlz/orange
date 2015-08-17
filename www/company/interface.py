@@ -782,7 +782,7 @@ class CashRecordBase(object):
         async_send_email("vip@3-10.cc", title, content)
 
         # 发送微信提醒
-        for manager in CompanyManager.get_managers_by_company(company.id):
+        for manager in CompanyManager().get_managers_by_company(company.id):
             
             to_user_appid = ExternalTokenBase().get_weixin_openid_by_user_id(manager.user_id)
             wb.send_balance_insufficient_template_msg(
