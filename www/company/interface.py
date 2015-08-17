@@ -782,12 +782,13 @@ class CashRecordBase(object):
         async_send_email("vip@3-10.cc", title, content)
 
         # 发送微信提醒
+        from weixin.interface import WeixinBase
         for manager in CompanyManagerBase().get_managers_by_company(company.id):
             
             to_user_openid = ExternalTokenBase().get_weixin_openid_by_user_id(manager.user_id)
 
             if to_user_openid:
-                wb.send_balance_insufficient_template_msg(
+                WeixinBase().send_balance_insufficient_template_msg(
                     to_user_openid, u"账户已达「%s」元最高透支额，请联系充值" % max_overdraft, 
                     company.name, balance + u" 元", 
                     u"感谢您的支持，祝工作愉快"
