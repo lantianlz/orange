@@ -28,19 +28,22 @@ def main():
     to_user = 'oZy3hskE524Y2QbLgY2h3VnI3Im8'
 
     app_key = "orange"
-    to_user = 'oNYsJj1eg4fnU4tKLvH-f2IXlxJ4'
-    content = (u'古人云：鸟随鸾凤飞腾远，人伴贤良品质高。\n')
+    to_user = 'odZBHxIYA_4vMMzeUU-2QU3NyAa4'
+    # content = (u'古人云：鸟随鸾凤飞腾远，人伴贤良品质高。\n')
 
     # print wb.send_msg_to_weixin(content, to_user, app_key)
 
-    context = {'reset_url': '%s/reset_password?code=%s' % (settings.MAIN_DOMAIN, "123"), }
-    print async_send_email("web@3-10.cc", u'来自三点十分', utils.render_email_template('email/reset_password.html', context), 'html')
+    # context = {'reset_url': '%s/reset_password?code=%s' % (settings.MAIN_DOMAIN, "123"), }
+    # print async_send_email("web@3-10.cc", u'来自三点十分', utils.render_email_template('email/reset_password.html', context), 'html')
 
     # pprint(wb.get_user_info(app_key, to_user))
     # pprint(wb.get_qr_code_ticket(app_key))
     # pprint(wb.send_buy_success_template_msg(to_user, name=u"三点十分行洗车码", remark=u"洗车码1: 0098 6543 1221   洗车码2: 7788 9954 1432", app_key=app_key))
     # pprint(wb.send_use_order_code_template_msg(to_user, product_type=u"消费项目", name=u"三点十分行", time=u"2013年8月20日 20:38",
     #                                            remark=u"洗车码「0280 1041 3114」已成功使用，欢迎再次购买", app_key=app_key))
+    
+    print wb.send_balance_insufficient_template_msg(
+        to_user, u"账户已达「1000」最高透支额，请及时充值", u"成都大橙科技有限公司", u"-1001", u"感谢您的支持，祝工作愉快")
 
 
 if __name__ == '__main__':

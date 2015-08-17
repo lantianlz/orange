@@ -13,7 +13,7 @@ from common import utils, debug, validators, cache, raw_sql
 from www.misc.decorators import cache_required
 from www.misc import consts
 
-from www.account.interface import UserBase
+from www.account.interface import UserBase, ExternalTokenBase
 from models import Item, Company, Meal, MealItem, Order, OrderItem, Booking, CompanyManager, CashAccount, CashRecord
 
 DEFAULT_DB = 'default'
@@ -39,6 +39,7 @@ dict_err = {
     20702: u'账户余额不足',
 }
 dict_err.update(consts.G_DICT_ERROR)
+
 
 class ItemBase(object):
 
@@ -67,18 +68,18 @@ class ItemBase(object):
 
         if Item.objects.filter(name=name):
             return 20101, dict_err.get(20101)
-        
+
         try:
             item = Item.objects.create(
-                name = name,
-                item_type = item_type,
-                spec = spec,
-                price = price,
-                sort = sort,
-                integer = integer,
-                sale_price = sale_price,
-                init_add = init_add,
-                code = self.generate_item_code(item_type)
+                name=name,
+                item_type=item_type,
+                spec=spec,
+                price=price,
+                sort=sort,
+                integer=integer,
+                sale_price=sale_price,
+                init_add=init_add,
+                code=self.generate_item_code(item_type)
             )
 
         except Exception, e:
@@ -89,13 +90,13 @@ class ItemBase(object):
 
     def search_items_for_admin(self, item_type, name):
         objs = self.get_all_item()
-        
+
         if item_type != -1:
             objs = objs.filter(item_type=item_type)
 
         if name:
             objs = objs.filter(name__contains=name)
-        
+
         return objs
 
     def get_item_by_id(self, item_id):
@@ -107,7 +108,7 @@ class ItemBase(object):
         return obj
 
     def modify_item(self, item_id, name, item_type, spec, price, sort, state, integer, sale_price, init_add):
-        
+
         if not (name and item_type and price):
             return 99800, dict_err.get(99800)
 
@@ -139,10 +140,10 @@ class ItemBase(object):
 
     def get_items_by_name(self, name):
         objs = self.get_all_item(True)
-        
+
         if name:
             objs = objs.filter(name__contains=name)
-        
+
         return objs
 
     def get_init_add_items(self):
@@ -189,16 +190,16 @@ class CompanyBase(object):
 
         try:
             obj = Company.objects.create(
-                name = name,
-                staff_name = staff_name,
-                mobile = mobile,
-                tel = tel,
-                addr = addr,
-                city_id = city_id,
-                sort = sort,
-                des = des,
-                person_count = person_count,
-                invite_by = invite.id if invite else None
+                name=name,
+                staff_name=staff_name,
+                mobile=mobile,
+                tel=tel,
+                addr=addr,
+                city_id=city_id,
+                sort=sort,
+                des=des,
+                person_count=person_count,
+                invite_by=invite.id if invite else None
             )
 
             # 创建公司对应的账户
@@ -224,7 +225,7 @@ class CompanyBase(object):
         invite = None
         if invite_by:
             invite = UserBase().get_user_by_id(invite_by)
-            
+
         try:
             obj.name = name
             obj.staff_name = staff_name
@@ -241,7 +242,7 @@ class CompanyBase(object):
         except Exception, e:
             debug.get_debug_detail_and_send_email(e)
             return 99900, dict_err.get(99900)
-        
+
         return 0, dict_err.get(0)
 
     def get_companys_by_name(self, name=""):
@@ -251,6 +252,7 @@ class CompanyBase(object):
             objs = objs.filter(name__contains=name)
 
         return objs[:10]
+
 
 class MealBase(object):
 
@@ -265,22 +267,22 @@ class MealBase(object):
         try:
             # 套餐
             meal = Meal.objects.create(
-                company_id = company_id,
-                name = name,
-                price = price,
-                start_date = start_date,
-                end_date = end_date,
-                des = des
+                company_id=company_id,
+                name=name,
+                price=price,
+                start_date=start_date,
+                end_date=end_date,
+                des=des
             )
 
             # 套餐下的项目
             for x in meal_items:
                 MealItem.objects.create(
-                    meal = meal,
-                    item_id = x['item_id'],
-                    amount = x['amount']
+                    meal=meal,
+                    item_id=x['item_id'],
+                    amount=x['amount']
                 )
-            
+
             transaction.commit(using=DEFAULT_DB)
 
         except Exception, e:
@@ -321,11 +323,11 @@ class MealBase(object):
 
             for x in meal_items:
                 MealItem.objects.create(
-                    meal = obj,
-                    item_id = x['item_id'],
-                    amount = x['amount']
+                    meal=obj,
+                    item_id=x['item_id'],
+                    amount=x['amount']
                 )
-            
+
             transaction.commit(using=DEFAULT_DB)
 
         except Exception, e:
@@ -370,6 +372,7 @@ class MealBase(object):
 
         return objs[:10]
 
+
 class OrderBase(object):
 
     def generate_order_no(self, pr):
@@ -383,11 +386,11 @@ class OrderBase(object):
 
     @transaction.commit_manually(using=DEFAULT_DB)
     def add_order(self, meal_id, create_operator, total_price, order_items, is_test=False, note=''):
-        
+
         if not (meal_id and create_operator and total_price and order_items):
             return 99800, dict_err.get(99800)
 
-        meal = MealBase().get_meal_by_id(meal_id)            
+        meal = MealBase().get_meal_by_id(meal_id)
         if not meal:
             return 20302, dict_err.get(20302)
 
@@ -395,16 +398,16 @@ class OrderBase(object):
             return 20202, dict_err.get(20202)
 
         try:
-            
+
             # 订单
             obj = Order.objects.create(
-                meal_id = meal.id,
-                company_id = meal.company_id,
-                order_no = self.generate_order_no("T"),
-                create_operator = create_operator,
-                total_price = total_price,
-                is_test = is_test,
-                note = note
+                meal_id=meal.id,
+                company_id=meal.company_id,
+                order_no=self.generate_order_no("T"),
+                create_operator=create_operator,
+                total_price=total_price,
+                is_test=is_test,
+                note=note
             )
 
             temp = decimal.Decimal(0)
@@ -418,15 +421,15 @@ class OrderBase(object):
                 temp += item.price * decimal.Decimal(x['amount'])
 
                 OrderItem.objects.create(
-                    order = obj,
-                    item_id = x['item_id'],
-                    amount = x['amount'],
-                    price = item.price,
-                    sale_price = item.sale_price,
-                    total_price = item.price * decimal.Decimal(x['amount']),
-                    total_sale_price = item.sale_price * decimal.Decimal(x['amount'])
+                    order=obj,
+                    item_id=x['item_id'],
+                    amount=x['amount'],
+                    price=item.price,
+                    sale_price=item.sale_price,
+                    total_price=item.price * decimal.Decimal(x['amount']),
+                    total_sale_price=item.sale_price * decimal.Decimal(x['amount'])
                 )
-            
+
             # 计算毛利
             obj.cost_price = temp
             obj.save()
@@ -456,13 +459,13 @@ class OrderBase(object):
             # 是否查询所有有效订单
             if state == -2:
                 objs = Order.objects.filter(
-                    state__in = (1, 2, 3)
+                    state__in=(1, 2, 3)
                 )
             else:
                 objs = self.get_all_order(state)
 
             objs = objs.filter(
-                create_time__range = (start_date, end_date)
+                create_time__range=(start_date, end_date)
             )
 
         return objs
@@ -470,19 +473,19 @@ class OrderBase(object):
     def search_uncreate_orders_for_admin(self, start_date, end_date):
         # 查询出日期需要配送的套餐
         objs = MealBase().get_all_meal(state=1).filter(
-            end_date__gt = end_date
+            end_date__gt=end_date
         )
         meal_ids = [x.id for x in objs]
 
         # 查询日期已经配送的订单
         orders = Order.objects.filter(
-            create_time__range = (start_date, end_date),
+            create_time__range=(start_date, end_date),
             meal_id__in = meal_ids
         ).exclude(state=0)
         except_meal_ids = [x.meal_id for x in orders]
 
         # 排除掉已经送出的订单
-        objs = objs.exclude(id__in = except_meal_ids)
+        objs = objs.exclude(id__in=except_meal_ids)
 
         return objs
 
@@ -513,7 +516,6 @@ class OrderBase(object):
 
         return 0, dict_err.get(0)
 
-
     @transaction.commit_manually(using=DEFAULT_DB)
     def confirm_order(self, order_id, confirm_operator, ip=None):
         '''
@@ -534,8 +536,8 @@ class OrderBase(object):
                 transaction.commit()
             else:
                 code, msg = CashRecordBase().add_cash_record(
-                    obj.company_id, 
-                    obj.total_price, 
+                    obj.company_id,
+                    obj.total_price,
                     1,
                     u"订单「%s」确认" % obj.order_no,
                     ip
@@ -582,17 +584,17 @@ class OrderBase(object):
 
         states = []
         # 是否查询所有有效订单
-        if state == -2: 
+        if state == -2:
             states = [1, 2, 3]
         else:
             states = [state]
 
         objs = OrderItem.objects.select_related('order', 'item', 'order__company').filter(
-            order__state__in = states,
-            order__create_time__range = (start_date, end_date)
+            order__state__in=states,
+            order__create_time__range=(start_date, end_date)
         ).values(
-            'order__order_no', 'order__create_time', 
-            'order__company__name', 'item__code', 
+            'order__order_no', 'order__create_time',
+            'order__company__name', 'item__code',
             'item__name', 'amount',
             'item__spec', 'item__item_type'
         )
@@ -625,11 +627,11 @@ class BookingBase(object):
 
         try:
             obj = Booking.objects.create(
-                company_name = company_name,
-                staff_name = staff_name,
-                mobile = mobile,
-                source = source,
-                invite_by = invite.id if invite else None
+                company_name=company_name,
+                staff_name=staff_name,
+                mobile=mobile,
+                source=source,
+                invite_by=invite.id if invite else None
             )
 
             # 发送邮件提醒
@@ -729,9 +731,12 @@ class CompanyManagerBase(object):
 
         return 0, dict_err.get(0)
 
+    def get_managers_by_company(self, company_id):
+        return CompanyManager.objects.filter(company_id = company_id)
 
 
 class CashAccountBase(object):
+
     '''
     '''
 
@@ -752,7 +757,6 @@ class CashAccountBase(object):
         except CashAccount.DoesNotExist:
             return ''
 
-
     def modify_cash_account(self, account_id, max_overdraft):
 
         obj = self.get_cash_account_by_id(account_id)
@@ -768,14 +772,33 @@ class CashAccountBase(object):
         return 0, dict_err.get(0)
 
 
-
 class CashRecordBase(object):
+
+    def send_notice(self, company, balance, max_overdraft):
+        # 发送邮件提醒
+        from www.tasks import async_send_email
+        title = u'账户已达最高透支额'
+        content = u'账户「%s」当前余额「%s」元，已达「%s」元最高透支额，请联系充值' % (company.name, balance, max_overdraft)
+        async_send_email("vip@3-10.cc", title, content)
+
+        # 发送微信提醒
+        from weixin.interface import WeixinBase
+        for manager in CompanyManagerBase().get_managers_by_company(company.id):
+            
+            to_user_openid = ExternalTokenBase().get_weixin_openid_by_user_id(manager.user_id)
+
+            if to_user_openid:
+                WeixinBase().send_balance_insufficient_template_msg(
+                    to_user_openid, u"账户已达「%s」元最高透支额，请联系充值" % max_overdraft, 
+                    company.name, u"%s 元" % balance, 
+                    u"感谢您的支持，祝工作愉快"
+                )
 
     def get_all_records(self):
         return CashRecord.objects.all()
 
     def get_records_for_admin(self, start_date, end_date, name):
-        objs = self.get_all_records().filter(create_time__range = (start_date, end_date))
+        objs = self.get_all_records().filter(create_time__range=(start_date, end_date))
 
         if name:
             objs = objs.filter(cash_account__company__name__contains=name)
@@ -814,13 +837,9 @@ class CashRecordBase(object):
 
             account, created = CashAccount.objects.get_or_create(company_id=company_id)
 
-            # 转出时判断是否超过透支额  发送邮件提醒
+            # 转出时判断是否超过透支额  发送提醒
             if operation == 1 and abs(account.balance - value) >= account.max_overdraft:
-                
-                from www.tasks import async_send_email
-                title = u'账户已达最大透支额'
-                content = u'账户「%s」已达最大透支额' % (account.company.name)
-                async_send_email("vip@3-10.cc", title, content)
+                self.send_notice(account.company, account.balance - value, account.max_overdraft)
 
             if operation == 0:
                 account.balance += value
@@ -829,37 +848,15 @@ class CashRecordBase(object):
             account.save()
 
             CashRecord.objects.create(
-                cash_account = account, 
-                value = value, 
-                current_balance = account.balance,
-                operation = operation, 
-                notes = notes, 
-                ip = ip
+                cash_account=account,
+                value=value,
+                current_balance=account.balance,
+                operation=operation,
+                notes=notes,
+                ip=ip
             )
 
             return 0, dict_err.get(0)
         except Exception, e:
             debug.get_debug_detail_and_send_email(e)
             return 99900, dict_err.get(99900)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
