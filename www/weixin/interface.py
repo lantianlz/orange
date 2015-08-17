@@ -281,15 +281,13 @@ class WeixinBase(object):
             debug.get_debug_detail(e)
         return result
 
-    def send_template_msg(self, app_key, openid, content, template_id):
+    def send_template_msg(self, app_key, openid, content, template_id, jump_url=''):
         """
         @note: 发送模板消息
         """
         access_token = self.get_weixin_access_token(app_key)
         url = '%s/cgi-bin/message/template/send?access_token=%s' % (weixin_api_url, access_token)
-        jump_url = ('https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx23cca542b396c669&redirect_uri='
-                    'http%3A%2F%2Fwww.3-10.cc%2Faccount%2Foauth%2Fweixin&response_type=code&scope=snsapi_base&state=order_code#wechat_redirect'
-                    )
+        
         data = u'''
         {
            "touser":"%(openid)s",
