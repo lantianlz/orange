@@ -23,13 +23,6 @@
 {% block base_js %}
 <script type="text/javascript">
 $(document).ready(function(){
-	// ajaxSend(
- //        "/admin/purchase/get_purchase", 
- //        $.Global.Utils.formToDict($('form')), 
- //        function(data){
- //            renderData(data);
- //        }
- //    );
 
 	// 渲染数据
     var types = {{types_json|safe}},
@@ -37,7 +30,7 @@ $(document).ready(function(){
 
         // 添加项目
         addItem = function(code, name, amount, spec, itemType){
-            console.log(code, name, amount, spec, itemType)
+            
             $(String.format([
                 '<tr>',
                     '<td>{0}</td>',

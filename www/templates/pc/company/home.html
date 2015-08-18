@@ -86,23 +86,23 @@ $(document).ready(function(){
     <div class="frame-left">
         <div class="co-ffffff pr pt-20 pb-20">
             <a href="/" target="_blank">
-                <img class="pa" style="left: 10px; top: 22px; width: 50px; " src="http://static.3-10.cc/img/logo.png">
+                <img class="pa" style="left: 10px; top: 22px; width: 50px;" src="http://static.3-10.cc/img/logo.png">
             </a>
             <div class="f20 pl-65 fb">三点十分 公司平台</div>
             <div class="f14 pl-65 pt-5 company-name">{{request.company.name}}</div>
         </div>
         <ul class="list-group p-nav">
+            <li class="list-group-item {% if '/record' in request.path %}active{% endif %}">
+                <a href="/company/{{request.company.id}}/record"><i class="fa fa-list pr-3"></i>账户余额</a>
+            </li>
+            <li class="list-group-item {% if '/deposit' in request.path %}active{% endif %}">
+                <a href="/company/{{request.company.id}}/deposit"><i class="fa fa-credit-card pr-3"></i>账户充值</a>
+            </li>
             <li class="list-group-item {% if '/orders' in request.path %}active{% endif %}">
                 <a href="/company/{{request.company.id}}/orders"><i class="fa fa-list-alt pr-3"></i>我的订单</a>
             </li>
             <li class="list-group-item {% if '/meal' in request.path %}active{% endif %}">
                 <a href="/company/{{request.company.id}}/meal"><i class="fa fa-archive pr-3"></i>我的套餐</a>
-            </li>
-            <li class="list-group-item {% if '/deposit' in request.path %}active{% endif %}">
-                <a href="/company/{{request.company.id}}/deposit"><i class="fa fa-credit-card pr-3"></i>账户充值</a>
-            </li>
-            <li class="list-group-item {% if '/record' in request.path %}active{% endif %}">
-                <a href="/company/{{request.company.id}}/record"><i class="fa fa-list pr-3"></i>账户流水</a>
             </li>
             <li class="list-group-item {% if '/feedback' in request.path %}active{% endif %}">
                 <a href="/company/{{request.company.id}}/feedback"><i class="fa fa-weixin pr-3"></i>意见反馈</a>

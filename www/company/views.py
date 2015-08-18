@@ -9,9 +9,10 @@ from django.shortcuts import render_to_response
 
 from common import utils, page
 from misc.decorators import common_ajax_response, member_required, company_manager_required_for_request
-from www.company.interface import BookingBase, CompanyManagerBase, MealBase, OrderBase
+from www.company.interface import BookingBase, CompanyManagerBase, MealBase, OrderBase, CashRecordBase, CashAccountBase
 from www.account.interface import UserBase
 from www.weixin.interface import WeixinBase, Sign
+from www.company.models import Item
 
 
 def booking(request, template_name='mobile/booking.html'):
@@ -51,7 +52,7 @@ def index(request):
     # 判断是否是公司管理员
     cm = CompanyManagerBase().get_cm_by_user_id(request.user.id)
     if cm:
-        return HttpResponseRedirect("/company/%s/orders" % cm.company.id)
+        return HttpResponseRedirect("/company/%s/record" % cm.company.id)
 
     err_msg = u'权限不足，你还不是公司管理员，如有疑问请联系三点十分客服'
     return render_to_response('error.html', locals(), context_instance=RequestContext(request))
@@ -87,16 +88,20 @@ def format_order(objs, num):
         })
 
     return data
+
 @member_required
 @company_manager_required_for_request
 def orders(request, company_id, template_name='pc/company/orders.html'):
 
-    start_date = request.REQUEST.get('start_date')
+    types = [{'value': x[0], 'name': x[1]} for x in Item.type_choices]
+
+    now = datetime.datetime.now()
+    start_date = request.REQUEST.get('start_date', now.replace(day=1).strftime('%Y-%m-%d'))
     end_date = request.REQUEST.get('end_date')
     start_date, end_date = utils.get_date_range(start_date, end_date)
     order_no = request.REQUEST.get('order_no')
     
-    objs = OrderBase().search_orders_for_company(company_id, start_date, end_date, order_no)
+    objs = OrderBase().search_orders_by_company(company_id, start_date, end_date, order_no)
 
     page_index = int(request.REQUEST.get('page', 1))
     page_objs = page.Cpt(objs, count=10, page=page_index).info
@@ -106,6 +111,32 @@ def orders(request, company_id, template_name='pc/company/orders.html'):
     data = format_order(page_objs[0], num)
 
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
+
+def format_item(objs, num):
+    data = []
+
+    for x in objs:
+        num += 1
+
+        data.append({
+            'num': num,
+            'code': x.item.code,
+            'name': x.item.name,
+            'amount': x.amount if x.item.integer == 2 else int(x.amount), # 非水果类 数量转为int
+            'spec': x.item.get_spec_display(),
+            'type': x.item.item_type,
+            'type_str': x.item.get_item_type_display()
+        })
+
+    return data
+
+@member_required
+def get_order_detail(request):
+    order_id = request.REQUEST.get('order_id')
+
+    data = format_item(OrderBase().get_items_of_order(order_id), 0)
+
+    return HttpResponse(json.dumps(data), mimetype='application/json')
 
 @member_required
 @company_manager_required_for_request
@@ -137,9 +168,41 @@ def deposit(request, company_id, template_name='pc/company/deposit.html'):
 
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
 
+def format_record(objs, num):
+    data = []
+
+    for x in objs:
+        num += 1
+
+        data.append({
+            'num': num,
+            'record_id': x.id,
+            'value': str(x.value),
+            'current_balance': str(x.current_balance),
+            'operation': x.operation,
+            'notes': x.notes,
+            'create_time': x.create_time.strftime('%Y-%m-%d %H:%M')
+        })
+
+    return data
+
 @member_required
 @company_manager_required_for_request
 def record(request, company_id, template_name='pc/company/record.html'):
+    now = datetime.datetime.now()
+    start_date = request.REQUEST.get('start_date', now.replace(day=1).strftime('%Y-%m-%d'))
+    end_date = request.REQUEST.get('end_date')
+    start_date, end_date = utils.get_date_range(start_date, end_date)
+
+    account = CashAccountBase().get_account_by_company(company_id)
+    objs = CashRecordBase().get_records_by_company(company_id, start_date, end_date)
+
+    page_index = int(request.REQUEST.get('page', 1))
+    page_objs = page.Cpt(objs, count=10, page=page_index).info
+    page_params = (page_objs[1], page_objs[4])
+
+    num = 10 * (page_index - 1)
+    data = format_record(page_objs[0], num)
 
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
 

@@ -1,18 +1,94 @@
 {% extends "pc/company/home.html" %}
 {% load custom_tags %}
 {% load custom_filters %}
-{% block title %}账户流水{% endblock %}
-{% block frame_title %}账户流水{% endblock %}
-{% block frame_title_m %}账户流水{% endblock %}
+{% block title %}账户余额{% endblock %}
+{% block frame_title %}账户余额{% endblock %}
+{% block frame_title_m %}账户余额{% endblock %}
 
 {% block css %}
 {% endblock %}
 
 {% block javascript %}
+<script type="text/javascript">
+$(document).ready(function(){
+    $('#start_date_search').datetimepicker({
+        format: 'yyyy-mm-dd',
+        language: 'zh-CN',
+        minView: 2,
+        autoclose: true
+    });
+
+    $('#end_date_search').datetimepicker({
+        format: 'yyyy-mm-dd',
+        language: 'zh-CN',
+        minView: 2,
+        autoclose: true
+    });
+
+});
+</script>
 {% endblock %}
 
 {% block frame_main %}
-<div>
-	账户流水
+<div class="row">
+	<div class="col-md-12 f18 border-bottom-2 bdc-dddddd pb-10">
+        <span>当前账户余额: <span class="co-1DABD9 fb">{{account.balance}}</span> 元</span>
+        <span>，最大透支额: <span class="co-1DABD9 fb">{{account.max_overdraft}}</span> 元</span>
+    </div>
+	<div class="col-md-12">
+		<form action="./record" class="form-inline pt-15">
+            <div class="input-group input-group-sm pb-10">
+                <span class="input-group-addon">开始日期</span>
+                <input type="text" class="form-control" name="start_date" id="start_date_search" value="{{start_date|date}}"  />
+            </div>
+            <div class="input-group input-group-sm pb-10">
+                <span class="input-group-addon">结束日期</span>
+                <input type="text" class="form-control" name="end_date" id="end_date_search" value="{{end_date|date}}"  />
+                <span class="input-group-btn">
+                    <button class="btn btn-default search bgc-eeeeee" type="submit">查询</button>
+                </span>
+            </div>
+        </form>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th class="hidden-xs">操作类型</th>
+                    <th>操作金额</th>
+                    <th>余额</th>
+                    <th>操作时间</th>
+                    <th class="hidden-xs">备注</th>
+                </tr>
+            </thead>
+            <tbody>
+            	{% for record in data %}
+                <tr>
+                	<td>{{record.num}}</td>
+                	<td class="hidden-xs">
+            		{% if record.operation == 0 %}
+	                    <span class="co-19BA40">充值</span>
+	                {% else %}
+	                    <span class="co-C33333">消费</span>
+	                {% endif %}
+                	</td>
+                	<td>
+            		{% if record.operation == 0 %}
+	                    <span class="co-19BA40">+{{record.value}}</span>
+	                {% else %}
+	                    <span class="co-C33333">-{{record.value}}</span>
+	                {% endif %}
+                	</td>
+                	<td>{{record.current_balance}}</td>
+                	<td>{{record.create_time}}</td>
+                	<td class="hidden-xs">{{record.notes}}</td>
+                </tr>
+                {% endfor %}
+        	</tbody>
+       	</table>
+	</div>
+
+	<div class="col-md-12">
+        {{page_params|paging:request}}
+    </div>
 </div>
 {% endblock %}

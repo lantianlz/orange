@@ -613,7 +613,7 @@ class OrderBase(object):
         return objs
 
 
-    def search_orders_for_company(self, company_id, start_date, end_date, order_no):
+    def search_orders_by_company(self, company_id, start_date, end_date, order_no):
         '''
         公司平台查询订单
         '''
@@ -799,6 +799,11 @@ class CashAccountBase(object):
 
         return 0, dict_err.get(0)
 
+    def get_account_by_company(self, company_id):
+        try:
+            return CashAccount.objects.get(company_id=company_id)
+        except CashAccount.DoesNotExist:
+            return ''
 
 class CashRecordBase(object):
 
@@ -888,3 +893,12 @@ class CashRecordBase(object):
         except Exception, e:
             debug.get_debug_detail_and_send_email(e)
             return 99900, dict_err.get(99900)
+
+
+    def get_records_by_company(self, company_id, start_date, end_date):
+        objs = self.get_all_records().filter(
+            cash_account__company__id = company_id,
+            create_time__range=(start_date, end_date)
+        )
+
+        return objs

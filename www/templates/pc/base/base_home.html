@@ -53,8 +53,12 @@
                     </a>
                 </li>
                 <li>
-                    <a class="f12 nav-login" href="/login_weixin" target="_blank">
-                        <span class="">登录</span>
+                    <a class="f12 nav-login" href="/company" target="_blank">
+                        {% if request.user.is_authenticated %}
+                        管理
+                        {% else %}
+                        登录
+                        {% endif %}
                     </a>
                 </li>
             </ul>

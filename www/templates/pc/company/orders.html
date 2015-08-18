@@ -25,14 +25,90 @@ $(document).ready(function(){
         autoclose: true
     });
 
+    // 点击查看详情
+    var showOrderDetail = function(order_id){
+
+        var html = [
+        '<div class="modal fade" id="order_modal" tabindex="-1" role="dialog">',
+            '<div class="modal-dialog">',
+                '<div class="modal-content">',
+                    '<div class="modal-header pb-5">',
+                        '<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>',
+                        '<h4 class="modal-title">订单详情</h4>',
+                    '</div>',
+                '<div class="modal-body">',
+                    '<table class="table table-hover">',
+                        '<thead>',
+                            '<tr>',
+                                '<th>#</th>',
+                                '<th class="hidden-xs">编号</th>',
+                                '<th>名称</th>',
+                                '<th>数量</th>',
+                                '<th>规格</th>',
+                                '<th class="hidden-xs">类型</th>',
+                            '</tr>',
+                        '</thead>',
+                        '<tbody>',
+                            {% for type in types %}
+                            '<tr class="item_type item_type_{{type.value}}">',
+                                '<td colspan="6" class="fb fi border-bottom-2 bdc-dddddd">{{type.name}}</td>',
+                            '</tr>',
+                            {% endfor %}
+                        '</tbody>',
+                    '</table>',
+                '</div>',
+            '</div>',
+        '</div>'
+        ].join('');
+
+        ajaxSend(
+            "/company/get_order_detail", 
+            {'order_id': order_id},
+            function(data){
+                $('#order_modal').remove();
+                $("body").append(html);
+
+                // 渲染数据
+                $.map(data, function(per){
+                    console.log(per)
+                    $(String.format([
+                        '<tr>',
+                            '<td>{0}</td>',
+                            '<td class="hidden-xs">{1}</td>',
+                            '<td>{2}</td>',
+                            '<td>{3}</td>',
+                            '<td>{4}</td>',
+                            '<td class="hidden-xs">{5}</td>',
+                        '</tr>'
+                    ].join(''), '', per.code, per.name, per.amount, per.spec, per.type_str))
+                    .insertAfter($('.item_type_' + per.type));
+                });
+
+                // 设置编号
+                var trs = $('#order_modal tbody>tr').filter(function(){return !$(this).hasClass('item_type')});
+                
+                $.map(trs, function(per, index){
+                    $(per).children().eq(0).html(index+1);
+                });
+
+                $('#order_modal').modal({'show': true});
+            }
+        );
+        
+    };
+
+    $('.show-detail').on('click', function(){
+        showOrderDetail($(this).data('order_id'));
+    });
+
 });
 </script>
 {% endblock %}
 
 {% block frame_main %}
 <div class="row ml-0 mr-0">
-    <div class="col-md-12 f16 border-bottom-2 bdc-dddddd pb-10">
-        <span><i class="fa fa-list-ol pr-5"></i>订单列表</span>
+    <div class="col-md-12 f16 pb-10 pl-0 pt-5">
+        <span><i class="fa fa-list-ol pr-5"></i>订单列表<span class="co-888888 f12 pl-10">(<i class="fa fa-question-circle pr-3 pl-3"></i>点击订单号可查看订单详情)</span></span>
     </div>
     <div class="col-md-12 pl-0 pr-0">
         <form action="./orders" class="form-inline pt-15">
@@ -70,7 +146,9 @@ $(document).ready(function(){
                 {% for order in data %}
                 <tr>
                     <td>{{ order.num }}</td>
-                    <td>{{ order.order_no }}</td>
+                    <td class="show-detail pointer" data-order_id="{{order.order_id}}" title="点击查看详情">
+                        <a>{{ order.order_no }}</a>
+                    </td>
                     <td class="hidden-xs">{{ order.create_time }}</td>
                     <td class="hidden-xs">{{ order.distribute_operator_name }}</td>
                     <td class="hidden-xs">{{ order.distribute_time }}</td>

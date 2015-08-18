@@ -45,7 +45,7 @@ def member_required(func):
                     url = urllib.quote_plus(request.get_full_path())
                 except:
                     url = '/'
-                return HttpResponseRedirect("/login?next_url=%s" % url)
+                return HttpResponseRedirect("/login_weixin?next_url=%s" % url)
 
         return func(request, *args, **kwargs)
     return _decorator

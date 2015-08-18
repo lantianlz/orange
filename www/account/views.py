@@ -14,7 +14,6 @@ from www.account import interface
 
 ub = interface.UserBase()
 
-
 def home_welcome(request, template_name='pc/index.html'):
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
 
