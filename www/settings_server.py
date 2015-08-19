@@ -112,6 +112,7 @@ TEMPLATE_DIRS = (
 INSTALLED_APPS = (
     'www.custom_tags',
     'www.admin',
+    'www.city',
     'www.account',
     'www.company',
 )
