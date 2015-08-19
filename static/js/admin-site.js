@@ -667,6 +667,128 @@ if (!String.format) {
         }
     });
 
+    /*
+        项目详细信息组件
+        主要用于显示套餐下的项目，订单下的项目
+    */
+    $.Global.ComponentView.ItemDetailView = Backbone.View.extend({
+        el: '#item-detail-view',
+
+        _items: [],
+
+        _html: [
+        '<table class="table table-hover">',
+            '<thead>',
+                '<tr>',
+                    '<th>#</th>',
+                    '<th class="hidden-xs">产品编号</th>',
+                    '<th>产品名称</th>',
+                    '<th>数量</th>',
+                    '<th>规格</th>',
+                    '<th class="hidden-xs">类别</th>',
+                '</tr>',
+            '</thead>',
+            '<tbody>',
+            '</tbody>',
+        '</table>'
+        ].join(''),
+
+        // 项目类型模版
+        _itemTypeTemplate: _.template([
+            '<% _.each(types, function(type){ %>',
+            '<tr class="item_type item_type_<%= type.value %>">',
+                '<td colspan="6" class="fb fi border-bottom-2 bdc-dddddd"><%= type.name %></td>',
+            '</tr>',
+            '<% }) %>'
+        ].join('')),
+
+        // 项目信息模版
+        _itemTemplate: _.template([
+            '<tr>',
+                '<td></td>',
+                '<td class="hidden-xs"><%= code %></td>',
+                '<td><%= name %></td>',
+                '<td><%= amount %></td>',
+                '<td><%= spec_str %></td>',
+                '<td class="hidden-xs"><%= item_type_str %></td>',
+            '</tr>'
+        ].join('')),
+
+        // 初始化项目类型
+        _initItemTypes: function(){
+            var me = this;
+
+            ajaxSend(
+                "/admin/item/get_item_types", 
+                {},
+                function(data){
+                    me.$('tbody').append(
+                        me._itemTypeTemplate({'types': data})
+                    );
+                    me._loadItems(me._items);
+                }
+            );
+        },
+
+        // 设置编号
+        _setIndex: function(){
+            var trs = this.$('tbody>tr').filter(function(){return !$(this).hasClass('item_type')});
+            
+            $.map(trs, function(per, index){
+                $(per).children().eq(0).html(index+1);
+            });
+        },
+
+        // 加载项目
+        _loadItems: function(items){
+            var me = this;
+
+            $.map(items, function(item){
+                
+                $(me._itemTemplate(item))
+                .insertAfter(me.$('.item_type_' + item.item_type));
+            });
+            
+            me._setIndex();
+        },
+
+        // 获取订单下的所有项目
+        getItemsByOrderId: function(orderId){
+            var me = this;
+
+            ajaxSend(
+                "/admin/order/get_items_of_order", 
+                {'order_id': orderId},
+                function(data){
+                    me._loadItems(data);
+                }
+            );
+        },
+
+        // 获取套餐下的所有项目
+        getItemsByMealId: function(mealId){
+            var me = this;
+
+            ajaxSend(
+                "/admin/meal/get_items_of_meal", 
+                {'meal_id': mealId},
+                function(data){
+                    me._loadItems(data);
+                }
+            );
+        },
+
+        // 加载项目
+        loadItems: function(items){
+            this._items = items;
+        },
+
+        render: function(){
+            this.$el.html(this._html);
+            this._initItemTypes();
+        }
+    });
+
 })(jQuery);
 
 

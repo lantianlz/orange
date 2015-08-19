@@ -122,3 +122,10 @@ def get_items_by_name(request):
     data = format_item(ItemBase().get_items_by_name(name)[:10], 1)
 
     return HttpResponse(json.dumps(data), mimetype='application/json')
+
+def get_item_types(request):
+    from www.company.models import Item
+
+    types = [{'name': x[1], 'value': x[0]} for x in Item.type_choices]
+
+    return HttpResponse(json.dumps(types), mimetype='application/json')

@@ -36,65 +36,20 @@ $(document).ready(function(){
                         '<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>',
                         '<h4 class="modal-title">订单详情</h4>',
                     '</div>',
-                '<div class="modal-body">',
-                    '<table class="table table-hover">',
-                        '<thead>',
-                            '<tr>',
-                                '<th>#</th>',
-                                '<th class="hidden-xs">编号</th>',
-                                '<th>名称</th>',
-                                '<th>数量</th>',
-                                '<th>规格</th>',
-                                '<th class="hidden-xs">类型</th>',
-                            '</tr>',
-                        '</thead>',
-                        '<tbody>',
-                            {% for type in types %}
-                            '<tr class="item_type item_type_{{type.value}}">',
-                                '<td colspan="6" class="fb fi border-bottom-2 bdc-dddddd">{{type.name}}</td>',
-                            '</tr>',
-                            {% endfor %}
-                        '</tbody>',
-                    '</table>',
+                '<div class="modal-body" id="item_detail">',
+                    
                 '</div>',
             '</div>',
         '</div>'
         ].join('');
 
-        ajaxSend(
-            "/company/get_order_detail", 
-            {'order_id': order_id},
-            function(data){
-                $('#order_modal').remove();
-                $("body").append(html);
+        $('#order_modal').remove();
+        $('body').append(html);
+        $('#order_modal').modal({'show': true});
 
-                // 渲染数据
-                $.map(data, function(per){
-                    console.log(per)
-                    $(String.format([
-                        '<tr>',
-                            '<td>{0}</td>',
-                            '<td class="hidden-xs">{1}</td>',
-                            '<td>{2}</td>',
-                            '<td>{3}</td>',
-                            '<td>{4}</td>',
-                            '<td class="hidden-xs">{5}</td>',
-                        '</tr>'
-                    ].join(''), '', per.code, per.name, per.amount, per.spec, per.type_str))
-                    .insertAfter($('.item_type_' + per.type));
-                });
-
-                // 设置编号
-                var trs = $('#order_modal tbody>tr').filter(function(){return !$(this).hasClass('item_type')});
-                
-                $.map(trs, function(per, index){
-                    $(per).children().eq(0).html(index+1);
-                });
-
-                $('#order_modal').modal({'show': true});
-            }
-        );
-        
+        var itemDetailView = new $.Global.ComponentView.ItemDetailView({el: '#item_detail'});
+        itemDetailView.render();
+        itemDetailView.getItemsByOrderId(order_id);
     };
 
     $('.show-detail').on('click', function(){

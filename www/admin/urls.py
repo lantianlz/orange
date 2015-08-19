@@ -56,7 +56,8 @@ urlpatterns += patterns('www.admin.views_cash_record',
 
 # 产品管理
 urlpatterns += patterns('www.admin.views_item',
-
+    
+    url(r'^item/get_item_types$', 'get_item_types'),
     url(r'^item/get_items_by_name$', 'get_items_by_name'),
     url(r'^item/add_item$', 'add_item'),
     url(r'^item/modify_item$', 'modify_item'),
@@ -68,6 +69,7 @@ urlpatterns += patterns('www.admin.views_item',
 # 套餐管理
 urlpatterns += patterns('www.admin.views_meal',
 
+    url(r'^meal/get_items_of_meal', 'get_items_of_meal'),
     url(r'^meal/get_meals_by_name$', 'get_meals_by_name'),
     url(r'^meal/add_meal$', 'add_meal'),
     url(r'^meal/modify_meal$', 'modify_meal'),
@@ -83,6 +85,7 @@ urlpatterns += patterns('www.admin.views_order',
     url(r'^purchase/get_purchase$', 'get_purchase'),
     url(r'^purchase$', 'purchase'),
 
+    url(r'^order/get_items_of_order', 'get_items_of_order'),
     url(r'^order/print_order$', 'print_order'),
     url(r'^order/add_order$', 'add_order'),
     url(r'^order/distribute_order$', 'distribute_order'),

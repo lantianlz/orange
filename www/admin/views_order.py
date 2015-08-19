@@ -224,6 +224,9 @@ def purchase(request, template_name='pc/admin/purchase.html'):
 
 def _get_purchase_data(start_date, end_date, state, show_order=False):
 
+    type_dict = dict(Item.type_choices)
+    spec_dict = dict(Item.spec_choices)
+
     start_date, end_date = utils.get_date_range(start_date, end_date)
     state = int(state)
 
@@ -241,7 +244,9 @@ def _get_purchase_data(start_date, end_date, state, show_order=False):
                 'name': x['item__name'],
                 'amount': 0,
                 'spec': x['item__spec'],
+                'spec_str': spec_dict[x['item__spec']],
                 'item_type': x['item__item_type'],
+                'item_type_str': type_dict[x['item__item_type']],
                 'orders': {}
             }
 
@@ -284,3 +289,24 @@ def print_purchase(request, template_name='pc/admin/print_purchase.html'):
     data_json = json.dumps(data)
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
 
+
+def get_items_of_order(request):
+    order_id = request.POST.get('order_id')
+    data = []
+
+    for i in OrderBase().get_items_of_order(order_id):
+        data.append({
+            'item_id': i.item.id,
+            'name': i.item.name,
+            'price': str(i.item.price),
+            'sale_price': str(i.item.sale_price),
+            'item_type': i.item.item_type,
+            'item_type_str': i.item.get_item_type_display(),
+            'spec': i.item.spec,
+            'spec_str': i.item.get_spec_display(),
+            'code': i.item.code,
+            'img': i.item.img,
+            'amount': i.amount if i.item.integer == 2 else int(i.amount)
+        })
+
+    return HttpResponse(json.dumps(data), mimetype='application/json')

@@ -169,3 +169,25 @@ def get_meals_by_name(request):
             result.append([x.id, u'%s [¥%s]' % (x.name, x.price), None, u'%s [¥%s]' % (x.name, x.price)])
 
     return HttpResponse(json.dumps(result), mimetype='application/json')
+
+
+def get_items_of_meal(request):
+    meal_id = request.POST.get('meal_id')
+    data = []
+
+    for i in MealBase().get_items_of_meal(meal_id):
+        data.append({
+            'item_id': i.item.id,
+            'name': i.item.name,
+            'price': str(i.item.price),
+            'sale_price': str(i.item.sale_price),
+            'item_type': i.item.item_type,
+            'item_type_str': i.item.get_item_type_display(),
+            'spec': i.item.spec,
+            'spec_str': i.item.get_spec_display(),
+            'code': i.item.code,
+            'img': i.item.img,
+            'amount': i.amount if i.item.integer == 2 else int(i.amount)
+        })
+
+    return HttpResponse(json.dumps(data), mimetype='application/json')
