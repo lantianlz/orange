@@ -541,7 +541,9 @@ $(document).ready(function(){
                         <div class="col-sm-3">
                             <select name="init_add" class="form-control">
                                 {% for init_add in init_adds %}
-                                <option value="{{init_add.value}}">{{init_add.name}}</option>
+                                <option value="{{init_add.value}}" {% if init_add.value == 2 %}selected{% endif %}>
+                                    {{init_add.name}}
+                                </option>
                                 {% endfor %}
                             </select>
                         </div>
