@@ -56,8 +56,8 @@ $(document).ready(function(){
                 function(data){
                     me.pageIndex = pageIndex;
                     me.pageCount = data.page_count;
-                    me.start_date = start_date;
-                    me.end_date = end_date;
+                    me.startDate = start_date;
+                    me.endDate = end_date;
                     me.name = name;
 
                     me.reset($.Global.Utils.dictMapParse(data.data, me._modelMaps));

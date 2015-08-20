@@ -6,7 +6,7 @@ from django.template import RequestContext
 from django.shortcuts import render_to_response
 
 from common import utils, page
-from misc.decorators import staff_required, common_ajax_response, verify_permission, member_required
+from misc.decorators import staff_required, common_ajax_response, verify_permission, member_required, log_sensitive_operation
 
 from www.company.interface import ItemBase
 
@@ -83,6 +83,7 @@ def get_item_by_id(request):
 
 
 @verify_permission('modify_item')
+@log_sensitive_operation
 @common_ajax_response
 def modify_item(request):
 
