@@ -284,11 +284,11 @@ $(document).ready(function(){
                 <tr>
                     <th>#</th>
                     <th>公司</th>
-                    <th>操作类型</th>
+                    <th class="hidden-xs">操作类型</th>
                     <th>操作金额</th>
-                    <th>余额</th>
+                    <th class="hidden-xs">余额</th>
                     <th>操作时间</th>
-                    <th>备注</th>
+                    <th class="hidden-xs">备注</th>
                 </tr>
             </thead>
             <tbody>
@@ -310,7 +310,7 @@ $(document).ready(function(){
         <tr class="pointer" data-record_id="<%= record.recordId %>">
             <td><%= record.num %></td>
             <td><%= record.companyName %></td>
-            <td>
+            <td class="hidden-xs">
                 <% if(record.operation == 0){ %>
                     <span class="co-19BA40">充值</span>
                 <% } else { %>
@@ -324,9 +324,9 @@ $(document).ready(function(){
                     <span class="co-C33333">-<%= record.value %></span>
                 <% } %>
             </td>
-            <td><%= record.currentBalance %></td>
+            <td class="hidden-xs"><%= record.currentBalance %></td>
             <td><%= record.createTime %></td>
-            <td><%= record.notes %></td>
+            <td class="hidden-xs"><%= record.notes %></td>
         </tr>
     <% }) %>
 </script>

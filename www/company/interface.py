@@ -725,13 +725,21 @@ class CompanyManagerBase(object):
         return True if (cm or user.is_staff()) else False
 
     def add_company_manager(self, company_id, user_id):
+        if not (company_id and user_id):
+            return 99800, dict_err.get(99800)
+
         if user_id and not UserBase().get_user_login_by_id(user_id):
             return 99600, dict_err.get(99600)
 
         if CompanyManager.objects.filter(user_id=user_id, company__id=company_id):
             return 20601, dict_err.get(20601)
 
-        cm = CompanyManager.objects.create(user_id=user_id, company_id=company_id)
+        try:
+            cm = CompanyManager.objects.create(user_id=user_id, company_id=company_id)
+        except Exception, e:
+            debug.get_debug_detail_and_send_email(e)
+            return 99900, dict_err.get(99900)
+            
         return 0, cm
 
     def search_managers_for_admin(self, company_name):
