@@ -47,14 +47,14 @@ $(document).ready(function(){
     }, 8000);
 
     // 点击预订跳转
-    $('.btn-booking-1').on('click', function(e){
+    $('.btn-booking-1').on('mousedown', function(e){
         e.preventDefault();
         $.fn.fullpage.moveTo(6);
         window.setTimeout(function(){
             $('.name').focus();
         }, 300);
     });
-    $('.btn-booking-3').on('click', function(e){
+    $('.btn-booking-3').on('mousedown', function(e){
         e.preventDefault();
         $.fn.fullpage.moveTo(6);
         window.setTimeout(function(){
@@ -64,8 +64,8 @@ $(document).ready(function(){
 
     var is_ajaxing = false;
     // 预约
-    $('.btn-booking-2').on('click', function(){
-
+    $('.btn-booking-2').on('mousedown', function(){
+        
         var name = $('.name').val(),
             company = $('.company').val(),
             mobile = $('.mobile').val();
