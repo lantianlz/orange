@@ -18,7 +18,6 @@ from www.account.interface import UserBase
 def order(request, template_name='pc/admin/order.html'):
     states = [{'value': x[0], 'name': x[1]} for x in Order.state_choices]
     all_states = [{'value': x[0], 'name': x[1]} for x in Order.state_choices]
-    all_states.insert(0, {'value': -1, 'name': u"待创建"})
     all_states.append({'value': -2, 'name': u"全部有效订单"})
 
     today = datetime.datetime.now()
@@ -26,6 +25,13 @@ def order(request, template_name='pc/admin/order.html'):
 
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
 
+@verify_permission('')
+def create_order(request, template_name='pc/admin/create_order.html'):
+
+    today = datetime.datetime.now()
+    start_date = today.strftime('%Y-%m-%d')
+
+    return render_to_response(template_name, locals(), context_instance=RequestContext(request))
 def format_order(objs, num):
     data = []
 
@@ -79,7 +85,7 @@ def format_uncreate_order(objs, num):
             'meal_id': x.id,
             'meal_name': u'%s [¥%s]' % (x.name, x.price),
             'company_id': company.id,
-            'company_name': company.name,
+            'company_name': u'%s[%s人]' % (company.name, company.person_count),
             'order_no': '',
             'create_time': '',
             'total_price': '',

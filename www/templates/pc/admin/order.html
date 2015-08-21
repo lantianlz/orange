@@ -54,7 +54,7 @@ $(document).ready(function(){
             var me = this,
                 startDate = startDate || '',
                 endDate = endDate || '',
-                state = state || '-1',
+                state = state || '-2',
                 orderNo = orderNo || '',
                 pageIndex = pageIndex || 1;
 
@@ -481,13 +481,6 @@ $(document).ready(function(){
             <span class="hidden-xs">修改订单信息</span>
         </a>
     </li>
-    <li class="pull-right">
-        <a href="#add//">
-            <i class="fa fa-plus-circle pr-5"></i>
-            <span class="hidden-sm hidden-md hidden-lg">添加</span>
-            <span class="hidden-xs">添加订单</span>
-        </a>
-    </li>
 </ul>
 
 <div class="tab-content">
@@ -506,7 +499,7 @@ $(document).ready(function(){
                 <span class="input-group-addon">订单状态</span>
                 <select class="form-control state">
                     {% for state in all_states %}
-                    <option value="{{state.value}}">{{state.name}}</option>
+                    <option value="{{state.value}}" {% if state.value == -2 %}selected{% endif %} >{{state.name}}</option>
                     {% endfor %}
                 </select>
             </div>

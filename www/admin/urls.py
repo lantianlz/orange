@@ -123,6 +123,7 @@ urlpatterns += patterns('www.admin.views_order',
     url(r'^order/drop_order$', 'drop_order'),
     url(r'^order/get_order_by_id$', 'get_order_by_id'),
     url(r'^order/search$', 'search'),
+    url(r'^create_order$', 'create_order'),
     url(r'^order$', 'order'),
 )
 

@@ -1,0 +1,420 @@
+{% extends "pc/admin/home.html" %}
+{% load custom_tags %}
+{% load custom_filters %}
+{% block title %}订单管理{% endblock %}
+{% block admin_title %}订单管理{% endblock %}
+{% block admin_title_m %}订单管理{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" type="text/css" href="{{MEDIA_URL}}css/autocomplete/styles.css">
+<style type="text/css">
+
+</style>
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript" src="{{MEDIA_URL}}js/jquery/jquery.autocomplete.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+    var Order = Backbone.Model.extend({
+        defaults: {
+            
+        }
+    });
+
+    var Orders = Backbone.Collection.extend({
+        model: Order,
+
+        _modelMaps: {
+            'num': 'num',
+            'orderId': 'order_id',
+            'mealId': 'meal_id',
+            'mealName': 'meal_name',
+            'companyId': 'company_id',
+            'companyName': 'company_name',
+            'orderNo': 'order_no',
+            'createOperatorId': 'create_operator_id',
+            'createOperatorName': 'create_operator_name',
+            'createTime': 'create_time',
+            'distributeOperatorId': 'distribute_operator_id',
+            'distributeOperatorName': 'distribute_operator_name',
+            'distributeTime': 'distribute_time',
+            'confirmOperatorId': 'confirm_operator_id',
+            'confirmOperatorName': 'confirm_operator_name',
+            'confirmTime': 'confirm_time',
+            'totalPrice': 'total_price',
+            'costPrice': 'cost_price',
+            'note': 'note',
+            'rate': 'rate',
+            'isTest': 'is_test',
+            'state': 'state'
+        },
+
+        search: function(startDate, pageIndex){
+            var me = this,
+                startDate = startDate || '',
+                pageIndex = pageIndex || 1;
+
+            ajaxSend(
+                "/admin/order/search", 
+                {'state': -1, 'start_date': startDate, 'page_index': pageIndex}, 
+                function(data){
+                    
+                    me.pageIndex = pageIndex;
+                    me.pageCount = data.page_count;
+                    me.startDate = startDate;
+
+                    me.reset($.Global.Utils.dictMapParse(data.data, me._modelMaps));
+                }
+            );
+        },
+
+        addOrder: function(data, callback){
+
+            ajaxSend(
+                "/admin/order/add_order", 
+                $.param(data, true),
+                function(response){
+                    if(callback){
+                        callback(response);
+                    }
+                }
+            );
+        },
+
+        getMeal: function(meal_id, callback){
+            ajaxSend(
+                "/admin/meal/get_meal_by_id", 
+                {'meal_id': meal_id},
+                function(response){
+                    if(callback){
+                        callback(response);
+                    }
+                }
+            );
+        }
+
+    });
+    
+    var ListView = Backbone.View.extend({
+        el: '#order_list',
+
+        template: _.template($('#order_list_template').html()),
+
+        pagination: new $.Global.Pagination.PaginationView(),
+
+        events: {
+            'click .search': 'searchOrder',
+            'click .pointer': 'addOrder'
+        },
+
+        initialize: function(){
+            this.listenTo(this.collection, 'reset', this.render);
+        },
+
+        render: function(){
+            var data = this.collection.toJSON();
+            
+            this.showPanel();
+            this.$('tbody').html(this.template({'orders': data}));
+            this.pagination.render(
+                this.collection.pageIndex||1, 
+                this.collection.pageCount, 
+                String.format('search/{0}', this.collection.startDate)
+            );
+        },
+
+        // 显示面板
+        showPanel: function(){
+            $('.orange-nav-pills a[href="#order_list"]').tab('show');
+        },
+
+        searchOrder: function(){
+            var startDate = this.$('#start_date_search').val();
+
+            router.navigate(String.format('/search/{0}/1', startDate), {trigger: true});
+        },
+
+        addOrder: function(sender){
+            var target = $(sender.currentTarget),
+                mealId = target.data('meal_id'),
+                mealName = target.data('meal_name');
+            
+            router.navigate('/add/' + mealId + '/' + mealName, {trigger: true});
+        }
+        
+    });
+
+    
+    var AddView = Backbone.View.extend({
+        el: 'body',
+
+        template: _.template($('#add_order_template').html()),
+
+        itemsView: null,
+
+        showPanel: function(mealId, mealName){
+            var me = this;
+
+            me.render(mealId, mealName);
+        },
+
+        mealTextBox: null,
+        initMealTextBox: function(name, value){
+            var me = this;
+
+            me.mealTextBox = $.Global.TextboxList.create('#meal_add', {
+                max: 1,
+                placeholder: '选择套餐',
+                url: '/admin/meal/get_meals_by_name',
+                param: 'meal_name',
+                loadPlaceholder: '正在加载...'
+            });
+            
+             // 选择套餐之后导入套餐项目
+            me.mealTextBox.target.onAdd = function(target){
+                var meal_id = target.getValue()[0];
+
+                me.loadMealItems(meal_id);
+            }
+
+            if(value){
+                me.mealTextBox.add(name, value);
+            }
+        },
+
+        // 加载套餐下的项目
+        loadMealItems: function(meal_id){
+            
+            var me = this;
+
+            orders.getMeal(meal_id, function(data){
+                me.itemsView.loadItems(data.items, true);
+                me.$('#meal_id_add').val(meal_id);
+                me.$('.total-price').val(data.price);
+
+                // 计算毛利
+                me.itemsView.totalSalePrice = parseFloat(me.$('.total-price').val());
+                me.itemsView.calculatePrice();
+            });
+        },
+
+        initOrderItems: function(){
+            this.itemsView = new $.Global.ComponentView.ItemsView({el: "#items_view_add"});
+            this.itemsView.render();
+        },
+
+        render: function(mealId, mealName){
+            var me = this;
+
+            $('#add_order_modal').remove();
+            
+            $('body').append(this.template());
+
+            // 绑定事件
+            $('#add_order_modal .cancel').bind('click', function(){
+                history.go(-1);
+            });
+            $('#add_order_modal .ok').bind('click', function(){
+                me.addOrder();
+            });
+            $('#add_order_modal .total-price').on('input', function(){
+                me.itemsView.totalSalePrice = parseFloat($(this).val());
+                me.itemsView.calculatePrice();
+            });
+            
+            $('#add_order_modal').modal({'show': true, 'backdrop': 'static'});
+
+            me.initMealTextBox(mealName, mealId);
+            me.initOrderItems();
+            
+        },
+
+        addOrder: function(){
+            var me = this;
+            
+            if(!$('#add_order_modal form').valid()){
+                return;
+            }
+
+            orders.addOrder($.Global.Utils.formToDict($('#add_order_modal form')), function(data){
+                if(data.errcode == "0"){
+                    window.location.href = "/admin/order#modify/" + data.errmsg;
+                    $('#add_order_modal').modal('hide');
+                    $.Global.Notice.SuccessTopNotice("操作成功");
+                } else {
+                    $.Global.Notice.ErrorTopNotice(data.errmsg);
+                }
+            })
+        }
+
+    });
+
+
+    var Router = Backbone.Router.extend({
+        routes: {
+            "":                             "search",
+            "search/(:startDate)/:pageIndex":    "search",
+            "add/(:mealId)/(:mealName)":                          "add"
+        },
+
+        // 获取推荐用户
+        search: function(startDate, pageIndex){
+            orders.search(startDate, pageIndex);
+        },
+
+        add: function(mealId, mealName){
+            addView.showPanel(mealId, mealName);
+        }
+
+    });
+
+    var orders = new Orders(),
+        listView = new ListView({collection: orders}),
+        addView = new AddView(),
+        router = new Router();
+
+    Backbone.history.start();
+
+    $('#start_date_search').datetimepicker({
+        format: 'yyyy-mm-dd',
+        language: 'zh-CN',
+        minView: 2,
+        autoclose: true
+    });
+
+    $('#end_date_search').datetimepicker({
+        format: 'yyyy-mm-dd',
+        language: 'zh-CN',
+        minView: 2,
+        autoclose: true
+    });
+});
+
+</script>
+{% endblock %}
+
+{% block admin_main %}
+<ul class="nav nav-pills orange-nav-pills">
+    <li class="active">
+        <a href="#order_list" data-toggle="pill">
+            <i class="fa fa-list-ol pr-5"></i>
+            <span class="hidden-sm hidden-md hidden-lg">列表</span>
+            <span class="hidden-xs">订单列表</span>
+        </a>
+    </li>
+    <li class="pull-right">
+        <a href="#add//">
+            <i class="fa fa-plus-circle pr-5"></i>
+            <span class="hidden-sm hidden-md hidden-lg">添加</span>
+            <span class="hidden-xs">添加订单</span>
+        </a>
+    </li>
+</ul>
+
+<div class="tab-content">
+    <!-- 用户列表 -->
+    <div class="tab-pane fade pt-15 in active" id="order_list">
+        <form action="." class="form-inline" onsubmit="javascript: return false;">
+            <div class="input-group input-group-sm pb-10">
+                <span class="input-group-addon">创建日期</span>
+                <input type="text" class="form-control" id="start_date_search" value="{{start_date}}"  />
+                <span class="input-group-btn">
+                    <button class="btn btn-default search bgc-eeeeee" type="submit">查询</button>
+                </span>
+            </div>
+        </form>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>套餐名称</th>
+                    <th class="hidden-xs">所属公司</th>
+                    <th>状态</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+            </tbody>
+        </table>
+
+        <div class="text-center">
+            <ul class="pagination pagination-sm qx-pagination">
+                
+            </ul>
+        </div>
+    </div>
+
+    <!-- 修改用户信息 -->
+    <div class="tab-pane fade pt-15" id="modify_order">
+        
+    </div>
+</div>
+
+<script type="text/template" id="order_list_template">
+<% _.each(orders, function(order){ %>
+    <tr class="pointer" data-order_id="<%= order.orderId %>" data-meal_id="<%= order.mealId %>" data-meal_name="<%= order.mealName %>">
+        <td><%= order.num %></td>
+        <td><%= order.mealName %></td>
+        <td class="hidden-xs"><%= order.companyName %></td>
+        <td>待创建</td>
+    </tr>
+<% }) %>
+</script>
+
+<script type="text/template" id="add_order_template">
+<div class="modal fade" id="add_order_modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header pb-5">
+                <h4 class="modal-title">添加订单</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" role="form" method="post" action="">
+                    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+                        <label class="col-sm-2 control-label">套餐</label>
+                        <div class="col-sm-10">
+                            <input type="text" id="meal_add" class="form-control" name='meal' value=''>
+                        </div>
+                    </div>
+                    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+                        <input type="hidden" id="meal_id_add" value="" />
+                        <label class="col-sm-2 control-label">套餐项目</label>
+                        <div class="col-sm-10" id="items_view_add">
+                            
+                        </div>
+                    </div>
+                    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+                        <label class="col-sm-2 control-label">价格</label>
+                        <div class="col-sm-3">
+                            <input type="text" required class="form-control total-price" name='total_price' value='0'>
+                        </div>
+                    </div>
+                    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+                        <label class="col-sm-2 control-label">描述</label>
+                        <div class="col-sm-10">
+                            <textarea name="note" rows="6" class="form-control" placeholder=""></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group pt-20 pb-20 mb-0">
+                        <label class="col-sm-2 control-label">是否试吃</label>
+                        <div class="col-sm-10">
+                            <label class="radio-inline">
+                                <input type="radio" name="is_test" value="0" checked> 否
+                            </label>
+                            <label class="radio-inline">
+                                <input type="radio" name="is_test" value="1"> 是
+                            </label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default cancel" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary ok">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+</script>
+{% endblock %}
