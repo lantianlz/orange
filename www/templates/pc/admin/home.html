@@ -392,7 +392,7 @@ $(document).ready(function(){
                 <a href="/admin/user"><i class="fa fa-user pr-3" style="left: 33px;"></i>用户管理</a>
             </li>
             <li class="list-group-item">
-                <a><i class="fa fa-users pr-3"></i>公司管理</a>
+                <a><i class="fa fa-building pr-3" style="left: 33px;"></i>公司管理</a>
                 <ul class="list-group sub-nav">
                     <li class="list-group-item {% if '/admin/company' = request.path %}active{% endif %}">
                         <a href="/admin/company"><i class="point"></i>公司信息管理</a>
@@ -405,6 +405,20 @@ $(document).ready(function(){
                     </li>
                     <li class="list-group-item {% if '/cash_record' in request.path %}active{% endif %}">
                         <a href="/admin/cash_record"><i class="point"></i>公司现金流水</a>
+                    </li>
+                </ul>
+            </li>
+            <li class="list-group-item">
+                <a><i class="fa fa-truck pr-3"></i>供货商管理</a>
+                <ul class="list-group sub-nav">
+                    <li class="list-group-item {% if '/admin/supplier' = request.path %}active{% endif %}">
+                        <a href="/admin/supplier"><i class="point"></i>供货商信息管理</a>
+                    </li>
+                    <li class="list-group-item {% if '/supplier_cash_account' in request.path %}active{% endif %}">
+                        <a href="/admin/supplier_cash_account"><i class="point"></i>供货商现金账户</a>
+                    </li>
+                    <li class="list-group-item {% if '/supplier_cash_record' in request.path %}active{% endif %}">
+                        <a href="/admin/supplier_cash_record"><i class="point"></i>供货商现金流水</a>
                     </li>
                 </ul>
             </li>
@@ -431,10 +445,7 @@ $(document).ready(function(){
                 </ul>
             </li>
             <li class="list-group-item {% if '/booking' in request.path %}active{% endif %}">
-                <a href="/admin/booking"><i class="fa fa-shopping-cart pr-3"></i>预约信息管理</a>
-            </li>
-            <li class="list-group-item">
-                <a href="#"><i class="fa fa-newspaper-o pr-3"></i>发票管理</a>
+                <a href="/admin/booking"><i class="fa fa-clock-o pr-3" style="font-size: 21px; top: 13px"></i>预约信息管理</a>
             </li>
             <li class="list-group-item">
                 <a href="#"><i class="fa fa-bar-chart pr-3"></i>统计管理</a>

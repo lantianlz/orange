@@ -14,7 +14,8 @@ from www.misc.decorators import cache_required
 from www.misc import consts
 
 from www.account.interface import UserBase, ExternalTokenBase
-from models import Item, Company, Meal, MealItem, Order, OrderItem, Booking, CompanyManager, CashAccount, CashRecord
+from models import Item, Company, Meal, MealItem, Order, OrderItem, \
+    Booking, CompanyManager, CashAccount, CashRecord, Supplier, SupplierCashAccount, SupplierCashRecord
 
 DEFAULT_DB = 'default'
 
@@ -37,6 +38,9 @@ dict_err = {
 
     20701: u'没有找到对应的账户信息',
     20702: u'账户余额不足',
+
+    20801: u'供货商名称重复',
+    20801: u'没有找到对应的供货商',
 }
 dict_err.update(consts.G_DICT_ERROR)
 
@@ -739,7 +743,7 @@ class CompanyManagerBase(object):
         except Exception, e:
             debug.get_debug_detail_and_send_email(e)
             return 99900, dict_err.get(99900)
-            
+
         return 0, cm
 
     def search_managers_for_admin(self, company_name):
@@ -910,3 +914,193 @@ class CashRecordBase(object):
         )
 
         return objs
+
+
+class SupplierBase(object):
+
+    def get_all_supplier(self, state=None):
+        objs = Supplier.objects.all()
+
+        if state != None:
+            objs = objs.filter(state=state)
+
+        return objs
+
+    def search_suppliers_for_admin(self, name):
+        objs = self.get_all_supplier()
+
+        if name:
+            objs = objs.filter(name__contains=name)
+
+        return objs
+
+    def get_supplier_by_id(self, id):
+        try:
+            ps = dict(id=id)
+
+            return Supplier.objects.get(**ps)
+        except Supplier.DoesNotExist:
+            return ""
+
+    def add_supplier(self, name, contact, tel, addr, bank_name='', account_name='', \
+            account_num='', sort=0, des=''):
+
+        if not (name and contact and tel and addr):
+            return 99800, dict_err.get(99800)
+
+        if Supplier.objects.filter(name=name):
+            return 20801, dict_err.get(20801)
+
+        try:
+            obj = Supplier.objects.create(
+                name = name,
+                contact = contact,
+                tel = tel,
+                addr = addr,
+                sort = sort,
+                des = des,
+                bank_name = bank_name,
+                account_name = account_name,
+                account_num = account_num
+            )
+
+            # 创建供货商对应的账户
+            SupplierCashAccount.objects.create(supplier=obj)
+
+        except Exception, e:
+            debug.get_debug_detail_and_send_email(e)
+            return 99900, dict_err.get(99900)
+
+        return 0, obj
+
+    def modify_supplier(self, supplier_id, name, contact, tel, addr, bank_name='', \
+            account_name='', account_num='', state=1, sort=0, des=''):
+
+        if not (name and contact and tel and addr):
+            return 99800, dict_err.get(99800)
+
+        obj = self.get_supplier_by_id(supplier_id)
+        if not obj:
+            return 20802, dict_err.get(20802)
+
+        if obj.name != name and Supplier.objects.filter(name=name):
+            return 20801, dict_err.get(20801)
+
+        try:
+            obj.name = name
+            obj.contact = contact
+            obj.tel = tel
+            obj.addr = addr
+            obj.bank_name = bank_name
+            obj.account_name = account_name
+            obj.account_num = account_num
+            obj.state = state
+            obj.sort = sort
+            obj.des = des
+            obj.save()
+        except Exception, e:
+            debug.get_debug_detail_and_send_email(e)
+            return 99900, dict_err.get(99900)
+
+        return 0, dict_err.get(0)
+
+    def get_suppliers_by_name(self, name=""):
+        objs = self.get_all_supplier()
+
+        if name:
+            objs = objs.filter(name__contains=name)
+
+        return objs[:10]
+
+
+class SupplierCashAccountBase(object):
+
+
+    def get_all_accounts(self):
+        return SupplierCashAccount.objects.all()
+
+    def get_accounts_for_admin(self, name):
+        objs = self.get_all_accounts()
+
+        if name:
+            objs = objs.select_related('supplier').filter(supplier__name__contains=name)
+
+        return objs
+
+    def get_supplier_cash_account_by_id(self, account_id):
+        try:
+            return SupplierCashAccount.objects.select_related("supplier").get(id=account_id)
+        except SupplierCashAccount.DoesNotExist:
+            return ''
+
+    def get_account_by_supplier(self, supplier_id):
+        try:
+            return SupplierCashAccount.objects.get(supplier_id=supplier_id)
+        except SupplierCashAccount.DoesNotExist:
+            return ''
+
+
+class SupplierCashRecordBase(object):
+
+    def get_all_records(self):
+        return SupplierCashRecord.objects.all()
+
+    def get_records_for_admin(self, start_date, end_date, name):
+        objs = self.get_all_records().filter(create_time__range=(start_date, end_date))
+
+        if name:
+            objs = objs.filter(cash_account__supplier__name__contains=name)
+
+        return objs
+
+    def validate_record_info(self, supplier_id, value, operation, notes):
+        value = float(value)
+        operation = int(operation)
+        supplier = SupplierBase().get_supplier_by_id(supplier_id)
+        assert operation in (0, 1)
+        assert value > 0 and notes and supplier
+
+    @transaction.commit_manually(using=DEFAULT_DB)
+    def add_cash_record_with_transaction(self, supplier_id, value, operation, notes, ip=None):
+        try:
+            errcode, errmsg = self.add_cash_record(supplier_id, value, operation, notes, ip)
+            if errcode == 0:
+                transaction.commit(using=DEFAULT_DB)
+            else:
+                transaction.rollback(using=DEFAULT_DB)
+            return errcode, errmsg
+        except Exception, e:
+            debug.get_debug_detail(e)
+            transaction.rollback(using=DEFAULT_DB)
+            return 99900, dict_err.get(99900)
+
+    def add_cash_record(self, supplier_id, value, operation, notes, ip=None):
+        try:
+            try:
+                value = decimal.Decimal(value)
+                operation = int(operation)
+                self.validate_record_info(supplier_id, value, operation, notes)
+            except Exception, e:
+                return 99801, dict_err.get(99801)
+
+            account, created = SupplierCashAccount.objects.get_or_create(supplier_id=supplier_id)
+
+            if operation == 0:
+                account.balance += value
+            elif operation == 1:
+                account.balance -= value
+            account.save()
+
+            SupplierCashRecord.objects.create(
+                cash_account=account,
+                value=value,
+                current_balance=account.balance,
+                operation=operation,
+                notes=notes,
+                ip=ip
+            )
+
+            return 0, dict_err.get(0)
+        except Exception, e:
+            debug.get_debug_detail_and_send_email(e)
+            return 99900, dict_err.get(99900)

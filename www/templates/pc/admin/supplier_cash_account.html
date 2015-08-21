@@ -1,0 +1,190 @@
+{% extends "pc/admin/home.html" %}
+{% load custom_tags %}
+{% load custom_filters %}
+{% block title %}供货商现金账户{% endblock %}
+{% block admin_title %}供货商现金账户{% endblock %}
+{% block admin_title_m %}供货商现金账户{% endblock %}
+
+{% block css %}
+<style type="text/css">
+
+</style>
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript">
+$(document).ready(function(){
+    // models
+    var Account = Backbone.Model.extend({
+
+        // 默认值
+        defaults: {
+            'num': ''
+        }
+
+    });
+
+    // collections
+    var Accounts = Backbone.Collection.extend({
+        model: Account,
+
+        _modelMaps: {
+            'num': 'num',
+            'accountId': 'account_id',
+            'supplierId': 'supplier_id',
+            'supplierName': 'supplier_name',
+            'balance': 'balance'
+        },
+
+        // 查询
+        search: function(name, pageIndex){
+            var me = this;
+
+            ajaxSend(
+                "/admin/supplier_cash_account/search", 
+                {'supplier_name': name||'', 'page_index': pageIndex||1}, 
+                function(data){
+                    me.pageIndex = pageIndex||1;
+                    me.pageCount = data.page_count;
+                    me.name = name||'';
+
+                    me.reset($.Global.Utils.dictMapParse(data.data, me._modelMaps));
+                }
+            );
+        }
+
+    });
+
+    // listView
+    var ListView = Backbone.View.extend({
+        el: '#account_list',
+
+        pagination: new $.Global.Pagination.PaginationView(),
+
+        template: _.template($('#account_template').html()),
+
+        initialize: function(){
+            this.listenTo(this.collection, 'reset', this.render);
+        },
+
+        events: {
+            'click .search': 'search'
+        },
+
+        // 渲染函数
+        render: function(){
+            var data = this.collection.toJSON();
+
+            this.showPanel();
+
+            this.$('tbody').html(this.template({'accounts': data}));
+
+            this.pagination.render(
+                this.collection.pageIndex||1, 
+                this.collection.pageCount, 
+                'search/' + this.collection.name
+            );
+        },
+
+        // 显示面板
+        showPanel: function(){
+            $('.orange-nav-pills a[href="#account_list"]').tab('show');
+        },
+
+        search: function(){
+            var name = this.$('.name').val();
+
+            router.navigate(String.format('/search/{0}/1', name), {trigger: true});
+        }
+        
+    });
+    
+    // router
+    var Router = Backbone.Router.extend({
+
+        routes: {
+            "":                     "search",
+            "modify/:accountId":       "modify",
+            "search/(:name)/:pageIndex":    "search"
+        },
+
+        // 查询
+        search: function(name, pageIndex){
+            accounts.search(name, pageIndex||1);
+        }
+
+    });
+    
+    // 初始化
+    var accounts = new Accounts(),
+        listView = new ListView({'collection': accounts}),
+        router = new Router();
+ 
+    Backbone.history.start();
+
+});
+
+</script>
+{% endblock %}
+
+{% block admin_main %}
+<ul class="nav nav-pills pt-15 orange-nav-pills">
+    <li class="active">
+        <a href="#account_list" data-toggle="pill">
+            <i class="fa fa-list-ol pr-5"></i>
+            <span class="hidden-sm hidden-md hidden-lg">列表</span>
+            <span class="hidden-xs">现金账户列表</span>
+        </a>
+    </li>
+</ul>
+
+<div class="tab-content">
+    <!-- 客户经理列表 -->
+    <div class="tab-pane fade pt-15 in active" id="account_list">
+        <form action="." class="form-inline" onsubmit="javascript: return false;">
+            <div class="input-group input-group-sm pb-10">
+                <span class="input-group-addon">供货商名称</span>
+                <input type="text" class="form-control name" placeholder="" />
+                <span class="input-group-btn">
+                    <button class="btn btn-default search bgc-eeeeee" type="submit">查询</button>
+                </span>
+            </div>
+        </form>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>供货商名称</th>
+                    <th>最新余额</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+            </tbody>
+        </table>
+
+        <div class="text-center">
+            <ul class="pagination pagination-sm qx-pagination">
+                
+            </ul>
+        </div>
+    </div>
+
+    <!-- 修改客户经理信息 -->
+    <div class="tab-pane fade" id="modify_account">
+        
+    </div>
+</div>
+
+<!-- 客户经理列表 -->
+<script type="text/template" id="account_template">
+    <% _.each(accounts, function(account){ %>
+        <tr class="pointer" data-account_id="<%= account.accountId %>">
+            <td><%= account.num %></td>
+            <td><%= account.supplierName %></td>
+            <td><%= account.balance %></td>
+        </tr>
+    <% }) %>
+</script>
+
+{% endblock %}

@@ -41,6 +41,18 @@ PERMISSIONS = [
     {'code': 'add_cash_record', 'name': u'添加现金流水', 'parent': 'cash_record_manage'},
     {'code': 'query_cash_record', 'name': u'查询现金流水', 'parent': 'cash_record_manage'},
 
+    {'code': 'supplier_manage', 'name': u'供货商管理', 'parent': None},
+    {'code': 'add_supplier', 'name': u'添加供货商', 'parent': 'supplier_manage'},
+    {'code': 'query_supplier', 'name': u'查询供货商', 'parent': 'supplier_manage'},
+    {'code': 'modify_supplier', 'name': u'修改供货商', 'parent': 'supplier_manage'},
+
+    {'code': 'supplier_cash_account_manage', 'name': u'供货商现金账户管理', 'parent': None},
+    {'code': 'query_supplier_cash_account', 'name': u'查询供货商现金账户', 'parent': 'supplier_cash_account_manage'},
+
+    {'code': 'supplier_cash_record_manage', 'name': u'供货商现金流水管理', 'parent': None},
+    {'code': 'add_supplier_cash_record', 'name': u'添加供货商现金流水', 'parent': 'supplier_cash_record_manage'},
+    {'code': 'query_supplier_cash_record', 'name': u'查询供货商现金流水', 'parent': 'supplier_cash_record_manage'},
+
     {'code': 'item_manage', 'name': u'产品管理', 'parent': None},
     {'code': 'add_item', 'name': u'添加产品', 'parent': 'item_manage'},
     {'code': 'query_item', 'name': u'查询产品', 'parent': 'item_manage'},

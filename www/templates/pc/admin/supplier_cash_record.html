@@ -1,9 +1,9 @@
 {% extends "pc/admin/home.html" %}
 {% load custom_tags %}
 {% load custom_filters %}
-{% block title %}公司现金流水{% endblock %}
-{% block admin_title %}公司现金流水{% endblock %}
-{% block admin_title_m %}公司现金流水{% endblock %}
+{% block title %}供货商现金流水{% endblock %}
+{% block admin_title %}供货商现金流水{% endblock %}
+{% block admin_title_m %}供货商现金流水{% endblock %}
 
 {% block css %}
 <style type="text/css">
@@ -31,8 +31,8 @@ $(document).ready(function(){
         _modelMaps: {
             'num': 'num',
             'recordId': 'record_id',
-            'companyId': 'company_id',
-            'companyName': 'company_name',
+            'supplierId': 'supplier_id',
+            'supplierName': 'supplier_name',
             'balance': 'balance',
             'value': 'value',
             'currentBalance': 'current_balance',
@@ -51,7 +51,7 @@ $(document).ready(function(){
                 pageIndex = pageIndex||1;
 
             ajaxSend(
-                "/admin/cash_record/search", 
+                "/admin/supplier_cash_record/search", 
                 {'start_date': start_date, 'end_date': end_date, 'name': name, 'page_index': pageIndex}, 
                 function(data){
                     me.pageIndex = pageIndex;
@@ -69,7 +69,7 @@ $(document).ready(function(){
             var me = this;
 
             ajaxSend(
-                "/admin/cash_record/add_cash_account",  
+                "/admin/supplier_cash_record/add_supplier_cash_account",  
                 data,
                 function(response){
                     if(callback){
@@ -138,15 +138,15 @@ $(document).ready(function(){
             me.render();
         },
 
-        companyTextBox: null,
-        initCompanyTextBox: function(name, value){
+        supplierTextBox: null,
+        initSupplierTextBox: function(name, value){
             var me = this;
 
-            this.companyTextBox = $.Global.TextboxList.create('#company_add', {
+            this.supplierTextBox = $.Global.TextboxList.create('#supplier_add', {
                 max: 1,
-                placeholder: '选择所属公司',
-                url: '/admin/company/get_companys_by_name',
-                param: 'company_name',
+                placeholder: '选择所属供货商',
+                url: '/admin/supplier/get_suppliers_by_name',
+                param: 'supplier_name',
                 loadPlaceholder: '正在加载...'
             });
             
@@ -169,7 +169,7 @@ $(document).ready(function(){
             
             $('#add_record_modal').modal({'show': true, 'backdrop': 'static'});
 
-            me.initCompanyTextBox();
+            me.initSupplierTextBox();
            
         },
 
@@ -272,7 +272,7 @@ $(document).ready(function(){
                 <input type="text" class="form-control" id="end_date_search" value="{{end_date}}"  />
             </div>
             <div class="input-group input-group-sm pb-10">
-                <span class="input-group-addon">公司名称</span>
+                <span class="input-group-addon">供货商名称</span>
                 <input type="text" class="form-control name" placeholder="" />
                 <span class="input-group-btn">
                     <button class="btn btn-default search bgc-eeeeee" type="submit">查询</button>
@@ -283,7 +283,7 @@ $(document).ready(function(){
             <thead>
                 <tr>
                     <th>#</th>
-                    <th>公司</th>
+                    <th>供货商</th>
                     <th class="hidden-xs">操作类型</th>
                     <th>操作金额</th>
                     <th class="hidden-xs">余额</th>
@@ -309,7 +309,7 @@ $(document).ready(function(){
     <% _.each(records, function(record){ %>
         <tr class="pointer" data-record_id="<%= record.recordId %>">
             <td><%= record.num %></td>
-            <td><%= record.companyName %></td>
+            <td><%= record.supplierName %></td>
             <td class="hidden-xs">
                 <% if(record.operation == 0){ %>
                     <span class="co-19BA40">充值</span>
@@ -337,14 +337,14 @@ $(document).ready(function(){
         <div class="modal-content">
             <div class="modal-header pb-5">
                 <!-- <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button> -->
-                <h4 class="modal-title">添加公司现金记录</h4>
+                <h4 class="modal-title">添加供货商现金记录</h4>
             </div>
             <div class="modal-body">
                 <form class="form-horizontal record-form" role="form" method="post" action="">
                     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
-                        <label class="col-sm-2 control-label">公司</label>
+                        <label class="col-sm-2 control-label">供货商</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control" id="company_add" required name="company_id" value=''>
+                            <input type="text" class="form-control" id="supplier_add" required name="supplier_id" value=''>
                         </div>
                     </div>
                     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">

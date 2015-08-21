@@ -21,6 +21,7 @@ urlpatterns += patterns('www.admin.views_user',
 
 # 公司管理
 urlpatterns += patterns('www.admin.views_company',
+
     url(r'^company/get_companys_by_name$', 'get_companys_by_name'),
     url(r'^company/modify_company$', 'modify_company'),
     url(r'^company/add_company$', 'add_company'),
@@ -31,6 +32,7 @@ urlpatterns += patterns('www.admin.views_company',
 
 # 公司管理员
 urlpatterns += patterns('www.admin.views_company_manager',
+
     url(r'^company_manager/delete_manager$', 'delete_manager'),
     url(r'^company_manager/add_manager$', 'add_manager'),
     url(r'^company_manager/modify_manager$', 'modify_manager'),
@@ -39,19 +41,47 @@ urlpatterns += patterns('www.admin.views_company_manager',
     url(r'^company_manager$', 'company_manager'),
 )
 
-# 现金账户
+# 公司现金账户
 urlpatterns += patterns('www.admin.views_cash_account',
+
     url(r'^cash_account/modify_cash_account$', 'modify_cash_account'),
     url(r'^cash_account/get_cash_account_by_id$', 'get_cash_account_by_id'),
     url(r'^cash_account/search$', 'search'),
     url(r'^cash_account$', 'cash_account'),
 )
 
-# 现金流水
+# 公司现金流水
 urlpatterns += patterns('www.admin.views_cash_record',
+
     url(r'^cash_record/add_cash_account$', 'add_cash_record'),
     url(r'^cash_record/search$', 'search'),
     url(r'^cash_record$', 'cash_record'),
+)
+
+# 供货商管理
+urlpatterns += patterns('www.admin.views_supplier',
+
+    url(r'^supplier/get_suppliers_by_name$', 'get_suppliers_by_name'),
+    url(r'^supplier/modify_supplier$', 'modify_supplier'),
+    url(r'^supplier/add_supplier$', 'add_supplier'),
+    url(r'^supplier/get_supplier_by_id$', 'get_supplier_by_id'),
+    url(r'^supplier/search$', 'search'),
+    url(r'^supplier$', 'supplier'),
+)
+
+# 供货商现金账户
+urlpatterns += patterns('www.admin.views_supplier_cash_account',
+
+    url(r'^supplier_cash_account/search$', 'search'),
+    url(r'^supplier_cash_account$', 'supplier_cash_account'),
+)
+
+# 公司现金流水
+urlpatterns += patterns('www.admin.views_supplier_cash_record',
+
+    url(r'^supplier_cash_record/add_supplier_cash_account$', 'add_supplier_cash_record'),
+    url(r'^supplier_cash_record/search$', 'search'),
+    url(r'^supplier_cash_record$', 'supplier_cash_record'),
 )
 
 # 产品管理
