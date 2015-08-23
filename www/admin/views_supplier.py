@@ -38,6 +38,7 @@ def format_supplier(objs, num):
             'bank_name': x.bank_name,
             'account_name': x.account_name,
             'account_num': x.account_num,
+            'remittance_des': x.remittance_des,
             'create_time': str(x.create_time)
         })
 
@@ -88,10 +89,11 @@ def modify_supplier(request):
     bank_name = request.REQUEST.get('bank_name')
     account_name = request.REQUEST.get('account_name')
     account_num = request.REQUEST.get('account_num')
+    remittance_des = request.REQUEST.get('remittance_des')
 
     return SupplierBase().modify_supplier(
         supplier_id, name, contact, tel, addr, bank_name, account_name, 
-        account_num, state, sort, des
+        account_num, state, sort, des, remittance_des
     )
 
 
@@ -107,10 +109,11 @@ def add_supplier(request):
     bank_name = request.REQUEST.get('bank_name')
     account_name = request.REQUEST.get('account_name')
     account_num = request.REQUEST.get('account_num')
+    remittance_des = request.REQUEST.get('remittance_des')
 
     flag, msg = SupplierBase().add_supplier(
         name, contact, tel, addr, bank_name, 
-        account_name, account_num, sort, des
+        account_name, account_num, sort, des, remittance_des
     )
 
     return flag, msg.id if flag == 0 else msg

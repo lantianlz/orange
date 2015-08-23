@@ -15,7 +15,8 @@ from www.misc import consts
 
 from www.account.interface import UserBase, ExternalTokenBase
 from models import Item, Company, Meal, MealItem, Order, OrderItem, \
-    Booking, CompanyManager, CashAccount, CashRecord, Supplier, SupplierCashAccount, SupplierCashRecord
+    Booking, CompanyManager, CashAccount, CashRecord, Supplier, \
+    SupplierCashAccount, SupplierCashRecord, PurchaseRecord
 
 DEFAULT_DB = 'default'
 
@@ -41,6 +42,8 @@ dict_err = {
 
     20801: u'供货商名称重复',
     20801: u'没有找到对应的供货商',
+
+    20901: u'没有找到对应的采购流水',
 }
 dict_err.update(consts.G_DICT_ERROR)
 
@@ -943,7 +946,7 @@ class SupplierBase(object):
             return ""
 
     def add_supplier(self, name, contact, tel, addr, bank_name='', account_name='', \
-            account_num='', sort=0, des=''):
+            account_num='', sort=0, des='', remittance_des=''):
 
         if not (name and contact and tel and addr):
             return 99800, dict_err.get(99800)
@@ -961,7 +964,8 @@ class SupplierBase(object):
                 des = des,
                 bank_name = bank_name,
                 account_name = account_name,
-                account_num = account_num
+                account_num = account_num,
+                remittance_des = remittance_des
             )
 
             # 创建供货商对应的账户
@@ -974,7 +978,7 @@ class SupplierBase(object):
         return 0, obj
 
     def modify_supplier(self, supplier_id, name, contact, tel, addr, bank_name='', \
-            account_name='', account_num='', state=1, sort=0, des=''):
+            account_name='', account_num='', state=1, sort=0, des='', remittance_des=''):
 
         if not (name and contact and tel and addr):
             return 99800, dict_err.get(99800)
@@ -997,6 +1001,7 @@ class SupplierBase(object):
             obj.state = state
             obj.sort = sort
             obj.des = des
+            obj.remittance_des = remittance_des
             obj.save()
         except Exception, e:
             debug.get_debug_detail_and_send_email(e)
@@ -1104,3 +1109,111 @@ class SupplierCashRecordBase(object):
         except Exception, e:
             debug.get_debug_detail_and_send_email(e)
             return 99900, dict_err.get(99900)
+
+
+class PurchaseRecordBase(object):
+
+    def get_all_records(self, state=None):
+        objs = PurchaseRecord.objects.all()
+
+        if state:
+            objs = objs.filter(state=state)
+
+        return objs
+
+    def search_records_for_admin(self, name, state):
+        objs = self.get_all_records(state)
+
+        if name:
+            objs = objs.select_related('supplier').filter(supplier__name__contains=name)
+
+        return objs
+
+    @transaction.commit_manually(using=DEFAULT_DB)
+    def add_record(self, supplier_id, des, price, operator, ip):
+        
+        if not (supplier_id, des, price, operator):
+            return 99800, dict_err.get(99800)
+
+        obj = SupplierBase().get_supplier_by_id(supplier_id)
+        if not obj:
+            return 20802, dict_err.get(20802)
+
+        try:
+            assert price > 0
+
+            record = PurchaseRecord.objects.create(
+                supplier_id = supplier_id,
+                des = des,
+                price = price,
+                operator = operator
+            )
+
+            errcode, errmsg = SupplierCashRecordBase().add_cash_record(
+                supplier_id, price, 0, u'来自采购流水', ip
+            )
+
+            if errcode == 0:
+                transaction.commit(using=DEFAULT_DB)
+                return 0, record
+            else:
+                transaction.rollback(using=DEFAULT_DB)
+                return errcode, errmsg
+
+        except Exception, e:
+            transaction.rollback(using=DEFAULT_DB)
+            debug.get_debug_detail_and_send_email(e)
+            return 99900, dict_err.get(99900)
+
+
+    def get_record_by_id(self, record_id):
+        try:
+            return PurchaseRecord.objects.select_related("supplier").get(id=record_id)
+        except PurchaseRecord.DoesNotExist:
+            return ''
+
+    @transaction.commit_manually(using=DEFAULT_DB)
+    def modify_record(self, record_id, ip):
+
+        if not record_id:
+            return 99800, dict_err.get(99800)
+
+        obj = self.get_record_by_id(record_id)
+        if not obj:
+            return 20901, dict_err.get(20901)
+
+        try:
+            obj.state = 0
+            obj.save()
+            
+            errcode, errmsg = SupplierCashRecordBase().add_cash_record(
+                obj.supplier_id, obj.price, 1, u'采购流水作废', ip
+            )
+
+            if errcode == 0:
+                transaction.commit(using=DEFAULT_DB)
+            else:
+                transaction.rollback(using=DEFAULT_DB)
+            return errcode, errmsg
+
+        except Exception, e:
+            transaction.rollback(using=DEFAULT_DB)
+            debug.get_debug_detail_and_send_email(e)
+            return 99900, dict_err.get(99900)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

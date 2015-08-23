@@ -264,6 +264,8 @@ class Supplier(models.Model):
     bank_name = models.CharField(verbose_name=u"开户银行名称", max_length=128, null=True)
     account_name = models.CharField(verbose_name=u"银行户名", max_length=128, null=True)
     account_num = models.CharField(verbose_name=u"银行账号", max_length=128, null=True)
+    remittance_des = models.TextField(verbose_name=u"打款备注", null=True)
+    img = models.CharField(verbose_name=u"图片", max_length=128, null=True)
     state = models.IntegerField(verbose_name=u"状态", default=1, db_index=True, choices=state_choices)
     sort = models.IntegerField(verbose_name=u"排序", default=0)
     create_time = models.DateTimeField(verbose_name=u"创建时间", auto_now_add=True, db_index=True)
@@ -297,8 +299,19 @@ class SupplierCashRecord(models.Model):
     class Meta:
         ordering = ['-id']
 
+class PurchaseRecord(models.Model):
 
+    '''
+    采购流水
+    '''
+    state_choices = ((0, u"作废"), (1, u"正常"))
 
+    supplier = models.ForeignKey("Supplier")
+    des = models.TextField(verbose_name=u"简介", null=True)
+    price = models.DecimalField(verbose_name=u"采购价格", max_digits=10, decimal_places=2, default=0)
+    operator = models.CharField(verbose_name=u"操作人", max_length=128)
+    create_time = models.DateTimeField(verbose_name=u"流水时间", auto_now_add=True, db_index=True)
+    state = models.IntegerField(verbose_name=u"状态", default=1, choices=state_choices, db_index=True)
 
 
 

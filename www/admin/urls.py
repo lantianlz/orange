@@ -76,7 +76,7 @@ urlpatterns += patterns('www.admin.views_supplier_cash_account',
     url(r'^supplier_cash_account$', 'supplier_cash_account'),
 )
 
-# 公司现金流水
+# 供货商现金流水
 urlpatterns += patterns('www.admin.views_supplier_cash_record',
 
     url(r'^supplier_cash_record/add_supplier_cash_account$', 'add_supplier_cash_record'),
@@ -111,10 +111,6 @@ urlpatterns += patterns('www.admin.views_meal',
 # 订单管理
 urlpatterns += patterns('www.admin.views_order',
 
-    url(r'^purchase/print_purchase$', 'print_purchase'),
-    url(r'^purchase/get_purchase$', 'get_purchase'),
-    url(r'^purchase$', 'purchase'),
-
     url(r'^order/get_items_of_order', 'get_items_of_order'),
     url(r'^order/print_order$', 'print_order'),
     url(r'^order/add_order$', 'add_order'),
@@ -127,7 +123,25 @@ urlpatterns += patterns('www.admin.views_order',
     url(r'^order$', 'order'),
 )
 
-# 产品管理
+# 采购汇总
+urlpatterns += patterns('www.admin.views_purchase',
+
+    url(r'^purchase/print_purchase$', 'print_purchase'),
+    url(r'^purchase/get_purchase$', 'get_purchase'),
+    url(r'^purchase$', 'purchase'),
+)
+
+# 采购流水
+urlpatterns += patterns('www.admin.views_purchase_record',
+
+    url(r'^purchase_record/modify_record$', 'modify_record'),
+    url(r'^purchase_record/add_record$', 'add_record'),
+    url(r'^purchase_record/get_record_by_id$', 'get_record_by_id'),
+    url(r'^purchase_record/search$', 'search'),
+    url(r'^purchase_record$', 'purchase_record'),
+)
+
+# 预订管理
 urlpatterns += patterns('www.admin.views_booking',
 
     url(r'^booking/modify_booking$', 'modify_booking'),

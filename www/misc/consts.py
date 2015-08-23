@@ -68,6 +68,11 @@ PERMISSIONS = [
     {'code': 'query_order', 'name': u'查询订单', 'parent': 'order_manage'},
     {'code': 'modify_order', 'name': u'修改订单', 'parent': 'order_manage'},
 
+    {'code': 'purchase_record_manage', 'name': u'采购流水管理', 'parent': None},
+    {'code': 'add_purchase_record', 'name': u'添加采购流水', 'parent': 'purchase_record_manage'},
+    {'code': 'query_purchase_record', 'name': u'查询采购流水', 'parent': 'purchase_record_manage'},
+    {'code': 'modify_purchase_record', 'name': u'修改采购流水', 'parent': 'purchase_record_manage'},
+
     {'code': 'booking_manage', 'name': u'预订管理', 'parent': None},
     # {'code': 'add_booking', 'name': u'添加预订', 'parent': 'booking_manage'},
     {'code': 'query_booking', 'name': u'查询预订', 'parent': 'booking_manage'},

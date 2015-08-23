@@ -41,6 +41,7 @@ $(document).ready(function(){
             'bankName': 'bank_name',
             'accountName': 'account_name',
             'accountNum': 'account_num',
+            'remittanceDes': 'remittance_des',
             'createTime': 'create_time'
         },
 
@@ -439,6 +440,12 @@ $(document).ready(function(){
             </div>
         </div>
         <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+            <label class="col-sm-2 control-label">打款备注</label>
+            <div class="col-sm-9">
+                <textarea name="remittance_des" rows="6" class="form-control"><%= remittanceDes %></textarea>
+            </div>
+        </div>
+        <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
             <label class="col-sm-2 control-label">排序</label>
             <div class="col-sm-2">
                 <input type="text" class="form-control" required name="sort" value='<%= sort %>'>
@@ -519,6 +526,12 @@ $(document).ready(function(){
                         <label class="col-sm-3 control-label">银行账号</label>
                         <div class="col-sm-9">
                             <input type="text" class="form-control" name="account_num" value=''>
+                        </div>
+                    </div>
+                    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+                        <label class="col-sm-3 control-label">打款备注</label>
+                        <div class="col-sm-9">
+                            <textarea name="remittance_des" rows="6" class="form-control" placeholder=""></textarea>
                         </div>
                     </div>
                     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
