@@ -7,7 +7,12 @@
 
 {% block css %}
 <style type="text/css">
-
+#start_date_search{
+    width: 130px;
+}
+#end_date_search{
+    width: 130px;
+}
 </style>
 {% endblock %}
 
@@ -42,20 +47,24 @@ $(document).ready(function(){
         },
 
         // 查询
-        search: function(name, state, pageIndex){
+        search: function(name, state, startDate, endDate, pageIndex){
             var me = this,
                 name = name||'',
                 state = state||1,
+                startDate = startDate||'',
+                endDate = endDate||'',
                 pageIndex = pageIndex||1;
 
             ajaxSend(
                 "/admin/purchase_record/search", 
-                {'name': name, 'state': state, 'page_index': pageIndex}, 
+                {'name': name, 'state': state, 'start_date': startDate, 'end_date': endDate, 'page_index': pageIndex}, 
                 function(data){
                     me.pageIndex = pageIndex;
                     me.pageCount = data.page_count;
                     me.name = name;
                     me.state = state;
+                    me.startDate = startDate;
+                    me.endDate = endDate;
 
                     me.reset($.Global.Utils.dictMapParse(data.data, me._modelMaps));
                 }
@@ -120,6 +129,7 @@ $(document).ready(function(){
 
         events: {
             'click .search': 'search',
+            'click .search-lastweek': 'searchLastWeek',
             'click .pointer': 'modifyRecord'
         },
 
@@ -134,7 +144,13 @@ $(document).ready(function(){
             this.pagination.render(
                 this.collection.pageIndex||1, 
                 this.collection.pageCount, 
-                'search/' + this.collection.name + '/' + this.collection.state
+                String.format(
+                    'search/{0}/{1}/{2}/{3}', 
+                    this.collection.name,
+                    this.collection.state,
+                    this.collection.startDate,
+                    this.collection.endDate
+                )
             );
         },
 
@@ -143,11 +159,35 @@ $(document).ready(function(){
             $('.orange-nav-pills a[href="#record_list"]').tab('show');
         },
 
+        searchLastWeek: function(){
+            var now = new Date(),
+                weekday = now.getDay(),
+                weekday = weekday == 0 ? 7 : weekday,
+                // 上周日
+                lastWeekEnd = new Date(now - (weekday)*24*60*60*1000),
+                // 上周一
+                lastWeekStart = new Date(lastWeekEnd - 6*24*60*60*1000);
+
+            this.$('#start_date_search').val(
+                $.Global.Utils.formatDate(lastWeekStart, 'y-m-d')
+            );
+            this.$('#end_date_search').val(
+                $.Global.Utils.formatDate(lastWeekEnd, 'y-m-d')
+            );
+
+            this.search();
+        },
+
         search: function(){
             var name = this.$('.name').val(),
+                startDate = this.$('#start_date_search').val(),
+                endDate = this.$('#end_date_search').val(),
                 state = this.$('.state').val();
 
-            router.navigate(String.format('/search/{0}/{1}/1', name, state), {trigger: true});
+            router.navigate(
+                String.format('/search/{0}/{1}/{2}/{3}/1', name, state, startDate, endDate), 
+                {trigger: true}
+            );
         },
 
         modifyRecord: function(sender){
@@ -290,13 +330,13 @@ $(document).ready(function(){
         routes: {
             "":                     "search",
             "modify/:recordId":       "modify",
-            "search/(:name)/(:state)/:pageIndex":    "search",
+            "search/(:name)/(:state)/(:startDate)/(:endDate)/:pageIndex":    "search",
             "add":                   "add"
         },
 
         // 查询
-        search: function(name, state, pageIndex){
-            records.search(name, state, pageIndex||1);
+        search: function(name, state, startDate, endDate, pageIndex){
+            records.search(name, state, startDate, endDate, pageIndex);
         },
 
         // 显示修改界面
@@ -319,6 +359,19 @@ $(document).ready(function(){
  
     Backbone.history.start();
 
+    $('#start_date_search').datetimepicker({
+        format: 'yyyy-mm-dd',
+        language: 'zh-CN',
+        minView: 2,
+        autoclose: true
+    });
+
+    $('#end_date_search').datetimepicker({
+        format: 'yyyy-mm-dd',
+        language: 'zh-CN',
+        minView: 2,
+        autoclose: true
+    });
 });
 
 </script>
@@ -362,11 +415,22 @@ $(document).ready(function(){
                 </select>
             </div>
             <div class="input-group input-group-sm pb-10">
+                <span class="input-group-addon">开始日期</span>
+                <input type="text" class="form-control" id="start_date_search" value="{{start_date}}"  />
+            </div>
+            <div class="input-group input-group-sm pb-10">
+                <span class="input-group-addon">结束日期</span>
+                <input type="text" class="form-control" id="end_date_search" value="{{end_date}}"  />
+            </div>
+            <div class="input-group input-group-sm pb-10">
                 <span class="input-group-addon">供货商名称</span>
                 <input type="text" class="form-control name" placeholder="" />
                 <span class="input-group-btn">
                     <button class="btn btn-default search bgc-eeeeee" type="submit">查询</button>
                 </span>
+            </div>
+            <div class="input-group input-group-sm pb-10">
+                <button class="btn btn-info search-lastweek btn-sm" type="submit">查询上周</button>
             </div>
         </form>
         <table class="table table-hover">

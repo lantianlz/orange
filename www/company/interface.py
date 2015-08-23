@@ -1121,11 +1121,15 @@ class PurchaseRecordBase(object):
 
         return objs
 
-    def search_records_for_admin(self, name, state):
-        objs = self.get_all_records(state)
+    def search_records_for_admin(self, name, state, start_date, end_date):
+        objs = self.get_all_records(state).filter(
+            create_time__range = (start_date, end_date)
+        )
 
         if name:
-            objs = objs.select_related('supplier').filter(supplier__name__contains=name)
+            objs = objs.select_related('supplier').filter(
+                supplier__name__contains=name
+            )
 
         return objs
 

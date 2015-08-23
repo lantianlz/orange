@@ -19,7 +19,8 @@ def purchase_record(request, template_name='pc/admin/purchase_record.html'):
     states = [{'value': x[0], 'name': x[1]} for x in PurchaseRecord.state_choices]
 
     today = datetime.datetime.now()
-    start_date= (today - datetime.timedelta(days=30)).strftime('%Y-%m-%d')
+    weekday = today.date().weekday()
+    start_date= (today - datetime.timedelta(days=weekday)).strftime('%Y-%m-%d')
     end_date = today.strftime('%Y-%m-%d')
 
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
@@ -54,9 +55,12 @@ def search(request):
 
     name = request.REQUEST.get('name')
     state = request.REQUEST.get('state')
+    start_date = request.POST.get('start_date')
+    end_date = request.POST.get('end_date')
+    start_date, end_date = utils.get_date_range(start_date, end_date)
     page_index = int(request.REQUEST.get('page_index'))
 
-    objs = PurchaseRecordBase().search_records_for_admin(name, state)
+    objs = PurchaseRecordBase().search_records_for_admin(name, state, start_date, end_date)
 
     page_objs = page.Cpt(objs, count=10, page=page_index).info
 
