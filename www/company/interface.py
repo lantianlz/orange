@@ -69,10 +69,13 @@ class ItemBase(object):
 
         return objs
 
-    def add_item(self, name, item_type, spec, price, sort, integer, sale_price, init_add):
+    def add_item(self, name, item_type, spec, price, sort, integer, sale_price, init_add, supplier_id, des):
 
-        if not (name and item_type and price):
+        if not (name and item_type and price and supplier_id):
             return 99800, dict_err.get(99800)
+
+        if not SupplierBase().get_supplier_by_id(supplier_id):
+            return 20802, dict_err.get(20802)
 
         if Item.objects.filter(name=name):
             return 20101, dict_err.get(20101)
@@ -87,6 +90,8 @@ class ItemBase(object):
                 integer=integer,
                 sale_price=sale_price,
                 init_add=init_add,
+                supplier_id=supplier_id,
+                des=des,
                 code=self.generate_item_code(item_type)
             )
 
@@ -115,10 +120,13 @@ class ItemBase(object):
 
         return obj
 
-    def modify_item(self, item_id, name, item_type, spec, price, sort, state, integer, sale_price, init_add):
+    def modify_item(self, item_id, name, item_type, spec, price, sort, state, integer, sale_price, init_add, supplier_id, des):
 
-        if not (name and item_type and price):
+        if not (name and item_type and price and supplier_id):
             return 99800, dict_err.get(99800)
+
+        if not SupplierBase().get_supplier_by_id(supplier_id):
+            return 20802, dict_err.get(20802)
 
         obj = Item.objects.filter(id=item_id)
         if not obj:
@@ -128,7 +136,7 @@ class ItemBase(object):
         temp = Item.objects.filter(name=name)
         if temp and temp[0].id != obj.id:
             return 20103, dict_err.get(20103)
-
+        
         try:
             obj.name = name
             obj.item_type = item_type
@@ -139,6 +147,8 @@ class ItemBase(object):
             obj.integer = integer
             obj.init_add = init_add
             obj.sale_price = sale_price
+            obj.supplier_id = supplier_id
+            obj.des = des
             obj.save()
         except Exception, e:
             debug.get_debug_detail_and_send_email(e)

@@ -8,7 +8,7 @@ from django.shortcuts import render_to_response
 from common import utils, page
 from misc.decorators import staff_required, common_ajax_response, verify_permission, member_required, log_sensitive_operation
 
-from www.company.interface import ItemBase
+from www.company.interface import ItemBase, SupplierBase
 
 @verify_permission('')
 def item(request, template_name='pc/admin/item.html'):
@@ -30,6 +30,8 @@ def format_item(objs, num):
     for x in objs:
         num += 1
 
+        supplier = SupplierBase().get_supplier_by_id(x.supplier_id) if x.supplier_id else None
+
         data.append({
             'num': num,
             'item_id': x.id,
@@ -44,6 +46,9 @@ def format_item(objs, num):
             'integer': x.integer,
             'sale_price': str(x.sale_price),
             'init_add': x.init_add,
+            'des': x.des,
+            'supplier_id': supplier.id if supplier else '',
+            'supplier_name': supplier.name if supplier else '',
             'sort': x.sort
         })
 
@@ -97,9 +102,13 @@ def modify_item(request):
     sale_price = request.POST.get('sale_price')
     sort = request.POST.get('sort')
     state = request.POST.get('state')
+    supplier_id = request.POST.get('supplier_id')
+    des = request.POST.get('des')
     # state = True if state == "1" else False
 
-    return ItemBase().modify_item(item_id, name, item_type, spec, price, sort, state, integer, sale_price, init_add)
+    return ItemBase().modify_item(item_id, name, item_type, spec, 
+        price, sort, state, integer, sale_price, init_add, supplier_id, des
+    )
 
 @verify_permission('add_item')
 @common_ajax_response
@@ -112,8 +121,14 @@ def add_item(request):
     integer = request.POST.get('integer')
     init_add = request.POST.get('init_add')
     sale_price = request.POST.get('sale_price')
+    supplier_id = request.POST.get('supplier_id')
+    des = request.POST.get('des')
 
-    flag, msg = ItemBase().add_item(name, item_type, spec, price, sort, integer, sale_price, init_add)
+    flag, msg = ItemBase().add_item(
+        name, item_type, spec, price, sort, integer, 
+        sale_price, init_add, supplier_id, des
+    )
+
     return flag, msg.id if flag == 0 else msg
 
 @verify_permission('query_item')
