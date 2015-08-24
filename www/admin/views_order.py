@@ -108,8 +108,10 @@ def search(request):
     order_no = request.POST.get('order_no')
     
     page_index = int(request.REQUEST.get('page_index'))
-
+    
     if state == -1:
+        end_date = str(start_date)[:10]+' 23:59:59'
+        end_date = datetime.datetime.strptime(end_date, '%Y-%m-%d %H:%M:%S')
         objs = OrderBase().search_uncreate_orders_for_admin(start_date, end_date)
     else:
         objs = OrderBase().search_orders_for_admin(start_date, end_date, state, order_no)
