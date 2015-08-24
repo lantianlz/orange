@@ -48,6 +48,7 @@ $(document).ready(function(){
     var DATA = {},
         types = {{types_json|safe}},
         specs = {{specs_json|safe}},
+        orderCount = [],
 
         // 添加项目
         addItem = function(code, name, amount, spec, itemType, orders){
@@ -65,6 +66,13 @@ $(document).ready(function(){
             .insertAfter($('#order_list .item_type_' + itemType));
 
             DATA[code] = orders;
+
+            // 订单数量
+            $.each(orders, function(k, v){
+                if(orderCount.indexOf(v.order_no) == -1){
+                    orderCount.push(v.order_no);
+                }
+            });
         },
 
         // 设置编号
@@ -129,6 +137,7 @@ $(document).ready(function(){
 
             // 清除
             DATA = {};
+            orderCount = [];
             $('#order_list tbody>tr').filter(function(){return !$(this).hasClass('item_type')}).remove();
 
             // 添加项目
@@ -138,6 +147,7 @@ $(document).ready(function(){
 
             setIndex();
 
+            $('.order-count').html(orderCount.length);
         };
 
     // 绑定显示详细订单事件
@@ -157,7 +167,7 @@ $(document).ready(function(){
         <a href="#order_list" data-toggle="pill">
             <i class="fa fa-list-ol pr-5"></i>
             <span class="hidden-sm hidden-md hidden-lg">列表</span>
-            <span class="hidden-xs">采购列表</span>
+            <span class="hidden-xs">采购汇总</span>
         </a>
     </li>
     <li class="pull-right">
@@ -212,6 +222,7 @@ $(document).ready(function(){
                 {% endfor %}
             </tbody>
         </table>
+        <div class="text-right border-top-2 bdc-dddddd mt-25">采购汇总信息来自 <span class="fb f18 co-1DABD9 order-count">0</span> 个订单</div>
     </div>
 </div>
 {% endblock %}

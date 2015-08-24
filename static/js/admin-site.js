@@ -389,7 +389,7 @@ if (!String.format) {
             max: options.max,
             plugins: {
                 autocomplete: {
-                    minLength: 2, // 最小字符
+                    minLength: 1, // 最小字符
                     queryRemote: true, // 远程查询
                     placeholder: options.placeholder,
                     highlight: false,
@@ -788,6 +788,105 @@ if (!String.format) {
             this._initItemTypes();
         }
     });
+
+    
+    $.Global.Image = {
+        version: '1.0.0',
+        author: 'stranger',
+        description: '图片控件'
+    }
+    /*
+        全屏显示
+    */
+    $.Global.Image.FullImage = function(imageUrl){
+
+        $('#full_image_modal').remove();
+
+        var clientWidth = 0,
+            height = 0,
+            width = 0,
+            html = [
+                '<div class="modal fade text-center" id="full_image_modal">',
+                    '<img style="max-width: 90%; transition: all 0.3s;" data-rotate="0" src="'+imageUrl+'" />',
+                    '<span class="pf fa fa-times-circle-o co-ffffff pointer f40 close-img" style="right: 30px; top: 15px;"></span>',
+                    '<span class="pf fa fa-share co-ffffff pointer f40 rotate-left" title="顺时针旋转" style="bottom: 30px; left: 45%;"></span>',
+                    '<span class="pf fa fa-reply co-ffffff pointer f40 rotate-right" title="逆时针旋转" style="bottom: 30px; left: 55%;"></span>',
+                '</div>'
+            ].join(''),
+
+            // 旋转图片
+            changeRotate = function(flag){
+                var target = $('#full_image_modal img'),
+                    deg = parseInt(target.data('rotate'));
+
+                // 旋转
+                if(flag == true){
+                    deg += 90;
+                } else {
+                    deg -= 90;
+                }
+                target.data('rotate', deg);
+
+                target.css({
+                    'transform': 'rotateZ('+deg+'deg)',
+                    '-webkit-transform': 'rotateZ('+deg+'deg)'
+                });
+
+                // 宽度
+                var tempWidth = 0,
+                    rate = imgWidth / imgHeight;
+
+                if( (Math.abs(deg)/90)%2 == 1 ) {
+                    tempWidth = clientWidth < imgWidth ? clientWidth * rate : imgWidth;
+                } else {
+                    tempWidth = clientWidth < imgWidth ? clientWidth : imgWidth;
+                }
+
+                target.css({
+                    width: tempWidth
+                });
+
+            },
+            getImageSize = function(){
+
+                // 计算图片
+                var img = new Image();
+                img.style.display = "none";
+                img.onload = function(){
+                    var marginTop = $(window).height() - img.height;
+                        marginTop = marginTop > 0 ? marginTop / 2 : 0;
+
+                    // 动态计算图片位置和大小
+                    $('#full_image_modal img').css({
+                        'marginTop': marginTop
+                    });
+
+                    clientWidth = $(window).width() * 0.9;
+                    imgWidth = img.width;
+                    imgHeight = img.height;
+                }
+                $('body').append(img);
+                img.src = imageUrl;
+            };
+
+
+        $('body').append(html);
+
+        // 关闭图片事件
+        $('#full_image_modal .close-img')
+        .on('click', function(){
+            $('#full_image_modal').modal('hide');
+        });
+        $('.rotate-left').on('click', function(){
+            changeRotate(true);
+        });
+        $('.rotate-right').on('click', function(){
+            changeRotate(false);
+        });
+
+        $('#full_image_modal').modal('show');
+        getImageSize();
+    };
 
 })(jQuery);
 

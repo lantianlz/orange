@@ -43,6 +43,7 @@ def format_record(objs, num):
             'price': str(x.price),
             'des': x.des,
             'state': x.state,
+            'img': x.img,
             'create_time': str(x.create_time)
         })
 
@@ -60,7 +61,7 @@ def search(request):
     start_date, end_date = utils.get_date_range(start_date, end_date)
     page_index = int(request.REQUEST.get('page_index'))
 
-    objs = PurchaseRecordBase().search_records_for_admin(name, state, start_date, end_date)
+    objs, sum_price = PurchaseRecordBase().search_records_for_admin(name, state, start_date, end_date)
 
     page_objs = page.Cpt(objs, count=10, page=page_index).info
 
@@ -69,7 +70,7 @@ def search(request):
     data = format_record(page_objs[0], num)
 
     return HttpResponse(
-        json.dumps({'data': data, 'page_count': page_objs[4], 'total_count': page_objs[5]}),
+        json.dumps({'data': data, 'sum_price': str(sum_price), 'page_count': page_objs[4], 'total_count': page_objs[5]}),
         mimetype='application/json'
     )
 
@@ -84,17 +85,26 @@ def get_record_by_id(request):
 
 
 @verify_permission('add_purchase_record')
-@common_ajax_response
 def add_record(request):
     supplier_id = request.POST.get('supplier_id')
     price = request.POST.get('price')
     des = request.POST.get('des')
 
+    img = request.FILES.get('img')
+    if img:
+        flag, img_name = qiniu_client.upload_img(img, img_type='purchase')
+        img_name = '%s/%s' % (settings.IMG0_DOMAIN, img_name)
+
     flag, msg = PurchaseRecordBase().add_record(
-        supplier_id, des, price, request.user.id, utils.get_clientip(request)
+        supplier_id, des, price, img_name, request.user.id, utils.get_clientip(request)
     )
 
-    return flag, msg.id if flag == 0 else msg
+    if flag == 0:
+        url = "/admin/purchase_record?#modify/%s" % (msg.id)
+    else:
+        url = "/admin/purchase_record?%s" % (msg)
+
+    return HttpResponseRedirect(url)
 
 
 @verify_permission('modify_purchase_record')

@@ -46,6 +46,7 @@ a:focus {outline: none; -moz-outline: none;}
 .f28{font-size: 28px;}
 .f30{font-size: 30px;}
 .f32{font-size: 32px;}
+.f40{font-size: 40px;}
 
 .w{width: 100%;}
 .w20{width: 20px;}
@@ -183,6 +184,7 @@ a:focus {outline: none; -moz-outline: none;}
 .mt-0{margin-top: 0;}
 .mt-10{margin-top: 10px;}
 .mt-15{margin-top: 15px;}
+.mt-25{margin-top: 25px;}
 .mt-80{margin-top: 80px;}
 
 .z-99{z-index: 99;}

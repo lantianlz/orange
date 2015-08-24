@@ -6,6 +6,7 @@ import time
 import random
 import decimal
 from django.db import transaction
+from django.db.models import Sum
 from django.utils.encoding import smart_unicode
 from django.conf import settings
 
@@ -1012,7 +1013,7 @@ class SupplierBase(object):
     def get_suppliers_by_name(self, name=""):
         objs = self.get_all_supplier()
 
-        if name:
+        if name and name not in (".", u"。"):
             objs = objs.filter(name__contains=name)
 
         return objs[:10]
@@ -1131,10 +1132,10 @@ class PurchaseRecordBase(object):
                 supplier__name__contains=name
             )
 
-        return objs
+        return objs, objs.aggregate(Sum('price'))['price__sum']
 
     @transaction.commit_manually(using=DEFAULT_DB)
-    def add_record(self, supplier_id, des, price, operator, ip):
+    def add_record(self, supplier_id, des, price, img, operator, ip):
         
         if not (supplier_id, des, price, operator):
             return 99800, dict_err.get(99800)
@@ -1150,6 +1151,7 @@ class PurchaseRecordBase(object):
                 supplier_id = supplier_id,
                 des = des,
                 price = price,
+                img = img,
                 operator = operator
             )
 

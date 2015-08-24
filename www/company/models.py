@@ -312,6 +312,7 @@ class PurchaseRecord(models.Model):
     operator = models.CharField(verbose_name=u"操作人", max_length=128)
     create_time = models.DateTimeField(verbose_name=u"流水时间", auto_now_add=True, db_index=True)
     state = models.IntegerField(verbose_name=u"状态", default=1, choices=state_choices, db_index=True)
+    img = models.CharField(verbose_name=u"流水图片", max_length=128, null=True)
 
 
 
