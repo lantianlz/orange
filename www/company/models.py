@@ -286,7 +286,7 @@ class SupplierCashRecord(models.Model):
     '''
     @note: 供货商现金账户流水
     '''
-    operation_choices = ((0, u"充值"), (1, u"消费"))
+    operation_choices = ((0, u"入账"), (1, u"转出"))
 
     cash_account = models.ForeignKey("SupplierCashAccount")
     value = models.DecimalField(verbose_name=u"操作金额", max_digits=20, decimal_places=2, db_index=True)
