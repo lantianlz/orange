@@ -382,6 +382,7 @@ $(document).ready(function(){
                     <th>#</th>
                     <th class="hidden-xs">货号</th>
                     <th>名称</th>
+                    <th>供货商</th>
                     <th>类型</th>
                     <th>成本价</th>
                     <th class="hidden-xs">规格</th>
@@ -412,6 +413,7 @@ $(document).ready(function(){
         <td><%= item.num %></td>
         <td class="hidden-xs"><%= item.code %></td>
         <td><%= item.name %></td>
+        <td><%= item.supplierName %></td>
         <td>
         {% for type in all_types %}
             <% if(item.itemType == '{{type.value}}'){ %>
