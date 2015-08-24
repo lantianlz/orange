@@ -18,6 +18,7 @@ $.TextboxList.Autocomplete = function(textboxlist, _options){
 	var options = $.extend(true, {
 		minLength: 1,
 		maxResults: 10,
+		searchAll: [],
 		insensitive: true,
 		highlight: true,
 		highlightSelector: null,
@@ -89,7 +90,8 @@ $.TextboxList.Autocomplete = function(textboxlist, _options){
 	};
 	
 	var showResults = function(search){
-		var results = method.filter(values, search, options.insensitive, options.maxResults);
+		
+		var results = method.filter(values, search, options.insensitive, options.maxResults, options.searchAll);
 		
 		if (textboxlist.getOptions().unique){
 			results = $.grep(results, function(v){ return textboxlist.isDuplicate(v) == -1; });		
@@ -213,11 +215,16 @@ $.TextboxList.Autocomplete = function(textboxlist, _options){
 $.TextboxList.Autocomplete.Methods = {
 	
 	standard: {
-		filter: function(values, search, insensitive, max){
-			var newvals = [], regexp = new RegExp(escapeRegExp(search), insensitive ? 'i' : '');
+		filter: function(values, search, insensitive, max, searchAll){
+			var newvals = [], 
+				regexp = new RegExp(escapeRegExp(search), insensitive ? 'i' : ''),
+				searchAll = searchAll||[];
+
 			for (var i = 0; i < values.length; i++){
 				if (newvals.length === max) break;
-				if (regexp.test(values[i][1])) newvals.push(values[i]);
+				if (regexp.test(values[i][1]) || searchAll.indexOf(search) > -1 ){
+					newvals.push(values[i]);
+				}
 			}
 			return newvals;
 		},

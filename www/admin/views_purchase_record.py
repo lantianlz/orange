@@ -70,7 +70,7 @@ def search(request):
     data = format_record(page_objs[0], num)
 
     return HttpResponse(
-        json.dumps({'data': data, 'sum_price': str(sum_price), 'page_count': page_objs[4], 'total_count': page_objs[5]}),
+        json.dumps({'data': data, 'sum_price': str(sum_price or 0), 'page_count': page_objs[4], 'total_count': page_objs[5]}),
         mimetype='application/json'
     )
 
@@ -90,6 +90,7 @@ def add_record(request):
     price = request.POST.get('price')
     des = request.POST.get('des')
 
+    img_name = ''
     img = request.FILES.get('img')
     if img:
         flag, img_name = qiniu_client.upload_img(img, img_type='purchase')

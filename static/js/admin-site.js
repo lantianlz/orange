@@ -392,6 +392,7 @@ if (!String.format) {
                     minLength: 1, // 最小字符
                     queryRemote: true, // 远程查询
                     placeholder: options.placeholder,
+                    searchAll: options.searchAll,
                     highlight: false,
                     onlyFromValues: true, // 是否默认选中第一个结果
                     remote: {

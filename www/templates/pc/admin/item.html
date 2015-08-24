@@ -183,6 +183,7 @@ $(document).ready(function(){
             this.supplierTextBox = $.Global.TextboxList.create('#supplier_modify', {
                 max: 1,
                 placeholder: '选择所属供货商',
+                searchAll: ['.', '。'],
                 url: '/admin/supplier/get_suppliers_by_name',
                 param: 'supplier_name',
                 loadPlaceholder: '正在加载...'
@@ -248,6 +249,7 @@ $(document).ready(function(){
             this.supplierTextBox = $.Global.TextboxList.create('#supplier_add', {
                 max: 1,
                 placeholder: '选择所属供货商',
+                searchAll: ['.', '。'],
                 url: '/admin/supplier/get_suppliers_by_name',
                 param: 'supplier_name',
                 loadPlaceholder: '正在加载...'
@@ -413,7 +415,7 @@ $(document).ready(function(){
         <td><%= item.num %></td>
         <td class="hidden-xs"><%= item.code %></td>
         <td><%= item.name %></td>
-        <td><%= item.supplierName %></td>
+        <td class="hidden-xs"><%= item.supplierName %></td>
         <td>
         {% for type in all_types %}
             <% if(item.itemType == '{{type.value}}'){ %>
@@ -459,6 +461,7 @@ $(document).ready(function(){
         <label class="col-sm-2 control-label">供货商</label>
         <div class="col-sm-6">
             <input type="text" class="form-control" id="supplier_modify" required name="supplier_id" value=''>
+            <p class="help-block">输入字符「.」可查所有供货商</p>
         </div>
     </div>
     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
@@ -562,6 +565,7 @@ $(document).ready(function(){
                         <label class="col-sm-3 control-label">供货商</label>
                         <div class="col-sm-8">
                             <input type="text" class="form-control" id="supplier_add" required name="supplier_id" value=''>
+                            <p class="help-block">输入字符「.」可查所有供货商</p>
                         </div>
                     </div>
                     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
