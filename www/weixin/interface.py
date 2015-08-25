@@ -383,6 +383,35 @@ class WeixinBase(object):
 
         return self.send_template_msg(app_key, openid, content, template_id)
 
+    def send_recharge_success_template_msg(self, openid, info, date, amount, remark, app_key=None):
+        '''
+        发送充值成功通知
+        '''
+        template_id = "r2u4sOmPKAyQPCz5nfIjwrodnJ9mpNxRTTrTe_8B_x0"
+        app_key = app_key or self.init_app_key()
+        content = u'''
+         {
+            "first": {
+                "value":"%(info)s",
+                "color":"#EF7B32"
+            },
+            "keynote1": {
+                "value":"%(date)s",
+                "color":"#000000"
+            },
+            "keynote2":{
+                "value":"%(amount)s",
+                "color":"#000000"
+            },
+            "remark":{
+                "value":"%(remark)s",
+                "color":"#000000"
+            }
+         }
+        ''' % dict(info=info, date=date, amount=amount, remark=remark)
+
+        return self.send_template_msg(app_key, openid, content, template_id)
+
     def get_weixin_jsapi_ticket(self, app_key):
         # 本地调试模式不走缓存
         if not settings.LOCAL_FLAG:
