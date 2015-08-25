@@ -11,7 +11,7 @@ from www.misc import qiniu_client
 from common import utils, page
 
 from www.company.models import Order, Item
-from www.company.interface import OrderBase, MealBase, CompanyBase
+from www.company.interface import OrderBase, MealBase, CompanyBase, SupplierBase
 from www.account.interface import UserBase
 
 @verify_permission('')
@@ -256,6 +256,9 @@ def get_items_of_order(request):
     data = []
 
     for i in OrderBase().get_items_of_order(order_id):
+
+        supplier = SupplierBase().get_supplier_by_id(i.item.supplier_id)
+
         data.append({
             'item_id': i.item.id,
             'name': i.item.name,
@@ -267,6 +270,8 @@ def get_items_of_order(request):
             'spec_str': i.item.get_spec_display(),
             'code': i.item.code,
             'img': i.item.img,
+            'supplier_id': supplier.id if supplier else '',
+            'supplier_name': supplier.name if supplier else u'无',
             'amount': i.amount if i.item.integer == 2 else int(i.amount)
         })
 

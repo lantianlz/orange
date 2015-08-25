@@ -675,45 +675,56 @@ if (!String.format) {
     $.Global.ComponentView.ItemDetailView = Backbone.View.extend({
         el: '#item-detail-view',
 
+        showSupplier: false,
+
         _items: [],
 
-        _html: [
-        '<table class="table table-hover">',
-            '<thead>',
-                '<tr>',
-                    '<th>#</th>',
-                    '<th class="hidden-xs">产品编号</th>',
-                    '<th>产品名称</th>',
-                    '<th>数量</th>',
-                    '<th>规格</th>',
-                    '<th class="hidden-xs">类别</th>',
-                '</tr>',
-            '</thead>',
-            '<tbody>',
-            '</tbody>',
-        '</table>'
-        ].join(''),
+        _html: function(){
+            var me = this;
+
+            return [
+            '<table class="table table-hover">',
+                '<thead>',
+                    '<tr>',
+                        '<th>#</th>',
+                        '<th class="hidden-xs">产品编号</th>',
+                        '<th>产品名称</th>',
+                        '<th>数量</th>',
+                        '<th>规格</th>',
+                        '<th class="hidden-xs">类别</th>',
+                        me.showSupplier ? '<th>供货商</th>' : '',
+                    '</tr>',
+                '</thead>',
+                '<tbody>',
+                '</tbody>',
+            '</table>'
+            ].join('');
+        },
 
         // 项目类型模版
         _itemTypeTemplate: _.template([
             '<% _.each(types, function(type){ %>',
             '<tr class="item_type item_type_<%= type.value %>">',
-                '<td colspan="6" class="fb fi border-bottom-2 bdc-dddddd"><%= type.name %></td>',
+                '<td colspan="7" class="fb fi border-bottom-2 bdc-dddddd"><%= type.name %></td>',
             '</tr>',
             '<% }) %>'
         ].join('')),
 
         // 项目信息模版
-        _itemTemplate: _.template([
-            '<tr>',
-                '<td></td>',
-                '<td class="hidden-xs"><%= code %></td>',
-                '<td><%= name %></td>',
-                '<td><%= amount %></td>',
-                '<td><%= spec_str %></td>',
-                '<td class="hidden-xs"><%= item_type_str %></td>',
-            '</tr>'
-        ].join('')),
+        _itemTemplate: function(data){
+            var me = this;
+            return _.template([
+                '<tr>',
+                    '<td></td>',
+                    '<td class="hidden-xs"><%= code %></td>',
+                    '<td><%= name %></td>',
+                    '<td><%= amount %></td>',
+                    '<td><%= spec_str %></td>',
+                    '<td class="hidden-xs"><%= item_type_str %></td>',
+                    me.showSupplier ? '<td><%= supplier_name %></td>': '',
+                '</tr>'
+            ].join(''))(data)
+        },
 
         // 初始化项目类型
         _initItemTypes: function(){
@@ -743,7 +754,7 @@ if (!String.format) {
         // 加载项目
         _loadItems: function(items){
             var me = this;
-
+            
             $.map(items, function(item){
                 
                 $(me._itemTemplate(item))
@@ -785,7 +796,7 @@ if (!String.format) {
         },
 
         render: function(){
-            this.$el.html(this._html);
+            this.$el.html(this._html());
             this._initItemTypes();
         }
     });

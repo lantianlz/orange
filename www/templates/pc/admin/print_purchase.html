@@ -25,6 +25,7 @@
 $(document).ready(function(){
 
     var itemDetailView = new $.Global.ComponentView.ItemDetailView({el: '#item_detail'});
+        itemDetailView.showSupplier = true;
         itemDetailView.render();
         itemDetailView.loadItems({{data_json|safe}});
 });

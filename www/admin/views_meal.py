@@ -8,7 +8,7 @@ from django.shortcuts import render_to_response
 from common import utils, page
 from misc.decorators import staff_required, common_ajax_response, verify_permission, member_required
 
-from www.company.interface import MealBase, CompanyBase, ItemBase
+from www.company.interface import MealBase, CompanyBase, ItemBase, SupplierBase
 
 @verify_permission('')
 def meal(request, template_name='pc/admin/meal.html'):
@@ -176,6 +176,9 @@ def get_items_of_meal(request):
     data = []
 
     for i in MealBase().get_items_of_meal(meal_id):
+
+        supplier = SupplierBase().get_supplier_by_id(i.item.supplier_id)
+
         data.append({
             'item_id': i.item.id,
             'name': i.item.name,
@@ -187,6 +190,8 @@ def get_items_of_meal(request):
             'spec_str': i.item.get_spec_display(),
             'code': i.item.code,
             'img': i.item.img,
+            'supplier_id': supplier.id if supplier else '',
+            'supplier_name': supplier.name if supplier else u'无',
             'amount': i.amount if i.item.integer == 2 else int(i.amount)
         })
 

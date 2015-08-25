@@ -663,14 +663,15 @@ class OrderBase(object):
         else:
             states = [state]
 
-        objs = OrderItem.objects.select_related('order', 'item', 'order__company').filter(
+        objs = OrderItem.objects.select_related('order', 'item', 'order__company', 'item__supplier').filter(
             order__state__in=states,
             order__create_time__range=(start_date, end_date)
         ).values(
             'order__order_no', 'order__create_time',
             'order__company__name', 'item__code',
             'item__name', 'amount',
-            'item__spec', 'item__item_type'
+            'item__spec', 'item__item_type',
+            'item__supplier__id', 'item__supplier__name'
         )
 
         return objs

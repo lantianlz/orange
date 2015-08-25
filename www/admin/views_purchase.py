@@ -54,6 +54,8 @@ def _get_purchase_data(start_date, end_date, state, show_order=False):
                 'spec_str': spec_dict[x['item__spec']],
                 'item_type': x['item__item_type'],
                 'item_type_str': type_dict[x['item__item_type']],
+                'supplier_id': x['item__supplier__id'],
+                'supplier_name': x['item__supplier__name'],
                 'orders': {}
             }
 

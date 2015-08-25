@@ -185,10 +185,12 @@ $(document).ready(function(){
         },
 
         // 保存
-        save: function(){
+        save: function(sender){
             var cityId = this.$('form').data('city_id'),
+                target = $(sender.currentTarget),
                 me = this;
 
+            g_ajax_processing_obj_id = target.setUUID().attr('id');
             me.collection.modifyCity(this.$('form').serializeArray(), function(data){
                 if(data.errcode === 0){
                     $.Global.Notice.SuccessTopNotice('操作成功!');
