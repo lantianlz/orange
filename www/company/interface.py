@@ -924,7 +924,7 @@ class CashRecordBase(object):
                 account.balance -= value
             account.save()
 
-            CashRecord.objects.create(
+            temp = CashRecord.objects.create(
                 cash_account=account,
                 value=value,
                 current_balance=account.balance,
@@ -945,7 +945,7 @@ class CashRecordBase(object):
             if operation == 0:
                 self.send_recharge_success_notice(
                     account.company,
-                    value,
+                    temp.value,
                     account.balance
                 )
 
