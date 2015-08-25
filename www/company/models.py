@@ -314,7 +314,8 @@ class PurchaseRecord(models.Model):
     state = models.IntegerField(verbose_name=u"状态", default=1, choices=state_choices, db_index=True)
     img = models.CharField(verbose_name=u"流水图片", max_length=128, null=True)
 
-
+    class Meta:
+        ordering = ["-create_time"]
 
 
 
