@@ -17,7 +17,6 @@ from www.account.interface import UserBase, UserCountBase
 def user(request, template_name='pc/admin/user.html'):
     from www.account.models import User
     states = [{'name': x[1], 'value': x[0]} for x in User.state_choices]
-    
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
 
 

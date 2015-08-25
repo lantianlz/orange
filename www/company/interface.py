@@ -379,9 +379,6 @@ class MealBase(object):
         except Meal.DoesNotExist:
             return ""
 
-    def get_items_of_meal(self, meal_id):
-        return MealItem.objects.select_related('item').filter(meal_id=meal_id)
-
     def get_meals_by_name(self, name=""):
         objs = self.get_all_meal()
 
@@ -399,7 +396,10 @@ class MealBase(object):
         '''
         获取订单下的项目
         '''
-        return MealItem.objects.select_related('item').filter(meal_id=meal_id)
+        if meal_id:
+            return MealItem.objects.select_related('item').filter(meal_id=meal_id)
+        else:
+            return []
 
 
 class OrderBase(object):

@@ -170,7 +170,7 @@ def get_meals_by_name(request):
 
     return HttpResponse(json.dumps(result), mimetype='application/json')
 
-
+@member_required
 def get_items_of_meal(request):
     meal_id = request.POST.get('meal_id')
     data = []
