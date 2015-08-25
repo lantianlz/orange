@@ -32,7 +32,8 @@ def create_order(request, template_name='pc/admin/create_order.html'):
     start_date = today.strftime('%Y-%m-%d')
 
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
-def format_order(objs, num):
+
+def format_order(objs, num, show_items=False):
     data = []
 
     for x in objs:
@@ -43,6 +44,23 @@ def format_order(objs, num):
         create_operator = UserBase().get_user_by_id(x.create_operator)
         distribute_operator = UserBase().get_user_by_id(x.distribute_operator) if x.distribute_operator else ''
         confirm_operator = UserBase().get_user_by_id(x.confirm_operator) if x.confirm_operator else ''
+
+        items = []
+        # 显示子项
+        if show_items:
+            for i in OrderBase().get_items_of_order(x.id):
+                items.append({
+                    'item_id': i.item.id,
+                    'name': i.item.name,
+                    'price': str(i.item.price),
+                    'sale_price': str(i.item.sale_price),
+                    'item_type': i.item.item_type,
+                    'spec': i.item.spec,
+                    'spec_text': i.item.get_spec_display(),
+                    'code': i.item.code,
+                    'img': i.item.img,
+                    'amount': i.amount
+                })
 
         data.append({
             'num': num,
@@ -66,6 +84,7 @@ def format_order(objs, num):
             'note': x.note,
             'rate': x.rate(),
             'is_test': x.is_test,
+            'items': items,
             'state': x.state
         })
 
@@ -132,7 +151,7 @@ def search(request):
 def get_order_by_id(request):
     order_id = request.REQUEST.get('order_id')
 
-    data = format_order([OrderBase().get_order_by_id(order_id)], 1)[0]
+    data = format_order([OrderBase().get_order_by_id(order_id)], 1, True)[0]
 
     return HttpResponse(json.dumps(data), mimetype='application/json')
 
@@ -168,6 +187,23 @@ def _get_items(item_ids, item_amounts):
         })
 
     return meal_items
+
+@verify_permission('modify_order')
+@common_ajax_response
+def modify_order(request):
+    order_id = request.POST.get('order_id')
+    total_price = request.POST.get('total_price')
+    is_test = request.POST.get('is_test')
+    is_test = True if is_test == "1" else False
+    note = request.POST.get('note')
+    
+    # 套餐项目
+    item_ids = request.POST.getlist('item-ids')
+    item_amounts = request.POST.getlist('item-amounts')
+
+    return OrderBase().modify_order(
+        order_id, _get_items(item_ids, item_amounts), total_price, note, is_test
+    )
 
 @verify_permission('add_order')
 @common_ajax_response

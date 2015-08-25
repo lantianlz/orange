@@ -459,7 +459,7 @@ class OrderBase(object):
                     total_sale_price=item.sale_price * decimal.Decimal(x['amount'])
                 )
 
-            # 计算毛利
+            # 计算成本价
             obj.cost_price = temp
             obj.save()
 
@@ -471,6 +471,51 @@ class OrderBase(object):
             return 99900, dict_err.get(99900)
 
         return 0, obj
+
+    @transaction.commit_manually(using=DEFAULT_DB)
+    def modify_order(self, order_id, order_items, total_price, note, is_test):
+
+        obj = self.get_order_by_id(order_id)
+        if not obj:
+            return 20401, dict_err.get(20401)
+
+        try:
+            obj.total_price = total_price
+            obj.note = note
+            obj.is_test = is_test
+
+            temp = decimal.Decimal(0)
+
+            # 订单下的项目
+            OrderItem.objects.filter(order=obj).delete()
+            for x in order_items:
+
+                item = ItemBase().get_item_by_id(x['item_id'])
+
+                # 计算成本价
+                temp += item.price * decimal.Decimal(x['amount'])
+
+                OrderItem.objects.create(
+                    order=obj,
+                    item_id=x['item_id'],
+                    amount=x['amount'],
+                    price=item.price,
+                    sale_price=item.sale_price,
+                    total_price=item.price * decimal.Decimal(x['amount']),
+                    total_sale_price=item.sale_price * decimal.Decimal(x['amount'])
+                )
+
+            # 计算成本价
+            obj.cost_price = temp
+            obj.save()
+
+            transaction.commit(using=DEFAULT_DB)
+        except Exception, e:
+            debug.get_debug_detail_and_send_email(e)
+            transaction.rollback(using=DEFAULT_DB)
+            return 99900, dict_err.get(99900)
+
+        return 0, dict_err.get(0)
 
     def get_all_order(self, state=None):
         objs = Order.objects.all()

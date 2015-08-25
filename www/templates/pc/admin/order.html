@@ -47,6 +47,7 @@ $(document).ready(function(){
             'note': 'note',
             'rate': 'rate',
             'isTest': 'is_test',
+            'items': 'items',
             'state': 'state'
         },
 
@@ -144,6 +145,19 @@ $(document).ready(function(){
             );
         },
 
+        modifyOrder: function(data, callback){
+
+            ajaxSend(
+                "/admin/order/modify_order", 
+                $.param(data, true),
+                function(response){
+                    if(callback){
+                        callback(response);
+                    }
+                }
+            );
+        },
+
         getMeal: function(meal_id, callback){
             ajaxSend(
                 "/admin/meal/get_meal_by_id", 
@@ -222,10 +236,12 @@ $(document).ready(function(){
         el: '#modify_order',
 
         template: _.template($('#modify_order_template').html()),
+        detail_template: _.template($('#order_detail_template').html()),
 
         itemsView: null,
 
         events: {
+            'click .save': 'saveOrder',
             'click .distribute': 'distributeOrder',
             'click .confirm': 'confirmOrder',
             'click .drop': 'dropOrder'
@@ -235,8 +251,27 @@ $(document).ready(function(){
             $('.orange-nav-pills a[href="#modify_order"]').tab('show');
         },
 
+        initMealItems: function(items){
+            this.itemsView = new $.Global.ComponentView.ItemsView({el: "#items_view_modify"});
+            this.itemsView.render();
+            this.itemsView.loadItems(items);
+            this.calculateRate();
+        },
+
+        calculateRate: function(){
+            this.itemsView.totalSalePrice = parseFloat(this.$('.order-total-price').val());
+            this.itemsView.calculatePrice();
+            console.log(parseFloat(this.$('.total-price').val()));
+        },
+
         render: function(data){
-            this.$el.html(this.template(data));
+            // 准备中的订单能修改
+            if(data.state==1){
+                this.$el.html(this.template(data));
+                this.initMealItems(data.items);
+            } else {
+                this.$el.html(this.detail_template(data));
+            }
         },
 
         modifyOrder: function(orderId){
@@ -252,6 +287,25 @@ $(document).ready(function(){
                     $.Global.Notice.ErrorTopNotice('没有找到对应的项目!');
                 }
             });
+        },
+
+        saveOrder: function(){
+            var orderId = this.$('form').data('order_id'),
+                me = this;
+
+            if(!this.$('form').valid()){
+                return;
+            }
+
+            me.collection.modifyOrder($.Global.Utils.formToDict(this.$('form')), function(data){
+                if(data.errcode == "0"){
+                    $.Global.Notice.SuccessTopNotice('操作成功');
+                    // router.navigate('modify/' + orderId, {'trigger': true});
+                    me.modifyOrder(orderId);
+                } else {
+                    $.Global.Notice.ErrorTopNotice(data.errmsg);
+                }
+            })
         },
 
         distributeOrder: function(){
@@ -359,7 +413,7 @@ $(document).ready(function(){
                 me.$('.total-price').val(data.price);
 
                 // 计算毛利
-                me.itemsView.totalSalePrice = parseFloat(me.$('.total-price').val());
+                me.itemsView.totalSalePrice = parseFloat(me.$('.order-total-price').val());
                 me.itemsView.calculatePrice();
             });
         },
@@ -583,6 +637,68 @@ $(document).ready(function(){
         </div>
     </div>
     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+        <input type="hidden" id="meal_id_add" value="" />
+        <label class="col-sm-2 control-label">套餐项目</label>
+        <div class="col-sm-6" id="items_view_modify">
+            
+        </div>
+    </div>
+    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+        <label class="col-sm-2 control-label">价格</label>
+        <div class="col-sm-3">
+            <input type="text" required class="form-control order-total-price" name='total_price' value='<%= totalPrice %>'>
+        </div>
+    </div>
+    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+        <label class="col-sm-2 control-label">描述</label>
+        <div class="col-sm-6">
+            <textarea name="note" rows="6" class="form-control" placeholder=""><%= note %></textarea>
+        </div>
+    </div>
+    <div class="form-group pt-20 pb-20 mb-0">
+        <label class="col-sm-2 control-label">是否试吃</label>
+        <div class="col-sm-10">
+            <label class="radio-inline">
+                <input type="radio" name="is_test" value="0" <% if(!isTest){ %>checked<% } %> > 否
+            </label>
+            <label class="radio-inline">
+                <input type="radio" name="is_test" value="1" <% if(isTest){ %>checked<% } %> > 是
+            </label>
+        </div>
+    </div>
+    <div class="form-group pt-20 pb-20 mb-0">
+        <div class="col-sm-12">
+            <% if(state == 1){ %>
+            <button type="button" class="btn btn-info save">修改订单</button>
+            <button type="button" class="btn btn-primary distribute ml-25">配送订单</button>
+            <% } %>
+            <% if(state == 2){ %>
+            <button type="button" class="btn btn-success confirm ml-25">完成订单</button>
+            <% } %>
+            <% if(state == 1 || state == 2){ %>
+            <button type="button" class="btn btn-danger drop ml-25">作废订单</button>
+            <% } %>
+            <a target="_blank" href="/admin/order/print_order?order_id=<%= orderId %>" class="btn btn-info print-order ml-25">打印配送单</a>
+        </div>
+    </div>
+</script>
+
+<script type="text/template" id="order_detail_template">
+<form class="form-horizontal" data-order_id='<%= orderId %>' role="form" method="post" action="">
+    <input type="hidden" name="order_id" value="<%= orderId %>" />
+    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+        <label class="col-sm-2 control-label">订单号</label>
+        <div class="col-sm-5">
+            <p class="form-control-static"><%= orderNo %></p>
+        </div>
+    </div>
+    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+        <label class="col-sm-2 control-label">套餐</label>
+        <div class="col-sm-5">
+            <p class="form-control-static"><%= mealName %></p>
+        </div>
+    </div>
+    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
         <label class="col-sm-2 control-label">所属公司</label>
         <div class="col-sm-5">
             <p class="form-control-static"><%= companyName %></p>
@@ -706,7 +822,7 @@ $(document).ready(function(){
                     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
                         <label class="col-sm-2 control-label">价格</label>
                         <div class="col-sm-3">
-                            <input type="text" required class="form-control total-price" name='total_price' value='0'>
+                            <input type="text" required class="form-control order-total-price" name='total_price' value='0'>
                         </div>
                     </div>
                     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
