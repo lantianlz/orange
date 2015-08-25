@@ -56,8 +56,8 @@ $(document).ready(function(){
             var me = this,
                 name = name||'',
                 state = state||1,
-                startDate = startDate||'',
-                endDate = endDate||'',
+                startDate = startDate||'{{start_date}}',
+                endDate = endDate||'{{end_date}}',
                 pageIndex = pageIndex||1;
 
             ajaxSend(
