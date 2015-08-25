@@ -872,8 +872,7 @@ class CashRecordBase(object):
                     u"您已成功充值", 
                     datetime.datetime.now().strftime("%Y-%m-%d %H:%M"), 
                     u"%s 元" % amount, 
-                    u'''账户余额：%s 元
-                    感谢您的支持，祝工作愉快''' % balance
+                    u"账户余额：%s 元" % balance
                 )
 
     def get_all_records(self):
