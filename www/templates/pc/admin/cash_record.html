@@ -180,6 +180,7 @@ $(document).ready(function(){
                 return;
             }
 
+            g_ajax_processing_obj_id = $("#add_record_modal .ok").setUUID().attr('id');
             records.addRecord($.Global.Utils.formToDict($('#add_record_modal form')), function(data){
                 if(data.errcode == "0"){
                     $('#add_record_modal').modal('hide');

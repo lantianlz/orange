@@ -238,10 +238,12 @@ $(document).ready(function(){
         },
 
         // 保存
-        save: function(){
+        save: function(sender){
             var companyId = this.$('form').data('company_id'),
+                target = $(sender.currentTarget),
                 me = this;
 
+            g_ajax_processing_obj_id = target.setUUID().attr('id');
             me.collection.modifyCompany($.Global.Utils.formToDict(this.$('form')), function(data){
                 if(data.errcode == "0"){
                     $.Global.Notice.SuccessTopNotice('操作成功!');
@@ -331,6 +333,7 @@ $(document).ready(function(){
                 return;
             }
 
+            g_ajax_processing_obj_id = $("#add_company_modal .ok").setUUID().attr('id');
             companys.addCompany($.Global.Utils.formToDict($('#add_company_modal form')), function(data){
                 if(data.errcode == "0"){
                     router.navigate('modify/' + data.errmsg, {trigger: true});

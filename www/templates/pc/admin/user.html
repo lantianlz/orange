@@ -231,10 +231,12 @@ $(document).ready(function(){
         },
 
         // 保存
-        save: function(){
-            var userId = this.$('form').data('user_id'),
+        save: function(sender){
+            var target = $(sender.currentTarget),
+                userId = this.$('form').data('user_id'),
                 me = this;
 
+            g_ajax_processing_obj_id = target.setUUID().attr('id');
             me.collection.modifyUser(this.$('form').serialize(), function(data){
                 if(data.errcode === 0){
                     $.Global.Notice.SuccessTopNotice('操作成功');
@@ -285,6 +287,7 @@ $(document).ready(function(){
                 return;
             }
 
+            g_ajax_processing_obj_id = $("#add_user_modal .ok").setUUID().attr('id');
             users.addUser($.Global.Utils.formToDict($('#add_user_modal form')), function(data){
                 if(data.errcode == "0"){
                     router.navigate('modify/' + data.errmsg, {trigger: true});
@@ -339,6 +342,7 @@ $(document).ready(function(){
                 return;
             }
 
+            g_ajax_processing_obj_id = $("#change_pwd_modal .ok").setUUID().attr('id');
             users.changePwd(me.userId, $('#change_pwd_modal .pwd').val(), function(data){
                 if(data.errcode == "0"){
                     $('#change_pwd_modal').modal('hide');

@@ -251,14 +251,16 @@ $(document).ready(function(){
         },
 
         // 保存
-        save: function(){
+        save: function(sender){
             var recordId = this.$('form').data('record_id'),
+                target = $(sender.currentTarget),
                 me = this;
 
             if(!confirm("确定要作废此流水？")){
                 return;
             }
 
+            g_ajax_processing_obj_id = target.setUUID().attr('id');
             me.collection.modifyRecord($.Global.Utils.formToDict(this.$('form')), function(data){
                 if(data.errcode == "0"){
                     $.Global.Notice.SuccessTopNotice('操作成功!');

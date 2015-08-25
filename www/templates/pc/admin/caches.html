@@ -32,6 +32,7 @@ $(document).ready(function(){
 
     $('.save').bind('click', function(){
 
+        g_ajax_processing_obj_id = $(this).setUUID().attr('id');
         ajaxSend(
             "/admin/caches/modify_cache" , 
             $.Global.Utils.formToDict('form'),
@@ -44,6 +45,7 @@ $(document).ready(function(){
 
     $('.remove').bind('click', function(){
 
+        g_ajax_processing_obj_id = $(this).setUUID().attr('id');
         if(confirm('确认要删除此缓存?')){
             ajaxSend( 
                 "/admin/caches/remove_cache", 

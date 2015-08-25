@@ -210,14 +210,16 @@ $(document).ready(function(){
             });
         },
 
-        save: function(){
+        save: function(sender){
             var itemId = this.$('form').data('item_id'),
+                target = $(sender.currentTarget),
                 me = this;
 
             if(!this.$('form').valid()){
                 return;
             }
 
+            g_ajax_processing_obj_id = target.setUUID().attr('id');
             me.collection.modifyItem(this.$('form').serialize(), function(data){
                 if(data.errcode == "0"){
                     $.Global.Notice.SuccessTopNotice('操作成功');
@@ -284,6 +286,7 @@ $(document).ready(function(){
                 return;
             }
 
+            g_ajax_processing_obj_id = $("#add_item_modal .ok").setUUID().attr('id');
             items.addItem($.Global.Utils.formToDict($('#add_item_modal form')), function(data){
                 if(data.errcode == "0"){
                     router.navigate('modify/' + data.errmsg, {trigger: true});

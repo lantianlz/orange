@@ -289,14 +289,16 @@ $(document).ready(function(){
             });
         },
 
-        saveOrder: function(){
+        saveOrder: function(sender){
             var orderId = this.$('form').data('order_id'),
+                target = $(sender.currentTarget),
                 me = this;
 
             if(!this.$('form').valid()){
                 return;
             }
 
+            g_ajax_processing_obj_id = target.setUUID().attr('id');
             me.collection.modifyOrder($.Global.Utils.formToDict(this.$('form')), function(data){
                 if(data.errcode == "0"){
                     $.Global.Notice.SuccessTopNotice('操作成功');
@@ -308,14 +310,16 @@ $(document).ready(function(){
             })
         },
 
-        distributeOrder: function(){
+        distributeOrder: function(sender){
             var orderId = this.$('form').data('order_id'),
+                target = $(sender.currentTarget),
                 me = this;
 
             if(!confirm('确认配送订单?')){
                 return;
             }
 
+            g_ajax_processing_obj_id = target.setUUID().attr('id');
             me.collection.distributeOrder(orderId, function(data){
                 if(data.errcode == "0"){
                     $.Global.Notice.SuccessTopNotice('操作成功');
@@ -326,14 +330,16 @@ $(document).ready(function(){
             });
         },
 
-        confirmOrder: function(){
+        confirmOrder: function(sender){
             var orderId = this.$('form').data('order_id'),
+                target = $(sender.currentTarget),
                 me = this;
 
             if(!confirm('确认完成订单?')){
                 return;
             }
 
+            g_ajax_processing_obj_id = target.setUUID().attr('id');
             me.collection.confirmOrder(orderId, function(data){
                 if(data.errcode == "0"){
                     $.Global.Notice.SuccessTopNotice('操作成功');
@@ -344,14 +350,16 @@ $(document).ready(function(){
             });
         },
 
-        dropOrder: function(){
+        dropOrder: function(sender){
             var orderId = this.$('form').data('order_id'),
+                target = $(sender.currentTarget),
                 me = this;
 
             if(!confirm('确认作废订单?')){
                 return;
             }
 
+            g_ajax_processing_obj_id = target.setUUID().attr('id');
             me.collection.dropOrder(orderId, function(data){
                 if(data.errcode == "0"){
                     $.Global.Notice.SuccessTopNotice('操作成功');
@@ -456,6 +464,7 @@ $(document).ready(function(){
                 return;
             }
 
+            g_ajax_processing_obj_id = $("#add_order_modal .ok").setUUID().attr('id');
             orders.addOrder($.Global.Utils.formToDict($('#add_order_modal form')), function(data){
                 if(data.errcode == "0"){
                     router.navigate('modify/' + data.errmsg, {trigger: true});

@@ -196,14 +196,16 @@ $(document).ready(function(){
         },
 
         // 保存
-        save: function(){
+        save: function(sender){
             var supplierId = this.$('form').data('supplier_id'),
+                target = $(sender.currentTarget),
                 me = this;
 
             if(!this.$('form').valid()){
                 return;
             }
 
+            g_ajax_processing_obj_id = target.setUUID().attr('id');
             me.collection.modifySupplier($.Global.Utils.formToDict(this.$('form')), function(data){
                 if(data.errcode == "0"){
                     $.Global.Notice.SuccessTopNotice('操作成功!');
@@ -255,6 +257,7 @@ $(document).ready(function(){
                 return;
             }
 
+            g_ajax_processing_obj_id = $("#add_supplier_modal .ok").setUUID().attr('id');
             suppliers.addSupplier($.Global.Utils.formToDict($('#add_supplier_modal form')), function(data){
                 if(data.errcode == "0"){
                     router.navigate('modify/' + data.errmsg, {trigger: true});

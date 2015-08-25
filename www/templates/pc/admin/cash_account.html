@@ -212,14 +212,16 @@ $(document).ready(function(){
         },
 
         // 保存
-        save: function(){
+        save: function(sender){
             var accountId = this.$('form').data('account_id'),
+                target = $(sender.currentTarget),
                 me = this;
 
             if(!this.$('form').valid()){
                 return;
             }
 
+            g_ajax_processing_obj_id = target.setUUID().attr('id');
             me.collection.modifyAccount($.Global.Utils.formToDict(this.$('form')), function(data){
                 console.log(data)
                 if(data.errcode == "0"){

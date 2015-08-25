@@ -237,6 +237,7 @@ $(document).ready(function(){
                 return;
             }
 
+            g_ajax_processing_obj_id = $("#add_order_modal .ok").setUUID().attr('id');
             orders.addOrder($.Global.Utils.formToDict($('#add_order_modal form')), function(data){
                 if(data.errcode == "0"){
                     window.location.href = "/admin/order#modify/" + data.errmsg;

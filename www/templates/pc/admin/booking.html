@@ -184,14 +184,16 @@ $(document).ready(function(){
             });
         },
 
-        save: function(){
+        save: function(sender){
             var bookingId = this.$('form').data('booking_id'),
+                target = $(sender.currentTarget),
                 me = this;
 
             if(!this.$('form').valid()){
                 return;
             }
 
+            g_ajax_processing_obj_id = target.setUUID().attr('id');
             me.collection.modifyBooking(this.$('form').serialize(), function(data){
                 if(data.errcode == "0"){
                     $.Global.Notice.SuccessTopNotice('操作成功');

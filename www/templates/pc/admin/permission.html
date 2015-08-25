@@ -220,8 +220,10 @@ $(document).ready(function(){
 
         saveUserPermission: function(sender){
             var userId = this.$('.user-name').data('user_id'),
+                target = $(sender.currentTarget),
                 me = this;
             
+            g_ajax_processing_obj_id = target.setUUID().attr('id');
             this.collection.saveUserPermission(userId, $.Global.Utils.formToDict(this.$('form')), function(data){
                 if(data.errcode === 0){
                     me.modifyUserPermission(userId);
@@ -235,8 +237,10 @@ $(document).ready(function(){
 
         cancelAdmin: function(sender){
             var userId = this.$('.user-name').data('user_id'),
+                target = $(sender.currentTarget),
                 me = this;
 
+            g_ajax_processing_obj_id = target.setUUID().attr('id');
             if(confirm('确认要删除此管理员?')){
                 me.collection.cancelAdmin(userId, function(data){
                     if(data.errcode === 0){
@@ -336,6 +340,7 @@ $(document).ready(function(){
                 userId = modal.find('.user-name').data('user_id'),
                 me = this;
             
+            g_ajax_processing_obj_id = $("#add_user_permission_modal .add-admin").setUUID().attr('id');
             modifyUserPermissionView.collection.saveUserPermission(userId, $.Global.Utils.formToDict(modal.find('form')), function(data){
                 if(data.errcode === 0){
                     router.navigate('modifyUserPermission/' + userId, {trigger: true});

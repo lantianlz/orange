@@ -224,26 +224,13 @@ $(document).ready(function(){
             });
         },
 
-        // 保存
-        save: function(){
+        delete: function(sender){
             var managerId = this.$('form').data('manager_id'),
-                me = this;
-
-            me.collection.modifyManager($.Global.Utils.formToDict(this.$('form')), function(data){
-                if(data.errcode == "0"){
-                    $.Global.Notice.SuccessTopNotice('操作成功!');
-                    router.navigate('modify/' + companyId, {'trigger': true});
-                } else {
-                    $.Global.Notice.ErrorTopNotice(data.errmsg);
-                }
-            });
-        },
-
-        delete: function(){
-            var managerId = this.$('form').data('manager_id'),
+                target = $(sender.currentTarget),
                 me = this;
 
             if(confirm('确认删除此管理员？')){
+                g_ajax_processing_obj_id = target.setUUID().attr('id');
                 me.collection.deleteManager(managerId, function(data){
                     if(data.errcode == "0"){
                         $.Global.Notice.SuccessTopNotice('操作成功!');
@@ -325,6 +312,7 @@ $(document).ready(function(){
                 return;
             }
 
+            g_ajax_processing_obj_id = $("#add_manager_modal .ok").setUUID().attr('id');
             managers.addManager($.Global.Utils.formToDict($('#add_manager_modal form')), function(data){
                 if(data.errcode == "0"){
                     router.navigate('modify/' + data.errmsg, {trigger: true});
