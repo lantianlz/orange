@@ -837,7 +837,7 @@ class CashRecordBase(object):
         # 发送邮件提醒
         from www.tasks import async_send_email
         title = u'账户已达最高透支额'
-        content = u'账户「%s」当前余额「%s」元，已达「%s」元最高透支额，请联系充值' % (company.name, balance, max_overdraft)
+        content = u'账户「%s」当前余额「%.2f」元，已达「%.2f」元最高透支额，请联系充值' % (company.name, balance, max_overdraft)
         async_send_email("vip@3-10.cc", title, content)
 
         # 发送微信提醒
@@ -848,8 +848,8 @@ class CashRecordBase(object):
 
             if to_user_openid:
                 WeixinBase().send_balance_insufficient_template_msg(
-                    to_user_openid, u"账户已达「%s」元最高透支额，请联系充值" % max_overdraft, 
-                    company.name, u"%s 元" % balance, 
+                    to_user_openid, u"账户已达「%.2f」元最高透支额，请联系充值" % max_overdraft, 
+                    company.name, u"%.2f 元" % balance, 
                     u"感谢您的支持，祝工作愉快"
                 )
 
@@ -857,7 +857,7 @@ class CashRecordBase(object):
         # 发送邮件提醒
         from www.tasks import async_send_email
         title = u'账户充值成功'
-        content = u'账户「%s」成功充值「%s」元，当前余额「%s」元。' % (company.name, amount, balance)
+        content = u'账户「%s」成功充值「%.2f」元，当前余额「%.2f」元。' % (company.name, amount, balance)
         async_send_email("vip@3-10.cc", title, content)
 
         # 发送微信提醒
@@ -871,8 +871,8 @@ class CashRecordBase(object):
                     to_user_openid, 
                     u"您已成功充值", 
                     datetime.datetime.now().strftime("%Y-%m-%d %H:%M"), 
-                    u"%s 元" % amount, 
-                    u"账户余额：%s 元" % balance
+                    u"%.2f 元" % amount, 
+                    u"账户余额：%.2f 元" % balance
                 )
 
     def get_all_records(self):
@@ -924,7 +924,7 @@ class CashRecordBase(object):
                 account.balance -= value
             account.save()
 
-            temp = CashRecord.objects.create(
+            CashRecord.objects.create(
                 cash_account=account,
                 value=value,
                 current_balance=account.balance,
@@ -945,7 +945,7 @@ class CashRecordBase(object):
             if operation == 0:
                 self.send_recharge_success_notice(
                     account.company,
-                    temp.value,
+                    value,
                     account.balance
                 )
 
