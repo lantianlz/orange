@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from django.db import models
-
+from django.conf import settings
 
 class Company(models.Model):
 
@@ -29,6 +29,9 @@ class Company(models.Model):
     sort = models.IntegerField(verbose_name=u"排序", default=0)
     is_show = models.IntegerField(verbose_name=u"官网是否显示", default=1, choices=show_choices)
     create_time = models.DateTimeField(verbose_name=u"创建时间", auto_now_add=True, db_index=True)
+
+    def get_logo(self):
+        return self.logo if self.logo else '%simg/logo.png' % settings.MEDIA_URL
 
     class Meta:
         ordering = ["sort", "-create_time"]

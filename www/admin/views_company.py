@@ -35,7 +35,7 @@ def format_company(objs, num):
             'num': num,
             'company_id': x.id,
             'name': x.name,
-            'logo': x.logo,
+            'logo': x.get_logo(),
             'des': x.des,
             'staff_name': x.staff_name,
             'mobile': x.mobile,
