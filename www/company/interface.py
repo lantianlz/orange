@@ -278,7 +278,7 @@ class CompanyBase(object):
         return objs[:10]
 
     def get_companys_by_show(self):
-        return self.get_all_company(state=True).filter(is_show=1).order_by('id')
+        return self.get_all_company(state=True).filter(is_show=1).order_by('-sort', 'id')
 
 
 class MealBase(object):
