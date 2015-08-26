@@ -439,12 +439,13 @@ $(document).ready(function(){
                     <th>#</th>
                     <th>logo</th>
                     <th>公司名称</th>
-                    <th>联系人</th>
-                    <th>联系人手机</th>
+                    <th>简称</th>
+                    <th class="hidden-xs">联系人</th>
+                    <th class="hidden-xs">联系人手机</th>
                     <th class="hidden-xs">座机</th>
                     <th class="hidden-xs">所属城市</th>
                     <th class="hidden-xs">邀请人</th>
-                    <th>状态</th>
+                    <th class="hidden-xs">状态</th>
                 </tr>
             </thead>
             <tbody>
@@ -472,12 +473,13 @@ $(document).ready(function(){
             <td><%= company.num %></td>
             <td><img src="<%= company.logo %>" class="w35"></td>
             <td><%= company.name %></td>
-            <td><%= company.staffName %></td>
-            <td><%= company.mobile %></td>
+            <td><%= company.shortName %></td>
+            <td class="hidden-xs"><%= company.staffName %></td>
+            <td class="hidden-xs"><%= company.mobile %></td>
             <td class="hidden-xs"><%= company.tel %></td>
             <td class="hidden-xs"><%= company.cityName %></td>
             <td class="hidden-xs"><%= company.inviteName %></td>
-            <td>
+            <td class="hidden-xs">
                 <% if(company.state){ %>
                     <span class="fa fa-check co-3B99FC"></span>
                 <% } else { %>
