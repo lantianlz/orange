@@ -53,7 +53,7 @@ $(document).ready(function(){
 
         search: function(startDate, endDate, state, orderNo, pageIndex){
             var me = this,
-                startDate = startDate || '',
+                startDate = startDate || '{{start_date}}',
                 endDate = endDate || '',
                 state = state || '-2',
                 orderNo = orderNo || '',
@@ -556,7 +556,7 @@ $(document).ready(function(){
             </div>
             <div class="input-group input-group-sm pb-10">
                 <span class="input-group-addon">结束日期</span>
-                <input type="text" class="form-control" id="end_date_search" value="{{start_date}}"  />
+                <input type="text" class="form-control" id="end_date_search" value="{{today_str}}"  />
             </div>
             <div class="input-group input-group-sm pb-10">
                 <span class="input-group-addon">订单状态</span>

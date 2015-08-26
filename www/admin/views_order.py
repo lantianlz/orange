@@ -22,7 +22,7 @@ def order(request, template_name='pc/admin/order.html'):
 
     today = datetime.datetime.now()
     today_str = today.strftime('%Y-%m-%d')
-    start_date = today.strftime('%Y-%m-%d')
+    start_date = (today - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
 
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
 
