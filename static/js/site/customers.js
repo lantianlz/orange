@@ -130,5 +130,10 @@ $(document).ready(function(){
 
     $('.customer-img').on("click", function(){
     	showScaleModal();
-    })
+    });
+
+
+    // 数字效果
+    new countUp("company-count", 0, $('#company-count').data('count')).start();
+    new countUp("order-count", 0, $('#order-count').data('count')).start();
 });

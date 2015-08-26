@@ -6,6 +6,7 @@
 {% endblock %}
 
 {% block js %}
+<script type="text/javascript" src="{{MEDIA_URL}}js/jquery/countUp.js"></script>
 <script type="text/javascript" src="{{MEDIA_URL}}js/site/customers.js?v={{MEDIA_VERSION}}"></script>
 {% endblock %}
 
@@ -86,31 +87,20 @@
 </div>
 <div class="container-fluid pl-0 pr-0">
     <div class="row">
-        <div class="col-md-12 text-center f30 pt-80">
-            典型客户
-        </div>
-        <div class="col-md-12 text-center f20 pt-3 co-ADADAD">
-            CUSTOMERS
+        <div class="col-md-12 text-center f25 pt-80">
+            三点十分先后服务过<span class="co-EF7B32 w55 inline-block" id="company-count" data-count="{{companys.count}}">0</span>家公司，累积配送<span class="co-EF7B32 w70 inline-block" id="order-count" data-count="{{order_count}}">0</span>次
         </div>
     </div>
-    <div class="container">
-        <div class="row pt-55 pb-30">
-            <div class="col-md-4 pl-30 pr-30 customer pb-30">
-                <div class="text-center customer-title">咕咚网</div>
-                <img class="w customer-img" src="{{MEDIA_URL}}img/customers/customer-1.jpg">
+    <div class="container pb-30">
+        <div class="row pt-30 pb-30">
+            {% for company in companys %}
+            <div class="col-md-2 pt-20">
+                <div class="bdr-circle bgc-ffffff pl-30 pr-30 pt-30 pb-30 customer pr">
+                    <img class="w" src="{{company.logo}}" alt="{{company.short_name}}">
+                </div>
+                <div class="text-center f16 pt-0">{{company.short_name}}</div>
             </div>
-            <div class="col-md-4 pl-30 pr-30 customer pb-30">
-                <div class="text-center customer-title">Camera360</div>
-                <img class="w customer-img" src="{{MEDIA_URL}}img/customers/customer-2.jpg">
-            </div>
-            <div class="col-md-4 pl-30 pr-30 customer pb-30">
-                <div class="text-center customer-title">小娱WiFi</div>
-                <img class="w customer-img" src="{{MEDIA_URL}}img/customers/customer-3.jpg">
-            </div>
-            <div class="col-md-4 pl-30 pr-30 customer pt-30 pb-30">
-                <div class="text-center customer-title">麦麦</div>
-                <img class="w customer-img" src="{{MEDIA_URL}}img/customers/customer-4.jpg">
-            </div>
+            {% endfor %}
         </div>
     </div>
 </div>

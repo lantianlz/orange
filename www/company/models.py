@@ -9,9 +9,11 @@ class Company(models.Model):
     @note: 公司
     '''
     state_choices = ((0, u"停用"), (1, u"正常"))
+    show_choices = ((0, u"不显示"), (1, u"显示"))
     source_choices = ((0, u"地推"), (1, u""))
 
     name = models.CharField(verbose_name=u"名称", max_length=128, unique=True)
+    short_name = models.CharField(verbose_name=u"简称", max_length=128, null=True)
     logo = models.CharField(verbose_name=u"logo", max_length=256, null=True)
     des = models.TextField(verbose_name=u"简介", null=True)
     staff_name = models.CharField(verbose_name=u"企业联系人", max_length=16, null=True)
@@ -25,6 +27,7 @@ class Company(models.Model):
     source = models.IntegerField(verbose_name=u"来源", default=0, choices=source_choices)
     state = models.IntegerField(verbose_name=u"状态", default=1, db_index=True, choices=state_choices)
     sort = models.IntegerField(verbose_name=u"排序", default=0)
+    is_show = models.IntegerField(verbose_name=u"官网是否显示", default=1, choices=show_choices)
     create_time = models.DateTimeField(verbose_name=u"创建时间", auto_now_add=True, db_index=True)
 
     class Meta:

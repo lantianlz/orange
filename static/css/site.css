@@ -53,6 +53,10 @@ a:focus {outline: none; -moz-outline: none;}
 .w35{width: 35px;}
 .w40{width: 40px;}
 .w45{width: 45px;}
+.w50{width: 50px;}
+.w55{width: 55px;}
+.w70{width: 70px;}
+.w80{width: 80px;}
 .w100{width: 100px;}
 .w130{width: 130px;}
 .w150{width: 150px;}
@@ -178,6 +182,7 @@ a:focus {outline: none; -moz-outline: none;}
 .ml-25{margin-left: 25px;}
 .ml-300{margin-left: 300px;}
 .mb-0{margin-bottom: 0;}
+.mb-10{margin-bottom: 10px;}
 .mb-15{margin-bottom: 15px;}
 .mb-20{margin-bottom: 20px;}
 .mt--5{margin-top: -5px;}

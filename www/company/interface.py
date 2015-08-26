@@ -194,7 +194,7 @@ class CompanyBase(object):
         except Company.DoesNotExist:
             return ""
 
-    def add_company(self, name, staff_name, mobile, tel, addr, city_id, sort, des, person_count, invite_by):
+    def add_company(self, name, staff_name, mobile, tel, addr, city_id, sort, des, person_count, invite_by, is_show, logo, short_name):
 
         if not (name and staff_name and mobile and addr and city_id):
             return 99800, dict_err.get(99800)
@@ -217,7 +217,10 @@ class CompanyBase(object):
                 sort=sort,
                 des=des,
                 person_count=person_count,
-                invite_by=invite.id if invite else None
+                invite_by=invite.id if invite else None,
+                is_show=is_show,
+                logo=logo,
+                short_name=short_name
             )
 
             # 创建公司对应的账户
@@ -229,7 +232,7 @@ class CompanyBase(object):
 
         return 0, obj
 
-    def modify_company(self, company_id, name, staff_name, mobile, tel, addr, city_id, sort, des, state, person_count, invite_by):
+    def modify_company(self, company_id, name, staff_name, mobile, tel, addr, city_id, sort, des, state, person_count, invite_by, is_show, logo, short_name):
         if not (name and staff_name and mobile and addr and city_id):
             return 99800, dict_err.get(99800)
 
@@ -256,6 +259,9 @@ class CompanyBase(object):
             obj.state = state
             obj.person_count = person_count
             obj.invite_by = invite.id if invite else None
+            obj.is_show = is_show 
+            obj.logo = logo 
+            obj.short_name = short_name
             obj.save()
         except Exception, e:
             debug.get_debug_detail_and_send_email(e)
@@ -270,6 +276,9 @@ class CompanyBase(object):
             objs = objs.filter(name__contains=name)
 
         return objs[:10]
+
+    def get_companys_by_show(self):
+        return self.get_all_company(state=True).filter(is_show=1)
 
 
 class MealBase(object):
@@ -693,6 +702,10 @@ class OrderBase(object):
 
         return objs
 
+    @cache_required(cache_key='active_order_count', expire=43200, cache_config=cache.CACHE_TMP)
+    def get_active_order_count(self):
+        return Order.objects.filter(state=3).count()
+
 
 class BookingBase(object):
 
@@ -980,7 +993,7 @@ class CashRecordBase(object):
             )
 
             # 转出时判断是否超过透支额  发送提醒
-            if operation == 1 and abs(account.balance) >= account.max_overdraft:
+            if operation == 1 and account.balance < 0 and abs(account.balance) >= account.max_overdraft:
                 self.send_balance_insufficient_notice(
                     account.company, 
                     account.balance, 

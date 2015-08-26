@@ -46,6 +46,8 @@ $(document).ready(function(){
             'source': 'source',
             'state': 'state',
             'sort': 'sort',
+            'shortName': 'short_name',
+            'isShow': 'is_show',
             'createTime': 'create_time'
         },
 
@@ -239,19 +241,21 @@ $(document).ready(function(){
 
         // 保存
         save: function(sender){
-            var companyId = this.$('form').data('company_id'),
-                target = $(sender.currentTarget),
-                me = this;
+            // var companyId = this.$('form').data('company_id'),
+            //     target = $(sender.currentTarget),
+            //     me = this;
 
-            g_ajax_processing_obj_id = target.setUUID().attr('id');
-            me.collection.modifyCompany($.Global.Utils.formToDict(this.$('form')), function(data){
-                if(data.errcode == "0"){
-                    $.Global.Notice.SuccessTopNotice('操作成功!');
-                    router.navigate('modify/' + companyId, {'trigger': true});
-                } else {
-                    $.Global.Notice.ErrorTopNotice(data.errmsg);
-                }
-            });
+            // g_ajax_processing_obj_id = target.setUUID().attr('id');
+            // me.collection.modifyCompany($.Global.Utils.formToDict(this.$('form')), function(data){
+            //     if(data.errcode == "0"){
+            //         $.Global.Notice.SuccessTopNotice('操作成功!');
+            //         router.navigate('modify/' + companyId, {'trigger': true});
+            //     } else {
+            //         $.Global.Notice.ErrorTopNotice(data.errmsg);
+            //     }
+            // });
+
+            this.$('form').submit();
         }
 
 
@@ -327,22 +331,23 @@ $(document).ready(function(){
         },
 
         addCompany: function(){
-            var me = this;
+            // var me = this;
             
-            if(!$('#add_company_modal form').valid()){
-                return;
-            }
+            // if(!$('#add_company_modal form').valid()){
+            //     return;
+            // }
 
-            g_ajax_processing_obj_id = $("#add_company_modal .ok").setUUID().attr('id');
-            companys.addCompany($.Global.Utils.formToDict($('#add_company_modal form')), function(data){
-                if(data.errcode == "0"){
-                    router.navigate('modify/' + data.errmsg, {trigger: true});
-                    $('#add_company_modal').modal('hide');
-                    $.Global.Notice.SuccessTopNotice("操作成功");
-                } else {
-                    $.Global.Notice.ErrorTopNotice(data.errmsg);
-                }
-            })
+            // g_ajax_processing_obj_id = $("#add_company_modal .ok").setUUID().attr('id');
+            // companys.addCompany($.Global.Utils.formToDict($('#add_company_modal form')), function(data){
+            //     if(data.errcode == "0"){
+            //         router.navigate('modify/' + data.errmsg, {trigger: true});
+            //         $('#add_company_modal').modal('hide');
+            //         $.Global.Notice.SuccessTopNotice("操作成功");
+            //     } else {
+            //         $.Global.Notice.ErrorTopNotice(data.errmsg);
+            //     }
+            // })
+            $('#add_company_modal form').submit();
         }
 
     });
@@ -383,6 +388,9 @@ $(document).ready(function(){
  
     Backbone.history.start();
 
+    if(window.location.href.indexOf('?') > -1){
+        $.Global.Notice.ErrorTopNotice(decodeURI(window.location.search).substring(1));
+    }
 });
 
 </script>
@@ -429,6 +437,7 @@ $(document).ready(function(){
             <thead>
                 <tr>
                     <th>#</th>
+                    <th>logo</th>
                     <th>公司名称</th>
                     <th>联系人</th>
                     <th>联系人手机</th>
@@ -461,6 +470,7 @@ $(document).ready(function(){
     <% _.each(companys, function(company){ %>
         <tr class="pointer" data-company_id="<%= company.companyId %>">
             <td><%= company.num %></td>
+            <td><img src="<%= company.logo %>" class="w35"></td>
             <td><%= company.name %></td>
             <td><%= company.staffName %></td>
             <td><%= company.mobile %></td>
@@ -480,17 +490,30 @@ $(document).ready(function(){
 
 <!-- 修改问题模板 -->
 <script type="text/template" id="modify_company_template">
-    <form class="form-horizontal" data-company_id="<%= companyId %>" role="form" method="post" action="">
+    <form class="form-horizontal" data-company_id="<%= companyId %>" role="form" method="post" action="/admin/company/modify_company" enctype="multipart/form-data">
         <input type="hidden" name="company_id" value="<%= companyId %>" />
-        <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
+        <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+            <label class="col-sm-2 control-label">公司logo</label>
+            <div class="col-sm-6">
+                <img class="mb-10" src="<%= logo %>" />
+                <input name="img" class="pb-10" type="file" />图片格式为png，尺寸为 124(宽) X 124(长)
+            </div>
+        </div>
+        <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
             <label class="col-sm-2 control-label">公司名称</label>
             <div class="col-sm-4">
                 <input type="text" class="form-control" required name="name" value='<%= name %>'>
             </div>
         </div>
         <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+            <label class="col-sm-2 control-label">公司简称</label>
+            <div class="col-sm-4">
+                <input type="text" class="form-control" required name="short_name" value='<%= shortName %>'>
+            </div>
+        </div>
+        <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
             <label class="col-sm-2 control-label">联系人</label>
-            <div class="col-sm-2">
+            <div class="col-sm-3">
                 <input type="text" class="form-control" required name="staff_name" value='<%= staffName %>'>
             </div>
         </div>
@@ -514,7 +537,7 @@ $(document).ready(function(){
         </div>
         <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
             <label class="col-sm-2 control-label">所属城市</label>
-            <div class="col-sm-6">
+            <div class="col-sm-3">
                 <input type="text" class="form-control" id="city_modify" required name="city_id" value=''>
             </div>
         </div>
@@ -546,13 +569,23 @@ $(document).ready(function(){
                 </select>
             </div>
         </div>
-        <div class="form-group pt-20 pb-20 mb-0">
+        <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+            <label class="col-sm-2 control-label">官网是否显示</label>
+            <div class="col-sm-2">
+                <select name="is_show" class="form-control">
+                    {% for show in shows %}
+                    <option value="{{show.value}}" <% if(isShow == {{show.value}}){ %>selected<% } %> >{{show.name}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
             <label class="col-sm-2 control-label">简介</label>
             <div class="col-sm-9">
                 <textarea name="des" rows="6" class="form-control" placeholder=""><%= des %></textarea>
             </div>
         </div>
-        <div class="form-group pt-20 pb-20 mb-0 border-bottom bdc-eee">
+        <div class="form-group pt-20 pb-20 mb-0">
             <div class="col-sm-12">
                 <button type="button" class="btn btn-primary save">提交你的修改</button>
             </div>
@@ -570,11 +603,24 @@ $(document).ready(function(){
                 <h4 class="modal-title">添加公司信息</h4>
             </div>
             <div class="modal-body">
-                <form class="form-horizontal" role="form" method="post" action="">
+                <form class="form-horizontal" role="form" method="post" action="/admin/company/add_company" enctype="multipart/form-data">
+                    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+                        <label class="col-sm-3 control-label">公司logo</label>
+                        <div class="col-sm-9">
+                            <img class="mb-10" src="" />
+                            <input name="img" class="pb-10" type="file" />图片格式为png，尺寸为 124(宽) X 124(长)
+                        </div>
+                    </div>
                     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
                         <label class="col-sm-3 control-label">公司名称</label>
                         <div class="col-sm-9">
                             <input type="text" class="form-control" required name="name" value=''>
+                        </div>
+                    </div>
+                    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+                        <label class="col-sm-3 control-label">公司简称</label>
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" required name="short_name" value=''>
                         </div>
                     </div>
                     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
@@ -623,6 +669,16 @@ $(document).ready(function(){
                         <label class="col-sm-3 control-label">排序</label>
                         <div class="col-sm-3">
                             <input type="text" class="form-control" required name="sort" value='0'>
+                        </div>
+                    </div>
+                    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+                        <label class="col-sm-3 control-label">官网是否显示</label>
+                        <div class="col-sm-3">
+                            <select name="is_show" class="form-control">
+                                {% for show in shows %}
+                                <option value="{{show.value}}" >{{show.name}}</option>
+                                {% endfor %}
+                            </select>
                         </div>
                     </div>
                     <div class="form-group pt-20 pb-20 mb-0">

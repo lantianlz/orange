@@ -18,6 +18,7 @@ from www.account.interface import UserBase
 def company(request, template_name='pc/admin/company.html'):
     from www.company.models import Company
     states = [{'name': x[1], 'value': x[0]} for x in Company.state_choices]
+    shows = [{'name': x[1], 'value': x[0]} for x in Company.show_choices]
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
 
 
@@ -48,6 +49,8 @@ def format_company(objs, num):
             'source': x.source,
             'state': x.state,
             'sort': x.sort,
+            'short_name': x.short_name,
+            'is_show': x.is_show,
             'create_time': str(x.create_time)
         })
 
@@ -85,7 +88,6 @@ def get_company_by_id(request):
 
 
 @verify_permission('modify_company')
-@common_ajax_response
 def modify_company(request):
     company_id = request.REQUEST.get('company_id')
     name = request.REQUEST.get('name')
@@ -98,16 +100,32 @@ def modify_company(request):
     sort = request.REQUEST.get('sort')
     des = request.REQUEST.get('des')
     invite = request.REQUEST.get('invite_by')
+    is_show = request.REQUEST.get('is_show')
+    short_name = request.REQUEST.get('short_name')
     state = request.REQUEST.get('state')
 
-    return CompanyBase().modify_company(
+    obj = CompanyBase().get_company_by_id(company_id)
+    img_name = obj.logo
+
+    img = request.FILES.get('img')
+    if img:
+        flag, img_name = qiniu_client.upload_img(img, img_type='company')
+        img_name = '%s/%s' % (settings.IMG0_DOMAIN, img_name)
+
+    flag, msg = CompanyBase().modify_company(
         company_id, name, staff_name, mobile, tel, addr, 
-        city_id, sort, des, state, person_count, invite
+        city_id, sort, des, state, person_count, invite, is_show, img_name, short_name
     )
+
+    if flag == 0:
+        url = "/admin/company?#modify/%s" % (obj.id)
+    else:
+        url = "/admin/company?%s#modify/%s" % (msg, obj.id)
+
+    return HttpResponseRedirect(url)
 
 
 @verify_permission('add_company')
-@common_ajax_response
 def add_company(request):
     name = request.REQUEST.get('name')
     staff_name = request.REQUEST.get('staff_name')
@@ -119,11 +137,24 @@ def add_company(request):
     sort = request.REQUEST.get('sort')
     des = request.REQUEST.get('des')
     invite = request.REQUEST.get('invite_by')
+    is_show = request.REQUEST.get('is_show')
+    short_name = request.REQUEST.get('short_name')
+
+    img_name = ''
+    img = request.FILES.get('img')
+    if img:
+        flag, img_name = qiniu_client.upload_img(img, img_type='company')
+        img_name = '%s/%s' % (settings.IMG0_DOMAIN, img_name)
 
     flag, msg = CompanyBase().add_company(name, staff_name, 
-        mobile, tel, addr, city_id, sort, des, person_count, invite)
+        mobile, tel, addr, city_id, sort, des, person_count, invite, is_show, img_name, short_name)
 
-    return flag, msg.id if flag == 0 else msg
+    if flag == 0:
+        url = "/admin/company?#modify/%s" % (msg.id)
+    else:
+        url = "/admin/company?%s" % (msg)
+
+    return HttpResponseRedirect(url)
 
 @member_required
 def get_companys_by_name(request):

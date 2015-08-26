@@ -150,3 +150,10 @@ def show_index(request):
         return home_welcome(request)
     else:
         return home_welcome(request)
+
+
+def customers(request):
+    from www.company.interface import CompanyBase, OrderBase
+    companys = CompanyBase().get_companys_by_show()
+    order_count = OrderBase().get_active_order_count()
+    return render_to_response('static_templates/customers.html', locals(), context_instance=RequestContext(request))
