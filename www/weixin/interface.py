@@ -150,10 +150,10 @@ class WeixinBase(object):
                     errcode, errmsg = UserBase().login_by_weixin_qr_code(ticket, from_user, app_key)
                     return self.get_base_content_response(to_user, from_user, errmsg)
             if event in ('subscribe',):
-                pass
+                # pass
 
                 # 发送客服消息通知用户
-                content = u"你所推荐的公司成功订购三点十分的产品后，老板给你发红包"
+                content = u"你所推荐的公司成功订购三点十分的产品后，给你发红包哦"
                 url = u'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxd6922b078dff1607&redirect_uri=http%3A%2F%2Fwww.3-10.cc%2Faccount%2Foauth%2Fweixin&response_type=code&scope=snsapi_base&state=recommend#wechat_redirect'
                 img_info = u'[{"title": "推荐有礼", "description": "%s", "url": "%s", "picurl": "%s"}]' \
                     % (content, url, 'http://static.3-10.cc/img/recommend.jpg')
