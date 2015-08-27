@@ -153,11 +153,11 @@ class WeixinBase(object):
                 pass
 
                 # 发送客服消息通知用户
-                # content = u"欢迎使用三点十分，第一次总会很紧张...\n不怕，看看指南便知一二"
-                # url = u'http://mp.weixin.qq.com/s?__biz=MjM5OTc2NzM0OQ==&mid=203091966&idx=1&sn=9cb0a17772932e0d4564aeaa62286dd1#rd'
-                # img_info = u'[{"title": "洗车之前，看看咋用", "description": "%s", "url": "%s", "picurl": "%s"}]' \
-                #     % (content, url, 'http://static.3-10.cc/img/using_guide.jpg')
-                # self.send_msg_to_weixin(content, from_user, app_key, msg_type='news', img_info=img_info)
+                content = u"你所推荐的公司成功订购三点十分的产品后，老板给你发红包"
+                url = u'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxd6922b078dff1607&redirect_uri=http%3A%2F%2Fwww.3-10.cc%2Faccount%2Foauth%2Fweixin&response_type=code&scope=snsapi_base&state=recommend#wechat_redirect'
+                img_info = u'[{"title": "推荐有礼", "description": "%s", "url": "%s", "picurl": "%s"}]' \
+                    % (content, url, 'http://static.3-10.cc/img/recommend.jpg')
+                self.send_msg_to_weixin(content, from_user, app_key, msg_type='news', img_info=img_info)
 
                 return self.get_subscribe_event_response(to_user, from_user)
             elif event in ('click', ):
@@ -287,7 +287,7 @@ class WeixinBase(object):
         """
         access_token = self.get_weixin_access_token(app_key)
         url = '%s/cgi-bin/message/template/send?access_token=%s' % (weixin_api_url, access_token)
-        
+
         data = u'''
         {
            "touser":"%(openid)s",
@@ -464,4 +464,3 @@ class Sign(object):
         string = '&'.join(['%s=%s' % (key.lower(), self.ret[key]) for key in sorted(self.ret)])
         self.ret['signature'] = hashlib.sha1(string).hexdigest()
         return self.ret
-
