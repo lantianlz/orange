@@ -234,21 +234,6 @@ def print_order(request, template_name='pc/admin/print_order.html'):
     order = OrderBase().get_order_by_id(order_id)
     items = OrderBase().get_items_of_order(order_id)
 
-    data = {}
-    for item in items:
-
-        key = item.item.item_type
-        if not data.has_key(key):
-            data[key] = []
-
-        data[key].append({
-            'code': item.item.code,
-            'name': item.item.name,
-            'amount': item.amount if item.item.integer == 2 else int(item.amount), # 非水果类 数量转为int
-            'spec': item.item.get_spec_display(),
-            'type': item.item.get_item_type_display()
-        })
-
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
 
 
@@ -271,6 +256,7 @@ def get_items_of_order(request):
             'spec_str': i.item.get_spec_display(),
             'code': i.item.code,
             'img': i.item.img,
+            'des': i.item.des,
             'supplier_id': supplier.id if supplier else '',
             'supplier_name': supplier.name if supplier else u'无',
             'amount': i.amount if i.item.integer == 2 else int(i.amount)

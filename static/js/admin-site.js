@@ -457,6 +457,7 @@ if (!String.format) {
             'itemType': 'item_type',
             'spec': 'spec',
             'specText': 'spec_text',
+            'des': 'des',
             'amount': 'amount'
         },
 
@@ -476,6 +477,7 @@ if (!String.format) {
                     itemType: '1',
                     spec: '',
                     specText: '',
+                    des: '',
                     amount: 0
                 }, _data),
                 _itemHtml = [
@@ -483,7 +485,7 @@ if (!String.format) {
                         '<div class="row">',
                             '<div class="col-sm-10 pr-0 col-xs-10">',
                                 '<div class="input-group">',
-                                    '<span class="input-group-addon">{1}</span>',
+                                    '<span class="input-group-addon">{1}{8}</span>',
                                     '<input type="text" name="item-amounts" data-item_price="{6}" required class="form-control number item" value="{2}">',
                                     '<input type="hidden" name="item-ids" value="{5}">',
                                     '<span class="input-group-addon">{3}, <span class="total-price">{4}</span> 元</span></span>',
@@ -506,13 +508,14 @@ if (!String.format) {
                     data.data,      // 0.item_id
                     data.value,     // 1.名称
                     data.amount,    // 2.数量
-                    data.specText,      // 3.规格
+                    data.specText,  // 3.规格
                     $.Global.Utils.formatPrice(
                         parseFloat(data.price) * parseFloat(data.amount)
-                    ),     // 4.总价
+                    ),              // 4.总价
                     data.data,      // 5.隐藏域
                     data.price,     // 6.成本价
-                    data.itemType   // 7.类型
+                    data.itemType,  // 7.类型
+                    data.des ? ('('+data.des+')') : ''  // 8.描述
                    
                 )).insertAfter(this.$('.type-'+data.itemType));
 
@@ -570,12 +573,13 @@ if (!String.format) {
             this.calculateTypePrice(3);
             this.calculateTypePrice(4);
 
+            // 总价
             $.map(this.$('.total-price'), function(price){
                 sum += parseFloat(price.innerHTML);
             });
-
             this.$('.sum').html($.Global.Utils.formatPrice(sum));
 
+            // 计算毛利
             rate = this.totalSalePrice > 0 ? Math.round((1-sum/this.totalSalePrice)*10000)/100 : 0;
             this.$('.rate').html(rate);
         },
@@ -594,13 +598,11 @@ if (!String.format) {
                         me.addItem(
                             $.Global.Utils.dictMap(data, me._modelMaps)
                         );
-
                     }
                 );
 
             });
 
-            
         },
 
         // 加载项目
@@ -651,10 +653,11 @@ if (!String.format) {
                 },
                 formatResult: function(suggestion, value){
                     return String.format(
-                        '<div class="suggestion-item">{0}<span class="pull-right">{1} / {2}</span></div>', 
+                        '<div class="suggestion-item">{0}{3}<span class="pull-right">{1} / {2}</span></div>', 
                         suggestion.value, 
                         suggestion.price,
-                        suggestion.specText
+                        suggestion.specText,
+                        suggestion.des ? ('('+suggestion.des+')') : ""
                     );
                 }
             })
@@ -717,7 +720,7 @@ if (!String.format) {
                 '<tr>',
                     '<td></td>',
                     '<td class="hidden-xs"><%= code %></td>',
-                    '<td><%= name %></td>',
+                    '<td><%= name %><%= des ? ("("+des+")") : "" %></td>',
                     '<td><%= amount %></td>',
                     '<td><%= spec_str %></td>',
                     '<td class="hidden-xs"><%= item_type_str %></td>',

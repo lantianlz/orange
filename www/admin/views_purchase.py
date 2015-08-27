@@ -50,6 +50,7 @@ def _get_purchase_data(start_date, end_date, state, show_order=False):
                 'code': x['item__code'],
                 'name': x['item__name'],
                 'amount': 0,
+                'des': x['item__des'],
                 'spec': x['item__spec'],
                 'spec_str': spec_dict[x['item__spec']],
                 'item_type': x['item__item_type'],

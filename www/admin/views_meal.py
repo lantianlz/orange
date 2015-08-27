@@ -190,6 +190,7 @@ def get_items_of_meal(request):
             'spec_str': i.item.get_spec_display(),
             'code': i.item.code,
             'img': i.item.img,
+            'des': i.item.des,
             'supplier_id': supplier.id if supplier else '',
             'supplier_name': supplier.name if supplier else u'无',
             'amount': i.amount if i.item.integer == 2 else int(i.amount)

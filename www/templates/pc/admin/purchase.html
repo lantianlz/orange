@@ -51,19 +51,19 @@ $(document).ready(function(){
         orderCount = [],
 
         // 添加项目
-        addItem = function(code, name, amount, spec, itemType, supplierName, orders){
-            console.log(supplierName)
+        addItem = function(code, name, des, amount, spec, itemType, supplierName, orders){
+            
             $(String.format([
                 '<tr class="pointer show-order">',
-                    '<td>{0}</td>',
+                    '<td class="hidden-xs">{0}</td>',
                     '<td class="hidden-xs">{1}</td>',
                     '<td>{2}</td>',
                     '<td>{3}</td>',
                     '<td>{4}</td>',
-                    '<td>{5}</td>',
+                    '<td class="hidden-xs">{5}</td>',
                     '<td>{6}</td>',
                 '</tr>'
-            ].join(''), '', code, name, amount, specs[spec], types[itemType], supplierName))
+            ].join(''), '', code, name+(des?('('+des+')'):''), amount, specs[spec], types[itemType], supplierName))
             .insertAfter($('#order_list .item_type_' + itemType));
 
             DATA[code] = orders;
@@ -143,7 +143,7 @@ $(document).ready(function(){
 
             // 添加项目
             $.map(data, function(per){
-                addItem(per.code, per.name, per.amount, per.spec, per.item_type, per.supplier_name, per.orders);
+                addItem(per.code, per.name, per.des, per.amount, per.spec, per.item_type, per.supplier_name, per.orders);
             });
 
             setIndex();
@@ -207,12 +207,12 @@ $(document).ready(function(){
         <table class="table table-hover">
             <thead>
                 <tr>
-                    <th>#</th>
+                    <th class="hidden-xs">#</th>
                     <th class="hidden-xs">产品编号</th>
                     <th>产品名称</th>
                     <th>数量</th>
                     <th>规格</th>
-                    <th>类别</th>
+                    <th class="hidden-xs">类别</th>
                     <th>供货商</th>
                 </tr>
             </thead>
