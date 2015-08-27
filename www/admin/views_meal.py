@@ -47,6 +47,7 @@ def format_meal(objs, num, show_items=False):
                     'spec_text': i.item.get_spec_display(),
                     'code': i.item.code,
                     'img': i.item.img,
+                    'des': i.item.des,
                     'amount': i.amount
                 })
 
