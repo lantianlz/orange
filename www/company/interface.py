@@ -616,7 +616,7 @@ class OrderBase(object):
 
             # 试吃订单不操作账户
             if obj.is_test:
-                transaction.commit()
+                transaction.commit(using=DEFAULT_DB)
             else:
                 code, msg = CashRecordBase().add_cash_record(
                     obj.company_id,
@@ -627,14 +627,14 @@ class OrderBase(object):
                 )
 
                 if code == 0:
-                    transaction.commit()
+                    transaction.commit(using=DEFAULT_DB)
                 else:
-                    transaction.rollback()
+                    transaction.rollback(using=DEFAULT_DB)
                     return code, dict_err.get(code)
 
         except Exception, e:
-            transaction.rollback()
             debug.get_debug_detail_and_send_email(e)
+            transaction.rollback(using=DEFAULT_DB)
             return 99900, dict_err.get(99900)
 
         return 0, dict_err.get(0)
@@ -962,7 +962,7 @@ class CashRecordBase(object):
                 transaction.rollback(using=DEFAULT_DB)
             return errcode, errmsg
         except Exception, e:
-            debug.get_debug_detail(e)
+            debug.get_debug_detail_and_send_email(e)
             transaction.rollback(using=DEFAULT_DB)
             return 99900, dict_err.get(99900)
 
@@ -1179,7 +1179,7 @@ class SupplierCashRecordBase(object):
                 transaction.rollback(using=DEFAULT_DB)
             return errcode, errmsg
         except Exception, e:
-            debug.get_debug_detail(e)
+            debug.get_debug_detail_and_send_email(e)
             transaction.rollback(using=DEFAULT_DB)
             return 99900, dict_err.get(99900)
 
@@ -1257,7 +1257,7 @@ class PurchaseRecordBase(object):
                 img = img,
                 operator = operator
             )
-
+            
             errcode, errmsg = SupplierCashRecordBase().add_cash_record(
                 supplier_id, price, 0, u'来自采购流水', ip
             )
@@ -1270,8 +1270,8 @@ class PurchaseRecordBase(object):
                 return errcode, errmsg
 
         except Exception, e:
-            transaction.rollback(using=DEFAULT_DB)
             debug.get_debug_detail_and_send_email(e)
+            transaction.rollback(using=DEFAULT_DB)
             return 99900, dict_err.get(99900)
 
 
@@ -1306,8 +1306,8 @@ class PurchaseRecordBase(object):
             return errcode, errmsg
 
         except Exception, e:
-            transaction.rollback(using=DEFAULT_DB)
             debug.get_debug_detail_and_send_email(e)
+            transaction.rollback(using=DEFAULT_DB)
             return 99900, dict_err.get(99900)
 
 
