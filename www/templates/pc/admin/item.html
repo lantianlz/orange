@@ -417,7 +417,7 @@ $(document).ready(function(){
     <tr class="pointer" data-item_id="<%= item.itemId %>">
         <td><%= item.num %></td>
         <td class="hidden-xs"><%= item.code %></td>
-        <td><%= item.name %></td>
+        <td><%= item.name %><%= item.des?'('+item.des+')':'' %></td>
         <td class="hidden-xs"><%= item.supplierName %></td>
         <td>
         {% for type in all_types %}
