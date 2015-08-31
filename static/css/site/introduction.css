@@ -368,8 +368,8 @@
     width: 150px;
     -webkit-animation-play-state: running;
             animation-play-state: running;
-    -webkit-animation: falling-1 10s linear both infinite;
-            animation: falling-1 10s linear both infinite;
+    -webkit-animation: falling-1 12s linear both infinite;
+            animation: falling-1 12s linear both infinite;
 }
 .falling-1:hover{
     -webkit-animation-play-state: paused;

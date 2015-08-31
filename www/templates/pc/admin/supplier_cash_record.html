@@ -144,6 +144,7 @@ $(document).ready(function(){
 
             this.supplierTextBox = $.Global.TextboxList.create('#supplier_add', {
                 max: 1,
+                searchAll: ['.', '。'],
                 placeholder: '选择所属供货商',
                 url: '/admin/supplier/get_suppliers_by_name',
                 param: 'supplier_name',
@@ -346,6 +347,7 @@ $(document).ready(function(){
                         <label class="col-sm-2 control-label">供货商</label>
                         <div class="col-sm-8">
                             <input type="text" class="form-control" id="supplier_add" required name="supplier_id" value=''>
+                            <p class="help-block">输入字符「.」可查所有供货商</p>
                         </div>
                     </div>
                     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">

@@ -14,4 +14,5 @@ urlpatterns = patterns('www.company.views',
 	url(r'^booking$', 'booking'),
 	url(r'^invite$', 'invite'),
 	url(r'^get_booking$', 'get_booking'),
+	url(r'^introduction_m$', 'introduction_m'),
 )

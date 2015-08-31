@@ -1,0 +1,165 @@
+{% extends "mobile/base.html" %}
+
+{% block title %}产品介绍{% endblock title %}
+
+{% block base_css %}
+<link rel="stylesheet" type="text/css" href="{{MEDIA_URL}}css/fullpage/jquery.fullPage.css">
+<style type="text/css">
+.table{
+    margin-bottom: 0;
+}
+.loading-container{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 100;
+    background-color: #ffffff;
+    left: 15px;
+    top: 0;
+    -webkit-transition: all 1s;
+            transition: all 1s;
+}
+.loading-container.out{
+    -webkit-transform: translateY(-1000px);
+            transform: translateY(-1000px);
+}
+.logo-1{
+    width: 150px;
+    -webkit-transform: translateX(-300px);
+            transform: translateX(-300px);
+    -webkit-animation: logoRight 2.5s both;
+            animation: logoRight 2.5s both;
+}
+@-webkit-keyframes logoRight{
+    0%{
+        -webkit-transform: translateX(-300px);
+    }
+    100%{
+        -webkit-transform: translateX(0);
+    }
+}
+@keyframes logoRight{
+    0%{
+        -webkit-transform: translateX(-300px);
+                transform: translateX(-300px);
+    }
+    100%{
+        -webkit-transform: translateX(0);
+                transform: translateX(0);
+    }
+}
+.logo-2{
+    width: 85px;
+    -webkit-transform: translateX(300px);
+            transform: translateX(300px);
+    -webkit-animation: logoLeft 2.5s both;
+            animation: logoLeft 2.5s both;
+}
+@-webkit-keyframes logoLeft {
+    0%{
+        -webkit-transform: translateX(300px);
+    }
+    100%{
+        -webkit-transform: translateX(0);
+    }
+}
+@keyframes logoLeft {
+    0%{
+        -webkit-transform: translateX(300px);
+                transform: translateX(300px);
+    }
+    100%{
+        -webkit-transform: translateX(0);
+                transform: translateX(0);
+    }
+}
+.logo-3{
+    width: 85px;
+    opacity: 0;
+    -webkit-animation: logoIn 1s 2.1s both;
+            animation: logoIn 1s 2.1s both;
+}
+@-webkit-keyframes logoIn {
+    0%{
+        opacity: 0;
+    }
+    100%{
+        opacity: 1;
+    }
+}
+@keyframes logoIn {
+    0%{
+        opacity: 0;
+    }
+    100%{
+        opacity: 1;
+    }
+}
+</style>
+{% endblock %}
+
+{% block base_js %}
+<script type="text/javascript" src="{{MEDIA_URL}}js/jquery/jquery.fullPage.min.js"></script>
+<script type="text/javascript" src="{{MEDIA_URL}}js/jquery/jquery.easing.1.3.min.js"></script>
+<script type="text/javascript" src="{{MEDIA_URL}}js/jquery/countUp.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+    // 数字效果
+    new countUp("percent", 0, 100, 0, 3).start();
+
+    var loadingCompelete = function(){
+        $('.loading-container').addClass('out');
+
+        // 全屏滑动插件
+        $('#fullpage').fullpage({
+            scrollingSpeed: 700,
+            easing: 'easeOutExpo',
+            easingcss3: 'ease',
+            navigation: false,
+            onLeave: function(index, nextIndex, direction){
+                // pageTransform(nextIndex);
+            }
+        });
+    };
+
+    window.setTimeout(loadingCompelete, 3400);
+
+});
+</script>
+{% endblock %}
+
+{% block body %}
+<div class="container-fluid pl-0 pr-0">
+    <div class="row loading-container">
+        <div class="pa text-center w" style="left:0; top: 100px;">
+            <img class="logo-1" src="{{MEDIA_URL}}img/introduction/mobile/logo-1.png">
+        </div>
+        <div class="pa text-center w" style="left:0; top: 180px;">
+            <img class="logo-2" src="{{MEDIA_URL}}img/introduction/mobile/logo-2.png">
+        </div>
+        <div class="pa text-center w" style="left:0; top: 180px;">
+            <img class="logo-3" src="{{MEDIA_URL}}img/introduction/mobile/logo-3.png">
+        </div>
+        <div class="text-center f20 co-EF7B32" style="padding-top: 350px;">
+            <span id="percent">0</span>%
+        </div>
+    </div>
+    <div id="fullpage" class="pr z-99">
+        <div class="section bgc-EE7A32">
+            <div class="container row text-center co-ffffff f20">
+                第一屏
+            </div>
+        </div>
+        <div class="section bgc-84CCC7">
+            <div class="container row text-center co-ffffff f20">
+                第二屏
+            </div>
+        </div>
+        <div class="section bgc-3E445B">
+            <div class="container row text-center co-ffffff f20">
+                第三屏
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -169,3 +169,8 @@ def record(request, company_id, template_name='pc/company/record.html'):
 def feedback(request, company_id, template_name='pc/company/feedback.html'):
 
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
+
+
+def introduction_m(request, template_name='mobile/introduction_m.html'):
+    
+    return render_to_response(template_name, locals(), context_instance=RequestContext(request))

@@ -71,7 +71,11 @@ def _get_purchase_data(start_date, end_date, state, show_order=False):
                     'amount': x['amount']
                 }
 
-    return result.values()
+    data = result.values()
+
+    data.sort(key=lambda x: x['supplier_id'])
+
+    return data
 
 
 @verify_permission('query_order')
