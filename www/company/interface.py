@@ -706,6 +706,11 @@ class OrderBase(object):
     def get_active_order_count(self):
         return Order.objects.filter(state=3).count()
 
+    @cache_required(cache_key='active_person_time_count', expire=43200, cache_config=cache.CACHE_TMP)
+    def get_active_person_time_count(self):
+        objs = Order.objects.select_related('company').filter(state=3)
+        return objs.aggregate(Sum('company__person_count'))['company__person_count__sum']
+
 
 class BookingBase(object):
 
@@ -1123,7 +1128,6 @@ class SupplierBase(object):
 
 
 class SupplierCashAccountBase(object):
-
 
     def get_all_accounts(self):
         return SupplierCashAccount.objects.all()

@@ -135,5 +135,5 @@ $(document).ready(function(){
 
     // 数字效果
     new countUp("company-count", 0, $('#company-count').data('count')).start();
-    new countUp("order-count", 0, $('#order-count').data('count')).start();
+    new countUp("person-time-count", 0, $('#person-time-count').data('count')).start();
 });
