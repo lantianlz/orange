@@ -44,6 +44,26 @@
     border-color: #D4621B;
 }
 
+.btn-booking-4{
+    border-radius: 50px;
+    padding-right: 20px;
+    padding-left: 20px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    font-size: 15px;
+    background-color: transparent;
+    border-color: #EF7B32;
+    color: #EF7B32;
+    -webkit-transition: all 0.3s;
+            transition: all 0.3s;
+}
+.btn-booking-4:hover, 
+.btn-booking-4:focus, 
+.btn-booking-4:active{
+    background-color: #EF7B32;
+    border-color: #eeeeee;
+}
+
 .form-control{
     border-radius: 1px;
 }
@@ -341,4 +361,39 @@
 .package:hover .border-l{
     -webkit-transform: scaleY(1);
             transform: scaleY(1);
+}
+
+
+.falling-1{
+    width: 150px;
+    -webkit-animation-play-state: running;
+            animation-play-state: running;
+    -webkit-animation: falling-1 10s linear both infinite;
+            animation: falling-1 10s linear both infinite;
+}
+.falling-1:hover{
+    -webkit-animation-play-state: paused;
+            animation-play-state: paused;
+}
+@-webkit-keyframes falling-1 {
+    0% {
+        -webkit-transform: translateY(-300px);
+                transform: translateY(-300px);
+    }
+    
+    100% {
+        -webkit-transform: translateY(700px);
+                transform: translateY(700px);
+    }
+}
+@keyframes falling-1 {
+    0% {
+        -webkit-transform: translateY(-300px);
+                transform: translateY(-300px);
+    }
+    
+    100% {
+        -webkit-transform: translateY(700px);
+                transform: translateY(700px);
+    }
 }

@@ -41,26 +41,24 @@ $(document).ready(function(){
     // 预订效果
     window.setInterval(function(){
         $('.btn-booking-1').removeClass('tada');
+        $('.btn-booking-4').removeClass('tada');
         window.setTimeout(function(){
             $('.btn-booking-1').addClass('tada');
+            $('.btn-booking-4').addClass('tada');
         }, 100);
     }, 8000);
 
     // 点击预订跳转
-    $('.btn-booking-1').on('mousedown', function(e){
+    var goBooking = function(e){
         e.preventDefault();
         $.fn.fullpage.moveTo(6);
         window.setTimeout(function(){
             $('.name').focus();
         }, 300);
-    });
-    $('.btn-booking-3').on('mousedown', function(e){
-        e.preventDefault();
-        $.fn.fullpage.moveTo(6);
-        window.setTimeout(function(){
-            $('.name').focus();
-        }, 300);
-    });
+    }
+    $('.btn-booking-1').on('mousedown', goBooking);
+    $('.btn-booking-3').on('mousedown', goBooking);
+    $('.btn-booking-4').on('mousedown', goBooking);
 
     var is_ajaxing = false;
     // 预约
