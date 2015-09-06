@@ -959,7 +959,7 @@ class CashRecordBase(object):
             if to_user_openid:
                 WeixinBase().send_recharge_success_template_msg(
                     to_user_openid, 
-                    u"您已成功充值", 
+                    u"%s，您已成功充值" % company.name,
                     datetime.datetime.now().strftime("%Y-%m-%d %H:%M"), 
                     u"%.2f 元" % amount, 
                     u"账户余额：%.2f 元" % balance
