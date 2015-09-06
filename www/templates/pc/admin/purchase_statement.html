@@ -1,0 +1,280 @@
+{% extends "pc/admin/home.html" %}
+{% load custom_tags %}
+{% load custom_filters %}
+{% block title %}采购对账{% endblock %}
+{% block admin_title %}采购对账{% endblock %}
+{% block admin_title_m %}采购对账{% endblock %}
+
+{% block css %}
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript">
+$(document).ready(function(){
+    var Record = Backbone.Model.extend({
+
+        // 默认值
+        defaults: {
+            'num': ''
+        }
+
+    });
+
+    var Records = Backbone.Collection.extend({
+        model: Record,
+
+        _modelMaps: {
+            'num': 'num',
+            'supplierId': 'supplier_id',
+            'supplierName': 'supplier_name',
+            'orderPrice': 'order_price',
+            'purchasePrice': 'purchase_price',
+            'orders': 'orders'
+        },
+
+        // 查询
+        search: function(name, startDate, endDate){
+            var me = this,
+                name = name||'',
+                startDate = startDate||'{{start_date}}',
+                endDate = endDate||'{{end_date}}';
+
+            ajaxSend(
+                "/admin/purchase_statement/get_purchase_statement", 
+                {'name': name, 'start_date': startDate, 'end_date': endDate}, 
+                function(data){
+                    // me.pageIndex = pageIndex;
+                    // me.pageCount = data.page_count;
+                    me.name = name;
+                    me.startDate = startDate;
+                    me.endDate = endDate;
+
+                    me.reset($.Global.Utils.dictMapParse(data.data, me._modelMaps));
+                }
+            );
+        }
+    });
+
+    var ListView = Backbone.View.extend({
+        el: '#record_list',
+
+        // pagination: new $.Global.Pagination.PaginationView(),
+
+        template: _.template($('#record_template').html()),
+
+        ordersTemplate: _.template($('#orders_template').html()),
+
+        initialize: function(){
+            this.listenTo(this.collection, 'reset', this.render);
+        },
+
+        events: {
+            'click .search': 'search',
+            'click .pointer': 'showOrders',
+            'click .go-supplier-record': 'goSupplierRecord'
+        },
+
+        // 渲染函数
+        render: function(){
+            var data = this.collection.toJSON();
+
+            this.$('tbody').html(this.template({'records': data}));
+            
+            // this.pagination.render(
+            //     this.collection.pageIndex||1, 
+            //     this.collection.pageCount, 
+            //     String.format(
+            //         'search/{0}/{1}/{2}', 
+            //         this.collection.name,
+            //         this.collection.startDate,
+            //         this.collection.endDate
+            //     )
+            // );
+
+        },
+
+        // 显示面板
+        showPanel: function(){
+            $('.orange-nav-pills a[href="#record_list"]').tab('show');
+        },
+
+        search: function(){
+            var name = this.$('.name').val(),
+                startDate = this.$('#start_date_search').val(),
+                endDate = this.$('#end_date_search').val();
+            
+            router.navigate(
+                String.format('/search/{0}/{1}/{2}', name, startDate, endDate), 
+                {trigger: true}
+            );
+        },
+
+        // 跳转到采购流水
+        goSupplierRecord: function(sender){
+
+            var target = $(sender.currentTarget),
+                startDate = this.$('#start_date_search').val(),
+                endDate = this.$('#end_date_search').val(),
+                supplierName = target.data('supplier-name');
+                url = String.format(
+                    '/admin/purchase_record#search/{0}/1/{1}/{2}/1',
+                    supplierName,
+                    startDate,
+                    endDate
+                );
+            
+            window.open(url);
+
+            sender.preventDefault();
+        },
+
+        showOrders: function(sender){
+            
+            var data = this.collection.toJSON(),
+                target = $(sender.currentTarget),
+                supplierId = target.parent().data('supplier-id'),
+                orders = _.filter(data, function(x){return x['supplierId'] == supplierId})[0]['orders'];
+
+            $('#orders_modal').remove();
+            $(this.ordersTemplate({records: orders})).appendTo('body');
+            $('#orders_modal').modal({'show': true, 'backdrop': 'static'});
+        }
+
+    });
+
+    var Router = Backbone.Router.extend({
+
+        routes: {
+            "":                     "search",
+            "search/(:name)/(:startDate)/(:endDate)":    "search",
+        },
+
+        // 查询
+        search: function(name, startDate, endDate){
+            records.search(name, startDate, endDate);
+        }
+
+    });
+    
+    // 初始化
+    var records = new Records(),
+        listView = new ListView({'collection': records}),
+        router = new Router();
+ 
+    Backbone.history.start();
+
+    $('#start_date_search').datetimepicker({
+        format: 'yyyy-mm-dd',
+        language: 'zh-CN',
+        minView: 2,
+        autoclose: true
+    });
+
+    $('#end_date_search').datetimepicker({
+        format: 'yyyy-mm-dd',
+        language: 'zh-CN',
+        minView: 2,
+        autoclose: true
+    });
+
+});
+</script>
+{% endblock %}
+
+{% block admin_main %}
+
+
+<div class="tab-content">
+    <!-- 客户经理列表 -->
+    <div class="tab-pane fade in active" id="record_list">
+
+        <form action="." class="form-inline" onsubmit="javascript: return false;">
+            <div class="input-group input-group-sm pb-10">
+                <span class="input-group-addon">开始日期</span>
+                <input type="text" class="form-control" id="start_date_search" value="{{start_date}}"  />
+            </div>
+            <div class="input-group input-group-sm pb-10">
+                <span class="input-group-addon">结束日期</span>
+                <input type="text" class="form-control" id="end_date_search" value="{{end_date}}"  />
+            </div>
+            <div class="input-group input-group-sm pb-10">
+                <span class="input-group-addon">供货商名称</span>
+                <input type="text" class="form-control name" placeholder="" />
+                <span class="input-group-btn">
+                    <button class="btn btn-default search bgc-eeeeee" type="submit">查询</button>
+                </span>
+            </div>
+        </form>
+
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>供货商名称</th>
+                    <th>订单总金额</th>
+                    <th>采购总金额</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+            </tbody>
+        </table>
+
+        <!-- <div class="text-center">
+            <ul class="pagination pagination-sm qx-pagination">
+                
+            </ul>
+        </div> -->
+    </div>
+</div>
+
+<script type="text/template" id="record_template">
+    <% _.each(records, function(record){ %>
+        <tr data-supplier-id='<%= record.supplierId %>' >
+            <td><%= record.num %></td>
+            <td class="pointer"><%= record.supplierName %></td>
+            <td class="pointer"><%= record.orderPrice %></td>
+            <td class="pointer"><%= record.purchasePrice %></td>
+            <td><a data-supplier-name="<%= record.supplierName %>" class="go-supplier-record" href="#">查看采购流水</a></td>
+        </tr>
+    <% }) %>
+</script>
+
+<script type="text/template" id="orders_template">
+<div class="modal fade" id="orders_modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header pb-5">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">订单列表</h4>
+            </div>
+            <div class="modal-body">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>订单号</th>
+                            <th>所属公司</th>
+                            <th>订单金额</th>
+                            <th>订单时间</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <% _.each(records, function(record){ %>
+                        <tr>
+                            <td>
+                                <a target="_blank" href="/admin/order#modify/<%= record.order_id %>"><%= record.order_no %></a>
+                            </td>
+                            <td><%= record.company_name %></td>
+                            <td><%= record.price %></td>
+                            <td><%= record.date %></td>
+                        </tr>
+                    <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</script>
+{% endblock %}

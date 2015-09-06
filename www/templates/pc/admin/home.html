@@ -453,6 +453,9 @@ $(document).ready(function(){
                     <li class="list-group-item {% if '/purchase_record' in request.path %}active{% endif %}">
                         <a href="/admin/purchase_record"><i class="point"></i>采购流水</a>
                     </li>
+                    <li class="list-group-item {% if '/purchase_statement' in request.path %}active{% endif %}">
+                        <a href="/admin/purchase_statement"><i class="point"></i>采购对账</a>
+                    </li>
                 </ul>
             </li>
             <li class="list-group-item {% if '/booking' in request.path %}active{% endif %}">
@@ -461,14 +464,8 @@ $(document).ready(function(){
             <li class="list-group-item">
                 <a href="#"><i class="fa fa-bar-chart pr-3"></i>统计管理</a>
                 <ul class="list-group sub-nav">
-                    <li class="list-group-item">
-                        <a href="#"><i class="point"></i>当日流水统计</a>
-                    </li>
-                    <li class="list-group-item">
-                        <a href="#"><i class="point"></i>本月流水统计</a>
-                    </li>
-                    <li class="list-group-item">
-                        <a href="#"><i class="point"></i>年度流水统计</a>
+                    <li class="list-group-item {% if '/admin/statistics_order_cost' == request.path %}active{% endif %}">
+                        <a href="/admin/statistics_order_cost"><i class="point"></i>订单成本统计</a>
                     </li>
                 </ul>
             </li>

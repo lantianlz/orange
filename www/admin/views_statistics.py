@@ -16,6 +16,48 @@ from www.account.interface import UserBase, ExternalTokenBase
 
 
 @verify_permission('')
+def statistics_order_cost(request, template_name='pc/admin/statistics_order_cost.html'):
+    
+    today = datetime.datetime.now()
+    weekday = today.date().weekday()
+    start_date= (today - datetime.timedelta(days=weekday)).strftime('%Y-%m-%d')
+    end_date = today.strftime('%Y-%m-%d')
+
+    return render_to_response(template_name, locals(), context_instance=RequestContext(request))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@verify_permission('')
 def active_user(request, template_name='pc/admin/statistics_active_user.html'):
     from www.account.models import LastActive
     sources = [{'value': x[0], 'name': x[1]} for x in LastActive.last_active_source_choices]

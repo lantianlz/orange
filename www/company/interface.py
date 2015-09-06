@@ -704,12 +704,38 @@ class OrderBase(object):
 
     @cache_required(cache_key='active_order_count', expire=43200, cache_config=cache.CACHE_TMP)
     def get_active_order_count(self):
+        '''
+        获取有效订单数量
+        '''
         return Order.objects.filter(state=3).count()
 
     @cache_required(cache_key='active_person_time_count', expire=43200, cache_config=cache.CACHE_TMP)
     def get_active_person_time_count(self):
+        '''
+        获取有效人次
+        '''
         objs = Order.objects.select_related('company').filter(state=3)
         return objs.aggregate(Sum('company__person_count'))['company__person_count__sum']
+
+    def get_purchase_statement(self, name, start_date, end_date):
+        '''
+        根据订单按供货商查询汇总信息
+        '''
+        sql = """
+            SELECT c.supplier_id, d.name, sum(b.total_price), a.order_no, a.confirm_time, e.name, a.id
+            FROM company_order AS a, company_orderitem AS b, company_item AS c, company_supplier AS d, company_company AS e
+            WHERE a.id = b.order_id 
+            AND d.id = c.supplier_id 
+            AND b.item_id = c.id 
+            AND a.state = 3 
+            AND a.company_id = e.id
+            AND d.name like %s 
+            AND a.confirm_time > %s 
+            AND a.confirm_time < %s 
+            GROUP BY c.supplier_id, a.order_no
+        """
+        
+        return raw_sql.exec_sql(sql, ['%%%s%%' % name, str(start_date), str(end_date)])
 
 
 class BookingBase(object):
@@ -1313,6 +1339,17 @@ class PurchaseRecordBase(object):
             debug.get_debug_detail_and_send_email(e)
             transaction.rollback(using=DEFAULT_DB)
             return 99900, dict_err.get(99900)
+
+    def get_purchase_records(self, name, start_date, end_date):
+        '''
+        根据流水按供货商查询汇总信息
+        '''
+        return PurchaseRecord.objects.select_related('supplier').filter(
+            state = 1,
+            supplier__name__contains = name,
+            create_time__range = (start_date, end_date)
+        ).values('supplier_id').annotate(Sum('price'))
+
 
 
 

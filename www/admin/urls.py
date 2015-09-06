@@ -142,6 +142,13 @@ urlpatterns += patterns('www.admin.views_purchase_record',
     url(r'^purchase_record$', 'purchase_record'),
 )
 
+# 采购对账
+urlpatterns += patterns('www.admin.views_purchase_statement',
+
+    url(r'^purchase_statement/get_purchase_statement$', 'get_purchase_statement'),
+    url(r'^purchase_statement$', 'purchase_statement'),
+)
+
 # 预订管理
 urlpatterns += patterns('www.admin.views_booking',
 
@@ -149,6 +156,12 @@ urlpatterns += patterns('www.admin.views_booking',
     url(r'^booking/get_booking_by_id$', 'get_booking_by_id'),
     url(r'^booking/search$', 'search'),
     url(r'^booking$', 'booking'),
+)
+
+# 统计管理
+urlpatterns += patterns('www.admin.views_statistics',
+
+    url(r'^statistics_order_cost$', 'statistics_order_cost'),
 )
 
 # 城市
