@@ -13,6 +13,7 @@ a:focus {outline: none; -moz-outline: none;}
 .line-height-35{line-height: 35px;}
 
 .letter-spacing-1{letter-spacing: 1px;}
+.letter-spacing-2{letter-spacing: 2px;}
 .letter-spacing-3{letter-spacing: 3px;}
 .letter-spacing-5{letter-spacing: 5px;}
 
@@ -46,7 +47,9 @@ a:focus {outline: none; -moz-outline: none;}
 .f28{font-size: 28px;}
 .f30{font-size: 30px;}
 .f32{font-size: 32px;}
+.f35{font-size: 35px;}
 .f40{font-size: 40px;}
+.f50{font-size: 50px;}
 
 .w{width: 100%;}
 .w20{width: 20px;}
@@ -56,8 +59,10 @@ a:focus {outline: none; -moz-outline: none;}
 .w50{width: 50px;}
 .w55{width: 55px;}
 .w70{width: 70px;}
+.w75{width: 75px;}
 .w80{width: 80px;}
 .w100{width: 100px;}
+.w110{width: 110px;}
 .w130{width: 130px;}
 .w150{width: 150px;}
 .w200{width: 200px;}
@@ -130,6 +135,7 @@ a:focus {outline: none; -moz-outline: none;}
 .pt-65{padding-top: 65px;}
 .pt-80{padding-top: 80px;}
 .pt-100{padding-top: 100px;}
+.pt-120{padding-top: 120px;}
 .pb-0{padding-bottom: 0;}
 .pb-3{padding-bottom: 3px;}
 .pb-5{padding-bottom: 5px;}
@@ -140,9 +146,13 @@ a:focus {outline: none; -moz-outline: none;}
 .pb-20{padding-bottom: 20px;}
 .pb-25{padding-bottom: 25px;}
 .pb-30{padding-bottom: 30px;}
+.pb-40{padding-bottom: 40px;}
 .pb-50{padding-bottom: 50px;}
 .pb-55{padding-bottom: 55px;}
 .pb-80{padding-bottom: 80px;}
+.pb-100{padding-bottom: 100px;}
+.pb-120{padding-bottom: 120px;}
+.pb-200{padding-bottom: 200px;}
 .pl-0{padding-left: 0;}
 .pl-3{padding-left: 3px;}
 .pl-5{padding-left: 5px;}

@@ -4,98 +4,8 @@
 
 {% block base_css %}
 <link rel="stylesheet" type="text/css" href="{{MEDIA_URL}}css/fullpage/jquery.fullPage.css">
-<style type="text/css">
-.table{
-    margin-bottom: 0;
-}
-.loading-container{
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    z-index: 100;
-    background-color: #ffffff;
-    left: 15px;
-    top: 0;
-    -webkit-transition: all 1s;
-            transition: all 1s;
-}
-.loading-container.out{
-    -webkit-transform: translateY(-1000px);
-            transform: translateY(-1000px);
-}
-.logo-1{
-    width: 150px;
-    -webkit-transform: translateX(-300px);
-            transform: translateX(-300px);
-    -webkit-animation: logoRight 2.5s both;
-            animation: logoRight 2.5s both;
-}
-@-webkit-keyframes logoRight{
-    0%{
-        -webkit-transform: translateX(-300px);
-    }
-    100%{
-        -webkit-transform: translateX(0);
-    }
-}
-@keyframes logoRight{
-    0%{
-        -webkit-transform: translateX(-300px);
-                transform: translateX(-300px);
-    }
-    100%{
-        -webkit-transform: translateX(0);
-                transform: translateX(0);
-    }
-}
-.logo-2{
-    width: 85px;
-    -webkit-transform: translateX(300px);
-            transform: translateX(300px);
-    -webkit-animation: logoLeft 2.5s both;
-            animation: logoLeft 2.5s both;
-}
-@-webkit-keyframes logoLeft {
-    0%{
-        -webkit-transform: translateX(300px);
-    }
-    100%{
-        -webkit-transform: translateX(0);
-    }
-}
-@keyframes logoLeft {
-    0%{
-        -webkit-transform: translateX(300px);
-                transform: translateX(300px);
-    }
-    100%{
-        -webkit-transform: translateX(0);
-                transform: translateX(0);
-    }
-}
-.logo-3{
-    width: 85px;
-    opacity: 0;
-    -webkit-animation: logoIn 1s 2.1s both;
-            animation: logoIn 1s 2.1s both;
-}
-@-webkit-keyframes logoIn {
-    0%{
-        opacity: 0;
-    }
-    100%{
-        opacity: 1;
-    }
-}
-@keyframes logoIn {
-    0%{
-        opacity: 0;
-    }
-    100%{
-        opacity: 1;
-    }
-}
-</style>
+<link rel="stylesheet" type="text/css" href="{{MEDIA_URL}}css/animate/animate.min.css">
+<link rel="stylesheet" type="text/css" href="{{MEDIA_URL}}css/site/introduction_m.css?v={{MEDIA_VERSION}}">
 {% endblock %}
 
 {% block base_js %}
@@ -107,7 +17,11 @@ $(document).ready(function(){
     // 数字效果
     new countUp("percent", 0, 100, 0, 3).start();
 
-    var loadingCompelete = function(){
+    var goPage = function(e, index){
+            $.fn.fullpage.moveTo(index);
+            e.preventDefault();
+        },
+        loadingCompelete = function(){
         $('.loading-container').addClass('out');
 
         // 全屏滑动插件
@@ -117,12 +31,30 @@ $(document).ready(function(){
             easingcss3: 'ease',
             navigation: false,
             onLeave: function(index, nextIndex, direction){
-                // pageTransform(nextIndex);
+                
             }
         });
+        
     };
 
-    window.setTimeout(loadingCompelete, 3400);
+    window.setTimeout(loadingCompelete, 3000);
+    // loadingCompelete();
+
+    $('.go-1').on('click', function(e){
+        goPage(e, 1);
+    });
+    $('.go-3').on('click', function(e){
+        goPage(e, 3);
+    });
+    $('.go-4').on('click', function(e){
+        goPage(e, 4);
+    });
+    $('.go-5').on('click', function(e){
+        goPage(e, 5);
+    });
+    $('.go-6').on('click', function(e){
+        goPage(e, 6);
+    });
 
 });
 </script>
@@ -130,6 +62,7 @@ $(document).ready(function(){
 
 {% block body %}
 <div class="container-fluid pl-0 pr-0">
+    <!-- loading -->
     <div class="row loading-container">
         <div class="pa text-center w" style="left:0; top: 100px;">
             <img class="logo-1" src="{{MEDIA_URL}}img/introduction/mobile/logo-1.png">
@@ -144,22 +77,333 @@ $(document).ready(function(){
             <span id="percent">0</span>%
         </div>
     </div>
+
     <div id="fullpage" class="pr z-99">
+        <!-- 第一屏 -->
+        <div class="section bgc-EE7A32">
+            <div class="container row text-center co-ffffff f20 pr">
+                <div class="col-xs-12 f25">下午茶 + 互联网 = <span class="anim1 animated f30 fb">?</span></div>
+                <div class="col-xs-12 f50 fb letter-spacing-5 anim2 animated">三点十分</div>
+                <div class="col-xs-12 anim3 animated">
+                    <img class="w200" style="margin-left: -10px;" src="{{MEDIA_URL}}img/introduction/mobile/slogan.png">
+                </div>
+                <div class="col-xs-12 pr" style="height: 420px;">
+                    <span class="bubble" style="left: 35%; top: 2%; animation-delay: 3s; -webkit-animation-delay: 3s;">
+                        <span class="bubble-front" style="animation-delay: 3s; -webkit-animation-delay: 3s;"></span>
+                        <span class="bubble-back">
+                            <span class="bubble-left" style="animation-delay: 3s; -webkit-animation-delay: 3s;"></span>
+                            <span class="bubble-top" style="animation-delay: 3s; -webkit-animation-delay: 3s;"></span>
+                            <span class="bubble-right" style="animation-delay: 3s; -webkit-animation-delay: 3s;"></span>
+                            <span class="bubble-bottom" style="animation-delay: 3s; -webkit-animation-delay: 3s;"></span>
+                        </span>
+                    </span>
+                    <span class="bubble" style="left: 17%; top: 24%; animation-delay: 5s; -webkit-animation-delay: 5s;">
+                        <span class="bubble-front" style="animation-delay: 5s; -webkit-animation-delay: 5s; background-color: #AA6917;"></span>
+                        <span class="bubble-back">
+                            <span class="bubble-left" style="animation-delay: 5s; -webkit-animation-delay: 5s; background-color: #AA6917;"></span>
+                            <span class="bubble-top" style="animation-delay: 5s; -webkit-animation-delay: 5s; background-color: #AA6917;"></span>
+                            <span class="bubble-right" style="animation-delay: 5s; -webkit-animation-delay: 5s; background-color: #AA6917;"></span>
+                            <span class="bubble-bottom" style="animation-delay: 5s; -webkit-animation-delay: 5s; background-color: #AA6917;"></span>
+                        </span>
+                    </span>
+                    <span class="bubble" style="right: 7%; top: 34%; width: 15px; height: 15px; animation-delay: 5.5s; -webkit-animation-delay: 5.5s;">
+                        <span class="bubble-front" style="animation-delay: 5.5s; -webkit-animation-delay: 5.5s; background-color: #AA6917;"></span>
+                        <span class="bubble-back">
+                            <span class="bubble-left" style="animation-delay: 5.5s; -webkit-animation-delay: 5.5s; background-color: #AA6917;"></span>
+                            <span class="bubble-top" style="animation-delay: 5.5s; -webkit-animation-delay: 5.5s; background-color: #AA6917;"></span>
+                            <span class="bubble-right" style="animation-delay: 5.5s; -webkit-animation-delay: 5.5s; background-color: #AA6917;"></span>
+                            <span class="bubble-bottom" style="animation-delay: 5.5s; -webkit-animation-delay: 5.5s; background-color: #AA6917;"></span>
+                        </span>
+                    </span>
+                    <span class="bubble" style="right: 17%; top: 64%; width: 35px; height: 35px; animation-delay: 3.7s; -webkit-animation-delay: 3.7s;">
+                        <span class="bubble-front" style="animation-delay: 3.7s; -webkit-animation-delay: 3.7s;"></span>
+                        <span class="bubble-back">
+                            <span class="bubble-left" style="animation-delay: 3.7s; -webkit-animation-delay: 3.7s;"></span>
+                            <span class="bubble-top" style="animation-delay: 3.7s; -webkit-animation-delay: 3.7s;"></span>
+                            <span class="bubble-right" style="animation-delay: 3.7s; -webkit-animation-delay: 3.7s;"></span>
+                            <span class="bubble-bottom" style="animation-delay: 3.7s; -webkit-animation-delay: 3.7s;"></span>
+                        </span>
+                    </span>
+                    <span class="bubble" style="right: 37%; top: 9%; width: 20px; height: 20px; animation-delay: 5.7s; -webkit-animation-delay: 5.7s;">
+                        <span class="bubble-front" style="animation-delay: 5.7s; -webkit-animation-delay: 5.7s;"></span>
+                        <span class="bubble-back">
+                            <span class="bubble-left" style="animation-delay: 5.7s; -webkit-animation-delay: 5.7s;"></span>
+                            <span class="bubble-top" style="animation-delay: 5.7s; -webkit-animation-delay: 5.7s;"></span>
+                            <span class="bubble-right" style="animation-delay: 5.7s; -webkit-animation-delay: 5.7s;"></span>
+                            <span class="bubble-bottom" style="animation-delay: 5.7s; -webkit-animation-delay: 5.7s;"></span>
+                        </span>
+                    </span>
+                    <span class="bubble" style="left: 22%; top: 60%; width: 40px; height: 40px; animation-delay: 6.4s; -webkit-animation-delay: 6.4s;">
+                        <span class="bubble-front" style="animation-delay: 6.4s; -webkit-animation-delay: 6.4s;"></span>
+                        <span class="bubble-back">
+                            <span class="bubble-left" style="animation-delay: 6.4s; -webkit-animation-delay: 6.4s;"></span>
+                            <span class="bubble-top" style="animation-delay: 6.4s; -webkit-animation-delay: 6.4s;"></span>
+                            <span class="bubble-right" style="animation-delay: 6.4s; -webkit-animation-delay: 6.4s;"></span>
+                            <span class="bubble-bottom" style="animation-delay: 6.4s; -webkit-animation-delay: 6.4s;"></span>
+                        </span>
+                    </span>
+                    <span class="bubble" style="right: 22%; top: 30%; width: 20px; height: 20px; animation-delay: 3.4s; -webkit-animation-delay: 3.4s;">
+                        <span class="bubble-front" style="animation-delay: 3.4s; -webkit-animation-delay: 3.4s;"></span>
+                        <span class="bubble-back">
+                            <span class="bubble-left" style="animation-delay: 3.4s; -webkit-animation-delay: 3.4s;"></span>
+                            <span class="bubble-top" style="animation-delay: 3.4s; -webkit-animation-delay: 3.4s;"></span>
+                            <span class="bubble-right" style="animation-delay: 3.4s; -webkit-animation-delay: 3.4s;"></span>
+                            <span class="bubble-bottom" style="animation-delay: 3.4s; -webkit-animation-delay: 3.4s;"></span>
+                        </span>
+                    </span>
+                    <span class="bubble" style="right: 15%; top: 36%; width: 15px; height: 15px; animation-delay: 4.4s; -webkit-animation-delay: 4.4s;">
+                        <span class="bubble-front" style="animation-delay: 4.4s; -webkit-animation-delay: 4.4s;"></span>
+                        <span class="bubble-back">
+                            <span class="bubble-left" style="animation-delay: 4.4s; -webkit-animation-delay: 4.4s;"></span>
+                            <span class="bubble-top" style="animation-delay: 4.4s; -webkit-animation-delay: 4.4s;"></span>
+                            <span class="bubble-right" style="animation-delay: 4.4s; -webkit-animation-delay: 4.4s;"></span>
+                            <span class="bubble-bottom" style="animation-delay: 4.4s; -webkit-animation-delay: 4.4s;"></span>
+                        </span>
+                    </span>
+
+                    <img class="animated anim4" style="width: 18%; position: absolute; left: 38%; top: 10%;" src="{{MEDIA_URL}}img/introduction/mobile/pic-2.png">
+                    <img class="animated anim5" style="width: 15%; position: absolute; left: 60%; top: 12%;" src="{{MEDIA_URL}}img/introduction/mobile/pic-3.png">
+                    <img class="animated anim6" style="width: 15%; position: absolute; left: 9%; top: 30%;" src="{{MEDIA_URL}}img/introduction/mobile/pic-4.png">
+                    <img class="animated anim7" style="width: 20%; position: absolute; left: 27%; top: 26%;" src="{{MEDIA_URL}}img/introduction/mobile/pic-5.png">
+                    <img class="animated anim8" style="width: 20%; position: absolute; left: 51%; top: 26%;" src="{{MEDIA_URL}}img/introduction/mobile/pic-6.png">
+                    <img class="animated anim9" style="width: 15%; position: absolute; left: 73%; top: 32%;" src="{{MEDIA_URL}}img/introduction/mobile/pic-7.png">
+                    <img class="animated anim10" style="width: 20%; position: absolute; left: 15%; top: 45%;" src="{{MEDIA_URL}}img/introduction/mobile/pic-8.png">
+                    <img class="animated anim11" style="width: 23%; position: absolute; left: 37%; top: 44%;" src="{{MEDIA_URL}}img/introduction/mobile/pic-9.png">
+                    <img class="animated anim12" style="width: 20%; position: absolute; left: 63%; top: 47%;" src="{{MEDIA_URL}}img/introduction/mobile/pic-10.png">
+                    <img class="animated anim13" style="width: 20%; position: absolute; left: 26%; top: 65%;" src="{{MEDIA_URL}}img/introduction/mobile/pic-11.png">
+                    <img class="animated anim14" style="width: 20%; position: absolute; left: 50%; top: 65%;" src="{{MEDIA_URL}}img/introduction/mobile/pic-12.png">
+
+                </div>
+            </div>
+            <div class="w pa text-center" style="left: 0; bottom: 0;">
+                <img class="animated anim15" style="width: 52%;" src="{{MEDIA_URL}}img/introduction/mobile/pic-1.png">
+            </div>
+        </div>
+
+        <!-- 第二屏 -->
         <div class="section bgc-EE7A32">
             <div class="container row text-center co-ffffff f20">
-                第一屏
+                <div class="col-xs-12 f50 fb anim16 animated">一张图</div>
+                <div class="col-xs-12 f25 letter-spacing-1 pb-10 anim17 animated">告诉你我们做什么?</div>
+                <div class="col-xs-12 pt-100 pb-100">
+                    <span class="inline-block pr" style="width: 200px;">
+                        <img class="w anim18 animated" src="{{MEDIA_URL}}img/introduction/mobile/pic-14.png">
+                        <img class="pa anim18 animated" style="left: -35%; top: -20%; width: 170%;" src="{{MEDIA_URL}}img/introduction/mobile/pic-13.png">
+                        <span class="line-1-1"></span>
+                        <span class="line-1-2"></span>
+                        <div class="anim19 animated pa f14 text-left" style="left: -15%; top: -37%; width: 60%;">
+                            <div class="letter-spacing-1">企业下午茶点</div>
+                            <div class="letter-spacing-1">O2O服务领跑者</div>
+                        </div>
+                        <span class="line-2-1"></span>
+                        <span class="line-2-2"></span>
+                        <div class="anim20 animated pa f14 text-right" style="right: -19%; top: -24%; width: 50%;">
+                            <div class="letter-spacing-1">水果点心</div>
+                            <div class="letter-spacing-1">按需定制</div>
+                        </div>
+                        <span class="line-3-1"></span>
+                        <span class="line-3-2"></span>
+                        <div class="anim21 animated pa f14 text-right" style="left: -32%; top: 108%; width: 50%;">
+                            <div class="letter-spacing-1">免费配送上门</div>
+                        </div>
+                        <span class="line-4-1"></span>
+                        <span class="line-4-2"></span>
+                        <div class="anim22 animated pa f14 text-right" style="right: -17%; top: 124%; width: 50%;">
+                            <div class="letter-spacing-1">新鲜可口</div>
+                            <div class="letter-spacing-1">营养均衡</div>
+                        </div>
+                    </span>
+                </div>
+                <div class="col-xs-12 pb-30">
+                    <a href="" class="anim23 go-3">去看看套餐</a>
+                </div>
             </div>
         </div>
-        <div class="section bgc-84CCC7">
-            <div class="container row text-center co-ffffff f20">
-                第二屏
+
+        <!-- 第三屏 -->
+        <div class="section bgc-EE7A32">
+            <div class="container row co-ffffff text-center f20">
+                <div class="col-xs-12 f35 fb anim24 animated">我们的套餐</div>
+                <div class="col-xs-12 f25 fb anim25 animated pb-40">形式是这样的...</div>
+                <div class="col-xs-3 col-xs-offset-1 pl-0">
+                    <img class="w75 anim26 animated" src="{{MEDIA_URL}}img/introduction/mobile/pic-15.png">
+                </div>
+                <div class="col-xs-8 text-left">
+                    <div class="f22 fb anim27 animated">水果：</div>
+                    <div class="f14 pt-3 anim28 animated">香蕉、葡萄、火龙果、西瓜、</div>
+                    <div class="f14 pt-3 anim28 animated">哈密瓜、石榴、脆红李等</div>
+                </div>
+                <div class="col-xs-3 col-xs-offset-1 pl-0 pt-30">
+                    <img class="w75 anim29 animated" src="{{MEDIA_URL}}img/introduction/mobile/pic-16.png">
+                </div>
+                <div class="col-xs-8 text-left pt-30 pb-30">
+                    <div class="f22 fb anim30 animated">点心：</div>
+                    <div class="f14 pt-3 anim31 animated">蛋挞、布丁、老婆饼、曲奇、</div>
+                    <div class="f14 pt-3 anim31 animated">拿破仑、蛋糕、甜甜圈等</div>
+                </div>
+                <div class="col-xs-10 col-xs-offset-1 pl-0 anim32 animated" style="background-color: #ffffff; border-radius: 10px;">
+                    <div class="col-xs-3 pt-25 pb-20">
+                        <img class="w50" src="{{MEDIA_URL}}img/introduction/mobile/pic-17.png">
+                    </div>
+                    <div class="col-xs-9 pt-20 pb-20 pl-0 pr-0 fb co-EF7B32">
+                        <div class="f13 letter-spacing-1">根据您的喜好和需要组合定制</div>
+                        <div class="f20 letter-spacing-3">人均最低仅需<span class="pl-3 pr-3">8</span>元</div>
+                        <div class="f15 letter-spacing-2">即可享受美好下午茶时光</div>
+                    </div>
+                </div>
+                <div class="col-xs-12 pt-40 pb-30">
+                    <a href="" class="anim33 go-4">了解配送流程</a>
+                </div>
             </div>
         </div>
-        <div class="section bgc-3E445B">
-            <div class="container row text-center co-ffffff f20">
-                第三屏
+
+        <!-- 第四屏 -->
+        <div class="section bgc-EE7A32">
+            <div class="container row co-ffffff text-center f20">
+                <div class="col-xs-12 f25 fb anim34 animated">起早贪黑</div>
+                <div class="col-xs-12 f25 fb anim35 animated">只是为了</div>
+                <div class="col-xs-12 f35 fb anim36 animated">新鲜多一点</div>
+                <div class="col-xs-12 pt-55">
+                    <div class="col-xs-4">
+                        <img class="w75 anim37 animated" src="{{MEDIA_URL}}img/introduction/mobile/pic-18.png">
+                    </div>
+                    <div class="col-xs-4">
+                        <img class="w75 anim38 animated" src="{{MEDIA_URL}}img/introduction/mobile/pic-19.png">
+                    </div>
+                    <div class="col-xs-4">
+                        <img class="w75 anim39 animated" src="{{MEDIA_URL}}img/introduction/mobile/pic-20.png">
+                    </div>
+                </div>
+                <div class="col-xs-12 pt-25">
+                    <div class="col-xs-4 pl-0 pr-0 letter-spacing-1">
+                        <div class="f25 fb pb-5 anim40 animated">水果</div>
+                        <div class="f14 anim40 animated">水果每天早</div>
+                        <div class="f14 anim40 animated">晨新鲜采购</div>
+                    </div>
+                    <div class="col-xs-4 pl-0 pr-0 letter-spacing-1">
+                        <div class="f25 fb pb-5 anim41 animated">点心</div>
+                        <div class="f14 anim41 animated">点心提前一</div>
+                        <div class="f14 anim41 animated">天下单让工</div>
+                        <div class="f14 anim41 animated">厂定制生产</div>
+                    </div>
+                    <div class="col-xs-4 pl-0 pr-0 letter-spacing-1">
+                        <div class="f25 fb pb-5 anim42 animated">配送</div>
+                        <div class="f14 anim42 animated">全程冷链配</div>
+                        <div class="f14 anim42 animated">送保证新鲜</div>
+                    </div>
+                </div>
+                <div class="col-xs-12 pt-80 pb-30">
+                    <a href="" class="anim43 go-5">看看谁定制了</a>
+                </div>
             </div>
         </div>
+
+        <!-- 第五屏 -->
+        <div class="section bgc-EE7A32">
+            <div class="container row co-ffffff text-center f20">
+                <div class="col-xs-12 f28 fb anim44 animated">员工吃得开心</div>
+                <div class="col-xs-12 f35 fb anim45 animated">工作更用心</div>
+                <div class="col-xs-12 pt-30">
+                    <div class="col-xs-6 text-right">
+                        <img class="w110 anim46 animated" src="{{MEDIA_URL}}img/introduction/mobile/pic-21.png">
+                    </div>
+                    <div class="col-xs-6 text-left">
+                        <img class="w110 anim47 animated" src="{{MEDIA_URL}}img/introduction/mobile/pic-22.png">
+                    </div>
+                </div>
+                <div class="col-xs-12 pt-20">
+                    <div class="col-xs-6 text-right">
+                        <img class="w110 anim48 animated" src="{{MEDIA_URL}}img/introduction/mobile/pic-23.png">
+                    </div>
+                    <div class="col-xs-6 text-left">
+                        <img class="w110 anim49 animated" src="{{MEDIA_URL}}img/introduction/mobile/pic-24.png">
+                    </div>
+                </div>
+                <div class="col-xs-10 col-xs-offset-1 pt-30 f14 letter-spacing-1 anim50 animated">
+                以上蓉城著名互联网公司都已是三点十分的客户，通过三点十分的产品成功为员工供应新鲜能量
+                </div>
+                <div class="col-xs-12 pt-40 pb-30">
+                    <a href="" class="anim51 go-6">联系我们吧</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 第六屏 -->
+        <div class="section bgc-ffffff">
+            <div class="container row co-EF7B32 text-center f20 pr">
+                <div class="col-xs-12 f28 fb anim52 animated">现在，</div>
+                <div class="col-xs-12 f28 fb anim53 animated">就用你喜欢的方式，</div>
+                <div class="col-xs-12 f28 fb anim54 animated">联系我们吧</div>
+                <div class="col-xs-12 f15 fb pt-80 pb-200 letter-spacing-1 pl-0 pr-0">
+                    <span class="inline-block text-left" style="width: 220px;">
+                        <div class="pt-3 anim55 animated">网址：www.3-10.cc</div>
+                        <div class="pt-3 anim56 animated">邮箱：lz@3-10.cc</div>
+                        <div class="pt-3 anim57 animated">电话：4008-920-310</div>
+                        <div class="pt-3 anim58 animated">公司：成都大橙科技有限公司</div>
+                        <div class="pt-3 anim59 animated">地址：成都市益州大道1800号</div>
+                        <div class="pt-3 anim59 animated" style="padding-left: 48px;">移动互联创业大厦</div>
+                    </span>
+                </div>
+                <img class="pa orange orange-1" style="left: -28%; bottom: 0%; z-index: 102;" src="{{MEDIA_URL}}img/introduction/mobile/pic-25.png">
+                <img class="pa orange orange-2" style="left: -12%; bottom: -18%; z-index: 106;" src="{{MEDIA_URL}}img/introduction/mobile/pic-25.png">
+                <img class="pa orange orange-3" style="left: 17%; bottom: -28%; z-index: 105;" src="{{MEDIA_URL}}img/introduction/mobile/pic-25.png">
+                <img class="pa orange orange-4" style="left: 45%; bottom: -24%; z-index: 101;" src="{{MEDIA_URL}}img/introduction/mobile/pic-25.png">
+                <img class="pa orange orange-5" style="left: 70%; bottom: -23%; z-index: 104;" src="{{MEDIA_URL}}img/introduction/mobile/pic-25.png">
+                <img class="pa orange orange-6" style="left: 75%; bottom: -7%; z-index: 103;" src="{{MEDIA_URL}}img/introduction/mobile/pic-25.png">
+            </div>
+        </div>
+
+        <!-- 第七屏 -->
+        <div class="section bgc-ffffff">
+            <div class="container row co-EF7B32 text-center f20 pr">
+                <div class="col-xs-12 f50 fb anim60 animated">扫码，</div>
+                <div class="col-xs-12 f30 fb anim61 animated">我养你啊！</div>
+
+                <div class="col-xs-12 pt-30" style="min-height: 420px;">
+                    <img class="anim62 animated" style="width: 220px" src="{{MEDIA_URL}}img/introduction/mobile/pic-26.png">
+                    <div class="col-xs-12 pt-10 f18 fb">
+                        <div class="anim63 animated">点击菜单中的免费试吃，</div>
+                        <div class="anim64 animated">即可体验三点十分的产品</div>
+                        <div class="anim65 animated f12 pt-3 co-222222">搜索「三点十分」关注官方微信服务号</div>
+                    </div>
+                </div>
+
+                <img class="pa orange orange-1" style="left: -28%; bottom: 0%; z-index: 102;" src="{{MEDIA_URL}}img/introduction/mobile/pic-25.png">
+                <img class="pa orange orange-2" style="left: -12%; bottom: -18%; z-index: 106;" src="{{MEDIA_URL}}img/introduction/mobile/pic-25.png">
+                <img class="pa orange orange-3" style="left: 17%; bottom: -28%; z-index: 105;" src="{{MEDIA_URL}}img/introduction/mobile/pic-25.png">
+                <img class="pa orange orange-4" style="left: 45%; bottom: -24%; z-index: 101;" src="{{MEDIA_URL}}img/introduction/mobile/pic-25.png">
+                <img class="pa orange orange-5" style="left: 70%; bottom: -23%; z-index: 104;" src="{{MEDIA_URL}}img/introduction/mobile/pic-25.png">
+                <img class="pa orange orange-6" style="left: 75%; bottom: -7%; z-index: 103;" src="{{MEDIA_URL}}img/introduction/mobile/pic-25.png">
+            </div>
+        </div>
+
+        <!-- 第八屏 -->
+        <div class="section bgc-ffffff">
+            <div class="container row co-EF7B32 text-center f20 pr">
+                <div class="col-xs-12">
+                    <img class="anim66 animated" style="width: 170px;" src="{{MEDIA_URL}}img/introduction/mobile/pic-27.png">
+                </div>
+                <div class="col-xs-12 pt-30 fb">
+                    <div class="f22 anim67 animated">现在开始行动吧</div>
+                    <div class="f25 anim68 animated">舞动你的手指</div>
+                    <div class="f22 anim69 animated">开始预约试吃吧</div>
+                </div>
+                <div class="col-xs-12 pt-30 pb-30">
+                    <a href="/company/booking" class="anim70">马上试吃</a>
+                </div>
+                <div class="col-xs-12 pt-10 pb-120">
+                    <a href="" class="anim71 go-1">重新观看</a>
+                </div>
+
+                <img class="pa orange orange-1" style="left: -28%; bottom: 0%; z-index: 102;" src="{{MEDIA_URL}}img/introduction/mobile/pic-25.png">
+                <img class="pa orange orange-2" style="left: -12%; bottom: -18%; z-index: 106;" src="{{MEDIA_URL}}img/introduction/mobile/pic-25.png">
+                <img class="pa orange orange-3" style="left: 17%; bottom: -28%; z-index: 105;" src="{{MEDIA_URL}}img/introduction/mobile/pic-25.png">
+                <img class="pa orange orange-4" style="left: 45%; bottom: -24%; z-index: 101;" src="{{MEDIA_URL}}img/introduction/mobile/pic-25.png">
+                <img class="pa orange orange-5" style="left: 70%; bottom: -23%; z-index: 104;" src="{{MEDIA_URL}}img/introduction/mobile/pic-25.png">
+                <img class="pa orange orange-6" style="left: 75%; bottom: -7%; z-index: 103;" src="{{MEDIA_URL}}img/introduction/mobile/pic-25.png">
+            </div>
+        </div>
+
     </div>
 </div>
 {% endblock %}
