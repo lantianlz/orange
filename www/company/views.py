@@ -172,5 +172,9 @@ def feedback(request, company_id, template_name='pc/company/feedback.html'):
 
 
 def introduction_m(request, template_name='mobile/introduction_m.html'):
+    # 微信key
+    url = 'http://www.3-10.cc/company/introduction_m'
+    sign = Sign(WeixinBase().get_weixin_jsapi_ticket(WeixinBase().init_app_key()), url)
+    sign_dict = sign.sign()
     
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
