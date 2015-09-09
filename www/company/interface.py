@@ -537,22 +537,20 @@ class OrderBase(object):
 
         return objs
 
-    def search_orders_for_admin(self, start_date, end_date, state, order_no):
-
-        if order_no:
-            objs = self.get_all_order().filter(order_no=order_no)
-        else:
-            # 是否查询所有有效订单
-            if state == -2:
-                objs = Order.objects.filter(
-                    state__in=(1, 2, 3)
-                )
-            else:
-                objs = self.get_all_order(state)
-
-            objs = objs.filter(
-                create_time__range=(start_date, end_date)
+    def search_orders_for_admin(self, start_date, end_date, state, company):
+        
+        # 是否查询所有有效订单
+        if state == -2:
+            objs = Order.objects.filter(
+                state__in=(1, 2, 3)
             )
+        else:
+            objs = self.get_all_order(state)
+
+        objs = objs.select_related('company').filter(
+            create_time__range=(start_date, end_date),
+            company__name__contains=company
+        )
 
         return objs
 
