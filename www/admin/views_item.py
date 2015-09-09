@@ -60,11 +60,12 @@ def search(request):
     data = []
 
     name = request.REQUEST.get('name')
+    supplier = request.REQUEST.get('supplier')
     item_type = request.REQUEST.get('item_type')
     item_type = int(item_type)
     page_index = int(request.REQUEST.get('page_index'))
 
-    objs = ItemBase().search_items_for_admin(item_type, name)
+    objs = ItemBase().search_items_for_admin(item_type, supplier, name)
 
     page_objs = page.Cpt(objs, count=10, page=page_index).info
 

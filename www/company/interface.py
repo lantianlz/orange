@@ -101,11 +101,14 @@ class ItemBase(object):
 
         return 0, item
 
-    def search_items_for_admin(self, item_type, name):
+    def search_items_for_admin(self, item_type, supplier, name):
         objs = self.get_all_item()
 
         if item_type != -1:
             objs = objs.filter(item_type=item_type)
+
+        if supplier:
+            objs = objs.select_related('supplier').filter(supplier__name__contains=supplier)
 
         if name:
             objs = objs.filter(name__contains=name)
