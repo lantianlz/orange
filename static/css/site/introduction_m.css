@@ -1,7 +1,9 @@
 .table{
     margin-bottom: 0;
 }
-
+a, a:hover, a:focus{
+	text-decoration: none;
+}
 /*********************************** loding **************************************/
 .loading-container{
     position: absolute;
@@ -11,8 +13,8 @@
     background-color: #ffffff;
     left: 15px;
     top: 0;
-    -webkit-transition: all 1s;
-            transition: all 1s;
+    -webkit-transition: all 0.8s;
+            transition: all 0.8s;
 }
 .loading-container.out{
     -webkit-transform: translateY(-1200px);
@@ -22,8 +24,8 @@
     width: 150px;
     -webkit-transform: translateX(-300px);
             transform: translateX(-300px);
-    -webkit-animation: logoRight 2.5s both;
-            animation: logoRight 2.5s both;
+    -webkit-animation: logoRight 1.8s both;
+            animation: logoRight 1.8s both;
 }
 @-webkit-keyframes logoRight{
     0%{
@@ -47,8 +49,8 @@
     width: 85px;
     -webkit-transform: translateX(300px);
             transform: translateX(300px);
-    -webkit-animation: logoLeft 2.5s both;
-            animation: logoLeft 2.5s both;
+    -webkit-animation: logoLeft 1.8s both;
+            animation: logoLeft 1.8s both;
 }
 @-webkit-keyframes logoLeft {
     0%{
@@ -71,8 +73,8 @@
 .logo-3{
     width: 85px;
     opacity: 0;
-    -webkit-animation: logoIn 1s 2.1s both;
-            animation: logoIn 1s 2.1s both;
+    -webkit-animation: logoIn 1s 1.4s both;
+            animation: logoIn 1s 1.4s both;
 }
 @-webkit-keyframes logoIn {
     0%{
@@ -424,14 +426,14 @@
             animation-name: swing;
 }
 .active .anim2{
-    -webkit-animation-delay: 1.1s;
-            animation-delay: 1.1s;
+    -webkit-animation-delay: 0.9s;
+            animation-delay: 0.9s;
     -webkit-animation-name: fadeInUp;
             animation-name: fadeInUp;
 }
 .active .anim3{
-    -webkit-animation-delay: 1.6s;
-            animation-delay: 1.6s;
+    -webkit-animation-delay: 1.4s;
+            animation-delay: 1.4s;
     -webkit-animation-name: fadeInUp;
             animation-name: fadeInUp;
 }
@@ -510,16 +512,16 @@
 
 /*********************************** 第 二 屏 **************************************/
 .active .anim16{
-    -webkit-animation-delay: 0.5s;
+    /*-webkit-animation-delay: 0.5s;
             animation-delay: 0.5s;
     -webkit-animation-name: fadeInUp;
-            animation-name: fadeInUp;
+            animation-name: fadeInUp;*/
 }
 .active .anim17{
-    -webkit-animation-delay: 1.0s;
+   /* -webkit-animation-delay: 1.0s;
             animation-delay: 1.0s;
     -webkit-animation-name: fadeInUp;
-            animation-name: fadeInUp;
+            animation-name: fadeInUp;*/
 }
 .active .anim18{
     -webkit-animation: fadeIn 1s 1.6s both;
@@ -535,8 +537,8 @@
     background-color: #ffffff;
     -webkit-transform-origin: 100% 0%;
             transform-origin: 100% 0%;
-    -webkit-animation: line-1-1 0.3s 2.3s both linear;
-            animation: line-1-1 0.3s 2.3s both linear;
+    -webkit-animation: line-1-1 0.3s 2.1s both linear;
+            animation: line-1-1 0.3s 2.1s both linear;
 }
 @-webkit-keyframes line-1-1{
     0% {
@@ -565,8 +567,8 @@
     background-color: #ffffff;
     -webkit-transform-origin: 100% 0%;
             transform-origin: 100% 0%;
-    -webkit-animation: line-1-2 0.3s 2.6s both linear;
-            animation: line-1-2 0.3s 2.6s both linear;
+    -webkit-animation: line-1-2 0.3s 2.4s both linear;
+            animation: line-1-2 0.3s 2.4s both linear;
 }
 @-webkit-keyframes line-1-2{
     0% {
@@ -587,8 +589,8 @@
     }
 }
 .active .anim19{
-    -webkit-animation-delay: 3s;
-            animation-delay: 3s;
+    -webkit-animation-delay: 2.8s;
+            animation-delay: 2.8s;
     -webkit-animation-name: fadeIn;
             animation-name: fadeIn;
 }
@@ -602,8 +604,8 @@
     background-color: #ffffff;
     -webkit-transform-origin: 100% 0%;
             transform-origin: 100% 0%;
-    -webkit-animation: line-2-1 0.3s 3.4s both linear;
-            animation: line-2-1 0.3s 3.4s both linear;
+    -webkit-animation: line-2-1 0.3s 3s both linear;
+            animation: line-2-1 0.3s 3s both linear;
 }
 @-webkit-keyframes line-2-1{
     0% {
@@ -632,8 +634,8 @@
     background-color: #ffffff;
     -webkit-transform-origin: 100% 0%;
             transform-origin: 100% 0%;
-    -webkit-animation: line-2-2 0.3s 3.7s both linear;
-            animation: line-2-2 0.3s 3.7s both linear;
+    -webkit-animation: line-2-2 0.3s 3.3s both linear;
+            animation: line-2-2 0.3s 3.3s both linear;
 }
 @-webkit-keyframes line-2-2{
     0% {
@@ -654,8 +656,8 @@
     }
 }
 .active .anim20{
-    -webkit-animation-delay: 4.1s;
-            animation-delay: 4.1s;
+    -webkit-animation-delay: 3.7s;
+            animation-delay: 3.7s;
     -webkit-animation-name: fadeIn;
             animation-name: fadeIn;
 }
@@ -669,8 +671,8 @@
     background-color: #ffffff;
     -webkit-transform-origin: 100% 0%;
             transform-origin: 100% 0%;
-    -webkit-animation: line-3-1 0.3s 4.5s both linear;
-            animation: line-3-1 0.3s 4.5s both linear;
+    -webkit-animation: line-3-1 0.3s 3.9s both linear;
+            animation: line-3-1 0.3s 3.9s both linear;
 }
 @-webkit-keyframes line-3-1{
     0% {
@@ -699,8 +701,8 @@
     background-color: #ffffff;
     -webkit-transform-origin: 0% 100%;
             transform-origin: 0% 100%;
-    -webkit-animation: line-3-2 0.3s 4.7s both linear;
-            animation: line-3-2 0.3s 4.7s both linear;
+    -webkit-animation: line-3-2 0.3s 4.1s both linear;
+            animation: line-3-2 0.3s 4.1s both linear;
 }
 @-webkit-keyframes line-3-2{
     0% {
@@ -721,8 +723,8 @@
     }
 }
 .active .anim21{
-    -webkit-animation-delay: 5.2s;
-            animation-delay: 5.2s;
+    -webkit-animation-delay: 4.6s;
+            animation-delay: 4.6s;
     -webkit-animation-name: fadeIn;
             animation-name: fadeIn;
 }
@@ -736,8 +738,8 @@
     background-color: #ffffff;
     -webkit-transform-origin: 0% 100%;
             transform-origin: 0% 100%;
-    -webkit-animation: line-4-1 0.3s 5.8s both linear;
-            animation: line-4-1 0.3s 5.8s both linear;
+    -webkit-animation: line-4-1 0.3s 5s both linear;
+            animation: line-4-1 0.3s 5s both linear;
 }
 @-webkit-keyframes line-4-1{
     0% {
@@ -768,8 +770,8 @@
     background-color: #ffffff;
     -webkit-transform-origin: 0% 100%;
             transform-origin: 0% 100%;
-    -webkit-animation: line-4-2 0.3s 6.1s both linear;
-            animation: line-4-2 0.3s 6.1s both linear;
+    -webkit-animation: line-4-2 0.3s 5.3s both linear;
+            animation: line-4-2 0.3s 5.3s both linear;
 }
 @-webkit-keyframes line-4-2{
     0% {
@@ -790,8 +792,8 @@
     }
 }
 .active .anim22{
-    -webkit-animation-delay: 6.5s;
-            animation-delay: 6.5s;
+    -webkit-animation-delay: 5.7s;
+            animation-delay: 5.7s;
     -webkit-animation-name: fadeIn;
             animation-name: fadeIn;
 }
@@ -808,62 +810,62 @@
     color: #fff;
 }
 .active .anim23{
-    -webkit-animation: fadeIn 1s 7.2s both, pulse 1s 7.3s both;
-            animation: fadeIn 1s 7.2s both, pulse 1s 7.3s both;
+    -webkit-animation: fadeIn 1s 6.4s both, pulse 1s 6.5s both;
+            animation: fadeIn 1s 6.4s both, pulse 1s 6.5s both;
 }
 
 /*********************************** 第 三 屏 **************************************/
 .active .anim24{
     -webkit-animation-delay: 0.5s;
             animation-delay: 0.5s;
-    -webkit-animation-name: fadeInUp;
-            animation-name: fadeInUp;
+    -webkit-animation-name: fadeInDown;
+            animation-name: fadeInDown;
 }
 .active .anim25{
-    -webkit-animation-delay: 1.0s;
-            animation-delay: 1.0s;
+    -webkit-animation-delay: 0.7s;
+            animation-delay: 0.7s;
     -webkit-animation-name: fadeInUp;
             animation-name: fadeInUp;
 }
 .active .anim26{
-    -webkit-animation-delay: 1.7s;
-            animation-delay: 1.7s;
+    -webkit-animation-delay: 1.5s;
+            animation-delay: 1.5s;
     -webkit-animation-name: fadeInLeft;
             animation-name: fadeInLeft;
 }
 .active .anim27{
-    -webkit-animation-delay: 1.7s;
-            animation-delay: 1.7s;
+    -webkit-animation-delay: 1.5s;
+            animation-delay: 1.5s;
     -webkit-animation-name: fadeInRight;
             animation-name: fadeInRight;
 }
 .active .anim28{
-    -webkit-animation-delay: 2s;
-            animation-delay: 2s;
+    -webkit-animation-delay: 1.8s;
+            animation-delay: 1.8s;
     -webkit-animation-name: fadeInRight;
             animation-name: fadeInRight;
 }
 .active .anim29{
-    -webkit-animation-delay: 2s;
-            animation-delay: 2s;
+    -webkit-animation-delay: 1.8s;
+            animation-delay: 1.8s;
     -webkit-animation-name: fadeInLeft;
             animation-name: fadeInLeft;
 }
 .active .anim30{
-    -webkit-animation-delay: 2s;
-            animation-delay: 2s;
+    -webkit-animation-delay: 1.8s;
+            animation-delay: 1.8s;
     -webkit-animation-name: fadeInRight;
             animation-name: fadeInRight;
 }
 .active .anim31{
-    -webkit-animation-delay: 2.3s;
-            animation-delay: 2.3s;
+    -webkit-animation-delay: 2.1s;
+            animation-delay: 2.1s;
     -webkit-animation-name: fadeInRight;
             animation-name: fadeInRight;
 }
 .active .anim32{
-    -webkit-animation-delay: 2.9s;
-            animation-delay: 2.9s;
+    -webkit-animation-delay: 2.7s;
+            animation-delay: 2.7s;
     -webkit-animation-name: flipInX;
             animation-name: flipInX;
 }
@@ -956,44 +958,44 @@
 
 /*********************************** 第 五 屏 **************************************/
 .active .anim44{
-    -webkit-animation-delay: 0.5s;
+    /*-webkit-animation-delay: 0.5s;
             animation-delay: 0.5s;
     -webkit-animation-name: fadeInUp;
-            animation-name: fadeInUp;
+            animation-name: fadeInUp;*/
 }
 .active .anim45{
-    -webkit-animation-delay: 0.8s;
+    /*-webkit-animation-delay: 0.8s;
             animation-delay: 0.8s;
     -webkit-animation-name: fadeInUp;
-            animation-name: fadeInUp;
+            animation-name: fadeInUp;*/
 }
 .active .anim46{
-    -webkit-animation-delay: 1.4s;
-            animation-delay: 1.4s;
-    -webkit-animation-name: bounceIn;
-            animation-name: bounceIn;
-}
-.active .anim47{
-    -webkit-animation-delay: 1.6s;
-            animation-delay: 1.6s;
-    -webkit-animation-name: bounceIn;
-            animation-name: bounceIn;
-}
-.active .anim48{
     -webkit-animation-delay: 2s;
             animation-delay: 2s;
     -webkit-animation-name: bounceIn;
             animation-name: bounceIn;
 }
+.active .anim47{
+    -webkit-animation-delay: 2.2s;
+            animation-delay: 2.2s;
+    -webkit-animation-name: bounceIn;
+            animation-name: bounceIn;
+}
+.active .anim48{
+    -webkit-animation-delay: 2.6s;
+            animation-delay: 2.6s;
+    -webkit-animation-name: bounceIn;
+            animation-name: bounceIn;
+}
 .active .anim49{
-    -webkit-animation-delay: 1.8s;
-            animation-delay: 1.8s;
+    -webkit-animation-delay: 2.4s;
+            animation-delay: 2.4s;
     -webkit-animation-name: bounceIn;
             animation-name: bounceIn;
 }
 .active .anim50{
-    -webkit-animation-delay: 2.5s;
-            animation-delay: 2.5s;
+    -webkit-animation-delay: 3.1s;
+            animation-delay: 3.1s;
     -webkit-animation-name: fadeIn;
             animation-name: fadeIn;
 }
@@ -1009,8 +1011,8 @@
     color: #fff;
 }
 .active .anim51{
-    -webkit-animation: fadeIn 1s 3.3s both, pulse 1s 3.4s both;
-            animation: fadeIn 1s 3.3s both, pulse 1s 3.4s both;
+    -webkit-animation: fadeIn 1s 3.5s both, pulse 1s 3.6s both;
+            animation: fadeIn 1s 3.5s both, pulse 1s 3.6s both;
 }
 
 /*********************************** 第 六 屏 **************************************/
@@ -1157,54 +1159,68 @@
     }
 }
 .active .anim52{
-    -webkit-animation-delay: 0.7s;
+    /*-webkit-animation-delay: 0.7s;
             animation-delay: 0.7s;
     -webkit-animation-name: fadeInUp;
-            animation-name: fadeInUp;
+            animation-name: fadeInUp;*/
 }
 .active .anim53{
-    -webkit-animation-delay: 1.1s;
+    /*-webkit-animation-delay: 1.1s;
             animation-delay: 1.1s;
     -webkit-animation-name: fadeInUp;
-            animation-name: fadeInUp;
+            animation-name: fadeInUp;*/
 }
 .active .anim54{
-    -webkit-animation-delay: 1.5s;
+    /*-webkit-animation-delay: 1.5s;
             animation-delay: 1.5s;
     -webkit-animation-name: fadeInUp;
-            animation-name: fadeInUp;
+            animation-name: fadeInUp;*/
 }
 .active .anim55{
     -webkit-animation-delay: 2s;
             animation-delay: 2s;
-    -webkit-animation-name: fadeInLeft;
-            animation-name: fadeInLeft;
+    -webkit-animation-name: fadeInUp;
+            animation-name: fadeInUp;
 }
 .active .anim56{
     -webkit-animation-delay: 2.2s;
             animation-delay: 2.2s;
-    -webkit-animation-name: fadeInRight;
-            animation-name: fadeInRight;
+    -webkit-animation-name: fadeInUp;
+            animation-name: fadeInUp;
 }
 .active .anim57{
     -webkit-animation-delay: 2.4s;
             animation-delay: 2.4s;
-    -webkit-animation-name: fadeInLeft;
-            animation-name: fadeInLeft;
+    -webkit-animation-name: fadeInUp;
+            animation-name: fadeInUp;
 }
 .active .anim58{
     -webkit-animation-delay: 2.6s;
             animation-delay: 2.6s;
-    -webkit-animation-name: fadeInRight;
-            animation-name: fadeInRight;
+    -webkit-animation-name: fadeInUp;
+            animation-name: fadeInUp;
 }
 .active .anim59{
     -webkit-animation-delay: 2.8s;
             animation-delay: 2.8s;
-    -webkit-animation-name: fadeInLeft;
-            animation-name: fadeInLeft;
+    -webkit-animation-name: fadeInUp;
+            animation-name: fadeInUp;
 }
-
+.anim72{
+    color: #EF7B32;
+    border: 2px solid #EF7B32;
+    border-radius: 25px;
+    padding: 5px 15px;
+    font-size: 15px;
+    letter-spacing: 1px;
+}
+.anim72:visited{
+    color: #EF7B32;
+}
+.active .anim72{
+    -webkit-animation: fadeIn 1s 3.6s both, pulse 1s 3.7s both;
+            animation: fadeIn 1s 3.6s both, pulse 1s 3.7s both;
+}
 /*********************************** 第 七 屏 **************************************/
 /*.active .anim60{
     -webkit-animation-delay: 0.7s;
@@ -1242,49 +1258,6 @@
     -webkit-animation-name: fadeInUp;
             animation-name: fadeInUp;
 }
-.active .anim72{
-    -webkit-animation-delay: 0.7s;
-            animation-delay: 0.7s;
-    -webkit-animation-name: bounceIn;
-            animation-name: bounceIn;
-}
-.active .anim73{
-    -webkit-animation-delay: 0.75s;
-            animation-delay: 0.75s;
-    -webkit-animation-name: bounceIn;
-            animation-name: bounceIn;
-}
-.active .anim74{
-    -webkit-animation-delay: 0.8s;
-            animation-delay: 0.8s;
-    -webkit-animation-name: bounceIn;
-            animation-name: bounceIn;
-}
-.active .anim75{
-    -webkit-animation-delay: 0.95s;
-            animation-delay: 0.95s;
-    -webkit-animation-name: bounceIn;
-            animation-name: bounceIn;
-}
-.active .anim76{
-    -webkit-animation-delay: 1s;
-            animation-delay: 1s;
-    -webkit-animation-name: bounceIn;
-            animation-name: bounceIn;
-}
-.active .anim77{
-    -webkit-animation-delay: 1.05s;
-            animation-delay: 1.05s;
-    -webkit-animation-name: bounceIn;
-            animation-name: bounceIn;
-}
-.active .anim78{
-    -webkit-animation-delay: 1.1s;
-            animation-delay: 1.1s;
-    -webkit-animation-name: bounceIn;
-            animation-name: bounceIn;
-}
-
 
 /*********************************** 第 八 屏 **************************************/
 .active .anim66{
@@ -1340,4 +1313,24 @@
 .active .anim71{
     -webkit-animation: fadeIn 1s 2.6s both, pulse 1s 2.7s both;
             animation: fadeIn 1s 2.6s both, pulse 1s 2.7s both;
+}
+
+
+
+/*********************************** 文字动画效果 **************************************/
+.active .anim-flipInX{
+	-webkit-animation: flipInX 1s both;
+            animation: flipInX 1s both;
+}
+.active .anim-flipInY{
+	-webkit-animation: flipInY 1s both;
+            animation: flipInY 1s both;
+}
+.active .anim-bounceIn{
+	-webkit-animation: bounceIn 1s both;
+            animation: bounceIn 1s both;
+}
+.active .anim-fadeInLeft{
+	-webkit-animation: fadeInLeft 1s both;
+            animation: fadeInLeft 1s both;
 }

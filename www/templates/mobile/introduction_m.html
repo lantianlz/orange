@@ -15,9 +15,30 @@
 <script type="text/javascript">
 $(document).ready(function(){
     // 数字效果
-    new countUp("percent", 0, 100, 0, 3).start();
+    new countUp("percent", 0, 100, 0, 2.3).start();
 
-    var goPage = function(e, index){
+    var animText = function(selector){
+            var target = $(selector),
+                effect = target.data('effect'),
+                delayStart = target.data('delay-start'),
+                delayStep = target.data('delay-step'),
+                words = target.text().split(''),
+                html = '';
+
+            $.map(words, function(word){
+                // 去掉空字符
+                if($.trim(word) != ""){
+
+                    html += String.format('<span class="{0}" style="animation-delay: {1}s; -webkit-animation-delay: {2}s;">{3}</span>', effect, delayStart, delayStart, word);
+
+                    delayStart += delayStep;
+                }
+                
+            });
+
+            target.html(html);
+        },
+        goPage = function(e, index){
             $.fn.fullpage.moveTo(index);
             e.preventDefault();
         },
@@ -37,9 +58,20 @@ $(document).ready(function(){
         
     };
 
-    window.setTimeout(loadingCompelete, 2600);
+    // 解除loading
+    window.setTimeout(loadingCompelete, 1800);
     // loadingCompelete();
+    animText('.anim16');
+    animText('.anim17');
+    animText('.anim44');
+    animText('.anim45');
+    animText('.anim52');
+    animText('.anim53');
+    animText('.anim54');
+    animText('.anim60');
+    animText('.anim61');
 
+    // 跳转链接
     $('.go-1').on('click', function(e){
         goPage(e, 1);
     });
@@ -183,8 +215,8 @@ $(document).ready(function(){
         <!-- 第二屏 -->
         <div class="section bgc-EE7A32">
             <div class="container row text-center co-ffffff f20">
-                <div class="col-xs-12 f50 fb anim16 animated">一张图</div>
-                <div class="col-xs-12 f25 letter-spacing-1 pb-10 anim17 animated">告诉你我们做什么?</div>
+                <div class="col-xs-12 f50 fb anim16 animated" data-effect="anim-flipInX" data-delay-start="0.7" data-delay-step="0.07">一张图</div>
+                <div class="col-xs-12 f25 letter-spacing-1 pb-10 anim17 animated" data-effect="anim-flipInX" data-delay-start="1" data-delay-step="0.07">告诉你我们做什么?</div>
                 <div class="col-xs-12 pt-100 pb-100">
                     <span class="inline-block pr" style="width: 200px;">
                         <img class="w anim18 animated" src="{{MEDIA_URL}}img/introduction/mobile/pic-14.png">
@@ -301,8 +333,8 @@ $(document).ready(function(){
         <!-- 第五屏 -->
         <div class="section bgc-EE7A32">
             <div class="container row co-ffffff text-center f20">
-                <div class="col-xs-12 f28 fb anim44 animated">员工吃得开心</div>
-                <div class="col-xs-12 f35 fb anim45 animated">工作更用心</div>
+                <div class="col-xs-12 f28 fb anim44 animated" data-effect="anim-flipInY" data-delay-start="0.7" data-delay-step="0.07">员工吃得开心</div>
+                <div class="col-xs-12 f35 fb anim45 animated" data-effect="anim-flipInY" data-delay-start="1.2" data-delay-step="0.07">工作更用心</div>
                 <div class="col-xs-12 pt-30">
                     <div class="col-xs-6 text-right">
                         <img class="w110 anim46 animated" src="{{MEDIA_URL}}img/introduction/mobile/pic-21.png">
@@ -313,7 +345,7 @@ $(document).ready(function(){
                 </div>
                 <div class="col-xs-12 pt-20">
                     <div class="col-xs-6 text-right">
-                        <img class="w110 anim48 animated" src="{{MEDIA_URL}}img/introduction/mobile/pic-23.png">
+                        <img class="w110 anim48 animated" src="{{MEDIA_URL}}img/introduction/mobile/pic-28.png">
                     </div>
                     <div class="col-xs-6 text-left">
                         <img class="w110 anim49 animated" src="{{MEDIA_URL}}img/introduction/mobile/pic-24.png">
@@ -331,10 +363,10 @@ $(document).ready(function(){
         <!-- 第六屏 -->
         <div class="section bgc-ffffff">
             <div class="container row co-EF7B32 text-center f20 pr">
-                <div class="col-xs-12 f28 fb anim52 animated">现在，</div>
-                <div class="col-xs-12 f28 fb anim53 animated">就用你喜欢的方式，</div>
-                <div class="col-xs-12 f28 fb anim54 animated">联系我们吧</div>
-                <div class="col-xs-12 f15 fb pt-80 pb-200 letter-spacing-1 pl-0 pr-0">
+                <div class="col-xs-12 f28 fb anim52 animated" data-effect="anim-flipInX" data-delay-start="0.7" data-delay-step="0.05">现在，</div>
+                <div class="col-xs-12 f28 fb anim53 animated" data-effect="anim-flipInX" data-delay-start="1.1" data-delay-step="0.05">就用你喜欢的方式，</div>
+                <div class="col-xs-12 f28 fb anim54 animated" data-effect="anim-flipInX" data-delay-start="1.5" data-delay-step="0.05">联系我们吧</div>
+                <div class="col-xs-12 f15 fb pt-80 pb-80 letter-spacing-1 pl-0 pr-0">
                     <span class="inline-block text-left" style="width: 220px;">
                         <div class="pt-3 anim55 animated">电话：4008-920-310</div>
                         <div class="pt-3 anim56 animated">网址：http://www.3-10.cc</div>
@@ -343,6 +375,9 @@ $(document).ready(function(){
                         <div class="pt-3 anim59 animated">地址：成都市益州大道1800号</div>
                         <div class="pt-3 anim59 animated" style="padding-left: 48px;">移动互联创业大厦</div>
                     </span>
+                </div>
+                <div class="col-xs-12 pb-100">
+                    <a href="http://mp.weixin.qq.com/s?__biz=MzI5MzAyNDM3Mw==&mid=217825231&idx=1&sn=917b3fed876d0e21efdadb301f53b6d8&scene=0#rd" class="anim72">更多了解，更多欢乐</a>
                 </div>
                 <img class="pa orange orange-1" style="left: -28%; bottom: 0%; z-index: 102;" src="{{MEDIA_URL}}img/introduction/mobile/pic-25.png">
                 <img class="pa orange orange-2" style="left: -12%; bottom: -18%; z-index: 106;" src="{{MEDIA_URL}}img/introduction/mobile/pic-25.png">
@@ -356,23 +391,13 @@ $(document).ready(function(){
         <!-- 第七屏 -->
         <div class="section bgc-ffffff">
             <div class="container row co-EF7B32 text-center f20 pr">
-                <div class="col-xs-12 f50 fb anim60 animated">
-                    <span class="anim72 animated">扫</span>
-                    <span class="anim73 animated">码</span>
-                    <span class="anim74 animated">，</span>
-                </div>
-                <div class="col-xs-12 f30 fb anim61 animated">
-                    <span class="anim75 animated">我</span>
-                    <span class="anim76 animated">养</span>
-                    <span class="anim77 animated">你</span>
-                    <span class="anim78 animated">啊！</span>
-                </div>
-
+                <div class="col-xs-12 f50 fb anim60 animated" data-effect="anim-bounceIn" data-delay-start="0.7" data-delay-step="0.05">扫码，</div>
+                <div class="col-xs-12 f30 fb anim61 animated" data-effect="anim-bounceIn" data-delay-start="1" data-delay-step="0.05">我养你啊！</div>
                 <div class="col-xs-12 pt-30" style="min-height: 420px;">
                     <img class="anim62 animated" style="width: 220px" src="{{MEDIA_URL}}img/introduction/mobile/pic-26.png">
                     <div class="col-xs-12 pt-10 pl-10 pr-10 f18 fb">
-                        <div class="anim63 animated">长按图片识别二维码关注三点十分</div>
-                        <!-- <div class="anim64 animated">即可体验三点十分的产品</div> -->
+                        <div class="anim63 animated">长按图片识别二维码</div>
+                        <div class="anim64 animated">关注三点十分</div>
                         <div class="anim65 animated f12 pt-3 co-222222">点击菜单中的免费试吃，即可预约体验</div>
                     </div>
                 </div>
