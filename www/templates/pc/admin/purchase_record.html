@@ -323,6 +323,11 @@ $(document).ready(function(){
 
         addRecord: function(){
             
+            if(this.supplierTextBox.getValues().length == 0){
+                $.Global.Notice.InfoTopNotice('请输入正确的供货商!');
+                return;
+            }
+
             if(!$('#add_record_modal form').valid()){
                 return;
             }
