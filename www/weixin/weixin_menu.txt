@@ -9,7 +9,7 @@
         }, 
         {
             "type": "view", 
-            "name": "免费试吃", 
+            "name": "立即预约", 
             "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxd6922b078dff1607&redirect_uri=http%3A%2F%2Fwww.3-10.cc%2Faccount%2Foauth%2Fweixin&response_type=code&scope=snsapi_base&state=booking#wechat_redirect"
         }, 
         {
