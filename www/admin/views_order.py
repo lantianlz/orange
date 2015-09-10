@@ -30,6 +30,8 @@ def order(request, template_name='pc/admin/order.html'):
 def create_order(request, template_name='pc/admin/create_order.html'):
 
     today = datetime.datetime.now()
+    weekday = today.date().weekday() + 2
+    weekday = 1 if weekday == 8 else weekday
     start_date = today.strftime('%Y-%m-%d')
 
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
@@ -89,10 +91,14 @@ def format_order(objs, num, show_items=False):
             'items': items,
             'state': x.state
         })
-
+    
     return data
 
 def format_uncreate_order(objs, num):
+    today = datetime.datetime.now()
+    weekday = today.date().weekday() + 2
+    weekday = 1 if weekday == 8 else weekday
+
     data = []
 
     for x in objs:
@@ -111,9 +117,14 @@ def format_uncreate_order(objs, num):
             'create_time': '',
             'total_price': '',
             'is_test': '',
+            'cycle': x.cycle or '0-0-0-0-0-0-0',
+            'need_notice': int((x.cycle or '0-0-0-0-0-0-0').find(str(weekday)) > -1),
+            'cycle_str': x.get_cycle_str(),
             'state': -1
         })
 
+    # 排序 需要提醒的排列在前面
+    data.sort(key=lambda x:x['need_notice'], reverse=True)
     return data
 
 @verify_permission('query_order')
@@ -137,10 +148,10 @@ def search(request):
     else:
         objs = OrderBase().search_orders_for_admin(start_date, end_date, state, company)
 
-    page_objs = page.Cpt(objs, count=10, page=page_index).info
+    page_objs = page.Cpt(objs, count=1000, page=page_index).info
 
     # 格式化json
-    num = 10 * (page_index - 1)
+    num = 1000 * (page_index - 1)
     data = format_uncreate_order(page_objs[0], num) if state == -1 else format_order(page_objs[0], num)
 
     return HttpResponse(

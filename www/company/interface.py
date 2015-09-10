@@ -286,9 +286,16 @@ class CompanyBase(object):
 
 class MealBase(object):
 
+    def _get_cycle_str(self, cycle):
+        temp = []
+        for x in range(1, 8):
+            temp.append(str(x)) if str(x) in cycle else temp.append('0')
+        
+        return "-".join(temp)
+
     @transaction.commit_manually(using=DEFAULT_DB)
-    def add_meal(self, company_id, name, price, start_date, end_date, des='', meal_items=[]):
-        if not (company_id and name and price and start_date and end_date):
+    def add_meal(self, company_id, name, price, start_date, end_date, cycle, des='', meal_items=[]):
+        if not (company_id and name and price and start_date and end_date and cycle):
             return 99800, dict_err.get(99800)
 
         if not CompanyBase().get_company_by_id(company_id):
@@ -302,6 +309,7 @@ class MealBase(object):
                 price=price,
                 start_date=start_date,
                 end_date=end_date,
+                cycle=self._get_cycle_str(cycle),
                 des=des
             )
 
@@ -323,8 +331,8 @@ class MealBase(object):
         return 0, meal
 
     @transaction.commit_manually(using=DEFAULT_DB)
-    def modify_meal(self, meal_id, company_id, name, price, start_date, end_date, state, des='', meal_items=[]):
-        if not (company_id and name and price and start_date and end_date):
+    def modify_meal(self, meal_id, company_id, name, price, start_date, end_date, state, cycle, des='', meal_items=[]):
+        if not (company_id and name and price and start_date and end_date and cycle):
             return 99800, dict_err.get(99800)
 
         obj = self.get_meal_by_id(meal_id)
@@ -346,6 +354,7 @@ class MealBase(object):
             obj.end_date = end_date
             obj.des = des
             obj.state = state
+            obj.cycle = self._get_cycle_str(cycle)
             obj.save()
 
             # 套餐下的项目

@@ -36,6 +36,7 @@ $(document).ready(function(){
             'startDate': 'start_date',
             'endDate': 'end_date',
             'items': 'items',
+            'cycle': 'cycle',
             'state': 'state'
         },
 
@@ -454,7 +455,7 @@ $(document).ready(function(){
                     <th>套餐名称</th>
                     <th class="hidden-xs">所属公司</th>
                     <th class="hidden-xs">开始时间</th>
-                    <th class="hidden-xs">结束时间</th>
+                    <th class="hidden-xs">配送频次</th>
                     <th>价格</th>
                     <th>状态</th>
                 </tr>
@@ -484,7 +485,7 @@ $(document).ready(function(){
         <td><%= meal.name %></td>
         <td class="hidden-xs"><%= meal.companyName %></td>
         <td class="hidden-xs"><%= meal.startDate %></td>
-        <td class="hidden-xs"><%= meal.endDate %></td>
+        <td class="hidden-xs"><%= meal.cycle %></td>
         <td><%= meal.price %></td>
         <td>
         <% if(meal.state == 1){ %>
@@ -522,6 +523,32 @@ $(document).ready(function(){
         <label class="col-sm-2 control-label">结束日期</label>
         <div class="col-sm-2">
             <input type="text" id="end_date_modify" required class="form-control date" name='end_date' value='<%= endDate %>'>
+        </div>
+    </div>
+    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+        <label class="col-sm-2 control-label">配送频次</label>
+        <div class="col-sm-10 cycles">
+            <label class="checkbox-inline">
+                <input type="checkbox" name="cycle" value="1" <% if(cycle.indexOf("1") > -1){ %>checked<% } %> > 周一
+            </label>
+            <label class="checkbox-inline">
+                <input type="checkbox" name="cycle" value="2" <% if(cycle.indexOf("2") > -1){ %>checked<% } %> > 周二
+            </label>
+            <label class="checkbox-inline">
+                <input type="checkbox" name="cycle" value="3" <% if(cycle.indexOf("3") > -1){ %>checked<% } %> > 周三
+            </label>
+            <label class="checkbox-inline">
+                <input type="checkbox" name="cycle" value="4" <% if(cycle.indexOf("4") > -1){ %>checked<% } %> > 周四
+            </label>
+            <label class="checkbox-inline">
+                <input type="checkbox" name="cycle" value="5" <% if(cycle.indexOf("5") > -1){ %>checked<% } %> > 周五
+            </label>
+            <label class="checkbox-inline">
+                <input type="checkbox" name="cycle" value="6" <% if(cycle.indexOf("6") > -1){ %>checked<% } %> > 周六
+            </label>
+            <label class="checkbox-inline">
+                <input type="checkbox" name="cycle" value="7" <% if(cycle.indexOf("7") > -1){ %>checked<% } %> > 周日
+            </label>
         </div>
     </div>
     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
@@ -591,6 +618,32 @@ $(document).ready(function(){
                         <label class="col-sm-2 control-label">结束日期</label>
                         <div class="col-sm-3">
                             <input type="text" id="end_date_add" required class="form-control date" name='end_date' value='{{end_date}}'>
+                        </div>
+                    </div>
+                    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+                        <label class="col-sm-2 control-label">配送频次</label>
+                        <div class="col-sm-10 cycles">
+                            <label class="checkbox-inline">
+                                <input type="checkbox" name="cycle" value="1"> 周一
+                            </label>
+                            <label class="checkbox-inline">
+                                <input type="checkbox" name="cycle" value="2"> 周二
+                            </label>
+                            <label class="checkbox-inline">
+                                <input type="checkbox" name="cycle" value="3"> 周三
+                            </label>
+                            <label class="checkbox-inline">
+                                <input type="checkbox" name="cycle" value="4"> 周四
+                            </label>
+                            <label class="checkbox-inline">
+                                <input type="checkbox" name="cycle" value="5"> 周五
+                            </label>
+                            <label class="checkbox-inline">
+                                <input type="checkbox" name="cycle" value="6"> 周六
+                            </label>
+                            <label class="checkbox-inline">
+                                <input type="checkbox" name="cycle" value="7"> 周日
+                            </label>
                         </div>
                     </div>
                     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">

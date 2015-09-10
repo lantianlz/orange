@@ -62,6 +62,7 @@ def format_meal(objs, num, show_items=False):
             'start_date': str(x.start_date),
             'end_date': str(x.end_date),
             'state': x.state,
+            'cycle': x.cycle or '0-0-0-0-0-0-0',
             'items': items
         })
 
@@ -123,6 +124,7 @@ def modify_meal(request):
     end_date = request.POST.get('end_date')
     des = request.POST.get('des')
     state = request.POST.get('state')
+    cycle = request.POST.getlist('cycle')
 
     # 套餐项目
     item_ids = request.POST.getlist('item-ids')
@@ -130,7 +132,7 @@ def modify_meal(request):
 
     return MealBase().modify_meal(
         meal_id, company, name, price, start_date, 
-        end_date, state, des, _get_items(item_ids, item_amounts)
+        end_date, state, cycle, des, _get_items(item_ids, item_amounts)
     )
 
 @verify_permission('add_meal')
@@ -142,13 +144,14 @@ def add_meal(request):
     start_date = request.POST.get('start_date')
     end_date = request.POST.get('end_date')
     des = request.POST.get('des')
+    cycle = request.POST.getlist('cycle')
 
     # 套餐项目
     item_ids = request.POST.getlist('item-ids')
     item_amounts = request.POST.getlist('item-amounts')
 
     flag, msg = MealBase().add_meal(
-        company, name, price, start_date, end_date, des, 
+        company, name, price, start_date, end_date, cycle, des,
         _get_items(item_ids, item_amounts)
     )
     return flag, msg.id if flag == 0 else msg

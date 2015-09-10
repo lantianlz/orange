@@ -22,7 +22,6 @@ class Company(models.Model):
     addr = models.CharField(verbose_name=u"地址", max_length=256, null=True)
     person_count = models.IntegerField(verbose_name=u"员工总数", default=0)
     invite_by = models.CharField(verbose_name=u"邀请人", max_length=32, null=True)
-
     city_id = models.IntegerField(verbose_name=u"所属城市", default=0)
     source = models.IntegerField(verbose_name=u"来源", default=0, choices=source_choices)
     state = models.IntegerField(verbose_name=u"状态", default=1, db_index=True, choices=state_choices)
@@ -169,8 +168,24 @@ class Meal(models.Model):
     price = models.DecimalField(verbose_name=u"价格", max_digits=10, decimal_places=2, default=0)
     start_date = models.DateField(verbose_name=u"开始日期", db_index=True)
     end_date = models.DateField(verbose_name=u"结束日期", db_index=True)
+    cycle = models.CharField(verbose_name=u"配送频率", max_length=32, null=True)
     state = models.IntegerField(verbose_name=u"状态", default=1, choices=state_choices)
     create_time = models.DateTimeField(verbose_name=u"创建时间", auto_now_add=True, db_index=True)
+
+    def get_cycle_str(self):
+
+        if not self.cycle:
+            return ""
+
+        temp = []
+        dict_map = [u'一', u'二', u'三', u'四', u'五', u'六', u'日']
+        for x in self.cycle.split('-'):
+            if x != '0':
+                temp.append(dict_map[int(x)-1])
+            else:
+                temp.append(u"  ")
+
+        return "-".join(temp)
 
     class Meta:
         ordering = ["-create_time"]
