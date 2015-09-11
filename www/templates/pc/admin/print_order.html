@@ -17,6 +17,12 @@
     font-size: 30px;
     padding-left: 40px;
 }
+.qrcode{
+    position: absolute;
+    right: 10px;
+    top: -30px;
+    width: 110px;
+}
 </style>
 {% endblock %}
 
@@ -36,6 +42,8 @@ $(document).ready(function(){
         <div class="col-md-12 col-xs-12 pr">
             <img class="logo" src="{{MEDIA_URL}}img/logo.png">
             <span class="logo-text">三点十分 - 配送单</span>
+
+            <img class="qrcode" src="/qrcode?info=http://www.3-10.cc/admin/order/order_state?order_id={{order.id}}">
         </div>
 
         <div class="col-md-12 col-xs-12 pt-15">

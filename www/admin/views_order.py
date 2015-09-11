@@ -275,3 +275,11 @@ def get_items_of_order(request):
         })
 
     return HttpResponse(json.dumps(data), mimetype='application/json')
+
+
+@verify_permission('')
+def order_state(request, template_name='pc/admin/order_state.html'):
+    order_id = request.REQUEST.get('order_id')
+    order = OrderBase().get_order_by_id(order_id)
+    return render_to_response(template_name, locals(), context_instance=RequestContext(request))
+

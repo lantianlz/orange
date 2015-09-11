@@ -5,6 +5,7 @@ from django.conf.urls import patterns, url
 
 urlpatterns = patterns('www.admin.views',
 	url(r'^$', 'home'),
+    url(r'^nav$', 'nav'),
 )
 
 # 用户
@@ -111,6 +112,7 @@ urlpatterns += patterns('www.admin.views_meal',
 # 订单管理
 urlpatterns += patterns('www.admin.views_order',
 
+    url(r'^order/order_state$', 'order_state'),
     url(r'^order/get_items_of_order', 'get_items_of_order'),
     url(r'^order/print_order$', 'print_order'),
     url(r'^order/modify_order$', 'modify_order'),

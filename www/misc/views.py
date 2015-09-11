@@ -157,3 +157,24 @@ def customers(request):
     companys = CompanyBase().get_companys_by_show()
     person_time_count = OrderBase().get_active_person_time_count()
     return render_to_response('static_templates/customers.html', locals(), context_instance=RequestContext(request))
+
+
+def qrcode(request):
+    import qrcode, cStringIO
+
+    info = request.REQUEST.get('info')
+    buf = cStringIO.StringIO()
+
+    img = qrcode.make(info)
+    img.save(buf, 'gif')
+    
+    return HttpResponse(buf.getvalue(),'image/gif')
+
+
+
+
+
+
+
+
+

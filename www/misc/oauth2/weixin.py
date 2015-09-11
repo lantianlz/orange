@@ -18,7 +18,7 @@ REDIRECT_URI = '%s/account/oauth/weixin' % settings.MAIN_DOMAIN
 
 class Consumer(object):
 
-    def __init__(self, app_key, response_type='code'):
+    def __init__(self, app_key, response_type='code', state='home'):
         from www.weixin.interface import dict_weixin_app
 
         self.client_id = dict_weixin_app[app_key]["app_id"]
@@ -26,7 +26,7 @@ class Consumer(object):
         self.api_url = API_URL
         self.response_type = response_type
         self.redirect_uri = urllib.quote_plus(REDIRECT_URI)
-        self.state = 'home'
+        self.state = state
         self.grant_type = 'authorization_code'
         self.dict_format = dict(appid=self.client_id, client_secret=self.client_secret,
                                 response_type=self.response_type, api_url=self.api_url, grant_type=self.grant_type,
