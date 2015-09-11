@@ -30,6 +30,11 @@
                     "name": "推荐有礼", 
                     "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxd6922b078dff1607&redirect_uri=http%3A%2F%2Fwww.3-10.cc%2Faccount%2Foauth%2Fweixin&response_type=code&scope=snsapi_base&state=recommend#wechat_redirect"
                 },
+                {
+                    "type": "view", 
+                    "name": "管理平台", 
+                    "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxd6922b078dff1607&redirect_uri=http%3A%2F%2Fwww.3-10.cc%2Faccount%2Foauth%2Fweixin&response_type=code&scope=snsapi_base&state=admin#wechat_redirect"
+                },
             ]
         }
     ]
