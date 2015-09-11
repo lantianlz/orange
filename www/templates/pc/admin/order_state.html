@@ -1,0 +1,127 @@
+{% extends "pc/base/base_admin.html" %}
+{% block title %} 订单操作 {% endblock %}
+
+{% block base_css %}
+<style type="text/css">
+.logo{
+    width: 37px;
+    position: absolute;
+    left: 15px;
+    top: 10px;
+}
+.logo-text{
+    font-size: 30px;
+    padding-left: 40px;
+}
+.btn-lg{
+    position: absolute;
+    top: 10px;
+    right: 20px;
+}
+</style>
+{% endblock %}
+
+{% block base_js %}
+<script type="text/javascript">
+$(document).ready(function(){
+    var itemDetailView = new $.Global.ComponentView.ItemDetailView({el: '#item_detail'});
+    itemDetailView.render();
+    itemDetailView.getItemsByOrderId('{{order.id}}');
+
+    $('.distribute').on('click', function(){
+
+        var orderId = '{{order.id}}',
+            target = $(this),
+            me = this;
+
+        if(!confirm('确认配送订单?')){
+            return;
+        }
+
+        g_ajax_processing_obj_id = target.setUUID().attr('id');
+        ajaxSend(
+            "/admin/order/distribute_order", 
+            {'order_id': orderId},
+            function(data){
+                if(data.errcode == "0"){
+                    // $.Global.Notice.SuccessTopNotice('操作成功');
+                    window.location.reload();
+                } else {
+                    $.Global.Notice.ErrorTopNotice(data.errmsg);
+                }
+            }
+        );
+
+    });
+
+    $('.confirm').on('click', function(){
+
+        var orderId = '{{order.id}}',
+            target = $(this),
+            me = this;
+
+        if(!confirm('确认完成订单?')){
+            return;
+        }
+
+        g_ajax_processing_obj_id = target.setUUID().attr('id');
+        ajaxSend(
+            "/admin/order/confirm_order", 
+            {'order_id': orderId},
+            function(data){
+                if(data.errcode == "0"){
+                    // $.Global.Notice.SuccessTopNotice('操作成功');
+                    window.location.reload();
+                } else {
+                    $.Global.Notice.ErrorTopNotice(data.errmsg);
+                }
+            }
+        );
+
+    });
+});
+</script>
+{% endblock %}
+
+{% block base_container %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-12 col-xs-12 pr pt-10">
+            <img class="logo" src="http://static.3-10.cc/img/logo.png">
+            <span class="logo-text">订单操作</span>
+            {% if order.state == 1 %}
+            <button type="button" class="btn btn-primary btn-lg distribute">配送订单</button>
+            {% elif order.state == 2 %}
+            <button type="button" class="btn btn-success btn-lg confirm">完成订单</button>
+            {% endif %}
+        </div>
+
+        <div class="col-md-12 col-xs-12 pt-10">
+            收货方: {{order.company.name}} [ <span class="fi">{{order.company.short_name}}</span> ] ( {{order.company.person_count}}人 )
+        </div>
+
+        <div class="col-md-6 col-xs-12 pt-10">
+            收货人: {{order.company.staff_name}} ( {{order.company.mobile}} )
+        </div>
+        <div class="col-md-6 col-xs-12 pt-10">
+            订单创建日期: {{order.create_time}}
+        </div>
+
+        <div class="col-md-8 col-xs-12 pt-10">
+            收货地址: {{order.company.addr}}
+        </div>
+        <div class="col-md-4 col-xs-12 pt-10">
+            订单号: {{order.order_no}}
+        </div>
+        <div class="col-xs-12 pt-10">
+            订单金额: <span class="fb">{{order.total_price}}</span> 元
+        </div>
+        <div class="col-md-12 col-xs-12 pt-20 pb-30" id="item_detail">
+            
+        </div>
+        
+    </div>
+</div>
+{% endblock %}
+
+{% block footer %}{% endblock %}

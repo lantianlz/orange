@@ -1,0 +1,50 @@
+{% extends "pc/base/base_admin.html" %}
+{% block title %} 管理后台导航 {% endblock %}
+
+{% block base_css %}
+<style type="text/css">
+
+</style>
+{% endblock %}
+
+{% block base_js %}
+<script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+    /*
+        微信接口
+    */
+    wx.config({
+        debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+        appId: 'wxd6922b078dff1607', // 必填，公众号的唯一标识
+        timestamp: '{{sign_dict.timestamp}}', // 必填，生成签名的时间戳
+        nonceStr: '{{sign_dict.nonceStr}}', // 必填，生成签名的随机串
+        signature: '{{sign_dict.signature}}',// 必填，签名，见附录1
+        jsApiList: ['scanQRCode'] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
+    });
+
+    wx.ready(function(){
+        
+        $('.scanQRCode').on('click', function(){
+            wx.scanQRCode();
+        });
+        
+    });
+});
+</script>
+{% endblock %}
+
+{% block base_container %}
+<div class="container">
+    <div class="row">
+        <div class="col-xs-12 text-center pt-100">
+            <a href="#" class="btn btn-primary btn-lg scanQRCode"><i class="fa fa-qrcode pr-5"></i>订单状态操作</a>
+        </div>
+        <div class="col-xs-12 text-center pt-40">
+            <a href="/admin" class="btn btn-info btn-lg"><i class="fa fa-cogs pr-5"></i>后台管理平台</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block footer %}{% endblock %}
