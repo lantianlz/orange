@@ -14,11 +14,15 @@ from www.account import interface
 
 ub = interface.UserBase()
 
+
 def home_welcome(request, template_name='pc/index.html'):
+    # print request.META.get("HTTP_USER_AGENT")
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
+
 
 def car_list(request, template_name='pc/car_list.html'):
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
+
 
 def login(request, template_name='pc/account/login.html'):
     mobile = request.POST.get('mobile', '').strip()
