@@ -16,6 +16,7 @@ def home(request):
     return HttpResponseRedirect('/admin/user')
 
 @member_required
+@verify_permission('')
 def nav(request):
     # 微信key
     url = 'http://www.3-10.cc/admin/nav'
