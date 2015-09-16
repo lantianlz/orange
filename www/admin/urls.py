@@ -164,6 +164,9 @@ urlpatterns += patterns('www.admin.views_booking',
 urlpatterns += patterns('www.admin.views_statistics',
 
     url(r'^statistics_order_cost$', 'statistics_order_cost'),
+    
+    url(r'^statistics_chart$', 'statistics_chart'),
+    url(r'^statistics_chart/get_chart_data$', 'get_chart_data'),
 )
 
 # 城市

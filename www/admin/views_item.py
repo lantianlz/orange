@@ -67,10 +67,10 @@ def search(request):
 
     objs = ItemBase().search_items_for_admin(item_type, supplier, name)
 
-    page_objs = page.Cpt(objs, count=10, page=page_index).info
+    page_objs = page.Cpt(objs, count=20, page=page_index).info
 
     # 格式化json
-    num = 10 * (page_index - 1)
+    num = 20 * (page_index - 1)
     data = format_item(page_objs[0], num)
 
     return HttpResponse(
