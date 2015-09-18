@@ -60,7 +60,7 @@ def async_send_use_order_code_template_msg_by_user_id(user_id, product_type, nam
     openid = ExternalTokenBase().get_weixin_openid_by_user_id(user_id)
     if openid:
         errcode, errmsg = WeixinBase().send_use_order_code_template_msg(openid=openid, product_type=product_type, name=name,
-                                                                       time=time, remark=remark, app_key=app_key)
+                                                                        time=time, remark=remark, app_key=app_key)
         # errcode, errmsg = WeixinBase().send_use_order_code_template_msg(openid="oNYsJj1eg4fnU4tKLvH-f2IXlxJ4", product_type=product_type, name=name,
         #                                                                time=time, remark=remark,  app_key="orange")
         logging.error(u"%s: errcode is:%s, errmsg is:%s" % (str(datetime.datetime.now()), errcode, errmsg))

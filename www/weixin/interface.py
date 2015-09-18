@@ -256,7 +256,7 @@ class WeixinBase(object):
                 logging.error("error user info data is:%s" % data)
                 data = {}
         except Exception, e:
-            debug.get_debug_detail(e)
+            debug.get_debug_detail_and_send_email(e)
         return data
 
     def get_qr_code_ticket(self, app_key, expire=300):

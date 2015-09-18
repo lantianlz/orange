@@ -73,8 +73,8 @@ def regist(request, invitation_code=None, template_name='account/regist.html'):
 
     if request.POST:
         if captcha and request.session.get("captcha", "").strip() == captcha:
-            errcode, result = ub.regist_user(email, nick, password, re_password, ip=utils.get_clientip(request),
-                                             invitation_code=request.session.get('invitation_code'))
+            errcode, result = ub.regist_user_with_transaction(email, nick, password, re_password, ip=utils.get_clientip(request),
+                                                              invitation_code=request.session.get('invitation_code'))
             if errcode == 0:
                 user = auth.authenticate(username=email, password=password)
                 auth.login(request, user=user)
