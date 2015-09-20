@@ -130,6 +130,21 @@ class UserBase(object):
         return 0, dict_err.get(0)
 
     @transaction.commit_manually(using=ACCOUNT_DB)
+    def regist_user_with_transaction(self, email, nick, password, re_password, ip, mobilenumber=None, username=None,
+                                     source=0, gender=0, invitation_code=None):
+        try:
+            errcode, errmsg = self.regist_user(email, nick, password, re_password, ip, mobilenumber, username,
+                                               source, gender, invitation_code)
+            if errcode == 0:
+                transaction.commit(using=ACCOUNT_DB)
+            else:
+                transaction.rollback(using=ACCOUNT_DB)
+            return errcode, errmsg
+        except Exception, e:
+            debug.get_debug_detail_and_send_email(e)
+            transaction.rollback(using=ACCOUNT_DB)
+            return 99900, dict_err.get(99900)
+
     def regist_user(self, email, nick, password, re_password, ip, mobilenumber=None, username=None,
                     source=0, gender=0, invitation_code=None):
         '''
@@ -137,16 +152,13 @@ class UserBase(object):
         '''
         try:
             if not (email and nick and password):
-                transaction.rollback(using=ACCOUNT_DB)
                 return 99800, dict_err.get(99800)
 
             if password != re_password:
-                transaction.rollback(using=ACCOUNT_DB)
                 return 10105, dict_err.get(10105)
 
             errcode, errmsg = self.check_user_info(email, nick, password, mobilenumber)
             if errcode != 0:
-                transaction.rollback(using=ACCOUNT_DB)
                 return errcode, errmsg
 
             id = utils.uuid_without_dash()
@@ -157,15 +169,12 @@ class UserBase(object):
             profile = Profile.objects.create(id=id, nick=nick, ip=ip, source=source, gender=gender)
             self.set_profile_login_att(profile, user)
 
-            transaction.commit(using=ACCOUNT_DB)
-
             # 发送验证邮件
             # self.send_confirm_email(user)
 
             return 0, profile
         except Exception, e:
-            debug.get_debug_detail(e)
-            transaction.rollback(using=ACCOUNT_DB)
+            debug.get_debug_detail_and_send_email(e)
             return 99900, dict_err.get(99900)
 
     def change_profile(self, user, nick, gender, birthday, email, mobilenumber, des=None, state=None):
@@ -460,30 +469,43 @@ class UserBase(object):
             return []
         return Profile.objects.filter(nick__icontains=nick)[:200]
 
+    @transaction.commit_manually(using=ACCOUNT_DB)
     def get_user_by_external_info(self, source, access_token, external_user_id,
                                   refresh_token, nick, ip, expire_time,
                                   user_url='', gender=0, app_id=None):
-        assert all((source, access_token, external_user_id, nick))
+        try:
+            assert all((source, access_token, external_user_id, nick))
 
-        expire_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(int(time.time()) + int(expire_time)))
-        et = self.get_external_user(source, access_token, external_user_id, refresh_token, expire_time)
-        if et:
-            return True, self.get_user_by_id(et.user_id)
-        else:
-            email = '%s_%s@mr3-10.cc' % (source, int(time.time() * 1000))
-            nick = self.generate_nick_by_external_nick(nick)
-            if not nick:
-                return False, u'生成名称异常'
-            errcode, result = self.regist_user(email=email, nick=nick, password=email, re_password=email, ip=ip, source=1, gender=gender)
-            if errcode == 0:
-                user = result
-                ExternalToken.objects.create(source=source, external_user_id=external_user_id,
-                                             access_token=access_token, refresh_token=refresh_token, user_url=user_url,
-                                             nick=nick, user_id=user.id, expire_time=expire_time, app_id=app_id
-                                             )
-                return True, user
+            expire_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(int(time.time()) + int(expire_time)))
+            et = self.get_external_user(source, access_token, external_user_id, refresh_token, expire_time)
+            if et:
+                flag, result = True, self.get_user_by_id(et.user_id)
             else:
-                return False, result
+                email = '%s_%s@mr3-10.cc' % (source, int(time.time() * 1000))
+                nick = self.generate_nick_by_external_nick(nick)
+                if not nick:
+                    flag, result = False, u'生成名称异常'
+                else:
+                    errcode, result = self.regist_user(email=email, nick=nick, password=email, re_password=email, ip=ip, source=1, gender=gender)
+                    if errcode == 0:
+                        user = result
+                        ExternalToken.objects.create(source=source, external_user_id=external_user_id,
+                                                     access_token=access_token, refresh_token=refresh_token, user_url=user_url,
+                                                     nick=nick, user_id=user.id, expire_time=expire_time, app_id=app_id
+                                                     )
+                        flag, result = True, user
+                    else:
+                        flag, result = False, result
+
+            if flag:
+                transaction.commit(using=ACCOUNT_DB)
+            else:
+                transaction.rollback(using=ACCOUNT_DB)
+            return flag, result
+        except Exception, e:
+            debug.get_debug_detail_and_send_email(e)
+            transaction.rollback(using=ACCOUNT_DB)
+            return False, dict_err.get(99900)
 
     def generate_nick_by_external_nick(self, nick):
         if not self.get_user_by_nick(nick):

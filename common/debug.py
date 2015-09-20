@@ -57,10 +57,14 @@ def get_debug_detail(e, log_it=True):
 
 
 def get_debug_detail_and_send_email(e):
+    from django.conf import settings
     from www.tasks import async_send_email
+
     debug_detail = get_debug_detail(e)
     if isinstance(debug_detail, (list, tuple)):
         debug_detail = str(debug_detail)
     debug_detail = u"%s\n%s" % (str(datetime.datetime.now()), debug_detail)
-    async_send_email(settings.NOTIFICATION_EMAIL, u"%s direct error" % (settings.SERVER_NAME, ),
-                     debug_detail, type="text")
+
+    if not settings.LOCAL_FLAG:
+        async_send_email(settings.NOTIFICATION_EMAIL, u"%s direct error" % (settings.SERVER_NAME, ),
+                         debug_detail, type="text")

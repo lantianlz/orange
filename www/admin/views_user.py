@@ -110,6 +110,7 @@ def modify_user(request):
 
     return UserBase().change_profile(user, nick, gender, birthday, email, mobile, des, state)
 
+
 @verify_permission('add_user')
 @common_ajax_response
 def add_user(request):
@@ -120,8 +121,9 @@ def add_user(request):
     mobilenumber = request.POST.get('mobilenumber', '').strip()
     ip = utils.get_clientip(request)
 
-    flag, msg = UserBase().regist_user(email, nick, password, re_password, ip, mobilenumber)
+    flag, msg = UserBase().regist_user_with_transaction(email, nick, password, re_password, ip, mobilenumber)
     return flag, msg.id if flag == 0 else msg
+
 
 @member_required
 def get_user_by_nick(request):
@@ -138,6 +140,7 @@ def get_user_by_nick(request):
         result.append([user.id, user.nick, None, user.nick])
 
     return HttpResponse(json.dumps(result), mimetype='application/json')
+
 
 @verify_permission('change_pwd')
 @common_ajax_response
