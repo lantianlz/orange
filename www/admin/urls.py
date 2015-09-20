@@ -8,7 +8,7 @@ urlpatterns = patterns('www.admin.views',
     url(r'^nav$', 'nav'),
 )
 
-# 用户
+# 注册用户管理
 urlpatterns += patterns('www.admin.views_user',
 
     url(r'^user/change_pwd$', 'change_pwd'),
@@ -18,6 +18,16 @@ urlpatterns += patterns('www.admin.views_user',
     url(r'^user/get_user_by_id$', 'get_user_by_id'),
     url(r'^user/search$', 'search'),
     url(r'^user$', 'user'),
+)
+
+# 销售人员管理
+urlpatterns += patterns('www.admin.views_sale_man',
+
+    url(r'^sale_man/add_sale_man$', 'add_sale_man'),
+    url(r'^sale_man/modify_sale_man$', 'modify_sale_man'),
+    url(r'^sale_man/get_sale_man_by_id$', 'get_sale_man_by_id'),
+    url(r'^sale_man/search$', 'search'),
+    url(r'^sale_man$', 'sale_man'),
 )
 
 # 公司管理

@@ -2,6 +2,7 @@
 
 {% block title_all %}典型客户 - 三点十分{% endblock %}
 {% block css %}
+<link rel="stylesheet" type="text/css" href="{{MEDIA_URL}}css/animate/animate.min.css" />
 <link rel="stylesheet" type="text/css" href="{{MEDIA_URL}}css/site/customers.css?v={{MEDIA_VERSION}}">
 {% endblock %}
 
@@ -11,81 +12,83 @@
 {% endblock %}
 
 {% block base_container %}
-<div class="container-fluid slides-container pt-80">
-    <div class="container">
-        <ul class="list-unstyled slides">
-            <li class="active">
-                <div class="slide-item row">
-                    <div class="col-md-5 slide-text">
-                        <div class="slide-title">咕咚网</div>
-                        <div class="slide-slogan">要运动、用咕咚</div>
-                        <div class="slide-desc">成都乐动信息技术有限公司成立于2009年10月，公司旗下品牌咕咚，是国内最大的运动社交平台，也是国内倡导"分享运动快乐"，传播"快乐运动、乐活生活"理念的移动互联网先驱。</div>
-                    </div>
-                    <div class="col-md-7 slide-imgs">
-                        <img class="slide-img-v" src="{{MEDIA_URL}}img/customers/customers_banner01.png">
-                        <img class="slide-img-v" src="{{MEDIA_URL}}img/customers/customers_banner02.png">
-                    </div>
+<div class="container-fluid bdc-dddddd">
+    <div class="row pr">
+        <img class="w visibility-hidden" src="{{MEDIA_URL}}img/customers/slide01.jpg">
+        <div class="slide active">
+            <img class="w visibility-hidden" src="{{MEDIA_URL}}img/customers/slide01.jpg">
+            <div class="container-fluid pa w" style="left: 0; bottom: 40px; z-index: 101;">
+                <div class="container">
+                    <div class="slide-name text-right">味他</div>
+                    <div class="slide-des text-right">公司规模: 10 - 30人</div>
                 </div>
-            </li>
-            <!-- <li>
-                <div class="slide-item row">
-                    <div class="col-md-5 slide-text">
-                        <div class="slide-title" style="letter-spacing: 1px;">Camera360</div>
-                        <div class="slide-slogan">让照片与众不同</div>
-                        <div class="slide-desc">Camera360「中文名“相机360”」是一款风靡全球的手机拍照应用，荣获了2011年PCWorld 全球科技百强产品。其简单的操作、丰富迷人的照片特效、流畅的用户体验在短短一年时间，便 赢得了全球超过1亿用户的信赖和喜欢。</div>
-                    </div>
-                    <div class="col-md-7 slide-imgs">
-                        <img class="slide-img-h" src="{{MEDIA_URL}}img/customers/customers_banner03.jpg">
-                        <img class="slide-img-h" src="{{MEDIA_URL}}img/customers/customers_banner04.jpg">
-                    </div>
+            </div>
+            
+            <img class="slide-img active" src="{{MEDIA_URL}}img/customers/slide01.jpg">
+            <img class="slide-img" src="{{MEDIA_URL}}img/customers/slide02.jpg">
+            <img class="slide-img" src="{{MEDIA_URL}}img/customers/slide03.jpg">
+
+            <div class="left-nav">
+                <i class="fa fa-angle-left"></i>
+            </div>
+            <div class="right-nav">
+                <i class="fa fa-angle-right"></i>
+            </div>
+        </div>
+        <div class="slide">
+            <img class="w visibility-hidden" src="{{MEDIA_URL}}img/customers/slide01.jpg">
+            <div class="container-fluid pa w" style="left: 0; bottom: 40px; z-index: 101;">
+                <div class="container">
+                    <div class="slide-name">铁皮人</div>
+                    <div class="slide-des">公司规模: 30 - 100人</div>
                 </div>
-            </li> -->
-            <li>
-                <div class="slide-item row">
-                    <div class="col-md-5 slide-text">
-                        <div class="slide-title">小娱WiFi</div>
-                        <div class="slide-slogan">小娱WiFi，连接你我</div>
-                        <div class="slide-desc">小娱员工自从吃了三点十分提供的下午茶，腰也不酸了，背也不疼了，腿也不抽筋了，干活也有劲了，工作效率恐怖提升，产出更高。</div>
-                    </div>
-                    <div class="col-md-7 slide-imgs">
-                        <img class="slide-img-v" src="{{MEDIA_URL}}img/customers/customers_banner05.jpg">
-                        <img class="slide-img-v" src="{{MEDIA_URL}}img/customers/customers_banner06.jpg">
-                    </div>
+            </div>
+
+            <img class="slide-img active" src="{{MEDIA_URL}}img/customers/slide04.jpg">
+            <img class="slide-img" src="{{MEDIA_URL}}img/customers/slide05.jpg">
+            <img class="slide-img" src="{{MEDIA_URL}}img/customers/slide06.jpg">
+
+            <div class="left-nav">
+                <i class="fa fa-angle-left"></i>
+            </div>
+            <div class="right-nav">
+                <i class="fa fa-angle-right"></i>
+            </div>
+        </div>
+        <div class="slide">
+            <img class="w visibility-hidden" src="{{MEDIA_URL}}img/customers/slide01.jpg">
+            <div class="container-fluid pa w" style="left: 0; bottom: 40px; z-index: 101;">
+                <div class="container">
+                    <div class="slide-name">咕咚</div>
+                    <div class="slide-des">公司规模: 100人以上</div>
                 </div>
-            </li>
-            <li>
-                <div class="slide-item row">
-                    <div class="col-md-5 slide-text">
-                        <div class="slide-title">麦麦</div>
-                        <div class="slide-slogan">专注智慧养老服务</div>
-                        <div class="slide-desc">麦麦养老解决方案是专为中高端养老机构定制研发的智能养老管理系统。方案由父母终端、护士终端、子女终端和管理平台构成，基于健康云大数据应用实现全面智能化管理。</div>
-                    </div>
-                    <div class="col-md-7 slide-imgs">
-                        <img class="slide-img-h" src="{{MEDIA_URL}}img/customers/customers_banner07.jpg">
-                        <img class="slide-img-h" src="{{MEDIA_URL}}img/customers/customers_banner08.jpg">
-                    </div>
-                </div>
-            </li>
-        </ul>
-    </div>
-    <div class="col-md-12 text-center">
-        <ul class="slide-nav list-inline">
-            <li>
-                <span class="slide-nav-item active" data-index="0"></span>
-            </li>
-            <li>
-                <span class="slide-nav-item" data-index="1"></span>
-            </li>
-            <li>
-                <span class="slide-nav-item" data-index="2"></span>
-            </li>
-            <!-- <li>
-                <span class="slide-nav-item" data-index="3"></span>
-            </li> -->
-        </ul>
+            </div>
+
+            <img class="slide-img active" src="{{MEDIA_URL}}img/customers/slide07.jpg">
+            <img class="slide-img" src="{{MEDIA_URL}}img/customers/slide08.jpg">
+            <img class="slide-img" src="{{MEDIA_URL}}img/customers/slide09.jpg">
+
+            <div class="left-nav">
+                <i class="fa fa-angle-left"></i>
+            </div>
+            <div class="right-nav">
+                <i class="fa fa-angle-right"></i>
+            </div>
+        </div>
+        <div class="slide-nav-container">
+            <span class="slide-nav active" style="-webkit-animation-delay: 0.4s; animation-delay: 0.4s;">
+                <img class="slide-nav-img" src="{{MEDIA_URL}}img/home/customer-3.png">
+            </span>
+            <span class="slide-nav" style="-webkit-animation-delay: 0.6s; animation-delay: 0.6s;">
+                <img class="slide-nav-img" src="{{MEDIA_URL}}img/home/customer-2.png">
+            </span>
+            <span class="slide-nav" style="-webkit-animation-delay: 0.8s; animation-delay: 0.8s;">
+                <img class="slide-nav-img" src="{{MEDIA_URL}}img/home/customer-1.png">
+            </span>
+        </div>
     </div>
 </div>
-<div class="container-fluid pl-0 pr-0">
+<div class="container-fluid pl-0 pr-0 pt-80">
     <div class="row">
         <div class="col-md-12 text-center f25 pt-80">
             三点十分自2015年8月累积服务<span class="co-EF7B32 w55 inline-block" id="company-count" data-count="{{companys.count}}">0</span>家公司，共<span class="co-EF7B32 w100 inline-block" id="person-time-count" data-count="{{person_time_count}}">0</span>人次

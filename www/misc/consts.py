@@ -22,6 +22,11 @@ PERMISSIONS = [
     {'code': 'remove_user', 'name': u'删除用户', 'parent': 'user_manage'},
     {'code': 'change_pwd', 'name': u'修改用户密码', 'parent': 'user_manage'},
 
+    {'code': 'sale_man_manage', 'name': u'销售人员管理', 'parent': None},
+    {'code': 'add_sale_man', 'name': u'添加销售人员', 'parent': 'sale_man_manage'},
+    {'code': 'query_sale_man', 'name': u'查询销售人员', 'parent': 'sale_man_manage'},
+    {'code': 'modify_sale_man', 'name': u'修改销售人员', 'parent': 'sale_man_manage'},
+
     {'code': 'company_manage', 'name': u'公司管理', 'parent': None},
     {'code': 'add_company', 'name': u'添加公司', 'parent': 'company_manage'},
     {'code': 'query_company', 'name': u'查询公司', 'parent': 'company_manage'},

@@ -37,14 +37,14 @@ $(document).ready(function(){
 
                     fadeText(WORDS[i]);
 
-                }, i * 5000);
+                }, i * 4000);
                 
             });
         };
 
     window.setInterval(function(){
         loopFadeText();
-    }, WORDS.length * 5000);
+    }, WORDS.length * 4000);
     
     loopFadeText();
 

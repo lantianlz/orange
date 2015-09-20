@@ -27,6 +27,8 @@ class Company(models.Model):
     state = models.IntegerField(verbose_name=u"状态", default=1, db_index=True, choices=state_choices)
     sort = models.IntegerField(verbose_name=u"排序", default=0)
     is_show = models.IntegerField(verbose_name=u"官网是否显示", default=1, choices=show_choices)
+    sale_by = models.CharField(verbose_name=u"销售人", max_length=32, null=True)
+    sale_date = models.DateTimeField(verbose_name=u"正式订购日期", null=True, db_index=True)
     create_time = models.DateTimeField(verbose_name=u"创建时间", auto_now_add=True, db_index=True)
 
     def get_logo(self):
@@ -337,6 +339,23 @@ class PurchaseRecord(models.Model):
 
     class Meta:
         ordering = ["-create_time"]
+
+
+class SaleMan(models.Model):
+
+    '''
+    销售人员表
+    '''
+    state_choices = ((0, u"无效"), (1, u"有效"))
+
+    user_id = models.CharField(verbose_name=u"用户id", max_length=32, db_index=True, unique=True)
+    employee_date = models.DateTimeField(verbose_name=u"入职时间", null=True)
+    state = models.IntegerField(verbose_name=u"状态", default=1, choices=state_choices)
+
+    class Meta:
+        ordering = ["-id"]
+
+
 
 
 

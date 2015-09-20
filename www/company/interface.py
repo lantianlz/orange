@@ -17,7 +17,7 @@ from www.misc import consts
 from www.account.interface import UserBase, ExternalTokenBase
 from models import Item, Company, Meal, MealItem, Order, OrderItem, \
     Booking, CompanyManager, CashAccount, CashRecord, Supplier, \
-    SupplierCashAccount, SupplierCashRecord, PurchaseRecord
+    SupplierCashAccount, SupplierCashRecord, PurchaseRecord, SaleMan
 
 DEFAULT_DB = 'default'
 
@@ -45,6 +45,8 @@ dict_err = {
     20801: u'没有找到对应的供货商',
 
     20901: u'没有找到对应的采购流水',
+
+    21001: u'没有找到对应的销售人员',
 }
 dict_err.update(consts.G_DICT_ERROR)
 
@@ -1365,8 +1367,64 @@ class PurchaseRecordBase(object):
         ).values('supplier_id').annotate(Sum('price'))
 
 
+class SaleManBase(object):
 
+    def get_all_sale_man(self, state=None):
+        objs = SaleMan.objects.all()
 
+        if state:
+            objs = objs.filter(state=state)
+
+        return objs
+
+    def search_sale_man_for_admin(self, state=True):
+        return self.get_all_sale_man(state)
+
+    def add_sale_man(self, user_id, employee_date, state=True):
+        
+        user = UserBase().get_user_by_id(user_id)
+        if not user:
+            return 99800, dict_err.get(99800)
+
+        try:
+            obj = SaleMan.objects.create(
+                user_id = user_id,
+                employee_date = employee_date
+            )
+        except Exception, e:
+            debug.get_debug_detail_and_send_email(e)
+            return 99900, dict_err.get(99900)
+
+        return 0, obj
+
+    def get_sale_man_by_id(self, sale_man_id):
+        try:
+            return SaleMan.objects.get(id=sale_man_id)
+        except PurchaseRecord.DoesNotExist:
+            return ''
+
+    def modify_sale_man(self, sale_man_id, user_id, employee_date, state=True):
+        
+        if not (sale_man_id and user_id):
+            return 99800, dict_err.get(99800)
+
+        user = UserBase().get_user_by_id(user_id)
+        if not user:
+            return 99800, dict_err.get(99800)
+
+        obj = self.get_sale_man_by_id(sale_man_id)
+        if not obj:
+            return 21001, dict_err.get(21001)
+
+        try:
+            obj.employee_date = employee_date
+            obj.state = state
+            obj.save()
+        except Exception, e:
+            debug.get_debug_detail_and_send_email(e)
+            return 99900, dict_err.get(99900)
+
+        return 0, obj
 
 
 

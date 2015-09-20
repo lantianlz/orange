@@ -388,8 +388,16 @@ $(document).ready(function(){
             <span class="f18 pl-65">三点十分 后台管理</span>
         </div>
         <ul class="list-group p-nav">
-            <li class="list-group-item {% if '/user' in request.path %}active{% endif %}">
-                <a href="/admin/user"><i class="fa fa-user pr-3" style="left: 33px;"></i>用户管理</a>
+            <li class="list-group-item">
+                <a><i class="fa fa-user pr-3" style="left: 33px;"></i>用户管理</a>
+                <ul class="list-group sub-nav">
+                    <li class="list-group-item {% if '/admin/user' = request.path %}active{% endif %}">
+                        <a href="/admin/user"><i class="point"></i>注册用户管理</a>
+                    </li>
+                    <li class="list-group-item {% if '/admin/sale_man' = request.path %}active{% endif %}">
+                        <a href="/admin/sale_man"><i class="point"></i>销售人员管理</a>
+                    </li>
+                </ul>
             </li>
             <li class="list-group-item">
                 <a><i class="fa fa-building pr-3" style="left: 33px;"></i>公司管理</a>

@@ -1,138 +1,88 @@
 $(document).ready(function(){
-    var isTrans = false,
-    	transform = function(index){
-        var OUT_EFFECTS = {
-                0: 'move-up-out',
-                1: 'move-down-out',
-                2: 'slide-up-out',
-                3: 'slide-down-out',
-                4: 'slide-left-out',
-                5: 'slide-right-out'
-            },
-            IN_EFFECTS = {
-                0: 'move-up-in',
-                1: 'move-down-in',
-                2: 'slide-up-in',
-                3: 'slide-down-in',
-                4: 'slide-left-in',
-                5: 'slide-right-in'
-            },
-            getOutEffect = function(){
-                return OUT_EFFECTS[Math.round(Math.random() * 5)];
-            },
-            getInEffect = function(){
-                return IN_EFFECTS[Math.round(Math.random() * 5)];
-            },
-            outEffect = getOutEffect(),
-            inEffect = getInEffect(),
-            prev = $('.slides>li.active'),
-            next = $('.slides>li').eq(index);
+    var getIndex = function(selector){
+            var index = 0,
+                targets = $(selector);
 
-        // outEffect = "slide-down-out";
-        // inEffect = "slide-right-in";
+            $.each(targets, function(i){
+                index += (targets.eq(i).hasClass('active')) ? i : 0;
+            });
 
-        // 纠正下效果
-        // if([1, 3, 5].indexOf(index) > -1){
-        //     outEffect = (outEffect == "slide-down-out") ? "slide-up-out" : outEffect;
-        //     outEffect = (outEffect == "slide-right-out") ? "slide-left-out" : outEffect;
-        //     inEffect = (inEffect == "slide-right-in") ? "slide-left-in" : inEffect;
-        //     inEffect = (inEffect == "slide-down-in") ? "slide-up-in" : inEffect;
-        // }
+            return index;
+        },
+        playUpInterval = null,
+        autoPlayUp = function(){
+            if(playUpInterval){
+                window.clearInterval(playUpInterval);
+            }
+            playUpInterval = window.setInterval(function(){
+                var targets = $('.slide-nav'),
+                    current = getIndex(targets),
+                    next = current + 1,
+                    next = (next < targets.length) ? next : 0;
 
-        prev.removeClass('active');
-        prev.addClass('s-hide');
-        prev.find('img').eq(0).addClass(outEffect);
-        window.setTimeout(function(){
-            prev.find('img').eq(1).addClass(outEffect);
-        }, 250);
-        window.setTimeout(function(){
-            prev.removeClass('s-hide');
-            prev.find('img').eq(0).removeClass(outEffect);
-            prev.find('img').eq(1).removeClass(outEffect);
-        }, 1750);
+                targets.eq(next).click();
+            }, 12000);
 
-        next.addClass('active s-show');
-        window.setTimeout(function(){
-            next.find('img').eq(0).addClass(inEffect);
-        }, 800);
-        window.setTimeout(function(){
-            next.removeClass('s-show');
-            next.find('img').eq(1).addClass(inEffect);
-        }, 1050);
-        window.setTimeout(function(){
-            next.find('img').eq(0).removeClass(inEffect);
-            next.find('img').eq(1).removeClass(inEffect);
+            autoPlayLeft();
+        },
+        playLeftInterval = null,
+        autoPlayLeft = function(){
+            if(playLeftInterval){
+                window.clearInterval(playLeftInterval);
+            }
+            playLeftInterval = window.setInterval(function(){
+                var targets = $('.slide'),
+                    current = getIndex(targets);
+                    
+                targets.eq(current).find('.left-nav').click();
+            }, 4000);
+        };
 
-            isTrans = false;
-        }, 2550);
-    };
+    // 上下切换
+    $('.slide-nav').on('click', function(){
 
-    // 导航事件
-    $('.slide-nav-item').on('click', function(){
-    	// 动画是否正在进行
-        if(isTrans == true){
-            return;
-        } else {
-            isTrans = true;
-        }
+        $('.slide-nav').removeClass('active');
+        $(this).addClass('active');
 
-        var target = $(this);
+        $('.slide').removeClass('active');
+        $('.slide').eq(getIndex('.slide-nav')).addClass('active');
 
-        if(target.hasClass('active')){
-            return;
-        }
-
-        $('.slide-nav-item.active').removeClass('active');
-        target.addClass('active');
-        transform(parseInt(target.data('index')));
+        autoPlayUp();
     });
 
-    // 自动跳转
-    window.setInterval(function(){
-        var currentIndex = $('.slide-nav-item.active').data('index') + 1;
+    // 左右切换
+    $('.left-nav').on('click', function(){
         
-        currentIndex = (currentIndex >= $('.slide-nav-item').length) ? 0 : currentIndex;
+        var targets = $(this).parent().find('.slide-img'),
+            index = getIndex(targets),
+            length = targets.length;
         
-        $('.slide-nav-item').eq(currentIndex).click();
-    }, 7000);
+        index -= 1;
+        index = (index == -1) ? (length-1) : index;
+        
+        targets.removeClass('active');
+        targets.eq(index).addClass('active');
 
-    window.setTimeout(function(){
-        $('.slide-nav-item').eq(1).click();
-    }, 2000);
+        autoPlayUp();
+    });
+    $('.right-nav').on('click', function(){
+        
+        var targets = $(this).parent().find('.slide-img'),
+            index = getIndex(targets),
+            length = targets.length;
+        
+        index += 1;
+        index = (index == length) ? 0 : index;
+        
+        targets.removeClass('active');
+        targets.eq(index).addClass('active');
 
-
-    var showScaleModal = function(){
-        var HTML = [
-            '<div class="modal fade" id="win-modal">',
-              '<div class="modal-dialog">',
-                '<div class="modal-content">',
-                  '<div class="modal-header">',
-                    '<button type="button" class="close hide" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>',
-                    '<h4 class="modal-title text-center letter-spacing-3">咕咚网</h4>',
-                  '</div>',
-                  '<div class="modal-body">',
-                    '<img class="w" src="'+MEDIA_URL+'img/customers/1.jpg" />',
-                  '</div>',
-                  '<div class="modal-footer">',
-                    '<a class="btn btn-default btn-modal" data-dismiss="modal">CLOSE ME</a>',
-                  '</div>',
-                '</div>',
-              '</div>',
-            '</div>'
-        ];
-
-        $('#win-modal').remove();
-
-        $('body').append(HTML.join(""));
-
-        $('#win-modal').modal('show');
-    };
-
-    $('.customer-img').on("click", function(){
-    	showScaleModal();
+        autoPlayUp();
     });
 
-
+    // 自动播放
+    autoPlayUp();
+    
     // 数字效果
     new countUp("company-count", 0, $('#company-count').data('count')).start();
     new countUp("person-time-count", 0, $('#person-time-count').data('count')).start();
