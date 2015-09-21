@@ -30,6 +30,7 @@ def format_company(objs, num):
 
         city = CityBase().get_city_by_id(x.city_id)
         invite = UserBase().get_user_by_id(x.invite_by) if x.invite_by else ''
+        sale_by = UserBase().get_user_by_id(x.sale_by) if x.sale_by else ''
 
         data.append({
             'num': num,
@@ -51,6 +52,9 @@ def format_company(objs, num):
             'sort': x.sort,
             'short_name': x.short_name,
             'is_show': x.is_show,
+            'sale_by_id': sale_by.id if sale_by else '',
+            'sale_by_nick': sale_by.nick if sale_by else '',
+            'sale_date': str(x.sale_date)[:10] if x.sale_date else '',
             'create_time': str(x.create_time)
         })
 
@@ -103,6 +107,8 @@ def modify_company(request):
     is_show = request.REQUEST.get('is_show')
     short_name = request.REQUEST.get('short_name')
     state = request.REQUEST.get('state')
+    sale_date = request.REQUEST.get('sale_date')
+    sale_by = request.REQUEST.get('sale_by')
 
     obj = CompanyBase().get_company_by_id(company_id)
     img_name = obj.logo
@@ -114,7 +120,8 @@ def modify_company(request):
 
     flag, msg = CompanyBase().modify_company(
         company_id, name, staff_name, mobile, tel, addr, 
-        city_id, sort, des, state, person_count, invite, is_show, img_name, short_name
+        city_id, sort, des, state, person_count, invite, is_show, 
+        img_name, short_name, sale_date, sale_by
     )
 
     if flag == 0:
@@ -139,6 +146,8 @@ def add_company(request):
     invite = request.REQUEST.get('invite_by')
     is_show = request.REQUEST.get('is_show')
     short_name = request.REQUEST.get('short_name')
+    sale_date = request.REQUEST.get('sale_date')
+    sale_by = request.REQUEST.get('sale_by')
 
     img_name = ''
     img = request.FILES.get('img')
@@ -147,7 +156,8 @@ def add_company(request):
         img_name = '%s/%s' % (settings.IMG0_DOMAIN, img_name)
 
     flag, msg = CompanyBase().add_company(name, staff_name, 
-        mobile, tel, addr, city_id, sort, des, person_count, invite, is_show, img_name, short_name)
+        mobile, tel, addr, city_id, sort, des, person_count, invite, is_show, 
+        img_name, short_name, sale_date, sale_by)
 
     if flag == 0:
         url = "/admin/company?#modify/%s" % (msg.id)

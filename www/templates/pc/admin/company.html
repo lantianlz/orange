@@ -48,6 +48,9 @@ $(document).ready(function(){
             'sort': 'sort',
             'shortName': 'short_name',
             'isShow': 'is_show',
+            'saleById': 'sale_by_id',
+            'saleByNick': 'sale_by_nick',
+            'saleDate': 'sale_date',
             'createTime': 'create_time'
         },
 
@@ -216,12 +219,41 @@ $(document).ready(function(){
             
         },
 
+        saleTextBox: null,
+        initSaleTextBox: function(name, value){
+            var me = this;
+
+            this.saleTextBox = $.Global.TextboxList.create('#sale_by_modify', {
+                max: 1,
+                placeholder: '选择邀请人',
+                url: '/admin/user/get_user_by_nick',
+                param: 'nick',
+                loadPlaceholder: '正在加载...'
+            });
+
+            if(value){
+                this.saleTextBox.add(name, value);
+            }
+            
+        },
+
+        initDate: function(){
+            $('#sale_date_modify').datetimepicker({
+                format: 'yyyy-mm-dd',
+                language: 'zh-CN',
+                minView: 2,
+                autoclose: true
+            });
+        },
+
         // 渲染
         render: function(data){
             this.$el.html(this.template(data));
 
             this.initCityTextBox(data.cityName, data.cityId);
             this.initInviteTextBox(data.inviteName, data.inviteId);
+            this.initSaleTextBox(data.saleByNick, data.saleById);
+            this.initDate();
         },
 
         // 显示提问信息
@@ -291,6 +323,15 @@ $(document).ready(function(){
             
         },
 
+        initDate: function(){
+            $('#sale_date_add').datetimepicker({
+                format: 'yyyy-mm-dd',
+                language: 'zh-CN',
+                minView: 2,
+                autoclose: true
+            });
+        },
+
         inviteTextBox: null,
         initInviteTextBox: function(name, value){
             var me = this;
@@ -305,6 +346,24 @@ $(document).ready(function(){
 
             if(value){
                 this.inviteTextBox.add(name, value);
+            }
+            
+        },
+
+        saleTextBox: null,
+        initSaleTextBox: function(name, value){
+            var me = this;
+
+            this.saleTextBox = $.Global.TextboxList.create('#sale_by_add', {
+                max: 1,
+                placeholder: '选择邀请人',
+                url: '/admin/user/get_user_by_nick',
+                param: 'nick',
+                loadPlaceholder: '正在加载...'
+            });
+
+            if(value){
+                this.saleTextBox.add(name, value);
             }
             
         },
@@ -328,6 +387,8 @@ $(document).ready(function(){
 
             me.initCityTextBox();
             me.initInviteTextBox();
+            me.initSaleTextBox();
+            me.initDate();
         },
 
         addCompany: function(){
@@ -580,6 +641,18 @@ $(document).ready(function(){
             </div>
         </div>
         <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+            <label class="col-sm-2 control-label">销售日期</label>
+            <div class="col-sm-2">
+                <input type="text" class="form-control" name='sale_date' id="sale_date_modify" value='<%= saleDate %>'>
+            </div>
+        </div>
+        <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+            <label class="col-sm-2 control-label">销售人</label>
+            <div class="col-sm-4">
+                <input type="text" id="sale_by_modify" class="form-control" required name="sale_by" value=''>
+            </div>
+        </div>
+        <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
             <label class="col-sm-2 control-label">简介</label>
             <div class="col-sm-9">
                 <textarea name="des" rows="6" class="form-control" placeholder=""><%= des %></textarea>
@@ -679,6 +752,18 @@ $(document).ready(function(){
                                 <option value="{{show.value}}" >{{show.name}}</option>
                                 {% endfor %}
                             </select>
+                        </div>
+                    </div>
+                    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+                        <label class="col-sm-3 control-label">销售日期</label>
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control" name='sale_date' id="sale_date_add" value=''>
+                        </div>
+                    </div>
+                    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+                        <label class="col-sm-3 control-label">销售人</label>
+                        <div class="col-sm-6">
+                            <input type="text" id="sale_by_add" class="form-control" required name="sale_by" value=''>
                         </div>
                     </div>
                     <div class="form-group pt-20 pb-20 mb-0">

@@ -12,8 +12,8 @@
 {% endblock %}
 
 {% block base_container %}
-<div class="container-fluid bdc-dddddd">
-    <div class="row pr">
+<div class="container-fluid bdc-dddddd pr">
+    <div class="row pr" style="overflow-y: hidden;">
         <img class="w visibility-hidden" src="{{MEDIA_URL}}img/customers/slide01.jpg">
         <div class="slide active">
             <img class="w visibility-hidden" src="{{MEDIA_URL}}img/customers/slide01.jpg">
@@ -75,17 +75,18 @@
                 <i class="fa fa-angle-right"></i>
             </div>
         </div>
-        <div class="slide-nav-container">
-            <span class="slide-nav active" style="-webkit-animation-delay: 0.4s; animation-delay: 0.4s;">
-                <img class="slide-nav-img" src="{{MEDIA_URL}}img/home/customer-3.png">
-            </span>
-            <span class="slide-nav" style="-webkit-animation-delay: 0.6s; animation-delay: 0.6s;">
-                <img class="slide-nav-img" src="{{MEDIA_URL}}img/home/customer-2.png">
-            </span>
-            <span class="slide-nav" style="-webkit-animation-delay: 0.8s; animation-delay: 0.8s;">
-                <img class="slide-nav-img" src="{{MEDIA_URL}}img/home/customer-1.png">
-            </span>
-        </div>
+        
+    </div>
+    <div class="slide-nav-container">
+        <span class="slide-nav active" style="-webkit-animation-delay: 0.4s; animation-delay: 0.4s;">
+            <img class="slide-nav-img" src="{{MEDIA_URL}}img/home/customer-3.png">
+        </span>
+        <span class="slide-nav" style="-webkit-animation-delay: 0.6s; animation-delay: 0.6s;">
+            <img class="slide-nav-img" src="{{MEDIA_URL}}img/home/customer-2.png">
+        </span>
+        <span class="slide-nav" style="-webkit-animation-delay: 0.8s; animation-delay: 0.8s;">
+            <img class="slide-nav-img" src="{{MEDIA_URL}}img/home/customer-1.png">
+        </span>
     </div>
 </div>
 <div class="container-fluid pl-0 pr-0 pt-80">

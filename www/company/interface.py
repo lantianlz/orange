@@ -199,7 +199,8 @@ class CompanyBase(object):
         except Company.DoesNotExist:
             return ""
 
-    def add_company(self, name, staff_name, mobile, tel, addr, city_id, sort, des, person_count, invite_by, is_show, logo, short_name):
+    def add_company(self, name, staff_name, mobile, tel, addr, city_id, \
+        sort, des, person_count, invite_by, is_show, logo, short_name, sale_date, sale_by):
 
         if not (name and staff_name and mobile and addr and city_id):
             return 99800, dict_err.get(99800)
@@ -225,7 +226,9 @@ class CompanyBase(object):
                 invite_by=invite.id if invite else None,
                 is_show=is_show,
                 logo=logo,
-                short_name=short_name
+                short_name=short_name,
+                sale_date = sale_date,
+                sale_by = sale_by
             )
 
             # 创建公司对应的账户
@@ -237,7 +240,9 @@ class CompanyBase(object):
 
         return 0, obj
 
-    def modify_company(self, company_id, name, staff_name, mobile, tel, addr, city_id, sort, des, state, person_count, invite_by, is_show, logo, short_name):
+    def modify_company(self, company_id, name, staff_name, mobile, tel, \
+        addr, city_id, sort, des, state, person_count, invite_by, \
+        is_show, logo, short_name, sale_date, sale_by):
         if not (name and staff_name and mobile and addr and city_id):
             return 99800, dict_err.get(99800)
 
@@ -267,6 +272,8 @@ class CompanyBase(object):
             obj.is_show = is_show 
             obj.logo = logo 
             obj.short_name = short_name
+            obj.sale_date = sale_date
+            obj.sale_by = sale_by
             obj.save()
         except Exception, e:
             debug.get_debug_detail_and_send_email(e)
