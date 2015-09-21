@@ -21,9 +21,9 @@ $(document).ready(function(){
                     next = (next < targets.length) ? next : 0;
 
                 targets.eq(next).click();
-            }, 12000);
+            }, 4000);
 
-            autoPlayLeft();
+            // autoPlayLeft();
         },
         playLeftInterval = null,
         autoPlayLeft = function(){
