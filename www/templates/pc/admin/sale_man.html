@@ -1,0 +1,501 @@
+{% extends "pc/admin/home.html" %}
+{% load custom_tags %}
+{% load custom_filters %}
+{% block title %}销售人员管理{% endblock %}
+{% block admin_title %}销售人员管理{% endblock %}
+{% block admin_title_m %}销售人员管理{% endblock %}
+
+{% block css %}
+<style type="text/css">
+
+</style>
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript">
+$(document).ready(function(){
+    var SaleMan = Backbone.Model.extend({
+        defaults: {
+
+        }
+    });
+
+    var SaleMans = Backbone.Collection.extend({
+        model: SaleMan,
+
+        _modelMaps: {
+            'num': 'num',
+            'saleManId': 'sale_man_id',
+            'userId': 'user_id',
+            'nick': 'nick',
+            'employeeDate': 'employee_date',
+            'state': 'state'
+        },
+
+        search: function(state, pageIndex){
+            var me = this,
+                state = state || 1,
+                pageIndex = pageIndex || 1;
+
+            ajaxSend(
+                "/admin/sale_man/search", 
+                {'state': state, 'page_index': pageIndex}, 
+                function(data){
+                    
+                    me.pageIndex = pageIndex;
+                    me.pageCount = data.page_count;
+                    me.state = state;
+
+                    me.reset($.Global.Utils.dictMapParse(data.data, me._modelMaps));
+                }
+            );
+        },
+
+        getOne: function(saleManId, callback){
+            var me = this;
+
+            ajaxSend(
+                "/admin/sale_man/get_sale_man_by_id", 
+                {'sale_man_id': saleManId},
+                function(data){
+                    if(callback){
+                        callback($.Global.Utils.dictMap(data, me._modelMaps));
+                    }
+                }
+            );
+        },
+
+        modifySaleMan: function(data, callback){
+            var me = this;
+
+            ajaxSend(
+                "/admin/sale_man/modify_sale_man", 
+                data,
+                function(data){
+                    if(callback){
+                        callback(data);
+                    }
+                }
+            );
+        },
+
+        addSaleMan: function(data, callback){
+
+            ajaxSend(
+                "/admin/sale_man/add_sale_man", 
+                data,
+                function(response){
+                    if(callback){
+                        callback(response);
+                    }
+                }
+            );
+        }
+
+    });
+    
+    var ListView = Backbone.View.extend({
+        el: '#sale_man_list',
+
+        template: _.template($('#sale_man_list_template').html()),
+
+        pagination: new $.Global.Pagination.PaginationView(),
+
+        events: {
+            'click .search': 'searchSaleMan',
+            'click .pointer': 'modifySaleMan'
+        },
+
+        initialize: function(){
+            this.listenTo(this.collection, 'reset', this.render);
+        },
+
+        render: function(){
+            var data = this.collection.toJSON();
+            
+            this.showPanel();
+            this.$('tbody').html(this.template({'salemans': data}));
+            this.pagination.render(
+                this.collection.pageIndex||1, 
+                this.collection.pageCount, 
+                'search/' + this.collection.state
+            );
+        },
+
+        // 显示面板
+        showPanel: function(){
+            $('.orange-nav-pills a[href="#sale_man_list"]').tab('show');
+        },
+
+        searchSaleMan: function(){
+            var state = this.$('.state').val();
+            router.navigate(String.format('/search/{0}/1', state), {trigger: true});
+        },
+
+        modifySaleMan: function(sender){
+            var target = $(sender.currentTarget),
+                saleManId = target.data('sale_man_id');
+
+            router.navigate('/modify/' + saleManId, {trigger: true});
+        }
+        
+    });
+    
+
+    var ModifyView = Backbone.View.extend({
+        
+        el: '#modify_sale_man',
+
+        template: _.template($('#modify_sale_man_template').html()),
+
+        events: {
+            'click .save': 'save'
+        },
+
+        showPanel: function(){
+            $('.orange-nav-pills a[href="#modify_sale_man"]').tab('show');
+        },
+
+        render: function(data){
+            this.$el.html(this.template(data));
+
+            this.initDate();
+            this.initUserTextBox(data.nick, data.userId);
+        },
+
+        initDate: function(){
+            $('#employee_date_modify').datetimepicker({
+                format: 'yyyy-mm-dd',
+                language: 'zh-CN',
+                minView: 2,
+                autoclose: true
+            });
+        },
+
+        userTextBox: null,
+        initUserTextBox: function(name, value){
+            var me = this;
+
+            this.userTextBox = $.Global.TextboxList.create('#user_modify', {
+                max: 1,
+                placeholder: '选择用户',
+                url: '/admin/user/get_user_by_nick',
+                param: 'nick',
+                loadPlaceholder: '正在加载...'
+            });
+            
+            if(value){
+                this.userTextBox.add(name, value);
+            }    
+        },  
+
+        modifySaleMan: function(saleManId){
+            var me = this;
+
+            this.collection.getOne(saleManId, function(data){
+
+                if(data){
+                    me.render(data);
+                    me.showPanel();
+                } else {
+                    setTimeout(function(){history.go(-1);}, 3000);
+                    $.Global.Notice.ErrorTopNotice('没有找到对应的销售人员!');
+                }
+            });
+        },
+
+        save: function(sender){
+            var saleManId = this.$('form').data('sale_man_id'),
+                target = $(sender.currentTarget),
+                me = this;
+
+            if(!this.$('form').valid()){
+                return;
+            }
+
+            g_ajax_processing_obj_id = target.setUUID().attr('id');
+            me.collection.modifySaleMan(this.$('form').serialize(), function(data){
+                if(data.errcode == "0"){
+                    $.Global.Notice.SuccessTopNotice('操作成功');
+                    router.navigate('modify/' + saleManId, {'trigger': true});
+                } else {
+                    $.Global.Notice.ErrorTopNotice(data.errmsg);
+                }
+            })
+        }
+
+    });
+
+    
+    var AddView = Backbone.View.extend({
+        el: 'body',
+
+        template: _.template($('#add_sale_man_template').html()),
+
+        showPanel: function(){
+            var me = this;
+
+            me.render();
+        },
+
+        initDate: function(){
+            $('#employee_date_add').datetimepicker({
+                format: 'yyyy-mm-dd',
+                language: 'zh-CN',
+                minView: 2,
+                autoclose: true
+            });
+        },
+
+        userTextBox: null,
+        initUserTextBox: function(name, value){
+            var me = this;
+
+            this.userTextBox = $.Global.TextboxList.create('#user_add', {
+                max: 1,
+                placeholder: '选择用户',
+                url: '/admin/user/get_user_by_nick',
+                param: 'nick',
+                loadPlaceholder: '正在加载...'
+            });
+            
+        },
+
+        render: function(){
+            var me = this;
+
+            $('#add_sale_man_modal').remove();
+            
+            $('body').append(this.template());
+
+            // 绑定事件
+            $('#add_sale_man_modal .cancel').bind('click', function(){
+                history.go(-1);
+            });
+            $('#add_sale_man_modal .ok').bind('click', function(){
+                me.addSaleMan();
+            });
+            
+            $('#add_sale_man_modal').modal({'show': true, 'backdrop': 'static'});
+
+            me.initUserTextBox();
+            me.initDate();
+        },
+
+        addSaleMan: function(){
+            var me = this;
+            
+            if(!$('#add_sale_man_modal form').valid()){
+                return;
+            }
+
+            g_ajax_processing_obj_id = $("#add_sale_man_modal .ok").setUUID().attr('id');
+            salemans.addSaleMan($.Global.Utils.formToDict($('#add_sale_man_modal form')), function(data){
+                if(data.errcode == "0"){
+                    router.navigate('modify/' + data.errmsg, {trigger: true});
+                    $('#add_sale_man_modal').modal('hide');
+                    $.Global.Notice.SuccessTopNotice("操作成功");
+                } else {
+                    $.Global.Notice.ErrorTopNotice(data.errmsg);
+                }
+            })
+        }
+
+    });
+
+
+    var Router = Backbone.Router.extend({
+        routes: {
+            "":                             "search",
+            "search/(:state)/:pageIndex":    "search",
+            "modify/:saleManId":               "modify",
+            "add":                          "add"
+        },
+
+        // 获取推荐用户
+        search: function(state, pageIndex){
+            salemans.search(state, pageIndex);
+        },
+
+        modify: function(saleManId){
+            modifyView.modifySaleMan(saleManId);
+        },
+
+        add: function(){
+            addView.showPanel();
+        }
+
+    });
+
+    var salemans = new SaleMans(),
+        listView = new ListView({collection: salemans}),
+        modifyView = new ModifyView({collection: salemans}),
+        addView = new AddView(),
+        router = new Router();
+
+    Backbone.history.start();
+});
+
+</script>
+{% endblock %}
+
+{% block admin_main %}
+<ul class="nav nav-pills orange-nav-pills">
+    <li class="active">
+        <a href="#sale_man_list" data-toggle="pill">
+            <i class="fa fa-list-ol pr-5"></i>
+            <span class="hidden-sm hidden-md hidden-lg">列表</span>
+            <span class="hidden-xs">销售人员列表</span>
+        </a>
+    </li>
+    <li>
+        <a href="#modify_sale_man" data-toggle="pill">
+            <i class="fa fa-pencil-square-o pr-5"></i>
+            <span class="hidden-sm hidden-md hidden-lg">修改</span>
+            <span class="hidden-xs">修改销售人员信息</span>
+        </a>
+    </li>
+    <li class="pull-right">
+        <a href="#add">
+            <i class="fa fa-plus-circle pr-5"></i>
+            <span class="hidden-sm hidden-md hidden-lg">添加</span>
+            <span class="hidden-xs">添加销售人员</span>
+        </a>
+    </li>
+</ul>
+
+<div class="tab-content">
+    <!-- 用户列表 -->
+    <div class="tab-pane fade pt-15 in active" id="sale_man_list">
+        <form action="." class="form-inline" onsubmit="javascript: return false;">
+            <div class="input-group input-group-sm pb-10">
+                <span class="input-group-addon">状态</span>
+                <select class="form-control state">
+                    {% for state in states %}
+                    <option {% if state.value == 1 %}selected{% endif %} value="{{state.value}}">{{state.name}}</option>
+                    {% endfor %}
+                </select>
+                <span class="input-group-btn">
+                    <button class="btn btn-default search bgc-eeeeee" type="submit">查询</button>
+                </span>
+            </div>
+        </form>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>名称</th>
+                    <th>入职时间</th>
+                    <th>状态</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+            </tbody>
+        </table>
+
+        <div class="text-center">
+            <ul class="pagination pagination-sm qx-pagination">
+                
+            </ul>
+        </div>
+    </div>
+
+    <!-- 修改用户信息 -->
+    <div class="tab-pane fade pt-15" id="modify_sale_man">
+        
+    </div>
+</div>
+
+<script type="text/template" id="sale_man_list_template">
+<% _.each(salemans, function(saleman){ %>
+    <tr class="pointer" data-sale_man_id="<%= saleman.saleManId %>">
+        <td><%= saleman.num %></td>
+        <td><%= saleman.nick %></td>
+        <td><%= saleman.employeeDate %></td>
+        <td>
+        <% if(saleman.state){ %>
+            <span class="fa fa-check co-3B99FC"></span>
+        <% } else { %>
+            <span class="fa fa-times co-C33333"></span>
+        <% } %>
+        </td>
+    </tr>
+<% }) %>
+</script>
+
+<script type="text/template" id="modify_sale_man_template">
+<form class="form-horizontal" data-sale_man_id='<%= saleManId %>' role="form" method="post" action="">
+    <input type="hidden" name="sale_man_id" value="<%= saleManId %>" />
+    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+        <label class="col-sm-3 control-label">用户</label>
+        <div class="col-sm-4">
+            <input type="text" required class="form-control" id="user_modify" name='user_id' value=''>
+        </div>
+    </div>
+    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+        <label class="col-sm-3 control-label">入职时间</label>
+        <div class="col-sm-2">
+            <input type="text" class="form-control" name="employee_date" id="employee_date_modify" value='<%= employeeDate %>'>
+        </div>
+    </div>
+    <div class="form-group pt-20 pb-20 mb-0">
+        <label class="col-sm-3 control-label">状态</label>
+        <div class="col-sm-2">
+            <select name="state" class="form-control">
+                {% for state in states %}
+                <option <% if(state == '{{state.value}}'){ %>selected<% } %> value="{{state.value}}">{{state.name}}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    <div class="form-group pt-20 pb-20 mb-0">
+        <div class="col-sm-12">
+            <button type="button" class="btn btn-primary save">提交你的修改</button>
+        </div>
+    </div>
+</form>
+</script>
+
+<script type="text/template" id="add_sale_man_template">
+<div class="modal fade" id="add_sale_man_modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header pb-5">
+                <h4 class="modal-title">添加销售人员</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" role="form" method="post" action="">
+                    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+                        <label class="col-sm-3 control-label">用户</label>
+                        <div class="col-sm-5">
+                            <input type="text" required class="form-control" id="user_add" name='user_id' value=''>
+                        </div>
+                    </div>
+                    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+                        <label class="col-sm-3 control-label">入职时间</label>
+                        <div class="col-sm-4">
+                            <input type="text" class="form-control" name="employee_date" id="employee_date_add" value='{{today}}'>
+                        </div>
+                    </div>
+                    <div class="form-group pt-20 pb-20 mb-0">
+                        <label class="col-sm-3 control-label">状态</label>
+                        <div class="col-sm-3">
+                            <select name="state" class="form-control">
+                                {% for state in states %}
+                                <option {% if state.value == 1 %}selected{% endif %} value="{{state.value}}">{{state.name}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default cancel" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary ok">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+</script>
+{% endblock %}
