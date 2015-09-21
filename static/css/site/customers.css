@@ -1,3 +1,13 @@
+.customer{
+    -webkit-transition: all 0.2s;
+            transition: all 0.2s;
+    cursor: pointer;
+}
+.customer:hover{
+    -webkit-transform: scale(0.95);
+            transform: scale(0.95);
+    background-color: #f9f9f9;
+}
 .slide{
     position: absolute;
     left: 0;
