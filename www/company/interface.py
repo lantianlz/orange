@@ -1197,16 +1197,20 @@ class SupplierCashAccountBase(object):
 
 class SupplierCashRecordBase(object):
 
-    def get_all_records(self):
-        return SupplierCashRecord.objects.all()
+    def get_all_records(self, operation=None):
+        objs = SupplierCashRecord.objects.all()
+        if operation:
+            objs = objs.filter(operation=operation)
 
-    def get_records_for_admin(self, start_date, end_date, name):
-        objs = self.get_all_records().filter(create_time__range=(start_date, end_date))
+        return objs
+
+    def get_records_for_admin(self, start_date, end_date, name, operation=None):
+        objs = self.get_all_records(operation).filter(create_time__range=(start_date, end_date))
 
         if name:
             objs = objs.filter(cash_account__supplier__name__contains=name)
 
-        return objs
+        return objs, objs.aggregate(Sum('value'))['value__sum']
 
     def validate_record_info(self, supplier_id, value, operation, notes):
         value = float(value)

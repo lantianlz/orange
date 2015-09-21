@@ -16,6 +16,8 @@ from www.company.models import SupplierCashRecord
 @verify_permission('')
 def supplier_cash_record(request, template_name='pc/admin/supplier_cash_record.html'):
     operation_choices = [{'value': x[0], 'name': x[1]} for x in SupplierCashRecord.operation_choices]
+    all_operations = [{'name': x[1], 'value': x[0]} for x in SupplierCashRecord.operation_choices]
+    all_operations.insert(0, {'name': u'全部', 'value': -1})
 
     today = datetime.datetime.now()
     start_date= (today - datetime.timedelta(days=30)).strftime('%Y-%m-%d')
@@ -57,10 +59,12 @@ def search(request):
     end_date = request.POST.get('end_date')
     start_date, end_date = utils.get_date_range(start_date, end_date)
     name = request.REQUEST.get('name')
+    operation = request.REQUEST.get('operation')
+    operation = None if operation == "-1" else operation
     
     page_index = int(request.REQUEST.get('page_index'))
     
-    objs = SupplierCashRecordBase().get_records_for_admin(start_date, end_date, name)
+    objs, sum_price = SupplierCashRecordBase().get_records_for_admin(start_date, end_date, name, operation)
 
     page_objs = page.Cpt(objs, count=10, page=page_index).info
 
@@ -69,7 +73,7 @@ def search(request):
     data = format_record(page_objs[0], num)
 
     return HttpResponse(
-        json.dumps({'data': data, 'page_count': page_objs[4], 'total_count': page_objs[5]}),
+        json.dumps({'data': data, 'sum_price': str(sum_price or 0), 'page_count': page_objs[4], 'total_count': page_objs[5]}),
         mimetype='application/json'
     )
 
