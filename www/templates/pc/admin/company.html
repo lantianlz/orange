@@ -286,7 +286,11 @@ $(document).ready(function(){
             //         $.Global.Notice.ErrorTopNotice(data.errmsg);
             //     }
             // });
-
+            
+            if(!this.$('form').valid()){
+                return;
+            }
+            
             this.$('form').submit();
         }
 
@@ -394,9 +398,9 @@ $(document).ready(function(){
         addCompany: function(){
             // var me = this;
             
-            // if(!$('#add_company_modal form').valid()){
-            //     return;
-            // }
+            if(!$('#add_company_modal form').valid()){
+                return;
+            }
 
             // g_ajax_processing_obj_id = $("#add_company_modal .ok").setUUID().attr('id');
             // companys.addCompany($.Global.Utils.formToDict($('#add_company_modal form')), function(data){

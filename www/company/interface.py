@@ -217,6 +217,8 @@ class CompanyBase(object):
             sale_date = datetime.datetime.strptime(sale_date, '%Y-%m-%d')
             if sale_date < datetime.datetime.now():
                 return 20203, dict_err.get(20203)
+        else:
+            sale_date = None
 
         try:
             obj = Company.objects.create(
@@ -267,6 +269,8 @@ class CompanyBase(object):
             sale_date = datetime.datetime.strptime(sale_date, '%Y-%m-%d')
             if sale_date < obj.create_time:
                 return 20203, dict_err.get(20203)
+        else:
+            sale_date = None
 
         try:
             obj.name = name
