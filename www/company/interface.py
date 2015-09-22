@@ -27,6 +27,7 @@ dict_err = {
 
     20201: u'公司名称重复',
     20202: u'没有找到对应的公司',
+    20203: u'销售日期不能小于创建日期',
 
     20301: u'套餐名称重复',
     20302: u'没有找到对应的套餐',
@@ -212,6 +213,11 @@ class CompanyBase(object):
         if invite_by:
             invite = UserBase().get_user_by_id(invite_by)
 
+        if sale_date:
+            sale_date = datetime.datetime.strptime(sale_date, '%Y-%m-%d')
+            if sale_date < datetime.datetime.now():
+                return 20203, dict_err.get(20203)
+
         try:
             obj = Company.objects.create(
                 name=name,
@@ -256,6 +262,11 @@ class CompanyBase(object):
         invite = None
         if invite_by:
             invite = UserBase().get_user_by_id(invite_by)
+
+        if sale_date:
+            sale_date = datetime.datetime.strptime(sale_date, '%Y-%m-%d')
+            if sale_date < obj.create_time:
+                return 20203, dict_err.get(20203)
 
         try:
             obj.name = name
