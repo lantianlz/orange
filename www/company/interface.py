@@ -1453,6 +1453,21 @@ class SaleManBase(object):
         return 0, obj
 
 
+class StatisticsBase(object):
+
+    def statistics_sale(self, start_date, end_date):
+
+        return Meal.objects.select_related('company').filter(
+            company__sale_date__range=(start_date, end_date),
+            state = 1
+        )
+
+
+
+
+
+
+
 
 
 

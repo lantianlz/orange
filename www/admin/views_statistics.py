@@ -14,7 +14,7 @@ from common import utils, page, cache
 from www.custom_tags.templatetags.custom_filters import str_display
 
 from www.account.interface import UserBase, ExternalTokenBase
-
+from www.company.interface import StatisticsBase, SaleManBase
 
 @verify_permission('')
 def statistics_order_cost(request, template_name='pc/admin/statistics_order_cost.html'):
@@ -30,6 +30,16 @@ def statistics_order_cost(request, template_name='pc/admin/statistics_order_cost
 def statistics_chart(request, template_name='pc/admin/statistics_chart.html'):
     
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
+
+@verify_permission('')
+def statistics_sale(request, template_name='pc/admin/statistics_sale.html'):
+    today = datetime.datetime.now()
+    start_date = today.replace(day=1).strftime('%Y-%m-%d')
+    end_date = today.strftime('%Y-%m-%d')
+    return render_to_response(template_name, locals(), context_instance=RequestContext(request))
+
+
+
 
 
 @verify_permission('')
@@ -64,7 +74,80 @@ def get_chart_data(request):
         mimetype='application/json'
     )
 
+@verify_permission('')
+def get_statistics_sale_data(request):
+    
+    start_date = request.POST.get('start_date')
+    end_date = request.POST.get('end_date')
+    start_date, end_date = utils.get_date_range(start_date, end_date)
 
+    # 获取所有销售人员列表
+    sale_man_dict = {}
+    for x in SaleManBase().get_all_sale_man(True):
+        user = UserBase().get_user_by_id(x.user_id)
+        sale_man_dict[x.user_id] = {
+            'sale_by_id': x.user_id,
+            'sale_by_nick': user.nick,
+            'sale_by_avatar': user.get_avatar_65(),
+            'total': 0,
+            'meals': [],
+            'companys': []
+        }
+
+    # 获取符合条件的销售数据
+    data = {}
+    objs = StatisticsBase().statistics_sale(start_date, end_date)
+    for x in objs:
+        key = x.company.sale_by
+        if not data.has_key(key):
+            
+            user = UserBase().get_user_by_id(key)
+            data[key] = {
+                'sale_by_id': key,
+                'sale_by_nick': user.nick,
+                'sale_by_avatar': user.get_avatar_65(),
+                'total': 0,
+                'meals': [],
+                'companys': []
+            }
+
+        data[key]['total'] += x.get_expect_price_per_month()
+        data[key]['meals'].append({
+            'meal_name': x.name,
+            'company_name': x.company.name,
+            'sale_date': str(x.company.sale_date)[:10],
+            'cycle': x.cycle,
+            'price': str(x.price),
+            'expect_price': str(x.get_expect_price_per_month())
+        })
+        data[key]['companys'].append(x.company.id)
+
+    # 合并数据
+    sale_man_dict.update(data)
+
+    data = sale_man_dict.values()
+    data.sort(key=lambda x: x['total'], reverse=True)
+    # 获取最大的销售额，用于计算比率
+    max_total = data[0]['total'] if data else 0
+
+    all_company = 0
+    all_total = 0
+    for x in data:
+        # 计算比率
+        x['rate'] = round(x['total'] / max_total * 100, 1) if max_total != 0 else 0
+        # 转json
+        all_total += x['total']
+        x['total'] = str(x['total']) if x['total'] > 0 else '0'
+        # 计算总公司
+        x['companys'] = len(set(x['companys']))
+        all_company += x['companys']
+
+    all_total = str(all_total)
+
+    return HttpResponse(
+        json.dumps({'data': data, 'all_total': all_total, 'all_company': all_company}),
+        mimetype='application/json'
+    )
 
 
 

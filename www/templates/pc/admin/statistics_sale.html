@@ -1,0 +1,193 @@
+{% extends "pc/admin/home.html" %}
+{% load custom_tags %}
+{% load custom_filters %}
+{% block title %}销售统计{% endblock %}
+{% block admin_title %}销售统计{% endblock %}
+{% block admin_title_m %}销售统计{% endblock %}
+
+{% block css %}
+<style type="text/css">
+@media (min-width: 768px){
+    .modal-dialog {
+        width: 1000px;
+        margin: 30px auto;
+    }
+}
+
+.score-container{
+    padding-top: 10px;
+}
+.score-border{
+    border-bottom: 1px solid #dddddd;
+    position: relative;
+    padding-bottom: 20px;
+    padding-left: 180px; 
+    padding-right: 20px; 
+    padding-top: 5px;
+}
+.score{
+    background-color: #EE7A32;
+    position: relative;
+    text-align: right;
+    height: 25px; 
+    line-height: 25px;
+    width: 100%;
+    cursor: pointer;
+}
+.info-container{
+    position: absolute;
+    left: 20px; 
+    top: 0; 
+    width: 160px;
+}
+.num{
+    padding-right: 15px;
+    font-style: italic;
+}
+.avatar{
+    width: 35px;
+    border-radius: 50%;
+}
+.amount{
+    font-weight: bold;
+    color: #ffffff;
+}
+</style>
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript">
+$(document).ready(function(){
+    $('#start_date_search').datetimepicker({
+        format: 'yyyy-mm-dd',
+        language: 'zh-CN',
+        minView: 2,
+        autoclose: true
+    });
+    $('#end_date_search').datetimepicker({
+        format: 'yyyy-mm-dd',
+        language: 'zh-CN',
+        minView: 2,
+        autoclose: true
+    });
+
+    var DATA = [],
+        // 渲染汇总信息
+        summary = function(){
+            var summaryTemplate = _.template([
+                    '<% _.each(records, function(record, num){ %>',
+                    '<div class="col-md-12 score-container">',
+                        '<div class="col-md-12 score-border">',
+                            '<div class="info-container">',
+                                '<span class="num"><%= num+1 %></span>',
+                                '<img class="avatar" src="<%= record.sale_by_avatar %>">',
+                                '<span class="pl-15"><%= record.sale_by_nick %></span>',
+                            '</div>',
+                            '<div class="col-md-12 score" data-index="<%= num %>" data-toggle="tooltip" data-placement="bottom" title="共谈成 <%= record.companys %> 家公司，预期销售总额 <%= record.total %> 元" style="width: <%= record.rate %>%;">',
+                                '<span class="amount"><%= record.total %></span>',
+                            '</div>',
+                        '</div>',
+                    '</div>',
+                    '<% }) %>'
+                ].join(''));
+
+            $('.scores').html(summaryTemplate({'records': DATA}));
+            $('[data-toggle="tooltip"]').tooltip();
+        },
+        // 渲染详细信息
+        detail = function(index){
+            index = parseInt(index);
+
+            var data = DATA[index]['meals'],
+                detailTemplate = _.template([
+                    '<div class="modal fade" id="detail_modal" tabindex="-1" role="dialog">',
+                        '<div class="modal-dialog">',
+                            '<div class="modal-content">',
+                                '<div class="modal-header pb-5">',
+                                    '<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>',
+                                    '<h4 class="modal-title">销售明细</h4>',
+                                '</div>',
+                                '<div class="modal-body">',
+                                    '<table class="table table-hover">',
+                                        '<thead>',
+                                            '<tr>',
+                                                '<th>套餐名称</th>',
+                                                '<th>公司名称</th>',
+                                                '<th>正式订购日期</th>',
+                                                '<th>配送频次</th>',
+                                                '<th>套餐价格</th>',
+                                                '<th>预期销售额</th>',
+                                            '</tr>',
+                                        '</thead>',
+                                        '<tbody>',
+                                            '<% _.each(records, function(record){ %>',
+                                            '<tr>',
+                                                '<td><%= record.meal_name %></td>',
+                                                '<td><%= record.company_name %></td>',
+                                                '<td><%= record.sale_date %></td>',
+                                                '<td><%= record.cycle %></td>',
+                                                '<td><%= record.price %></td>',
+                                                '<td><%= record.expect_price %></td>',
+                                            '</tr>',
+                                            '<% }) %>',
+                                        '</tbody>',
+                                    '</table>',
+                                '</div>',
+                            '</div>',
+                        '</div>',
+                    '</div>'
+                ].join(''));
+            
+            $('#detail_modal').remove();
+            $('body').append(detailTemplate({'records': data}));
+            $('#detail_modal').modal({'show': true});
+        };
+
+    $('.search').on('click', function(){
+        // 获取数据
+        ajaxSend(
+            "/admin/statistics_sale/get_statistics_sale_data", 
+            {'start_date': $('#start_date_search').val(), 'end_date': $('#end_date_search').val()},
+            function(data){
+                DATA = data.data;
+                $('.all-company').html(data.all_company);
+                $('.all-total').html(data.all_total);
+                summary();
+            }
+        );
+    });
+    $('.score').live('click', function(){
+        detail($(this).data('index'));
+    });
+    
+    $('.search').click();
+});
+</script>
+{% endblock %}
+
+{% block admin_main %}
+<div class="row pt-15">
+    <div class="col-md-12 pb-10">
+        <form action="." class="form-inline" onsubmit="javascript: return false;">
+            <div class="input-group input-group-sm pb-10">
+                <span class="input-group-addon">开始日期</span>
+                <input type="text" class="form-control" id="start_date_search" value="{{start_date}}"  />
+            </div>
+            <div class="input-group input-group-sm pb-10">
+                <span class="input-group-addon">结束日期</span>
+                <input type="text" class="form-control" id="end_date_search" value="{{end_date}}"  />
+                <span class="input-group-btn">
+                    <button class="btn btn-default search bgc-eeeeee" type="submit">查询</button>
+                </span>
+            </div>
+        </form>
+        <div class="pt-15 pb-10">此时间段，共谈成<span class="fb fi co-1DABD9 pr-5 pl-5 all-company"></span>家公司，预期总销售额<span class="fb fi co-1DABD9 pr-5 pl-5 all-total">0</span>元</div>
+        <div class="text-right border-top-2 bdc-dddddd"></div>
+    </div>
+
+    <div class="col-md-12 pl-0 pr-0 scores">
+        
+    </div>
+    
+</div>
+{% endblock %}

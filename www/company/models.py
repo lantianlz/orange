@@ -189,6 +189,15 @@ class Meal(models.Model):
 
         return "-".join(temp)
 
+    def get_expect_price_per_month(self):
+        '''
+        计算每月的预期销售额
+        '''
+        cycle = self.cycle or "0-0-0-0-0-0-0"
+        temp = cycle.split('-')
+        count = len(temp) - temp.count('0')
+        return self.price * 4 * count
+
     class Meta:
         ordering = ["-create_time"]
 
