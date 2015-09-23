@@ -74,7 +74,7 @@ def get_chart_data(request):
         mimetype='application/json'
     )
 
-@verify_permission('')
+@verify_permission('statistics_sale')
 def get_statistics_sale_data(request):
     
     start_date = request.POST.get('start_date')

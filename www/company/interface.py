@@ -1012,7 +1012,19 @@ class CashRecordBase(object):
         if name:
             objs = objs.filter(cash_account__company__name__contains=name)
 
-        return objs, objs.aggregate(Sum('value'))['value__sum']
+        all_sum = 0
+        # 如果没有指定操作类型
+        if not operation:
+            in_sum = objs.filter(operation=0).aggregate(Sum('value'))['value__sum']
+            in_sum = in_sum or 0
+            out_sum = objs.filter(operation=1).aggregate(Sum('value'))['value__sum']
+            out_sum = out_sum or 0
+            all_sum = in_sum - out_sum
+        else:
+            all_sum = objs.aggregate(Sum('value'))['value__sum']
+            all_sum = all_sum or 0
+
+        return objs, all_sum
 
     def validate_record_info(self, company_id, value, operation, notes):
         value = float(value)
@@ -1232,7 +1244,19 @@ class SupplierCashRecordBase(object):
         if name:
             objs = objs.filter(cash_account__supplier__name__contains=name)
 
-        return objs, objs.aggregate(Sum('value'))['value__sum']
+        all_sum = 0
+        # 如果没有指定操作类型
+        if not operation:
+            in_sum = objs.filter(operation=0).aggregate(Sum('value'))['value__sum']
+            in_sum = in_sum or 0
+            out_sum = objs.filter(operation=1).aggregate(Sum('value'))['value__sum']
+            out_sum = out_sum or 0
+            all_sum = in_sum - out_sum
+        else:
+            all_sum = objs.aggregate(Sum('value'))['value__sum']
+            all_sum = all_sum or 0
+
+        return objs, all_sum
 
     def validate_record_info(self, supplier_id, value, operation, notes):
         value = float(value)
