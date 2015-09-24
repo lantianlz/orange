@@ -16,7 +16,11 @@ from www.company.models import Item
 
 
 def booking(request, template_name='mobile/booking.html'):
-
+    
+    url = u'http://%s' % (request.get_host() + request.get_full_path())
+    sign = Sign(WeixinBase().get_weixin_jsapi_ticket(WeixinBase().init_app_key()), url)
+    sign_dict = sign.sign()
+    
     invite_by = request.REQUEST.get('invite_by')
     if invite_by:
         invite = UserBase().get_user_by_id(invite_by)
@@ -40,7 +44,7 @@ def get_booking(request):
 def invite(request, template_name='mobile/invite.html'):
 
     # 微信key
-    url = 'http://www.3-10.cc/company/invite'
+    url = u'http://%s' % (request.get_host() + request.get_full_path())
     sign = Sign(WeixinBase().get_weixin_jsapi_ticket(WeixinBase().init_app_key()), url)
     sign_dict = sign.sign()
 
@@ -173,7 +177,7 @@ def feedback(request, company_id, template_name='pc/company/feedback.html'):
 
 def introduction_m(request, template_name='mobile/introduction_m.html'):
     # 微信key
-    url = 'http://www.3-10.cc/company/introduction_m'
+    url = u'http://%s' % (request.get_host() + request.get_full_path())
     sign = Sign(WeixinBase().get_weixin_jsapi_ticket(WeixinBase().init_app_key()), url)
     sign_dict = sign.sign()
     
