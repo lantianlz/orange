@@ -1,0 +1,101 @@
+{% extends "pc/admin/home.html" %}
+{% load custom_tags %}
+{% load custom_filters %}
+{% block title %}综合统计{% endblock %}
+{% block admin_title %}综合统计{% endblock %}
+{% block admin_title_m %}综合统计{% endblock %}
+
+{% block css %}
+<style type="text/css">
+</style>
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript" src="{{MEDIA_URL}}js/jquery/countUp.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+	ajaxSend(
+        "/admin/statistics_summary/get_statistics_summary_data", 
+        {},
+        function(data){
+            
+            new countUp("company_count", 0, data.company_count, 0, 2).start();
+            new countUp("distribute_count", 0, data.distribute_count, 0, 2).start();
+            new countUp("person_count", 0, data.person_count, 0, 2).start();
+            new countUp("person_time_count", 0, data.person_time_count, 0, 2).start();
+            new countUp("supplier_count", 0, data.supplier_count, 0, 2).start();
+            new countUp("fruit_count", 0, data.fruit_count, 1, 2).start();
+            new countUp("cake_count", 0, data.cake_count, 0, 2).start();
+            new countUp("rate", 0, data.rate, 1, 2).start();
+            new countUp("per_customer_transaction", 0, data.per_customer_transaction, 1, 2).start();
+            new countUp("sale", 0, data.sale, 1, 2).start();
+            new countUp("cost", 0, data.cost, 1, 2).start();
+        }
+    );
+})
+</script>
+{% endblock %}
+
+{% block admin_main %}
+<div class="row pt-15">
+	<div class="col-md-12 mt-25 mb-20">
+		<div class="col-md-2 text-center pl-0 pr-0 pt-10 border-right-1 bdc-dddddd statistics-item statistics-company-count">
+			<div>共服务公司</div>
+			<div><span class="f50 co-1DABD9 pr-5" id="company_count">0</span>家</div>
+		</div>
+		<div class="col-md-3 text-center pl-0 pr-0 pt-10 border-right-1 bdc-dddddd statistics-item statistics-distribute-count">
+			<div>共配送</div>
+			<div><span class="f50 co-1DABD9 pr-5" id="distribute_count">0</span>次</div>
+		</div>
+		<div class="col-md-3 text-center pl-0 pr-0 pt-10 border-right-1 bdc-dddddd statistics-item statistics-person-count">
+			<div>共服务员工</div>
+			<div><span class="f50 co-1DABD9 pr-5" id="person_count">0</span>人</div>
+		</div>
+		<div class="col-md-4 text-center pl-0 pr-0 pt-10 statistics-item statistics-person-time-count">
+			<div>共服务</div>
+			<div><span class="f50 co-1DABD9 pr-5" id="person_time_count">0</span>人次</div>
+		</div>
+	</div>
+
+	<div class="col-md-12 border-bottom-dashed-1 bdc-dddddd mt-20"></div>
+
+	<div class="col-md-10 col-md-offset-1 mt-40 mb-20">
+		<div class="col-md-3 text-center pl-0 pr-0 pt-10 border-right-1 bdc-dddddd statistics-item statistics-supplier-count">
+			<div>达成合作供货商</div>
+			<div><span class="f50 co-7696DB pr-5" id="supplier_count">0</span>家</div>
+		</div>
+		<div class="col-md-4 text-center pl-0 pr-0 pt-10 border-right-1 bdc-dddddd statistics-item statistics-fruit-count">
+			<div>共配送水果</div>
+			<div><span class="f50 co-7696DB pr-5" id="fruit_count">0</span>斤</div>
+		</div>
+		<div class="col-md-4 text-center pl-0 pr-0 pt-10 statistics-item statistics-cake-count">
+			<div>共配送点心</div>
+			<div><span class="f50 co-7696DB pr-5" id="cake_count">0</span>份</div>
+		</div>
+	</div>
+
+	<div class="col-md-12 border-bottom-dashed-1 bdc-dddddd mt-20"></div>
+
+	<div class="col-md-12 mt-40 mb-20">
+		<div class="col-md-2 text-center pl-0 pr-0 pt-10 border-right-1 bdc-dddddd statistics-item statistics-rate">
+			<div>平均毛利率</div>
+			<div><span class="f50 co-EF7B32 pr-5" id="rate">0</span>%</div>
+		</div>
+		<div class="col-md-2 text-center pl-0 pr-0 pt-10 border-right-1 bdc-dddddd statistics-item statistics-per-customer-transaction">
+			<div>平均客单价</div>
+			<div><span class="f50 co-EF7B32 pr-5" id="per_customer_transaction">0</span>元</div>
+		</div>
+		<div class="col-md-4 text-center pl-0 pr-0 pt-10 border-right-1 bdc-dddddd statistics-item statistics-sale">
+			<div>总销售额</div>
+			<div><span class="f50 co-EF7B32 pr-5" id="sale">0</span>元</div>
+		</div>
+		<div class="col-md-4 text-center pl-0 pr-0 pt-10 statistics-item statistics-cost">
+			<div>总原材料成本</div>
+			<div><span class="f50 co-EF7B32 pr-5" id="cost">0</span>元</div>
+		</div>
+	</div>
+
+	<!-- <div class="col-md-12 border-bottom-dashed-1 bdc-dddddd mt-20"></div> -->
+
+</div>
+{% endblock %}

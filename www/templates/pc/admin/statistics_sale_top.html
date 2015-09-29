@@ -1,15 +1,15 @@
 {% extends "pc/admin/home.html" %}
 {% load custom_tags %}
 {% load custom_filters %}
-{% block title %}销售统计{% endblock %}
-{% block admin_title %}销售统计{% endblock %}
-{% block admin_title_m %}销售统计{% endblock %}
+{% block title %}销售排行{% endblock %}
+{% block admin_title %}销售排行{% endblock %}
+{% block admin_title_m %}销售排行{% endblock %}
 
 {% block css %}
 <style type="text/css">
 @media (min-width: 768px){
     .modal-dialog {
-        width: 1000px;
+        width: 900px;
         margin: 30px auto;
     }
 }
@@ -83,7 +83,7 @@ $(document).ready(function(){
                                 '<img class="avatar" src="<%= record.sale_by_avatar %>">',
                                 '<span class="pl-15"><%= record.sale_by_nick %></span>',
                             '</div>',
-                            '<div class="col-md-12 score" data-index="<%= num %>" data-toggle="tooltip" data-placement="bottom" title="共谈成 <%= record.companys %> 家公司，预期销售总额 <%= record.total %> 元" style="width: <%= record.rate %>%;">',
+                            '<div class="col-md-12 score" data-index="<%= num %>" data-toggle="tooltip" data-placement="bottom" title="共成单 <%= record.companys %> 家公司，预期销售总额 <%= record.total %> 元" style="width: <%= record.rate %>%;">',
                                 '<span class="amount"><%= record.total %></span>',
                             '</div>',
                         '</div>',
@@ -146,7 +146,7 @@ $(document).ready(function(){
     $('.search').on('click', function(){
         // 获取数据
         ajaxSend(
-            "/admin/statistics_sale/get_statistics_sale_data", 
+            "/admin/statistics_sale_top/get_statistics_sale_top_data", 
             {'start_date': $('#start_date_search').val(), 'end_date': $('#end_date_search').val()},
             function(data){
                 DATA = data.data;
@@ -181,7 +181,7 @@ $(document).ready(function(){
                 </span>
             </div>
         </form>
-        <div class="pt-15 pb-10">此时间段，共谈成<span class="fb fi co-1DABD9 pr-5 pl-5 all-company"></span>家公司，预期总销售额<span class="fb fi co-1DABD9 pr-5 pl-5 all-total">0</span>元</div>
+        <div class="pt-15 pb-10">此时间段，共成单<span class="fb fi co-1DABD9 pr-5 pl-5 all-company"></span>家公司，预期总销售额<span class="fb fi co-1DABD9 pr-5 pl-5 all-total">0</span>元</div>
         <div class="text-right border-top-2 bdc-dddddd"></div>
     </div>
 

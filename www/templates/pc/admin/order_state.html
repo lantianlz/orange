@@ -45,6 +45,7 @@ $(document).ready(function(){
             function(data){
                 if(data.errcode == "0"){
                     // $.Global.Notice.SuccessTopNotice('操作成功');
+                    $('.distribute').remove();
                     window.location.reload();
                 } else {
                     $.Global.Notice.ErrorTopNotice(data.errmsg);
@@ -71,6 +72,7 @@ $(document).ready(function(){
             function(data){
                 if(data.errcode == "0"){
                     // $.Global.Notice.SuccessTopNotice('操作成功');
+                    $('.confirm').remove();
                     window.location.reload();
                 } else {
                     $.Global.Notice.ErrorTopNotice(data.errmsg);

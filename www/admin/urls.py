@@ -172,8 +172,14 @@ urlpatterns += patterns('www.admin.views_booking',
 
 # 统计管理
 urlpatterns += patterns('www.admin.views_statistics',
-    url(r'^statistics_sale$', 'statistics_sale'),
-    url(r'^statistics_sale/get_statistics_sale_data$', 'get_statistics_sale_data'),
+    url(r'^statistics_orders$', 'statistics_orders'),
+    url(r'^statistics_orders/get_statistics_orders_data$', 'get_statistics_orders_data'),
+
+    url(r'^statistics_summary$', 'statistics_summary'),
+    url(r'^statistics_summary/get_statistics_summary_data$', 'get_statistics_summary_data'),
+
+    url(r'^statistics_sale_top$', 'statistics_sale_top'),
+    url(r'^statistics_sale_top/get_statistics_sale_top_data$', 'get_statistics_sale_top_data'),
 
     url(r'^statistics_order_cost$', 'statistics_order_cost'),
     

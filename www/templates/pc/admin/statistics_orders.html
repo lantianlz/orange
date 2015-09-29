@@ -1,0 +1,429 @@
+{% extends "pc/admin/home.html" %}
+{% load custom_tags %}
+{% load custom_filters %}
+{% block title %}订单统计{% endblock %}
+{% block admin_title %}订单统计{% endblock %}
+{% block admin_title_m %}订单统计{% endblock %}
+
+{% block css %}
+<style type="text/css">
+</style>
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript" src="{{MEDIA_URL}}js/echarts/echarts.js"></script>
+<script type="text/javascript">
+require.config({
+    paths: {
+        echarts: '{{MEDIA_URL}}js/echarts'
+    }
+});
+require(
+    [
+        "echarts", 
+        "echarts/chart/line", 
+        "echarts/chart/bar"
+    ],
+    function(ec){
+        echarts = ec;
+
+        $('.search').click();
+        // loadData();
+        // orderChart(['2015-08-01', '2015-08-02', '2015-08-03', '2015-08-04'], [5, 6, 7, 8]);
+    }
+);
+
+var echarts,
+    calculatePercent = function(length){
+        if(length <= 90){
+            return 0;
+        } else if(90 < length && length <= 180){
+            return 25;
+        } else if(180 < length && length <= 270){
+            return 50;
+        } else if(270 < length && length <= 360){
+            return 75;
+        }
+    },
+    loadData = function(start_date, end_date){
+        ajaxSend(
+            "/admin/statistics_orders/get_statistics_orders_data", 
+            {'start_date': start_date, 'end_date': end_date}, 
+            function(data){
+                
+                // new countUp("order-count", 0, data['order_count']).start(),
+                orderCountChart(data['order_count_x_data'], data['order_count_y_data'], data['order_count']);
+                personCountChart(data['person_count_x_data'], data['person_count_y_data'], data['person_count']);
+                orderPriceChart(data['order_price_x_data'], data['order_price_y_data'], data['order_price']);
+            }
+        );
+    },
+    orderCountChart = function(xData, yData, total){
+        var main = echarts.init(document.getElementById('order_count_chart'));
+
+        main.setOption({
+            title: {
+                text: '日订单数量'
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'line',
+                    lineStyle: {
+                      color: '#ddd',
+                      width: 1,
+                      type: 'solid'
+                    }
+                },
+                formatter: '{b}<br />{a}: {c} '
+            },
+            legend: {
+                data:['日订单数量']
+            },
+            toolbox: {
+                show: false
+            },
+            dataZoom : {
+                show : true,
+                realtime : true,
+                start : calculatePercent(xData.length),
+                end : 100,
+                handleColor: 'rgba(29, 171, 217, 0.8)',
+                fillerColor: 'rgba(29, 171, 217, 0.2)'
+            },
+            calculable: false,
+            xAxis: [{
+                type: 'category',
+                boundaryGap: false,
+                data: xData,
+                splitLine: {
+                    show: true,
+                    lineStyle: {
+                        color: ['#e2e2e2'],
+                        width: 1,
+                        type: 'solid'
+                    }
+                },
+                axisLine: {
+                    show: true,
+                    lineStyle: {
+                        color: '#888',
+                        width: 2,
+                        type: 'solid'
+                    }
+                }
+            }],
+            yAxis: [{
+                type : 'value',
+                splitLine: {
+                    show: true,
+                    lineStyle: {
+                        color: ['#e2e2e2'],
+                        width: 1,
+                        type: 'solid'
+                    }
+                },
+                axisLine: {
+                    show: true,
+                    lineStyle: {
+                        color: '#888',
+                        width: 2,
+                        type: 'solid'
+                    }
+                }
+            }],
+            color: ['#1DABD9'],
+            series : [{
+                name:'日订单数量',
+                type:'line',
+                smooth: true,
+                itemStyle: {
+                    normal: {
+                        areaStyle: {
+                            type: 'default'
+                        }
+                    }
+                },
+                data: yData
+            }]
+        });
+
+        $('.order-count-total').html(total);
+    },
+
+    personCountChart = function(xData, yData, total){
+        var main = echarts.init(document.getElementById('person_count_chart'));
+        
+        main.setOption({
+            title: {
+                text: '日服务人次'
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'line',
+                    lineStyle: {
+                      color: '#ddd',
+                      width: 1,
+                      type: 'solid'
+                    }
+                },
+                formatter: '{b}<br />{a}: {c} '
+            },
+            legend: {
+                data:['日服务人次']
+            },
+            
+            dataZoom : {
+                show : true,
+                realtime : true,
+                start : calculatePercent(xData.length),
+                end : 100,
+                handleColor: 'rgba(29, 171, 217, 0.8)',
+                fillerColor: 'rgba(29, 171, 217, 0.2)'
+            },
+            calculable: false,
+            xAxis: [{
+                type: 'category',
+                // boundaryGap: false,
+                data: xData,
+                splitLine: {
+                    show: true,
+                    lineStyle: {
+                        color: ['#e2e2e2'],
+                        width: 1,
+                        type: 'solid'
+                    }
+                },
+                axisLine: {
+                    show: true,
+                    lineStyle: {
+                        color: '#888',
+                        width: 2,
+                        type: 'solid'
+                    }
+                }
+            }],
+            yAxis: [{
+                type : 'value',
+                splitLine: {
+                    show: true,
+                    lineStyle: {
+                        color: ['#e2e2e2'],
+                        width: 1,
+                        type: 'solid'
+                    }
+                },
+                axisLine: {
+                    show: true,
+                    lineStyle: {
+                        color: '#888',
+                        width: 2,
+                        type: 'solid'
+                    }
+                }
+            }],
+            color: ['#1DABD9'],
+            series : [{
+                name: '日服务人次',
+                type: 'bar',
+                smooth: true,
+                // itemStyle: {
+                //     normal: {
+                //         areaStyle: {
+                //             type: 'default'
+                //         }
+                //     }
+                // },
+                data: yData
+            }]
+        });
+
+        $('.person-count-total').html(total);
+
+    },
+
+    orderPriceChart = function(xData, yData, total){
+        var main = echarts.init(document.getElementById('order_price_chart'));
+        
+        main.setOption({
+            title: {
+                text: '日订单总金额'
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'line',
+                    lineStyle: {
+                      color: '#ddd',
+                      width: 1,
+                      type: 'solid'
+                    }
+                },
+                formatter: '{b}<br />{a}: {c} '
+            },
+            legend: {
+                data:['日订单总金额']
+            },
+            toolbox: {
+                show: false
+            },
+            dataZoom : {
+                show : true,
+                realtime : true,
+                start : calculatePercent(xData.length),
+                end : 100,
+                handleColor: 'rgba(29, 171, 217, 0.8)',
+                fillerColor: 'rgba(29, 171, 217, 0.2)',
+                // handleColor: 'rgba(239, 123, 50, 0.8)',
+                // fillerColor: 'rgba(239, 123, 50, 0.2)'
+            },
+            calculable: false,
+            xAxis: [{
+                type: 'category',
+                boundaryGap: false,
+                data: xData,
+                splitLine: {
+                    show: true,
+                    lineStyle: {
+                        color: ['#e2e2e2'],
+                        width: 1,
+                        type: 'solid'
+                    }
+                },
+                axisLine: {
+                    show: true,
+                    lineStyle: {
+                        color: '#888',
+                        width: 2,
+                        type: 'solid'
+                    }
+                }
+            }],
+            yAxis: [{
+                type : 'value',
+                splitLine: {
+                    show: true,
+                    lineStyle: {
+                        color: ['#e2e2e2'],
+                        width: 1,
+                        type: 'solid'
+                    }
+                },
+                axisLine: {
+                    show: true,
+                    lineStyle: {
+                        color: '#888',
+                        width: 2,
+                        type: 'solid'
+                    }
+                }
+            }],
+            color: ['#1DABD9'],
+            // color: ['#EF7B32'],
+            series : [{
+                name:'日订单总金额',
+                type:'line',
+                smooth: true,
+                // itemStyle: {
+                //     normal: {
+                //         areaStyle: {
+                //             type: 'default'
+                //         }
+                //     }
+                // },
+                data: yData
+            }]
+        });
+    
+        $('.order-price-total').html(total);
+    };
+
+$(document).ready(function(){
+    $('#start_date_search').datetimepicker({
+        format: 'yyyy-mm-dd',
+        language: 'zh-CN',
+        minView: 2,
+        autoclose: true
+    });
+    $('#end_date_search').datetimepicker({
+        format: 'yyyy-mm-dd',
+        language: 'zh-CN',
+        minView: 2,
+        autoclose: true
+    });
+
+    $('.tab-pane>div').width($('.tab-pane').width());
+
+    $('.search').on('click', function(){
+        loadData($('#start_date_search').val(), $('#end_date_search').val());
+    });
+
+});
+</script>
+{% endblock %}
+
+{% block admin_main %}
+<div class="row pt-15">
+    <div class="col-md-12">
+        <form action="." class="form-inline" onsubmit="javascript: return false;">
+            <div class="input-group input-group-sm pb-10">
+                <span class="input-group-addon">开始日期</span>
+                <input type="text" class="form-control" id="start_date_search" value="{{start_date}}" />
+            </div>
+            <div class="input-group input-group-sm pb-10">
+                <span class="input-group-addon">结束日期</span>
+                <input type="text" class="form-control" id="end_date_search" value="{{end_date}}" />
+                <span class="input-group-btn">
+                    <button class="btn btn-default search bgc-eeeeee" type="submit">查询</button>
+                </span>
+            </div>
+        </form>
+    </div>
+    <div class="col-md-12">
+        <ul class="nav nav-pills orange-nav-pills">
+            <li class="active">
+                <a href="#order_count" data-toggle="pill">
+                    <i class="fa fa-area-chart pr-5"></i>
+                    <span class="hidden-sm hidden-md hidden-lg">列表</span>
+                    <span class="hidden-xs">日订单数量</span>
+                </a>
+            </li>
+            <li>
+                <a href="#person_count" data-toggle="pill">
+                    <i class="fa fa-bar-chart pr-5"></i>
+                    <span class="hidden-sm hidden-md hidden-lg">修改</span>
+                    <span class="hidden-xs">日服务人次</span>
+                </a>
+            </li>
+            <li>
+                <a href="#order_price" data-toggle="pill">
+                    <i class="fa fa-line-chart pr-5"></i>
+                    <span class="hidden-sm hidden-md hidden-lg">添加</span>
+                    <span class="hidden-xs">日订单总金额</span>
+                </a>
+            </li>
+        </ul>
+
+        <div class="tab-content">
+            
+            <div class="tab-pane fade pt-15 in active" id="order_count">
+                <div id="order_count_chart" style="height: 400px;"></div>
+                <div class="text-right pt-20">此时间段日订单总数: <span class="f20 fb co-1DABD9 order-count-total pl-5">0</span></div>
+            </div>
+
+            <div class="tab-pane fade pt-15 in" id="person_count">
+                <div id="person_count_chart" style="height: 400px;"></div>
+                <div class="text-right pt-20">此时间段日服务人次总数: <span class="f20 fb co-1DABD9 person-count-total pl-5">0</span></div>
+            </div>
+
+            <div class="tab-pane fade pt-15 in" id="order_price">
+                <div id="order_price_chart" style="height: 400px;"></div>
+                <div class="text-right pt-20">此时间段日订单总额: <span class="f20 fb co-1DABD9 order-price-total pl-5">0</span></div>
+            </div>
+
+        </div>
+    </div>
+    
+</div>
+{% endblock %}

@@ -6,7 +6,7 @@ import time
 import random
 import decimal
 from django.db import transaction
-from django.db.models import Sum
+from django.db.models import Sum, Count
 from django.utils.encoding import smart_unicode
 from django.conf import settings
 
@@ -33,6 +33,8 @@ dict_err = {
     20302: u'没有找到对应的套餐',
 
     20401: u'没有找到对应的订单',
+    20402: u'订单状态为非配送中，无法进行此操作',
+    20403: u'订单状态为非准备中，无法进行此操作',
 
     20501: u'已预约，请勿重复提交',
     20502: u'没有找到对应的预约信息',
@@ -323,6 +325,7 @@ class MealBase(object):
             return 99800, dict_err.get(99800)
 
         if not CompanyBase().get_company_by_id(company_id):
+            transaction.rollback(using=DEFAULT_DB)
             return 20202, dict_err.get(20202)
 
         try:
@@ -361,12 +364,15 @@ class MealBase(object):
 
         obj = self.get_meal_by_id(meal_id)
         if not obj:
+            transaction.rollback(using=DEFAULT_DB)
             return 20302, dict_err.get(20302)
 
         if not CompanyBase().get_company_by_id(company_id):
+            transaction.rollback(using=DEFAULT_DB)
             return 20202, dict_err.get(20202)
 
         if obj.name != name and Meal.objects.filter(name=name):
+            transaction.rollback(using=DEFAULT_DB)
             return 20301, dict_err.get(20301)
 
         try:
@@ -466,9 +472,11 @@ class OrderBase(object):
 
         meal = MealBase().get_meal_by_id(meal_id)
         if not meal:
+            transaction.rollback(using=DEFAULT_DB)
             return 20302, dict_err.get(20302)
 
         if not CompanyBase().get_company_by_id(meal.company_id):
+            transaction.rollback(using=DEFAULT_DB)
             return 20202, dict_err.get(20202)
 
         try:
@@ -522,6 +530,7 @@ class OrderBase(object):
 
         obj = self.get_order_by_id(order_id)
         if not obj:
+            transaction.rollback(using=DEFAULT_DB)
             return 20401, dict_err.get(20401)
 
         try:
@@ -611,7 +620,7 @@ class OrderBase(object):
             ps = dict(id=order_id)
 
             return Order.objects.get(**ps)
-        except Meal.DoesNotExist:
+        except Order.DoesNotExist:
             return ""
 
     def distribute_order(self, order_id, distribute_operator):
@@ -621,6 +630,10 @@ class OrderBase(object):
         obj = self.get_order_by_id(order_id)
         if not obj:
             return 20401, dict_err.get(20401)
+
+        # 状态为准备中的订单才能配送
+        if obj.state != 1:
+            return 20403, dict_err.get(20403)
 
         try:
             obj.state = 2
@@ -640,7 +653,13 @@ class OrderBase(object):
         '''
         obj = self.get_order_by_id(order_id)
         if not obj:
+            transaction.rollback(using=DEFAULT_DB)
             return 20401, dict_err.get(20401)
+
+        # 状态为配送中的订单才能确认完成
+        if obj.state != 2:
+            transaction.rollback(using=DEFAULT_DB)
+            return 20402, dict_err.get(20402)
 
         try:
             obj.state = 3
@@ -1341,6 +1360,7 @@ class PurchaseRecordBase(object):
 
         obj = SupplierBase().get_supplier_by_id(supplier_id)
         if not obj:
+            transaction.rollback(using=DEFAULT_DB)
             return 20802, dict_err.get(20802)
 
         try:
@@ -1385,6 +1405,7 @@ class PurchaseRecordBase(object):
 
         obj = self.get_record_by_id(record_id)
         if not obj:
+            transaction.rollback(using=DEFAULT_DB)
             return 20901, dict_err.get(20901)
 
         try:
@@ -1450,7 +1471,7 @@ class SaleManBase(object):
     def get_sale_man_by_id(self, sale_man_id):
         try:
             return SaleMan.objects.get(id=sale_man_id)
-        except PurchaseRecord.DoesNotExist:
+        except SaleMan.DoesNotExist:
             return ''
 
     def modify_sale_man(self, sale_man_id, user_id, employee_date, state=True):
@@ -1480,11 +1501,123 @@ class SaleManBase(object):
 class StatisticsBase(object):
 
     def statistics_sale(self, start_date, end_date):
+        '''
+        销售统计
+        '''
 
         return Meal.objects.select_related('company').filter(
             company__sale_date__range=(start_date, end_date),
             state = 1
         )
+
+
+    # @cache_required(cache_key='statistics_summary_data', expire=43200, cache_config=cache.CACHE_TMP)
+    def statistics_summary(self):
+        '''
+        综合统计
+        '''
+
+        # 总服务公司数
+        company_count = Order.objects.select_related('company').filter(state=3).values('company__id').annotate(Count('company__id')).count()
+
+        # 总配送次数
+        distribute_count = Order.objects.filter(state=3).count()
+
+        # 总服务员工
+        person_count = Company.objects.filter(state=1).aggregate(Sum('person_count'))['person_count__sum']
+
+        # 总服务人次
+        person_time_count = Order.objects.select_related('company').filter(state=3).aggregate(Sum('company__person_count'))['company__person_count__sum']
+
+        # 总供货商数
+        supplier_count = Supplier.objects.filter(state=1).count()
+
+        # 配送水果总数
+        fruit_count = OrderItem.objects.select_related('order', 'item').filter(order__state=3, item__item_type=1).aggregate(Sum('amount'))['amount__sum']
+
+        # 配送点心总数
+        cake_count = OrderItem.objects.select_related('order', 'item').filter(order__state=3, item__item_type=2).aggregate(Sum('amount'))['amount__sum']
+
+        # 总销售额
+        sale = Order.objects.filter(state=3, is_test=0).aggregate(Sum('total_price'))['total_price__sum']
+
+        # 总原材料成本
+        cost = Order.objects.filter(state=3, is_test=0).aggregate(Sum('cost_price'))['cost_price__sum']
+
+        # 平均毛利率
+        rate = round((1 - (cost / sale)) * 100, 1)
+
+        # 根据订单汇总的总服务人次
+        temp_person_time_count = Order.objects.select_related('company').filter(state=3, is_test=0).aggregate(Sum('company__person_count'))['company__person_count__sum']
+        # 平均客单价
+        per_customer_transaction = round(sale / temp_person_time_count, 1)
+
+        return {
+            'company_count': company_count,
+            'distribute_count': distribute_count,
+            'person_count': person_count,
+            'person_time_count': person_time_count,
+            'supplier_count': supplier_count,
+            'fruit_count': fruit_count,
+            'cake_count': cake_count,
+            'sale': round(float(sale), 1),
+            'cost': round(float(cost), 1),
+            'rate': rate,
+            'per_customer_transaction': per_customer_transaction
+        }
+
+
+    def get_order_count_group_by_confirm_time(self, start_date, end_date):
+        '''
+        查询日订单数 按订单确认时间分组
+        数据格式：
+        [2014-01-01, 15], [2014-01-02, 23]
+        '''
+        sql = """
+            SELECT DATE_FORMAT(confirm_time, "%%Y-%%m-%%d"), COUNT(id) 
+            FROM company_order 
+            WHERE %s <= confirm_time AND confirm_time <= %s
+            AND state = 3 AND is_test = 0
+            GROUP BY DATE_FORMAT(confirm_time, "%%Y-%%m-%%d")
+        """
+
+        return raw_sql.exec_sql(sql, [start_date, end_date])
+
+    def get_person_count_group_by_confirm_time(self, start_date, end_date):
+        '''
+        查询日服务人次数 按订单确认时间分组
+        数据格式：
+        [2014-01-01, 15], [2014-01-02, 23]
+        '''
+        sql = """
+            SELECT DATE_FORMAT(a.confirm_time, "%%Y-%%m-%%d"), SUM(b.person_count)
+            FROM company_order AS a, company_company AS b
+            WHERE %s <= a.confirm_time AND a.confirm_time <= %s
+            AND a.company_id = b.id
+            AND a.state = 3 AND a.is_test = 0
+            GROUP BY DATE_FORMAT(a.confirm_time, "%%Y-%%m-%%d")
+        """
+
+        return raw_sql.exec_sql(sql, [start_date, end_date])
+
+    def get_order_price_group_by_confirm_time(self, start_date, end_date):
+        '''
+        查询日订单总金额 按订单确认时间分组
+        数据格式：
+        [2014-01-01, 15], [2014-01-02, 23]
+        '''
+        sql = """
+            SELECT DATE_FORMAT(confirm_time, "%%Y-%%m-%%d"), SUM(total_price) 
+            FROM company_order 
+            WHERE %s <= confirm_time AND confirm_time <= %s
+            AND state = 3 AND is_test = 0
+            GROUP BY DATE_FORMAT(confirm_time, "%%Y-%%m-%%d")
+        """
+
+        return raw_sql.exec_sql(sql, [start_date, end_date])
+
+
+
 
 
 

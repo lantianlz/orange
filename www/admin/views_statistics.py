@@ -32,13 +32,23 @@ def statistics_chart(request, template_name='pc/admin/statistics_chart.html'):
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
 
 @verify_permission('')
-def statistics_sale(request, template_name='pc/admin/statistics_sale.html'):
+def statistics_sale_top(request, template_name='pc/admin/statistics_sale_top.html'):
     today = datetime.datetime.now()
     start_date = today.replace(day=1).strftime('%Y-%m-%d')
     end_date = today.strftime('%Y-%m-%d')
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
 
+@verify_permission('')
+def statistics_summary(request, template_name='pc/admin/statistics_summary.html'):
+    
+    return render_to_response(template_name, locals(), context_instance=RequestContext(request))
 
+@verify_permission('')
+def statistics_orders(request, template_name='pc/admin/statistics_orders.html'):
+    today = datetime.datetime.now()
+    start_date = today.replace(day=1).strftime('%Y-%m-%d')
+    end_date = today.strftime('%Y-%m-%d')
+    return render_to_response(template_name, locals(), context_instance=RequestContext(request))
 
 
 
@@ -74,8 +84,8 @@ def get_chart_data(request):
         mimetype='application/json'
     )
 
-@verify_permission('statistics_sale')
-def get_statistics_sale_data(request):
+@verify_permission('statistics_sale_top')
+def get_statistics_sale_top_data(request):
     
     start_date = request.POST.get('start_date')
     end_date = request.POST.get('end_date')
@@ -150,10 +160,80 @@ def get_statistics_sale_data(request):
     )
 
 
+@verify_permission('statistics_summary')
+def get_statistics_summary_data(request):
+
+    statistics_summary_data = StatisticsBase().statistics_summary()
+
+    return HttpResponse(
+        json.dumps(statistics_summary_data),
+        mimetype='application/json'
+    )
 
 
+@verify_permission('statistics_orders')
+def get_statistics_orders_data(request):
+    days = 100
+    x_data = [(datetime.datetime.now() - datetime.timedelta(days=(days-x))).strftime('%Y-%m-%d') for x in range(days)]
+
+    data = {
+        'order_count_x_data': x_data,
+        'order_count_y_data': [random.randint(0, 100) for x in range(days)],
+
+        'person_count_x_data': x_data,
+        'person_count_y_data': [random.randint(0, 100) for x in range(days)],
+
+        'order_price_x_data': x_data,
+        'order_price_y_data': [random.randint(0, 100) for x in range(days)],
+    }
+
+    start_date = request.POST.get('start_date')
+    end_date = request.POST.get('end_date')
+    start_date, end_date = utils.get_date_range(start_date, end_date)
+
+    #=================== 获取日订单的数量
+    order_count_x_data = []
+    order_count_y_data = []
+    order_count = 0
+    for x in StatisticsBase().get_order_count_group_by_confirm_time(start_date, end_date):
+        order_count_x_data.append(x[0])
+        order_count_y_data.append(x[1])
+        order_count += x[1]
+
+    #=================== 获取日服务人次的数量
+    person_count_x_data = []
+    person_count_y_data = []
+    person_count = 0
+    for x in StatisticsBase().get_person_count_group_by_confirm_time(start_date, end_date):
+        person_count_x_data.append(x[0])
+        person_count_y_data.append(str(x[1]))
+        person_count += x[1]
+
+    #=================== 获取日订单总金额
+    order_price_x_data = []
+    order_price_y_data = []
+    order_price = 0
+    for x in StatisticsBase().get_order_price_group_by_confirm_time(start_date, end_date):
+        order_price_x_data.append(x[0])
+        order_price_y_data.append(str(x[1]))
+        order_price += x[1]
 
 
+    data = {
+        'order_count': str(order_count),
+        'order_count_x_data': order_count_x_data,
+        'order_count_y_data': order_count_y_data,
+        'person_count': str(person_count),
+        'person_count_x_data': person_count_x_data,
+        'person_count_y_data': person_count_y_data,
+        'order_price': str(order_price),
+        'order_price_x_data': order_price_x_data,
+        'order_price_y_data': order_price_y_data
+    }
+    return HttpResponse(
+        json.dumps(data),
+        mimetype='application/json'
+    )
 
 
 

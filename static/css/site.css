@@ -24,7 +24,7 @@ a:focus {outline: none; -moz-outline: none;}
 .block{display: block;}
 .inline-block{display: inline-block;}
 .visibility-hidden{visibility: hidden;}
-.visibility{visibility: hidden;}
+.visibility{visibility: visible;}
 
 .pointer{cursor: pointer;}
 
@@ -81,12 +81,14 @@ a:focus {outline: none; -moz-outline: none;}
 .co-84CCC7{color: #84CCC7;}
 .co-C33333{color: #C33333;}/*红*/
 .co-19BA40{color: #19BA40;}/*绿*/
+.co-7696DB{color: #7696DB;}/*绿*/
 .co-e1e1e1{color: #e1e1e1;}
 .co-1DABD9{color: #1DABD9;}/*蓝*/
 
 .border-1{border: 1px solid;}
 .border-2{border: 2px solid;}
 .border-bottom-1{border-bottom: 1px solid;}
+.border-bottom-dashed-1{border-bottom: 1px dashed;}
 .border-bottom-2{border-bottom: 2px solid;}
 .border-right-1{border-right: 1px solid;}
 .border-left-1{border-left: 1px solid;}
@@ -200,7 +202,10 @@ a:focus {outline: none; -moz-outline: none;}
 .mt-0{margin-top: 0;}
 .mt-10{margin-top: 10px;}
 .mt-15{margin-top: 15px;}
+.mt-20{margin-top: 20px;}
 .mt-25{margin-top: 25px;}
+.mt-40{margin-top: 40px;}
+.mt-50{margin-top: 50px;}
 .mt-80{margin-top: 80px;}
 
 .z-99{z-index: 99;}

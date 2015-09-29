@@ -84,7 +84,11 @@ PERMISSIONS = [
     {'code': 'modify_booking', 'name': u'修改预订', 'parent': 'booking_manage'},
 
     {'code': 'statistics_manage', 'name': u'统计管理', 'parent': None},
+    {'code': 'statistics_sale_top', 'name': u'销售排行', 'parent': 'statistics_manage'},
+    {'code': 'statistics_summary', 'name': u'综合统计', 'parent': 'statistics_manage'},
+    {'code': 'statistics_order', 'name': u'订单统计', 'parent': 'statistics_manage'},
     {'code': 'statistics_sale', 'name': u'销售额统计', 'parent': 'statistics_manage'},
+    {'code': 'statistics_commission', 'name': u'邀请人返佣', 'parent': 'statistics_manage'},
 
     {'code': 'city_manage', 'name': u'城市管理', 'parent': None},
     #{'code': 'add_city', 'name': u'添加城市', 'parent': 'city_manage'},
