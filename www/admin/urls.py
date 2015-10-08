@@ -172,6 +172,9 @@ urlpatterns += patterns('www.admin.views_booking',
 
 # 统计管理
 urlpatterns += patterns('www.admin.views_statistics',
+    url(r'^statistics_commission$', 'statistics_commission'),
+    url(r'^statistics_commission/get_statistics_commission_data$', 'get_statistics_commission_data'),
+    
     url(r'^statistics_orders$', 'statistics_orders'),
     url(r'^statistics_orders/get_statistics_orders_data$', 'get_statistics_orders_data'),
 

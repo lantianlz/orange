@@ -50,6 +50,12 @@ def statistics_orders(request, template_name='pc/admin/statistics_orders.html'):
     end_date = today.strftime('%Y-%m-%d')
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
 
+@verify_permission('')
+def statistics_commission(request, template_name='pc/admin/statistics_commission.html'):
+    today = datetime.datetime.now()
+    start_date = today.replace(day=1).strftime('%Y-%m-%d')
+    end_date = today.strftime('%Y-%m-%d')
+    return render_to_response(template_name, locals(), context_instance=RequestContext(request))
 
 
 @verify_permission('')
@@ -232,6 +238,51 @@ def get_statistics_orders_data(request):
     }
     return HttpResponse(
         json.dumps(data),
+        mimetype='application/json'
+    )
+
+
+@verify_permission('statistics_commission')
+def get_statistics_commission_data(request):
+
+    start_date = request.POST.get('start_date')
+    end_date = request.POST.get('end_date')
+    start_date, end_date = utils.get_date_range(start_date, end_date)
+
+    data = {}
+
+    for x in StatisticsBase().statistics_commission(start_date, end_date):
+        key = x.company.invite_by
+        user = UserBase().get_user_by_id(key)
+
+        if not data.has_key(key):
+            data[key] = {
+                'user_id': key,
+                'user_nick': user.nick,
+                'user_avatar': user.get_avatar_65(),
+                'total_price': 0,
+                'meals': []
+            }
+
+        # 订单金额 199以上的奖励100  其他奖励50
+        temp_price = 100 if x.price >= 199 else 50
+
+        data[key]['total_price'] += temp_price
+        data[key]['meals'].append({
+            'company_name': x.company.name,
+            'company_short_name': x.company.short_name,
+            'meal_name': x.name,
+            'meal_price': str(x.price),
+            'date': str(x.company.sale_date)[:10],
+            'user_nick': user.nick,
+            'price': str(temp_price)
+        })
+
+    for x in data.values():
+        x['total_price'] = str(x['total_price'])
+
+    return HttpResponse(
+        json.dumps(data.values()),
         mimetype='application/json'
     )
 

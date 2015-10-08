@@ -51,10 +51,15 @@ var echarts,
             {'start_date': start_date, 'end_date': end_date}, 
             function(data){
                 
-                // new countUp("order-count", 0, data['order_count']).start(),
-                orderCountChart(data['order_count_x_data'], data['order_count_y_data'], data['order_count']);
-                personCountChart(data['person_count_x_data'], data['person_count_y_data'], data['person_count']);
-                orderPriceChart(data['order_price_x_data'], data['order_price_y_data'], data['order_price']);
+                if(data['order_count_x_data'].length > 0){
+                    orderCountChart(data['order_count_x_data'], data['order_count_y_data'], data['order_count']);
+                }
+                if(data['person_count_x_data'].length > 0){
+                    personCountChart(data['person_count_x_data'], data['person_count_y_data'], data['person_count']);
+                }
+                if(data['order_price_x_data'].length > 0){
+                    orderPriceChart(data['order_price_x_data'], data['order_price_y_data'], data['order_price']);
+                }
             }
         );
     },

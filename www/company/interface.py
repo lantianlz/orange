@@ -1511,7 +1511,7 @@ class StatisticsBase(object):
         )
 
 
-    # @cache_required(cache_key='statistics_summary_data', expire=43200, cache_config=cache.CACHE_TMP)
+    @cache_required(cache_key='statistics_summary_data', expire=43200, cache_config=cache.CACHE_TMP)
     def statistics_summary(self):
         '''
         综合统计
@@ -1566,7 +1566,6 @@ class StatisticsBase(object):
             'per_customer_transaction': per_customer_transaction
         }
 
-
     def get_order_count_group_by_confirm_time(self, start_date, end_date):
         '''
         查询日订单数 按订单确认时间分组
@@ -1616,6 +1615,14 @@ class StatisticsBase(object):
 
         return raw_sql.exec_sql(sql, [start_date, end_date])
 
+    def statistics_commission(self, start_date, end_date):
+        '''
+        '''
+        return Meal.objects.select_related('company').filter(
+            company__sale_date__range=(start_date, end_date),
+            state=1,
+            company__invite_by__isnull=False
+        )
 
 
 

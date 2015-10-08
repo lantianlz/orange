@@ -1,0 +1,118 @@
+{% extends "pc/admin/home.html" %}
+{% load custom_tags %}
+{% load custom_filters %}
+{% block title %}邀请人返佣{% endblock %}
+{% block admin_title %}邀请人返佣{% endblock %}
+{% block admin_title_m %}邀请人返佣{% endblock %}
+
+{% block css %}
+<style type="text/css">
+</style>
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript">
+$(document).ready(function(){
+    $('#start_date_search').datetimepicker({
+        format: 'yyyy-mm-dd',
+        language: 'zh-CN',
+        minView: 2,
+        autoclose: true
+    });
+    $('#end_date_search').datetimepicker({
+        format: 'yyyy-mm-dd',
+        language: 'zh-CN',
+        minView: 2,
+        autoclose: true
+    });
+
+    $('.search').on('click', function(){
+
+        ajaxSend(
+            "/admin/statistics_commission/get_statistics_commission_data", 
+            {'start_date': $('#start_date_search').val(), 'end_date': $('#end_date_search').val()}, 
+            function(data){
+                var  contentTemplate = _.template([
+                    '<% _.each(data, function(meal, index){ %>',
+
+                    '<tr>',
+                        '<td><%= index+1 %></td>',
+                        '<td><%= meal.company_name %></td>',
+                        '<td><%= meal.company_short_name %></td>',
+                        '<td><%= meal.meal_name %></td>',
+                        '<td><%= meal.meal_price %></td>',
+                        '<td><%= meal.date %></td>',
+                        '<td><%= meal.user_nick %></td>',
+                        '<td><%= meal.price %></td>',
+                    '</tr>',
+
+                    '<% }) %>'
+                ].join(''));
+
+                
+                $('.contents').html('');
+                $.map(data, function(per){
+                    var html = [
+                        '<table class="table table-hover mb-0">',
+                            '<thead>',
+                                '<tr>',
+                                    '<th>#</th>',
+                                    '<th>公司名称</th>',
+                                    '<th>公司简称</th>',
+                                    '<th>套餐名称</th>',
+                                    '<th>套餐价格</th>',
+                                    '<th>正式订购日期</th>',
+                                    '<th>邀请人</th>',
+                                    '<th>返佣金额</th>',
+                                '</tr>',
+                            '</thead>',
+                            '<tbody>',
+
+                                contentTemplate({'data': per['meals']}),
+
+                            '</tbody>',
+                        '</table>',
+                        '<div class="text-right border-top-2 bdc-dddddd pt-10 mb-20 pb-20">',
+                            '<img class="avatar w35 bdr-circle" src="'+per['user_avatar']+'">',
+                            '<span class="pl-5 pr-10">'+per['user_nick']+'</span>返佣汇总<span class="fb f18 co-1DABD9 pl-5 pr-5">'+per['total_price']+'</span>元',
+                        '</div>'
+                    ].join('');
+
+                    $('.contents').append(html);
+                });
+
+
+            }
+        );
+
+    });
+
+    $('.search').click();
+
+});
+</script>
+{% endblock %}
+
+{% block admin_main %}
+<div class="row pt-15">
+    <div class="col-md-12 pb-10">
+        <form action="." class="form-inline" onsubmit="javascript: return false;">
+            <div class="input-group input-group-sm pb-10">
+                <span class="input-group-addon">开始日期</span>
+                <input type="text" class="form-control" id="start_date_search" value="{{start_date}}"  />
+            </div>
+            <div class="input-group input-group-sm pb-10">
+                <span class="input-group-addon">结束日期</span>
+                <input type="text" class="form-control" id="end_date_search" value="{{end_date}}"  />
+                <span class="input-group-btn">
+                    <button class="btn btn-default search bgc-eeeeee" type="submit">查询</button>
+                </span>
+            </div>
+        </form>
+    </div>
+
+    <div class="col-md-12 contents">
+
+    </div>    
+</div>
+{% endblock %}
