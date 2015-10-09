@@ -54,6 +54,8 @@ class CashAccount(models.Model):
     balance = models.DecimalField(verbose_name=u"最新余额", max_digits=20, decimal_places=2, default=0, db_index=True)
     max_overdraft = models.DecimalField(verbose_name=u"最大透支额", max_digits=20, decimal_places=2, default=1000, db_index=True)
 
+    class Meta:
+        ordering = ['balance']
 
 class CashRecord(models.Model):
 
@@ -312,6 +314,9 @@ class SupplierCashAccount(models.Model):
     '''
     supplier = models.ForeignKey("Supplier", unique=True)
     balance = models.DecimalField(verbose_name=u"最新余额", max_digits=20, decimal_places=2, default=0, db_index=True)
+
+    class Meta:
+        ordering = ['-balance']
 
 class SupplierCashRecord(models.Model):
 
