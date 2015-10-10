@@ -52,18 +52,33 @@ var echarts,
             function(data){
                 
                 if(data['order_count_x_data'].length > 0){
-                    orderCountChart(data['order_count_x_data'], data['order_count_y_data'], data['order_count']);
+                    orderCountChart(
+                        data['order_count_x_data'], 
+                        data['order_count_y_data'], 
+                        data['order_count'], 
+                        data['order_per_count']
+                    );
                 }
                 if(data['person_count_x_data'].length > 0){
-                    personCountChart(data['person_count_x_data'], data['person_count_y_data'], data['person_count']);
+                    personCountChart(
+                        data['person_count_x_data'], 
+                        data['person_count_y_data'], 
+                        data['person_count'],
+                        data['person_per_count']
+                    );
                 }
                 if(data['order_price_x_data'].length > 0){
-                    orderPriceChart(data['order_price_x_data'], data['order_price_y_data'], data['order_price']);
+                    orderPriceChart(
+                        data['order_price_x_data'], 
+                        data['order_price_y_data'], 
+                        data['order_price'],
+                        data['order_per_price']
+                    );
                 }
             }
         );
     },
-    orderCountChart = function(xData, yData, total){
+    orderCountChart = function(xData, yData, total, perCount){
         var main = echarts.init(document.getElementById('order_count_chart'));
 
         main.setOption({
@@ -154,9 +169,10 @@ var echarts,
         });
 
         $('.order-count-total').html(total);
+        $('.order-per-count').html(perCount);
     },
 
-    personCountChart = function(xData, yData, total){
+    personCountChart = function(xData, yData, total, perCount){
         var main = echarts.init(document.getElementById('person_count_chart'));
         
         main.setOption({
@@ -245,10 +261,10 @@ var echarts,
         });
 
         $('.person-count-total').html(total);
-
+        $('.person-per-count').html(perCount);
     },
 
-    orderPriceChart = function(xData, yData, total){
+    orderPriceChart = function(xData, yData, total, perPrice){
         var main = echarts.init(document.getElementById('order_price_chart'));
         
         main.setOption({
@@ -342,6 +358,7 @@ var echarts,
         });
     
         $('.order-price-total').html(total);
+        $('.order-per-price').html(perPrice);
     };
 
 $(document).ready(function(){
@@ -414,17 +431,32 @@ $(document).ready(function(){
             
             <div class="tab-pane fade pt-15 in active" id="order_count">
                 <div id="order_count_chart" style="height: 400px;"></div>
-                <div class="text-right pt-20">此时间段日订单总数: <span class="f20 fb co-1DABD9 order-count-total pl-5">0</span></div>
+                <div class="text-right pt-20">
+                    <span>日订单总数: </span>
+                    <span class="f20 fb co-1DABD9 order-count-total pl-5">0</span>
+                    <span>，平均日订单数: </span>
+                    <span class="f20 fb co-1DABD9 order-per-count pl-5">0</span>
+                </div>
             </div>
 
             <div class="tab-pane fade pt-15 in" id="person_count">
                 <div id="person_count_chart" style="height: 400px;"></div>
-                <div class="text-right pt-20">此时间段日服务人次总数: <span class="f20 fb co-1DABD9 person-count-total pl-5">0</span></div>
+                <div class="text-right pt-20">
+                    <span>日服务人次总数: </span>
+                    <span class="f20 fb co-1DABD9 person-count-total pl-5">0</span>
+                    <span>，平均日服务人次数: </span>
+                    <span class="f20 fb co-1DABD9 person-per-count pl-5">0</span>
+                </div>
             </div>
 
             <div class="tab-pane fade pt-15 in" id="order_price">
                 <div id="order_price_chart" style="height: 400px;"></div>
-                <div class="text-right pt-20">此时间段日订单总额: <span class="f20 fb co-1DABD9 order-price-total pl-5">0</span></div>
+                <div class="text-right pt-20">
+                    <span>日订单总额: </span>
+                    <span class="f20 fb co-1DABD9 order-price-total pl-5">0</span>
+                    <span>，平均日订单额: </span>
+                    <span class="f20 fb co-1DABD9 order-per-price pl-5">0</span>
+                </div>
             </div>
 
         </div>

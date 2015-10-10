@@ -201,38 +201,49 @@ def get_statistics_orders_data(request):
     order_count_x_data = []
     order_count_y_data = []
     order_count = 0
+    order_per_count = 0
     for x in StatisticsBase().get_order_count_group_by_confirm_time(start_date, end_date):
         order_count_x_data.append(x[0])
         order_count_y_data.append(x[1])
         order_count += x[1]
+    days = len(order_count_x_data) if order_count_x_data else 1
+    order_per_count = (order_count / days) if (order_count % days) == 0 else (order_count / days + 1)
 
     #=================== 获取日服务人次的数量
     person_count_x_data = []
     person_count_y_data = []
     person_count = 0
+    person_per_count = 0
     for x in StatisticsBase().get_person_count_group_by_confirm_time(start_date, end_date):
         person_count_x_data.append(x[0])
         person_count_y_data.append(str(x[1]))
         person_count += x[1]
+    days = len(person_count_x_data) if person_count_x_data else 1
+    person_per_count = '%.f' % (person_count / days)
 
     #=================== 获取日订单总金额
     order_price_x_data = []
     order_price_y_data = []
     order_price = 0
+    order_per_price = 0
     for x in StatisticsBase().get_order_price_group_by_confirm_time(start_date, end_date):
         order_price_x_data.append(x[0])
         order_price_y_data.append(str(x[1]))
         order_price += x[1]
-
+    days = len(order_price_x_data) if order_price_x_data else 1
+    order_per_price = '%.2f' % (order_price / days)
 
     data = {
         'order_count': str(order_count),
+        'order_per_count': str(order_per_count),
         'order_count_x_data': order_count_x_data,
         'order_count_y_data': order_count_y_data,
         'person_count': str(person_count),
+        'person_per_count': str(person_per_count),
         'person_count_x_data': person_count_x_data,
         'person_count_y_data': person_count_y_data,
         'order_price': str(order_price),
+        'order_per_price': str(order_per_price),
         'order_price_x_data': order_price_x_data,
         'order_price_y_data': order_price_y_data
     }
