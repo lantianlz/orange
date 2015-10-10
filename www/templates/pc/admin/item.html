@@ -7,7 +7,17 @@
 
 {% block css %}
 <style type="text/css">
+.big-img{
+    display: none;
+    position: absolute;
+    background-color: #ffffff;
+    left: 60px;
+    top: 10px;
+}
 
+.small-img:hover~.big-img{
+    display: block;
+}
 </style>
 {% endblock %}
 
@@ -214,23 +224,30 @@ $(document).ready(function(){
         },
 
         save: function(sender){
-            var itemId = this.$('form').data('item_id'),
-                target = $(sender.currentTarget),
-                me = this;
+            // var itemId = this.$('form').data('item_id'),
+            //     target = $(sender.currentTarget),
+            //     me = this;
+
+            // if(!this.$('form').valid()){
+            //     return;
+            // }
+
+            // g_ajax_processing_obj_id = target.setUUID().attr('id');
+            // me.collection.modifyItem(this.$('form').serialize(), function(data){
+            //     if(data.errcode == "0"){
+            //         $.Global.Notice.SuccessTopNotice('操作成功');
+            //         router.navigate('modify/' + itemId, {'trigger': true});
+            //     } else {
+            //         $.Global.Notice.ErrorTopNotice(data.errmsg);
+            //     }
+            // })
 
             if(!this.$('form').valid()){
                 return;
             }
+            
+            this.$('form').submit();
 
-            g_ajax_processing_obj_id = target.setUUID().attr('id');
-            me.collection.modifyItem(this.$('form').serialize(), function(data){
-                if(data.errcode == "0"){
-                    $.Global.Notice.SuccessTopNotice('操作成功');
-                    router.navigate('modify/' + itemId, {'trigger': true});
-                } else {
-                    $.Global.Notice.ErrorTopNotice(data.errmsg);
-                }
-            })
         }
 
     });
@@ -289,16 +306,18 @@ $(document).ready(function(){
                 return;
             }
 
-            g_ajax_processing_obj_id = $("#add_item_modal .ok").setUUID().attr('id');
-            items.addItem($.Global.Utils.formToDict($('#add_item_modal form')), function(data){
-                if(data.errcode == "0"){
-                    router.navigate('modify/' + data.errmsg, {trigger: true});
-                    $('#add_item_modal').modal('hide');
-                    $.Global.Notice.SuccessTopNotice("操作成功");
-                } else {
-                    $.Global.Notice.ErrorTopNotice(data.errmsg);
-                }
-            })
+            // g_ajax_processing_obj_id = $("#add_item_modal .ok").setUUID().attr('id');
+            // items.addItem($.Global.Utils.formToDict($('#add_item_modal form')), function(data){
+            //     if(data.errcode == "0"){
+            //         router.navigate('modify/' + data.errmsg, {trigger: true});
+            //         $('#add_item_modal').modal('hide');
+            //         $.Global.Notice.SuccessTopNotice("操作成功");
+            //     } else {
+            //         $.Global.Notice.ErrorTopNotice(data.errmsg);
+            //     }
+            // })
+            
+            $('#add_item_modal form').submit();
         }
 
     });
@@ -392,6 +411,7 @@ $(document).ready(function(){
             <thead>
                 <tr>
                     <th>#</th>
+                    <th class="hidden-xs">图片</th>
                     <th class="hidden-xs">货号</th>
                     <th>名称</th>
                     <th class="hidden-xs">供货商</th>
@@ -423,6 +443,10 @@ $(document).ready(function(){
 <% _.each(items, function(item){ %>
     <tr class="pointer" data-item_id="<%= item.itemId %>">
         <td><%= item.num %></td>
+        <td class="hidden-xs pr">
+            <img src="<%= item.img %>" class="w35 small-img" />
+            <img src="<%= item.img %>" class="w250 big-img" />
+        </td>
         <td class="hidden-xs"><%= item.code %></td>
         <td><%= item.name %><%= item.des?'('+item.des+')':'' %></td>
         <td class="hidden-xs"><%= item.supplierName %></td>
@@ -453,8 +477,15 @@ $(document).ready(function(){
 </script>
 
 <script type="text/template" id="modify_item_template">
-<form class="form-horizontal" data-item_id='<%= itemId %>' role="form" method="post" action="">
+<form class="form-horizontal" data-item_id='<%= itemId %>' role="form" method="post" action="/admin/item/modify_item" enctype="multipart/form-data">
     <input type="hidden" name="item_id" value="<%= itemId %>" />
+    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+        <label class="col-sm-2 control-label">图片</label>
+        <div class="col-sm-6">
+            <img class="mb-10 w250" src="<%= img %>" />
+            <input name="img" class="pb-10" type="file" />图片尺寸为 250(宽) X 250(长)
+        </div>
+    </div>
     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
         <label class="col-sm-2 control-label">货号</label>
         <div class="col-sm-5">
@@ -564,7 +595,14 @@ $(document).ready(function(){
                 <h4 class="modal-title">添加产品</h4>
             </div>
             <div class="modal-body">
-                <form class="form-horizontal" role="form" method="post" action="">
+                <form class="form-horizontal" role="form" method="post" action="/admin/item/add_item" enctype="multipart/form-data">
+                    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+                        <label class="col-sm-3 control-label">图片</label>
+                        <div class="col-sm-9">
+                            <img class="mb-10 w250" src="" />
+                            <input name="img" class="pb-10" type="file" />图片尺寸为 250(宽) X 250(长)
+                        </div>
+                    </div>
                     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
                         <label class="col-sm-3 control-label">名称</label>
                         <div class="col-sm-5">

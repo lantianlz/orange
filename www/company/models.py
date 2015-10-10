@@ -155,6 +155,9 @@ class Item(models.Model):
 
     img = models.CharField(verbose_name=u"图片", max_length=128, null=True)
 
+    def get_img(self):
+        return self.img if self.img else '%simg/logo.png' % settings.MEDIA_URL
+
     class Meta:
         ordering = ["sort", "-create_time"]
 

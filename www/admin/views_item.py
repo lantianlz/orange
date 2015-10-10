@@ -4,8 +4,10 @@ import json
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.template import RequestContext
 from django.shortcuts import render_to_response
+from django.conf import settings
 
 from common import utils, page
+from www.misc import qiniu_client
 from misc.decorators import staff_required, common_ajax_response, verify_permission, member_required, log_sensitive_operation
 
 from www.company.interface import ItemBase, SupplierBase
@@ -42,7 +44,7 @@ def format_item(objs, num):
             'spec_text': x.get_spec_display(),
             'state': x.state,
             'code': x.code,
-            'img': x.img,
+            'img': x.get_img(),
             'integer': x.integer,
             'sale_price': str(x.sale_price),
             'init_add': x.init_add,
@@ -90,7 +92,6 @@ def get_item_by_id(request):
 
 @verify_permission('modify_item')
 @log_sensitive_operation
-@common_ajax_response
 def modify_item(request):
 
     item_id = request.POST.get('item_id')
@@ -105,14 +106,28 @@ def modify_item(request):
     state = request.POST.get('state')
     supplier_id = request.POST.get('supplier_id')
     des = request.POST.get('des')
-    # state = True if state == "1" else False
 
-    return ItemBase().modify_item(item_id, name, item_type, spec, 
-        price, sort, state, integer, sale_price, init_add, supplier_id, des
+    obj = ItemBase().get_item_by_id(item_id)
+    img_name = obj.img
+
+    img = request.FILES.get('img')
+    if img:
+        flag, img_name = qiniu_client.upload_img(img, img_type='item')
+        img_name = '%s/%s' % (settings.IMG0_DOMAIN, img_name)
+
+    flag, msg = ItemBase().modify_item(item_id, name, item_type, spec, 
+        price, sort, state, integer, sale_price, init_add, supplier_id, des, img_name
     )
 
+    if flag == 0:
+        url = "/admin/item?#modify/%s" % (obj.id)
+    else:
+        url = "/admin/item?%s#modify/%s" % (msg, obj.id)
+
+    return HttpResponseRedirect(url)
+
+
 @verify_permission('add_item')
-@common_ajax_response
 def add_item(request):
     name = request.POST.get('name')
     item_type = request.POST.get('item_type')
@@ -125,12 +140,24 @@ def add_item(request):
     supplier_id = request.POST.get('supplier_id')
     des = request.POST.get('des')
 
+    img_name = ''
+    img = request.FILES.get('img')
+    if img:
+        flag, img_name = qiniu_client.upload_img(img, img_type='item')
+        img_name = '%s/%s' % (settings.IMG0_DOMAIN, img_name)
+
     flag, msg = ItemBase().add_item(
         name, item_type, spec, price, sort, integer, 
-        sale_price, init_add, supplier_id, des
+        sale_price, init_add, supplier_id, des, img_name
     )
 
-    return flag, msg.id if flag == 0 else msg
+    if flag == 0:
+        url = "/admin/item?#modify/%s" % (msg.id)
+    else:
+        url = "/admin/item?%s" % (msg)
+
+    return HttpResponseRedirect(url)
+
 
 @verify_permission('query_item')
 def get_items_by_name(request):

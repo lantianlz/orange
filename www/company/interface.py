@@ -74,7 +74,7 @@ class ItemBase(object):
 
         return objs
 
-    def add_item(self, name, item_type, spec, price, sort, integer, sale_price, init_add, supplier_id, des):
+    def add_item(self, name, item_type, spec, price, sort, integer, sale_price, init_add, supplier_id, des, img):
 
         if not (name and item_type and price and supplier_id):
             return 99800, dict_err.get(99800)
@@ -97,6 +97,7 @@ class ItemBase(object):
                 init_add=init_add,
                 supplier_id=supplier_id,
                 des=des,
+                img=img,
                 code=self.generate_item_code(item_type)
             )
 
@@ -128,7 +129,8 @@ class ItemBase(object):
 
         return obj
 
-    def modify_item(self, item_id, name, item_type, spec, price, sort, state, integer, sale_price, init_add, supplier_id, des):
+    def modify_item(self, item_id, name, item_type, spec, price, sort,\
+                    state, integer, sale_price, init_add, supplier_id, des, img):
 
         if not (name and item_type and price and supplier_id):
             return 99800, dict_err.get(99800)
@@ -157,6 +159,7 @@ class ItemBase(object):
             obj.sale_price = sale_price
             obj.supplier_id = supplier_id
             obj.des = des
+            obj.img = img
             obj.save()
         except Exception, e:
             debug.get_debug_detail_and_send_email(e)
