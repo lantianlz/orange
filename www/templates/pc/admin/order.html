@@ -248,7 +248,8 @@ $(document).ready(function(){
             'click .save': 'saveOrder',
             'click .distribute': 'distributeOrder',
             'click .confirm': 'confirmOrder',
-            'click .drop': 'dropOrder'
+            'click .drop': 'dropOrder',
+            'input .order-total-price': 'calculateRate'
         },
 
         showPanel: function(){
