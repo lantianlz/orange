@@ -52,16 +52,17 @@ $(document).ready(function(){
             'sort': 'sort'
         },
 
-        search: function(itemType, supplier, name, pageIndex){
+        search: function(itemType, state, supplier, name, pageIndex){
             var me = this,
                 name = name || '',
                 supplier = supplier || '',
                 itemType = itemType || -1,
+                state = state || 1,
                 pageIndex = pageIndex || 1;
 
             ajaxSend(
                 "/admin/item/search", 
-                {'item_type': itemType, 'supplier': supplier, 'name': name, 'page_index': pageIndex}, 
+                {'item_type': itemType, 'state': state, 'supplier': supplier, 'name': name, 'page_index': pageIndex}, 
                 function(data){
                     
                     me.pageIndex = pageIndex;
@@ -69,6 +70,7 @@ $(document).ready(function(){
                     me.supplier = supplier;
                     me.name = name;
                     me.itemType = itemType;
+                    me.state = state;
 
                     me.reset($.Global.Utils.dictMapParse(data.data, me._modelMaps));
                 }
@@ -142,7 +144,7 @@ $(document).ready(function(){
             this.pagination.render(
                 this.collection.pageIndex||1, 
                 this.collection.pageCount, 
-                'search/' + this.collection.itemType + '/' + this.collection.supplier + '/' + this.collection.name
+                'search/' + this.collection.itemType + '/' + this.collection.state + '/' + this.collection.supplier + '/' + this.collection.name
             );
         },
 
@@ -154,9 +156,10 @@ $(document).ready(function(){
         searchItem: function(){
             var itemType = this.$('.item-type').val(),
                 supplier = this.$('.supplier').val(),
+                state = this.$('.state').val(),
                 name = this.$('.name').val();
 
-            router.navigate(String.format('/search/{0}/{1}/{2}/1', itemType, supplier, name), {trigger: true});
+            router.navigate(String.format('/search/{0}/{1}/{2}/{3}/1', itemType, state, supplier, name), {trigger: true});
         },
 
         modifyItem: function(sender){
@@ -326,14 +329,14 @@ $(document).ready(function(){
     var Router = Backbone.Router.extend({
         routes: {
             "":                             "search",
-            "search/(:itemType)/(:supplier)/(:name)/:pageIndex":    "search",
+            "search/(:itemType)/(:state)/(:supplier)/(:name)/:pageIndex":    "search",
             "modify/:itemId":               "modify",
             "add":                          "add"
         },
 
         // 获取推荐用户
-        search: function(itemType, supplier, name, pageIndex){
-            items.search(itemType, supplier, name, pageIndex);
+        search: function(itemType, state, supplier, name, pageIndex){
+            items.search(itemType, state, supplier, name, pageIndex);
         },
 
         modify: function(itemId){
@@ -392,6 +395,14 @@ $(document).ready(function(){
                 <select class="form-control item-type">
                     {% for type in all_types %}
                     <option value="{{type.value}}">{{type.name}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="input-group input-group-sm pb-10">
+                <span class="input-group-addon">状态</span>
+                <select class="form-control state">
+                    {% for state in all_states %}
+                    <option value="{{state.value}}" {% if state.value == 1 %}selected{% endif %} >{{state.name}}</option>
                     {% endfor %}
                 </select>
             </div>

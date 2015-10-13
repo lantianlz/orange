@@ -107,8 +107,8 @@ class ItemBase(object):
 
         return 0, item
 
-    def search_items_for_admin(self, item_type, supplier, name):
-        objs = self.get_all_item()
+    def search_items_for_admin(self, item_type, state, supplier, name):
+        objs = self.get_all_item(state)
 
         if item_type != -1:
             objs = objs.filter(item_type=item_type)

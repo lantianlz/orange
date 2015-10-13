@@ -16,6 +16,8 @@ from www.company.interface import ItemBase, SupplierBase
 def item(request, template_name='pc/admin/item.html'):
     from www.company.models import Item
     states = [{'name': x[1], 'value': x[0]} for x in Item.state_choices]
+    all_states = [{'name': x[1], 'value': x[0]} for x in Item.state_choices]
+    all_states.insert(0, {'value': -1, 'name': u"全部"})
     types = [{'name': x[1], 'value': x[0]} for x in Item.type_choices]
     all_types = [{'name': x[1], 'value': x[0]} for x in Item.type_choices]
     all_types.insert(0, {'value': -1, 'name': u"全部"})
@@ -65,9 +67,11 @@ def search(request):
     supplier = request.REQUEST.get('supplier')
     item_type = request.REQUEST.get('item_type')
     item_type = int(item_type)
+    state = request.REQUEST.get('state', '-1')
+    state = {'-1': None, '0': False, '1': True}[state]
     page_index = int(request.REQUEST.get('page_index'))
 
-    objs = ItemBase().search_items_for_admin(item_type, supplier, name)
+    objs = ItemBase().search_items_for_admin(item_type, state, supplier, name)
 
     page_objs = page.Cpt(objs, count=20, page=page_index).info
 
