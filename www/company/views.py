@@ -9,7 +9,7 @@ from django.shortcuts import render_to_response
 
 from common import utils, page
 from misc.decorators import common_ajax_response, member_required, company_manager_required_for_request
-from www.company.interface import BookingBase, CompanyManagerBase, MealBase, OrderBase, CashRecordBase, CashAccountBase
+from www.company.interface import BookingBase, CompanyManagerBase, MealBase, OrderBase, CashRecordBase, CashAccountBase, ItemBase
 from www.account.interface import UserBase
 from www.weixin.interface import WeixinBase, Sign
 from www.company.models import Item
@@ -181,4 +181,15 @@ def introduction_m(request, template_name='mobile/introduction_m.html'):
     sign = Sign(WeixinBase().get_weixin_jsapi_ticket(WeixinBase().init_app_key()), url)
     sign_dict = sign.sign()
     
+    return render_to_response(template_name, locals(), context_instance=RequestContext(request))
+
+@member_required
+@company_manager_required_for_request
+def product_list(request, company_id, template_name='pc/company/product_list.html'):
+
+    fruit = ItemBase().get_items_by_type(1, True)
+    cake = ItemBase().get_items_by_type(2, True)
+    supplies = ItemBase().get_items_by_type(3, True)
+    recycle = ItemBase().get_items_by_type(4, True)
+
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))

@@ -178,6 +178,12 @@ class ItemBase(object):
     def get_init_add_items(self):
         return self.get_all_item(True).filter(init_add=1)
 
+    def get_items_by_type(self, item_type=1, state=None):
+        '''
+        根据项目类型获取项目
+        '''
+        return self.get_all_item(state).filter(item_type=item_type)
+
 
 class CompanyBase(object):
 

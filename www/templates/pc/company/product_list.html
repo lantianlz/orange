@@ -1,0 +1,128 @@
+{% extends "pc/company/home.html" %}
+{% load custom_tags %}
+{% load custom_filters %}
+{% block title %}产品目录{% endblock %}
+{% block frame_title %}产品目录{% endblock %}
+{% block frame_title_m %}产品目录{% endblock %}
+
+{% block css %}
+<style type="text/css">
+.list-inline{
+    margin-left: -8px;
+    margin-right: -8px;
+}
+
+.list-inline>li{
+    padding-left: 8px;
+    padding-right: 8px;
+}
+</style>
+{% endblock %}
+
+{% block javascript %}
+{% endblock %}
+
+{% block frame_main %}
+<ul class="nav nav-pills orange-nav-pills">
+    <li class="active">
+        <a href="#fruit" data-toggle="pill">
+            <i class="fa fa-apple pr-5"></i>
+            <span class="hidden-sm hidden-md hidden-lg">水果</span>
+            <span class="hidden-xs">水果 ( {{fruit.count}}种 )</span>
+        </a>
+    </li>
+    <li>
+        <a href="#cake" data-toggle="pill">
+            <i class="fa fa-coffee pr-5"></i>
+            <span class="hidden-sm hidden-md hidden-lg">点心</span>
+            <span class="hidden-xs">点心 ( {{cake.count}}种 )</span>
+        </a>
+    </li>
+    <li>
+        <a href="#supplies" data-toggle="pill">
+            <i class="fa fa-cutlery pr-5"></i>
+            <span class="hidden-sm hidden-md hidden-lg">耗材</span>
+            <span class="hidden-xs">一次性耗材 ( {{supplies.count}}种 )</span>
+        </a>
+    </li>
+    <li>
+        <a href="#recycle" data-toggle="pill">
+            <i class="fa fa-recycle pr-5"></i>
+            <span class="hidden-sm hidden-md hidden-lg">容器</span>
+            <span class="hidden-xs">盛装容器 ( {{recycle.count}}种 )</span>
+        </a>
+    </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade in active" id="fruit">
+        <div class="row">
+            <div class="col-md-12">
+                <ul class="list-inline">
+                    {% for item in fruit %}
+                    <li class="col-md-3 col-xs-6 pt-25">
+                        <div class="col-md-12 bgc-ffffff pt-15">
+                            <img src="{{item.get_img}}" class="w">
+                            <div class="pt-10 pb-10 text-center">{{item.name}}</div>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-pane fade in" id="cake">
+        <div class="row">
+            <div class="col-md-12">
+                <ul class="list-inline">
+                    {% for item in cake %}
+                    <li class="col-md-3 col-xs-6 pt-25">
+                        <div class="col-md-12 bgc-ffffff pt-15">
+                            <img src="{{item.get_img}}" class="w">
+                            <div class="pt-10 pb-10 text-center">{{item.name}}</div>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-pane fade in" id="supplies">
+        <div class="row">
+            <div class="col-md-12">
+                <ul class="list-inline">
+                    {% for item in supplies %}
+                    <li class="col-md-3 col-xs-6 pt-25">
+                        <div class="col-md-12 bgc-ffffff pt-15">
+                            <img src="{{item.get_img}}" class="w">
+                            <div class="pt-10 pb-10 text-center">{{item.name}}</div>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-pane fade in" id="recycle">
+        <div class="row">
+            <div class="col-md-12">
+                <ul class="list-inline">
+                    {% for item in recycle %}
+                    <li class="col-md-3 col-xs-6 pt-25">
+                        <div class="col-md-12 bgc-ffffff pt-15">
+                            <img src="{{item.get_img}}" class="w">
+                            <div class="pt-10 pb-10 text-center">{{item.name}}</div>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

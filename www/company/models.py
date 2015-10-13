@@ -44,6 +44,7 @@ class CompanyManager(models.Model):
 
     class Meta:
         unique_together = [("company", "user_id"), ]
+        ordering = ["company"]
 
 class CashAccount(models.Model):
 
