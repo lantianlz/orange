@@ -160,6 +160,11 @@ $(document).ready(function(){
             );
 
             this.$('.sum-price').html(this.collection.sumPrice);
+
+            this.$('.state').val(this.collection.state);
+            this.$('#start_date_search').val(this.collection.startDate);
+            this.$('#end_date_search').val(this.collection.endDate);
+            this.$('.name').val(this.collection.name);
         },
 
         // 显示面板
