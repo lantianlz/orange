@@ -132,7 +132,7 @@ class Item(models.Model):
     '''
     @note: 单项
     '''
-    state_choices = ((0, u"停用"), (1, u"正常"))
+    state_choices = ((0, u"停用"), (1, u"正常"), (2, u"正常,目录不显示"))
     type_choices = ((1, u"水果"), (2, u"点心"), (3, u"一次性耗材"), (4, u"盛装容器"))
     spec_choices = ((1, u"斤"), (2, u"个"), (3, u"盒"), (4, u"袋"))
     integer_choices = ((1, u"整数"), (2, u"保留小数"))

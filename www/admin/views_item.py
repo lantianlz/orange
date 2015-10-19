@@ -68,7 +68,7 @@ def search(request):
     item_type = request.REQUEST.get('item_type')
     item_type = int(item_type)
     state = request.REQUEST.get('state', '-1')
-    state = {'-1': None, '0': False, '1': True}[state]
+    state = [] if state == "-1" else [int(state)]
     page_index = int(request.REQUEST.get('page_index'))
 
     objs = ItemBase().search_items_for_admin(item_type, state, supplier, name)

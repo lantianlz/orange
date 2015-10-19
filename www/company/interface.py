@@ -66,11 +66,11 @@ class ItemBase(object):
 
         return word + count
 
-    def get_all_item(self, state=None):
+    def get_all_item(self, state=[]):
         objs = Item.objects.all()
 
-        if state != None:
-            objs = objs.filter(state=state)
+        if state != []:
+            objs = objs.filter(state__in=state)
 
         return objs
 
@@ -168,7 +168,7 @@ class ItemBase(object):
         return 0, dict_err.get(0)
 
     def get_items_by_name(self, name):
-        objs = self.get_all_item(True)
+        objs = self.get_all_item([1, 2])
 
         if name:
             objs = objs.filter(name__contains=name)
@@ -176,9 +176,9 @@ class ItemBase(object):
         return objs
 
     def get_init_add_items(self):
-        return self.get_all_item(True).filter(init_add=1)
+        return self.get_all_item([1, 2]).filter(init_add=1)
 
-    def get_items_by_type(self, item_type=1, state=None):
+    def get_items_by_type(self, item_type=1, state=[]):
         '''
         根据项目类型获取项目
         '''

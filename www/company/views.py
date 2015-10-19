@@ -187,9 +187,9 @@ def introduction_m(request, template_name='mobile/introduction_m.html'):
 @company_manager_required_for_request
 def product_list(request, company_id, template_name='pc/company/product_list.html'):
 
-    fruit = ItemBase().get_items_by_type(1, True)
-    cake = ItemBase().get_items_by_type(2, True)
-    supplies = ItemBase().get_items_by_type(3, True)
-    recycle = ItemBase().get_items_by_type(4, True)
+    fruit = ItemBase().get_items_by_type(1, [1])
+    cake = ItemBase().get_items_by_type(2, [1])
+    supplies = ItemBase().get_items_by_type(3, [1])
+    recycle = ItemBase().get_items_by_type(4, [1])
 
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
