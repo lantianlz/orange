@@ -837,7 +837,10 @@ class BookingBase(object):
 
             sources = dict(Booking.source_choices)
             title = u'诸位，订单来了'
-            content = u'「%s」的「%s」通过「%s」申请预订，联系电话「%s」' % (company_name, staff_name, sources.get(int(source), u'未知'), mobile)
+            if invite:
+                content = u'「%s」的「%s」收到「%s」的邀请，通过「%s」申请预订，联系电话「%s」' % (company_name, staff_name, invite.nick, sources.get(int(source), u'未知'), mobile)
+            else:
+                content = u'「%s」的「%s」通过「%s」申请预订，联系电话「%s」' % (company_name, staff_name, sources.get(int(source), u'未知'), mobile)
             async_send_email("vip@3-10.cc", title, content)
 
         except Exception, e:
