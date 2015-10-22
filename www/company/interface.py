@@ -1561,8 +1561,12 @@ class StatisticsBase(object):
 
         # 根据订单汇总的总服务人次
         temp_person_time_count = Order.objects.select_related('company').filter(state=3, is_test=0).aggregate(Sum('company__person_count'))['company__person_count__sum']
+        
         # 平均客单价
         per_customer_transaction = round(sale / temp_person_time_count, 1)
+
+        # 统计时间
+        date = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
         return {
             'company_count': company_count,
@@ -1575,7 +1579,8 @@ class StatisticsBase(object):
             'sale': round(float(sale), 1),
             'cost': round(float(cost), 1),
             'rate': rate,
-            'per_customer_transaction': per_customer_transaction
+            'per_customer_transaction': per_customer_transaction,
+            'date': date
         }
 
     def get_order_count_group_by_confirm_time(self, start_date, end_date):
