@@ -138,7 +138,7 @@ class Item(models.Model):
     integer_choices = ((1, u"整数"), (2, u"保留小数"))
     add_choices = ((1, u"添加"), (2, u"不添加"))
 
-    code_dict = {1: 'F', 2: 'C', 3: 'S', 4: 'R', 5: 'D'}
+    code_dict = {1: 'F', 2: 'C', 3: 'D', 90: 'S', 91: 'R'}
 
     code = models.CharField(verbose_name=u"货号", max_length=32, unique=True)
     name = models.CharField(verbose_name=u"名称", max_length=128, unique=True)
