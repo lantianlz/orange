@@ -150,6 +150,7 @@ class ItemBase(object):
         try:
             obj.name = name
             obj.item_type = item_type
+            obj.code = self.generate_item_code(item_type)
             obj.spec = spec
             obj.price = price
             obj.sort = sort
