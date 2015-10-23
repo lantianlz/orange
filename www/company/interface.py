@@ -60,11 +60,20 @@ class ItemBase(object):
         '''
         自动生成货号
         '''
+        # 获得类别
         word = Item.code_dict[int(item_type)]
-        count = Item.objects.filter(item_type=item_type).count() + 1
-        count = '%03d' % count
 
-        return word + count
+        last_code = 0
+
+        # 查询此类别最后一个
+        obj = Item.objects.filter(item_type=item_type).order_by('-id')
+        if obj:
+            last_code = obj[0].code
+            last_code = int(last_code[1:])
+
+        last_code = '%03d' % (last_code + 1)
+
+        return word + last_code
 
     def get_all_item(self, state=[]):
         objs = Item.objects.all()
@@ -148,9 +157,12 @@ class ItemBase(object):
             return 20103, dict_err.get(20103)
         
         try:
+            # 如果换了类别需要重新计算货号
+            if obj.item_type != int(item_type):
+                obj.code = self.generate_item_code(item_type)
+                
             obj.name = name
             obj.item_type = item_type
-            obj.code = self.generate_item_code(item_type)
             obj.spec = spec
             obj.price = price
             obj.sort = sort

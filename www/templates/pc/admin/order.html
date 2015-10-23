@@ -420,7 +420,7 @@ $(document).ready(function(){
             var me = this;
 
             orders.getMeal(meal_id, function(data){
-                me.itemsView.loadItems(data.items, true);
+                me.itemsView._loadItems(data.items, true);
                 me.$('#meal_id_add').val(meal_id);
                 me.$('.total-price').val(data.price);
 

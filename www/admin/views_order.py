@@ -63,6 +63,7 @@ def format_order(objs, num, show_items=False):
                     'code': i.item.code,
                     'img': i.item.img,
                     'des': i.item.des,
+                    'smart_des': i.item.smart_des(),
                     'amount': i.amount
                 })
 
@@ -269,6 +270,7 @@ def get_items_of_order(request):
             'code': i.item.code,
             'img': i.item.img,
             'des': i.item.des,
+            'smart_des': i.item.smart_des(),
             'supplier_id': supplier.id if supplier else '',
             'supplier_name': supplier.name if supplier else u'无',
             'amount': i.amount if i.item.integer == 2 else int(i.amount)

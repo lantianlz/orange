@@ -432,22 +432,9 @@ if (!String.format) {
         // 售价  初始化时传入,核算毛利使用
         totalSalePrice: 0,
 
-        _html: [
-            '<ul class="list-unstyled items-view">',
-                '<div class="pb-15 border-bottom-1 bdc-e4e4e4 mb-15 pr item-header">',
-                    '<input type="text" class="form-control search-item" placeholder="输入茶点项目名字" value="">',
-                    '<span class="btn-search-item"><i class="fa fa-search"></i></span>',
-                '</div>',
-                '<div class="fb fi pb-5 type-1">水果 ( 总价: <span class="sum-1">0</span> )</div>',
-                '<div class="fb fi pb-5 pt-15 type-2">点心 ( 总价: <span class="sum-2">0</span> )</div>',
-                '<div class="fb fi pb-5 pt-15 type-3">一次性耗材 ( 总价: <span class="sum-3">0</span> )</div>',
-                '<div class="fb fi pb-5 pt-15 type-4">盛装容器 ( 总价: <span class="sum-4">0</span> )</div>',
-                '<div class="border-top-1 bdc-e4e4e4 text-right mt-5 pt-10 item-footer">',
-                    '<span>成本总价: <span class="sum fb">0</span> 元，</span>',
-                    '<span>毛利: <span class="rate">0</span>%</span>',
-                '</div>',
-            '</ul>'
-        ].join(''),
+        _items: [],
+        _itemTypes: [],
+        _initItemIds: [],
 
         _modelMaps: {
             'value': 'name',
@@ -458,13 +445,188 @@ if (!String.format) {
             'spec': 'spec',
             'specText': 'spec_text',
             'des': 'des',
+            'smartDes': 'smart_des',
             'amount': 'amount'
         },
 
+        _html: [
+            '<ul class="list-unstyled items-view">',
+                '<div class="pb-15 border-bottom-1 bdc-e4e4e4 mb-15 pr item-header">',
+                    '<input type="text" class="form-control search-item" placeholder="输入茶点项目名字" value="">',
+                    '<span class="btn-search-item"><i class="fa fa-search"></i></span>',
+                '</div>',
+                
+                '<div class="border-top-1 bdc-e4e4e4 text-right mt-5 pt-10 item-footer">',
+                    '<span>成本总价: <span class="sum fb">0</span> 元，</span>',
+                    '<span>毛利: <span class="rate">0</span>%</span>',
+                '</div>',
+            '</ul>'
+        ].join(''),
+
+        // 初始化项目产品自动补全下拉框
+        _initItemAutocomplete: function(){
+            var me = this;
+
+            me.$('.search-item').autocomplete({
+                serviceUrl: '/admin/item/get_items_by_name',
+                paramName: 'name',
+                isLocal: false,
+                triggerSelectOnValidInput: false,
+                deferRequestBy: 300,
+                transformResult: function(response) {
+                    var data = JSON.parse(response),
+                        result = [];
+
+                    if(data){
+                        result = $.Global.Utils.dictMapParse(data, me._modelMaps);
+                    }
+                    
+                    return {
+                        suggestions: result
+                    };
+                },
+                onSelect: function(suggestion){
+                    // 添加项目
+                    me.addItem(suggestion);
+                },
+                formatResult: function(suggestion, value){
+                    return String.format(
+                        '<div class="suggestion-item">{0}{3}<span class="pull-right">{1} / {2}</span></div>', 
+                        suggestion.value, 
+                        suggestion.price,
+                        suggestion.specText,
+                        suggestion.smartDes
+                    );
+                }
+            })
+        },
+
+        // 项目模板
+        _itemTemplate: _.template([
+            '<li class="pb-10 item-type-<%= item.itemType %>" data-item_id="<%= item.data %>">',
+                '<div class="row">',
+                    '<div class="col-sm-10 pr-0 col-xs-10">',
+                        '<div class="input-group">',
+                            '<span class="input-group-addon"><%= item.value %><%= item.smartDes %></span>',
+                            '<input type="text" name="item-amounts" data-item_price="<%= item.price %>" required class="form-control number item" value="<%= item.amount %>">',
+                            '<input type="hidden" name="item-ids" value="<%= item.data %>">',
+                            '<span class="input-group-addon"><%= item.specText %>, <span class="total-price"><%= $.Global.Utils.formatPrice(item.price * item.amount) %></span> 元</span></span>',
+                        '</div>',
+                    '</div>',
+                    '<div class="col-sm-2 col-xs-2 text-right">',
+                        '<a class="btn btn-danger btn-remove-item" title="删除该项目">X</a>',
+                    '</div>',
+                '</div>',
+            '</li>'
+        ].join('')),
+
+        // 项目类型模版
+        _itemTypeTemplate: _.template([
+            '<% _.each(types, function(type){ %>',
+            '<div class="fb fi pb-5 type-<%= type.value %>"><%= type.name %> ( 总价: <span class="sum-<%= type.value %>">0</span> )</div>',
+            '<% }) %>'
+        ].join('')),
+
+        // 初始化项目类型
+        _initItemTypes: function(){
+            var me = this;
+
+            ajaxSend(
+                "/admin/item/get_item_types", 
+                {},
+                function(data){
+                    me._itemTypes = data;
+                    $(me._itemTypeTemplate({'types': data})).insertAfter(me.$('.item-header'));
+                    me._initItems(me._initItemIds);
+                    me._loadItems(me._items, true);
+                }
+            );
+        },
+
+        // 加载项目
+        _loadItems: function(items, clear){
+            var me = this;
+
+            // 是否清除已有项目
+            if(clear){
+                this.$(".items-view li").remove();
+            }
+
+            $.map(items, function(item){
+                me.addItem(
+                    $.Global.Utils.dictMap(item, me._modelMaps)
+                );
+            });
+        },
+
+        // 初始化项目
+        _initItems: function(initItemIds){
+            var me = this;
+
+            $.map(initItemIds, function(itemId){
+                ajaxSend(
+                    "/admin/item/get_item_by_id", 
+                    {'item_id': itemId},
+                    function(data){
+                        // 添加项目
+                        me.addItem(
+                            $.Global.Utils.dictMap(data, me._modelMaps)
+                        );
+
+                        me._loadItems(me._items, true);
+                    }
+                );
+            });
+        },
+
+        // 删除项目
+        _removeItem: function(sender){
+            var target = $(sender.currentTarget);
+
+            target.parents('li').remove();
+
+            this.calculatePrice();
+        },
+
+        // 点击选中
+        _focusItem: function(sender){
+            var target = $(sender.currentTarget);
+
+            target[0].select();
+        },
+
+        // 价格变动
+        _changeAmount: function(sender){
+            var target = $(sender.currentTarget),
+                price = parseFloat(target.data("item_price")),
+                amount = parseFloat(target.val()),
+                totalPrice = $.Global.Utils.formatPrice(
+                    price * amount
+                );
+                
+            target.parents('li').find('.total-price').html(totalPrice);
+            this.calculatePrice();
+        },
+
+        // 计算分类总价
+        _calculateTypePrice: function(){
+            
+            $.map(this._itemTypes, function(itemType){
+                var sum = 0;
+
+                $.map(this.$('.item-type-'+itemType.value+' .total-price'), function(price){
+                    sum += parseFloat(price.innerHTML);
+                });
+                
+                this.$('.sum-' + itemType.value).html($.Global.Utils.formatPrice(sum));
+            });
+            
+        },
+
         events: {
-            'click .btn-remove-item': 'removeItem',
-            'click .item': 'focusItem',
-            'input .item': 'changeAmount'
+            'click .btn-remove-item': '_removeItem',
+            'click .item': '_focusItem',
+            'input .item': '_changeAmount'
         },
 
         // 添加项目
@@ -480,98 +642,25 @@ if (!String.format) {
                     des: '',
                     amount: 0
                 }, _data),
-                _itemHtml = [
-                    '<li class="pb-10 item-type-{7}" data-item_id="{0}">',
-                        '<div class="row">',
-                            '<div class="col-sm-10 pr-0 col-xs-10">',
-                                '<div class="input-group">',
-                                    '<span class="input-group-addon">{1}{8}</span>',
-                                    '<input type="text" name="item-amounts" data-item_price="{6}" required class="form-control number item" value="{2}">',
-                                    '<input type="hidden" name="item-ids" value="{5}">',
-                                    '<span class="input-group-addon">{3}, <span class="total-price">{4}</span> 元</span></span>',
-                                '</div>',
-                            '</div>',
-                            '<div class="col-sm-2 col-xs-2 text-right">',
-                                '<a class="btn btn-danger btn-remove-item" title="删除该项目">X</a>',
-                            '</div>',
-                        '</div>',
-                    '</li>'
-                ].join(''),
+
                 _items = this.$('.items-view li'),
                 temp = _items.filter(function(i){return _items.eq(i).data('item_id') == _data.data});
 
             // 是否已经存在
             if(temp.length == 0){
                 
-                $(String.format(
-                    _itemHtml,
-                    data.data,      // 0.item_id
-                    data.value,     // 1.名称
-                    data.amount,    // 2.数量
-                    data.specText,  // 3.规格
-                    $.Global.Utils.formatPrice(
-                        parseFloat(data.price) * parseFloat(data.amount)
-                    ),              // 4.总价
-                    data.data,      // 5.隐藏域
-                    data.price,     // 6.成本价
-                    data.itemType,  // 7.类型
-                    data.des ? ('('+data.des+')') : ''  // 8.描述
-                   
-                )).insertAfter(this.$('.type-'+data.itemType));
+                $(this._itemTemplate({'item': data})).insertAfter(this.$('.type-' + data.itemType));
 
                 this.calculatePrice();
             }
 
         },
-
-        // 删除项目
-        removeItem: function(sender){
-            var target = $(sender.currentTarget);
-
-            target.parents('li').remove();
-
-            this.calculatePrice();
-        },
-
-        // 点击选中
-        focusItem: function(sender){
-            var target = $(sender.currentTarget);
-
-            target[0].select();
-        },
-
-        // 价格变动
-        changeAmount: function(sender){
-            var target = $(sender.currentTarget),
-                price = parseFloat(target.data("item_price")),
-                amount = parseFloat(target.val()),
-                totalPrice = $.Global.Utils.formatPrice(
-                    price * amount
-                );
-                
-            target.parents('li').find('.total-price').html(totalPrice);
-            this.calculatePrice();
-        },
-
-        // 计算分类总价
-        calculateTypePrice: function(typeId){
-            var sum = 0;
-
-            $.map(this.$('.item-type-'+typeId+' .total-price'), function(price){
-                sum += parseFloat(price.innerHTML);
-            });
-
-            this.$('.sum-' + typeId).html($.Global.Utils.formatPrice(sum));
-        },
-
+        
         // 计算总价
         calculatePrice: function(){
             var sum = 0, rate = 0;
 
-            this.calculateTypePrice(1);
-            this.calculateTypePrice(2);
-            this.calculateTypePrice(3);
-            this.calculateTypePrice(4);
+            this._calculateTypePrice();
 
             // 总价
             $.map(this.$('.total-price'), function(price){
@@ -584,90 +673,19 @@ if (!String.format) {
             this.$('.rate').html(rate);
         },
 
-        // 初始化项目
-        initItems: function(itemIds){
-            var me = this;
-
-            $.map(itemIds, function(itemId){
-
-                ajaxSend(
-                    "/admin/item/get_item_by_id", 
-                    {'item_id': itemId},
-                    function(data){
-                        // 添加项目
-                        me.addItem(
-                            $.Global.Utils.dictMap(data, me._modelMaps)
-                        );
-                    }
-                );
-
-            });
-
+        // 批量加载项目
+        loadItems: function(items){
+            this._items = items;
         },
 
-        // 加载项目
-        loadItems: function(items, clear){
-            var me = this;
-
-            // 是否清除已有项目
-            if(clear){
-                this.$(".items-view li").remove();
-            }
-
-            $.map(items, function(item){
-                
-                me.addItem(
-                    $.Global.Utils.dictMap(item, me._modelMaps)
-                );
-            });
-        },
-
-        // 初始化项目产品自动补全下拉框
-        initItemAutocomplete: function(){
-            var me = this;
-
-            me.$('.search-item').autocomplete({
-                
-                serviceUrl: '/admin/item/get_items_by_name',
-                paramName: 'name',
-                isLocal: false,
-                triggerSelectOnValidInput: false,
-                deferRequestBy: 300,
-                transformResult: function(response) {
-                    
-                    var data = JSON.parse(response),
-                        result = [];
-
-                    if(data){
-                        result = $.Global.Utils.dictMapParse(data, me._modelMaps);
-                    }
-                    
-                    return {
-                        suggestions: result
-                    };
-                },
-                onSelect: function(suggestion){
-                    // 添加项目
-                    me.addItem(suggestion);
-
-                },
-                formatResult: function(suggestion, value){
-                    return String.format(
-                        '<div class="suggestion-item">{0}{3}<span class="pull-right">{1} / {2}</span></div>', 
-                        suggestion.value, 
-                        suggestion.price,
-                        suggestion.specText,
-                        suggestion.des ? ('('+suggestion.des+')') : ""
-                    );
-                }
-            })
+        initItems: function(initItemIds){
+            this._initItemIds = initItemIds;
         },
 
         render: function(){
-
             this.$el.html(this._html);
-
-            this.initItemAutocomplete();
+            this._initItemAutocomplete();
+            this._initItemTypes();
         }
     });
 
@@ -720,7 +738,7 @@ if (!String.format) {
                 '<tr>',
                     '<td></td>',
                     '<td class="hidden-xs"><%= code %></td>',
-                    '<td><%= name %><%= des ? ("("+des+")") : "" %></td>',
+                    '<td><%= name %><%= smart_des %></td>',
                     '<td><%= amount %></td>',
                     '<td><%= spec_str %></td>',
                     '<td class="hidden-xs"><%= item_type_str %></td>',
@@ -765,6 +783,20 @@ if (!String.format) {
             });
             
             me._setIndex();
+            setTimeout(function(){
+                me._hideItemType();
+            }, 100);
+            
+        },
+
+        _hideItemType: function(){
+            var me = this, 
+                targets = $('.item_type');
+
+            targets.filter(function(index){
+                return targets.eq(index).next().hasClass('item_type');
+            }).hide();
+
         },
 
         // 获取订单下的所有项目

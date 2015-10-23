@@ -51,6 +51,7 @@ def format_item(objs, num):
             'sale_price': str(x.sale_price),
             'init_add': x.init_add,
             'des': x.des,
+            'smart_des': x.smart_des(),
             'supplier_id': supplier.id if supplier else '',
             'supplier_name': supplier.name if supplier else '',
             'sort': x.sort

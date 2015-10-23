@@ -133,12 +133,12 @@ class Item(models.Model):
     @note: 单项
     '''
     state_choices = ((0, u"停用"), (1, u"正常"), (2, u"正常,目录不显示"))
-    type_choices = ((1, u"水果"), (2, u"点心"), (3, u"一次性耗材"), (4, u"盛装容器"))
-    spec_choices = ((1, u"斤"), (2, u"个"), (3, u"盒"), (4, u"袋"))
+    type_choices = ((1, u"水果"), (2, u"点心"), (3, u"饮料"), (90, u"一次性耗材"), (91, u"盛装容器"), )
+    spec_choices = ((1, u"斤"), (2, u"个"), (3, u"盒"), (4, u"袋"), (5, u"桶"), (6, u"杯"), (7, u"套"))
     integer_choices = ((1, u"整数"), (2, u"保留小数"))
     add_choices = ((1, u"添加"), (2, u"不添加"))
 
-    code_dict = {1: 'F', 2: 'C', 3: 'S', 4: 'R'}
+    code_dict = {1: 'F', 2: 'C', 3: 'S', 4: 'R', 5: 'D'}
 
     code = models.CharField(verbose_name=u"货号", max_length=32, unique=True)
     name = models.CharField(verbose_name=u"名称", max_length=128, unique=True)
@@ -158,6 +158,9 @@ class Item(models.Model):
 
     def get_img(self):
         return self.img if self.img else '%simg/logo.png' % settings.MEDIA_URL
+
+    def smart_des(self):
+        return ('(%s)' % self.des) if self.des else ''
 
     class Meta:
         ordering = ["sort", "-create_time"]
