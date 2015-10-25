@@ -190,7 +190,8 @@ $(document).ready(function(){
             var me = this;
 
             orders.getMeal(meal_id, function(data){
-                me.itemsView._loadItems(data.items, true);
+                me.initOrderItems();
+                me.itemsView.loadItems(data.items);
                 me.$('#meal_id_add').val(meal_id);
                 me.$('.total-price').val(data.price);
 
@@ -227,7 +228,7 @@ $(document).ready(function(){
             $('#add_order_modal').modal({'show': true, 'backdrop': 'static'});
 
             me.initMealTextBox(mealName, mealId);
-            me.initOrderItems();
+            // me.initOrderItems();
             
         },
 
