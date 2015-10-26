@@ -572,8 +572,8 @@ if (!String.format) {
                         me.addItem(
                             $.Global.Utils.dictMap(data, me._modelMaps)
                         );
-
-                        me._loadItems(me._items, true);
+                        
+                        // me._loadItems(me._items, true);
                     }
                 );
             });

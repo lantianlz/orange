@@ -30,6 +30,8 @@ $(document).ready(function(){
             new countUp("per_customer_transaction", 0, data.per_customer_transaction, 1, 2).start();
             new countUp("sale", 0, data.sale, 1, 2).start();
             new countUp("cost", 0, data.cost, 1, 2).start();
+
+            $('.date').html(data.date);
         }
     );
 })
@@ -100,7 +102,7 @@ $(document).ready(function(){
     </div>
 
     <div class="col-md-12 co-888888">
-        <span class="pull-right f13">数据更新时间: {{date}}</span>
+        <span class="pull-right f13">数据更新时间: <span class="date pl-5"></span></span>
     </div>
 
 </div>
