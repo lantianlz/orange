@@ -139,6 +139,8 @@ def search(request):
     state = request.POST.get('state', '-1')
     state = int(state)
     company = request.POST.get('company')
+    is_test = request.POST.get('is_test', '0')
+    is_test = True if is_test == "1" else False
     
     page_index = int(request.REQUEST.get('page_index'))
     
@@ -147,7 +149,7 @@ def search(request):
         end_date = datetime.datetime.strptime(end_date, '%Y-%m-%d %H:%M:%S')
         objs = OrderBase().search_uncreate_orders_for_admin(start_date, end_date)
     else:
-        objs = OrderBase().search_orders_for_admin(start_date, end_date, state, company)
+        objs = OrderBase().search_orders_for_admin(start_date, end_date, state, company, is_test)
 
     page_objs = page.Cpt(objs, count=1000, page=page_index).info
 

@@ -601,7 +601,7 @@ class OrderBase(object):
 
         return objs
 
-    def search_orders_for_admin(self, start_date, end_date, state, company):
+    def search_orders_for_admin(self, start_date, end_date, state, company, is_test):
         
         # 是否查询所有有效订单
         if state == -2:
@@ -610,6 +610,9 @@ class OrderBase(object):
             )
         else:
             objs = self.get_all_order(state)
+
+        if is_test:
+            objs = objs.filter(is_test=True)
 
         objs = objs.select_related('company').filter(
             create_time__range=(start_date, end_date),
