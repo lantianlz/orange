@@ -51,6 +51,7 @@ def _get_purchase_data(start_date, end_date, state, show_order=False):
                 'name': x['item__name'],
                 'amount': 0,
                 'des': x['item__des'],
+                'smart_des': ('('+x['item__des']+')') if x['item__des'] else '',
                 'spec': x['item__spec'],
                 'spec_str': spec_dict[x['item__spec']],
                 'item_type': x['item__item_type'],

@@ -89,6 +89,7 @@ PERMISSIONS = [
     {'code': 'statistics_orders', 'name': u'订单统计', 'parent': 'statistics_manage'},
     {'code': 'statistics_sale', 'name': u'销售额统计', 'parent': 'statistics_manage'},
     {'code': 'statistics_commission', 'name': u'邀请人返佣', 'parent': 'statistics_manage'},
+    {'code': 'statistics_order_cost', 'name': u'成本统计', 'parent': 'statistics_manage'},
 
     {'code': 'city_manage', 'name': u'城市管理', 'parent': None},
     #{'code': 'add_city', 'name': u'添加城市', 'parent': 'city_manage'},

@@ -19,17 +19,17 @@ $(document).ready(function(){
         {},
         function(data){
             
-            new countUp("company_count", 0, data.company_count, 0, 2).start();
-            new countUp("distribute_count", 0, data.distribute_count, 0, 2).start();
-            new countUp("person_count", 0, data.person_count, 0, 2).start();
-            new countUp("person_time_count", 0, data.person_time_count, 0, 2).start();
-            new countUp("supplier_count", 0, data.supplier_count, 0, 2).start();
-            new countUp("fruit_count", 0, data.fruit_count, 1, 2).start();
-            new countUp("cake_count", 0, data.cake_count, 0, 2).start();
-            new countUp("rate", 0, data.rate, 1, 2).start();
-            new countUp("per_customer_transaction", 0, data.per_customer_transaction, 1, 2).start();
-            new countUp("sale", 0, data.sale, 1, 2).start();
-            new countUp("cost", 0, data.cost, 1, 2).start();
+            new countUp("company_count", 0, data.company_count, 0, 1).start();
+            new countUp("distribute_count", 0, data.distribute_count, 0, 1).start();
+            new countUp("person_count", 0, data.person_count, 0, 1).start();
+            new countUp("person_time_count", 0, data.person_time_count, 0, 1).start();
+            new countUp("supplier_count", 0, data.supplier_count, 0, 1).start();
+            new countUp("fruit_count", 0, data.fruit_count, 1, 1).start();
+            new countUp("cake_count", 0, data.cake_count, 0, 1).start();
+            new countUp("rate", 0, data.rate, 1, 1).start();
+            new countUp("per_customer_transaction", 0, data.per_customer_transaction, 1, 1).start();
+            new countUp("sale", 0, data.sale, 1, 1).start();
+            new countUp("cost", 0, data.cost, 1, 1).start();
 
             $('.date').html(data.date);
         }

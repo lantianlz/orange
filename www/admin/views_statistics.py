@@ -297,3 +297,17 @@ def get_statistics_commission_data(request):
         mimetype='application/json'
     )
 
+
+@verify_permission('statistics_order_cost')
+def get_statistics_order_cost_data(request):
+
+    start_date = request.POST.get('start_date')
+    end_date = request.POST.get('end_date')
+    start_date, end_date = utils.get_date_range(start_date, end_date)
+    
+    statistics_order_cost_data = StatisticsBase().statistics_order_cost(start_date, end_date)
+
+    return HttpResponse(
+        json.dumps(statistics_order_cost_data),
+        mimetype='application/json'
+    )

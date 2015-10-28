@@ -185,6 +185,7 @@ urlpatterns += patterns('www.admin.views_statistics',
     url(r'^statistics_sale_top/get_statistics_sale_top_data$', 'get_statistics_sale_top_data'),
 
     url(r'^statistics_order_cost$', 'statistics_order_cost'),
+    url(r'^statistics_order_cost/get_statistics_order_cost_data$', 'get_statistics_order_cost_data'),
     
     url(r'^statistics_chart$', 'statistics_chart'),
     url(r'^statistics_chart/get_chart_data$', 'get_chart_data'),

@@ -1657,13 +1657,40 @@ class StatisticsBase(object):
             company__invite_by__isnull=False
         )
 
+    def statistics_order_cost(self, start_date, end_date):
 
+        # 总销售额
+        sale = Order.objects.filter(
+            state=3, 
+            is_test=0,
+            confirm_time__range=(start_date, end_date)
+        ).aggregate(Sum('total_price'))['total_price__sum']
+        sale = sale if sale else 0
+        
+        # 总原材料成本
+        cost = Order.objects.filter(
+            state=3, 
+            is_test=0,
+            confirm_time__range=(start_date, end_date)
+        ).aggregate(Sum('cost_price'))['cost_price__sum']
+        cost = cost if cost else 0
 
+        # 总试吃订单金额
+        test_cost = Order.objects.filter(
+            state=3, 
+            is_test=1,
+            confirm_time__range=(start_date, end_date)
+        ).aggregate(Sum('total_price'))['total_price__sum']
+        test_cost = test_cost if test_cost else 0
+        
+        gross_profit = sale - cost - test_cost
 
-
-
-
-
+        return {
+            'sale': str(sale),
+            'cost': str(cost),
+            'test_cost': str(test_cost),
+            'gross_profit': str(gross_profit)
+        }
 
 
 

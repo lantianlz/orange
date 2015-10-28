@@ -472,9 +472,7 @@ $(document).ready(function(){
             <li class="list-group-item">
                 <a href="#"><i class="fa fa-bar-chart pr-3"></i>统计管理</a>
                 <ul class="list-group sub-nav">
-                    <!-- <li class="list-group-item {% if '/admin/statistics_order_cost' == request.path %}active{% endif %}">
-                        <a href="/admin/statistics_order_cost"><i class="point"></i>订单成本统计</a>
-                    </li> -->
+                    
                     <!-- <li class="list-group-item {% if '/admin/statistics_chart' == request.path %}active{% endif %}">
                         <a href="/admin/statistics_chart" target="_blank"><i class="point"></i>图表统计</a>
                     </li> -->
@@ -490,6 +488,9 @@ $(document).ready(function(){
                     <!-- <li class="list-group-item {% if '/admin/statistics_sale' == request.path %}active{% endif %}">
                         <a href="/admin/statistics_sale"><i class="point"></i>销售额统计</a>
                     </li> -->
+                    <li class="list-group-item {% if '/admin/statistics_order_cost' == request.path %}active{% endif %}">
+                        <a href="/admin/statistics_order_cost"><i class="point"></i>成本统计</a>
+                    </li>
                     <li class="list-group-item {% if '/admin/statistics_commission' == request.path %}active{% endif %}">
                         <a href="/admin/statistics_commission"><i class="point"></i>邀请人返佣</a>
                     </li>
