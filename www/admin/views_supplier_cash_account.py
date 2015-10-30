@@ -14,7 +14,9 @@ from www.company.interface import SupplierBase, SupplierCashAccountBase
 
 @verify_permission('')
 def supplier_cash_account(request, template_name='pc/admin/supplier_cash_account.html'):
-    
+    today = datetime.datetime.now()
+    today_str = today.strftime('%Y-%m-%d')
+    start_date = (today.replace(day=1)).strftime('%Y-%m-%d')
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
 
 

@@ -20,8 +20,7 @@ from www.company.interface import StatisticsBase, SaleManBase
 def statistics_order_cost(request, template_name='pc/admin/statistics_order_cost.html'):
     
     today = datetime.datetime.now()
-    weekday = today.date().weekday()
-    start_date= (today - datetime.timedelta(days=weekday)).strftime('%Y-%m-%d')
+    start_date = today.replace(day=1).strftime('%Y-%m-%d')
     end_date = today.strftime('%Y-%m-%d')
 
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))

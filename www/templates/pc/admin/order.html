@@ -58,7 +58,7 @@ $(document).ready(function(){
         search: function(startDate, endDate, state, company, isTest, pageIndex){
             var me = this,
                 startDate = startDate || '{{start_date}}',
-                endDate = endDate || '',
+                endDate = endDate || '{{today_str}}',
                 state = state || '-2',
                 company = company || '',
                 isTest = isTest || '0',
@@ -202,8 +202,21 @@ $(document).ready(function(){
             this.pagination.render(
                 this.collection.pageIndex||1, 
                 this.collection.pageCount, 
-                String.format('search/{0}/{1}/{2}/{3}/{4}', this.collection.startDate, this.collection.endDate, this.collection.state, this.collection.company, this.collection.isTest)
+                String.format(
+                    'search/{0}/{1}/{2}/{3}/{4}', 
+                    this.collection.startDate, 
+                    this.collection.endDate, 
+                    this.collection.state, 
+                    this.collection.company, 
+                    this.collection.isTest
+                )
             );
+
+            this.$('#start_date_search').val(this.collection.startDate);
+            this.$('#end_date_search').val(this.collection.endDate);
+            this.$('.state').val(this.collection.state);
+            this.$('.company').val(this.collection.company);
+            this.$('.is-test').attr('checked', this.collection.isTest==1 ? true : false)
         },
 
         // 显示面板

@@ -7,6 +7,13 @@
 
 {% block css %}
 <style type="text/css">
+.box{
+    transition: all 0.3s;
+    padding-left: 30px;
+}
+.box:hover{
+    box-shadow: 3px 3px 12px #ccc;
+}
 </style>
 {% endblock %}
 
@@ -33,18 +40,36 @@ $(document).ready(function(){
             "/admin/statistics_order_cost/get_statistics_order_cost_data", 
             {'start_date': $('#start_date_search').val(), 'end_date': $('#end_date_search').val()},
             function(data){
-                // $('.sale').html(data.sale);
-                // $('.cost').html(data.cost);
-                // $('.test-cost').html(data.test_cost);
-                // $('.gross-profit').html(data.gross_profit);
-
                 new countUp("sale", 0, data.sale, 2, 0.5).start();
                 new countUp("cost", 0, data.cost, 2, 0.5).start();
                 new countUp("test_cost", 0, data.test_cost, 2, 0.5).start();
                 new countUp("gross_profit", 0, data.gross_profit, 2, 0.5).start();
+                new countUp("purchase", 0, data.purchase, 2, 0.5).start();
             }
         );
     });
+
+    $('.show-test-cost').on('click', function(e){
+        window.open(
+            String.format(
+                '/admin/order#search/{0}/{1}/-2//1/1',
+                $('#start_date_search').val(),
+                $('#end_date_search').val()
+            )
+        );
+        e.preventDefault();
+    });
+    $('.show-purchase').on('click', function(e){
+        window.open(
+            String.format(
+                '/admin/purchase_record#search//1/{0}/{1}/1',
+                $('#start_date_search').val(),
+                $('#end_date_search').val()
+            )
+        );
+        e.preventDefault();
+    });
+
     $('.search').click();
     
 });
@@ -53,7 +78,7 @@ $(document).ready(function(){
 
 {% block admin_main %}
 <div class="row pt-15">
-    <div class="col-md-10">
+    <div class="col-md-12">
         <form action="." class="form-inline" onsubmit="javascript: return false;">
             <div class="input-group input-group-sm pb-10">
                 <span class="input-group-addon">开始日期</span>
@@ -68,36 +93,53 @@ $(document).ready(function(){
             </div>
         </form>
     </div>
-    <div class="col-md-12 pt-40 pb-10">
-        <div class="col-md-3" style="padding-top: 22px;">
-            <span class="f20">总销售额:</span>
+    <div class="col-md-12 pt-20">
+        <div class="col-md-11 bgc-ffffff pt-20 box" style="">
+            <div class="co-ADADAD pt-10">总销售额</div>
+            <div class="pb-10">
+                <span class="f50 co-1DABD9 pr-10" id="sale">0</span>
+                <span class="co-ADADAD">元</span>
+            </div>
         </div>
-        <div class="col-md-9">
-            <span class="f50 co-1DABD9 sale" id="sale">0</span>
-        </div>
-        <div class="col-md-7 border-bottom-dashed-1 bdc-dddddd mt-20"></div>
     </div>
-    <div class="col-md-12 pt-10 pb-10">
-        <div class="col-md-3" style="padding-top: 22px;">
-            <span class="f20">总原材料成本:</span>
+    <div class="col-md-12 pt-10">
+        <div class="col-md-6 bgc-ffffff pt-20 box" style="border-right: 10px solid #EEF3F6;">
+            <div class="co-ADADAD pt-10">总原材料成本</div>
+            <div class="pb-10">
+                <span class="f50 co-EF7B32 pr-10" id="cost">0</span>
+                <span class="co-ADADAD">元</span>
+            </div>
         </div>
-        <div class="col-md-9">
-            <span class="f50 co-EF7B32 cost" id="cost">0</span>
+        <div class="col-md-5 bgc-ffffff pt-20 pl-20 box" style="">
+            <a href="#" class="no-underline show-test-cost" title="点击查看详情">
+                <div class="co-ADADAD pt-10">总试吃订单成本</div>
+                <div class="pb-10">
+                    <span class="f50 co-EF7B32 pr-10" id="test_cost">0</span>
+                    <span class="co-ADADAD">元</span>
+                </div>
+                <i class="fa fa-angle-right pa co-e1e1e1" style="font-size: 90px; right: 20px; top: 20px;"></i>
+            </a>
         </div>
-        <div class="col-md-3" style="padding-top: 22px;">
-            <span class="f20">总试吃订单金额:</span>
-        </div>
-        <div class="col-md-9">
-            <span class="f50 co-EF7B32 test-cost" id="test_cost">0</span>
-        </div>
-        <div class="col-md-7 border-bottom-1 bdc-dddddd mt-20"></div>
     </div>
-    <div class="col-md-12 pt-10 pb-10">
-        <div class="col-md-3" style="padding-top: 22px;">
-            <span class="f20">总毛利:</span>
+    <div class="col-md-12 pt-10">
+        <div class="col-md-11 bgc-ffffff pt-20 box">
+            <a href="#" class="no-underline show-purchase" title="点击查看详情">
+                <div class="co-ADADAD pt-10">总采购金额</div>
+                <div class="pb-10">
+                    <span class="f50 co-EF7B32 pr-10" id="purchase">0</span>
+                    <span class="co-ADADAD">元</span>
+                </div>
+                <i class="fa fa-angle-right pa co-e1e1e1" style="font-size: 90px; right: 20px; top: 20px;"></i>
+            </a>
         </div>
-        <div class="col-md-9">
-            <span class="f50 co-7696DB gross-profit" id="gross_profit">0</span>
+    </div>
+    <div class="col-md-12 pt-10">
+        <div class="col-md-11 bgc-ffffff pt-20 box" style="">
+            <div class="co-ADADAD pt-10">总毛利</div>
+            <div class="pb-10">
+                <span class="f50 co-7696DB pr-10" id="gross_profit">0</span>
+                <span class="co-ADADAD">元</span>
+            </div>
         </div>
     </div>
 </div>

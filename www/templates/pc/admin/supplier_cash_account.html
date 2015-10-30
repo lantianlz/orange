@@ -68,7 +68,8 @@ $(document).ready(function(){
         },
 
         events: {
-            'click .search': 'search'
+            'click .search': 'search',
+            'click .pointer': 'goRecord'
         },
 
         // 渲染函数
@@ -95,6 +96,20 @@ $(document).ready(function(){
             var name = this.$('.name').val();
 
             router.navigate(String.format('/search/{0}/1', name), {trigger: true});
+        },
+
+        goRecord: function(sender){
+            var target = $(sender.currentTarget),
+                supplierName = target.data('supplier_name');
+
+            window.open(
+                String.format(
+                    '/admin/supplier_cash_record#search/{0}/{1}/{2}/-1/1',
+                    '{{start_date}}',
+                    '{{today_str}}',
+                    supplierName
+                )
+            )
         }
         
     });
@@ -179,7 +194,7 @@ $(document).ready(function(){
 <!-- 客户经理列表 -->
 <script type="text/template" id="account_template">
     <% _.each(accounts, function(account){ %>
-        <tr class="pointer" data-account_id="<%= account.accountId %>">
+        <tr class="pointer" data-supplier_name="<%= account.supplierName %>" data-account_id="<%= account.accountId %>">
             <td><%= account.num %></td>
             <td><%= account.supplierName %></td>
             <td><%= account.balance %></td>

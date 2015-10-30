@@ -1680,16 +1680,22 @@ class StatisticsBase(object):
             state=3, 
             is_test=1,
             confirm_time__range=(start_date, end_date)
-        ).aggregate(Sum('total_price'))['total_price__sum']
+        ).aggregate(Sum('cost_price'))['cost_price__sum']
         test_cost = test_cost if test_cost else 0
         
         gross_profit = sale - cost - test_cost
+
+        purchase = PurchaseRecordBase().get_all_records(True).filter(
+            create_time__range = (start_date, end_date)
+        ).aggregate(Sum('price'))['price__sum']
+        purchase = purchase if purchase else 0
 
         return {
             'sale': str(sale),
             'cost': str(cost),
             'test_cost': str(test_cost),
-            'gross_profit': str(gross_profit)
+            'gross_profit': str(gross_profit),
+            'purchase': str(purchase)
         }
 
 
