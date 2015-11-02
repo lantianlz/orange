@@ -291,6 +291,17 @@ $(document).ready(function(){
             me.render();
         },
 
+        events: {
+            'click .number': '_focusItem' 
+        },
+
+        // 点击选中
+        _focusItem: function(sender){
+            var target = $(sender.currentTarget);
+
+            target[0].select();
+        },
+
         supplierTextBox: null,
         initSupplierTextBox: function(name, value){
             var me = this;
@@ -318,6 +329,9 @@ $(document).ready(function(){
                 history.go(-1);
             });
             $('#add_record_modal .ok').bind('click', function(){
+                g_ajax_processing_obj_id = $(this).setUUID().attr('id');
+                show_ajax_processing();
+
                 me.addRecord();
             });
             
