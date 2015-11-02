@@ -225,12 +225,14 @@ def get_statistics_orders_data(request):
     order_price_y_data = []
     order_price = 0
     order_per_price = 0
+    order_per_day_price = 0
     for x in StatisticsBase().get_order_price_group_by_confirm_time(start_date, end_date):
         order_price_x_data.append(x[0])
         order_price_y_data.append(str(x[1]))
         order_price += x[1]
     days = len(order_price_x_data) if order_price_x_data else 1
-    order_per_price = '%.2f' % (order_price / days)
+    order_per_day_price = '%.2f' % (order_price / days)
+    order_per_price = '%.2f' % (order_price / order_count)
 
     data = {
         'order_count': str(order_count),
@@ -242,6 +244,7 @@ def get_statistics_orders_data(request):
         'person_count_x_data': person_count_x_data,
         'person_count_y_data': person_count_y_data,
         'order_price': str(order_price),
+        'order_per_day_price': str(order_per_day_price),
         'order_per_price': str(order_per_price),
         'order_price_x_data': order_price_x_data,
         'order_price_y_data': order_price_y_data

@@ -46,7 +46,7 @@ $(document).ready(function(){
         search: function(start_date, end_date, name, operation, pageIndex){
             var me = this,
                 start_date = start_date||'{{start_date}}',
-                end_date = end_date||'',
+                end_date = end_date||'{{end_date}}',
                 name = name||'',
                 operation = operation||'-1',
                 pageIndex = pageIndex||1;

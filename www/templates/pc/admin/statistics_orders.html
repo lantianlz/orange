@@ -72,6 +72,7 @@ var echarts,
                         data['order_price_x_data'], 
                         data['order_price_y_data'], 
                         data['order_price'],
+                        data['order_per_day_price'],
                         data['order_per_price']
                     );
                 }
@@ -264,7 +265,7 @@ var echarts,
         $('.person-per-count').html(perCount);
     },
 
-    orderPriceChart = function(xData, yData, total, perPrice){
+    orderPriceChart = function(xData, yData, total, perDayPrice, perPrice){
         var main = echarts.init(document.getElementById('order_price_chart'));
         
         main.setOption({
@@ -358,6 +359,7 @@ var echarts,
         });
     
         $('.order-price-total').html(total);
+        $('.order-per-day-price').html(perDayPrice);
         $('.order-per-price').html(perPrice);
     };
 
@@ -455,6 +457,8 @@ $(document).ready(function(){
                     <span>总订单额: </span>
                     <span class="f20 fb co-1DABD9 order-price-total pl-5">0</span>
                     <span>，平均日订单额: </span>
+                    <span class="f20 fb co-1DABD9 order-per-day-price pl-5">0</span>
+                    <span>，平均每单金额: </span>
                     <span class="f20 fb co-1DABD9 order-per-price pl-5">0</span>
                 </div>
             </div>
