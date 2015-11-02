@@ -1667,7 +1667,7 @@ class StatisticsBase(object):
         ).aggregate(Sum('total_price'))['total_price__sum']
         sale = sale if sale else 0
         
-        # 总原材料成本
+        # 总订单成本
         cost = Order.objects.filter(
             state=3, 
             is_test=0,
@@ -1675,27 +1675,33 @@ class StatisticsBase(object):
         ).aggregate(Sum('cost_price'))['cost_price__sum']
         cost = cost if cost else 0
 
-        # 总试吃订单金额
+        # 总试吃订单成本
         test_cost = Order.objects.filter(
             state=3, 
             is_test=1,
             confirm_time__range=(start_date, end_date)
         ).aggregate(Sum('cost_price'))['cost_price__sum']
         test_cost = test_cost if test_cost else 0
-        
-        gross_profit = sale - cost - test_cost
 
+        # 总采购金额
         purchase = PurchaseRecordBase().get_all_records(True).filter(
             create_time__range = (start_date, end_date)
         ).aggregate(Sum('price'))['price__sum']
         purchase = purchase if purchase else 0
+
+        # 总毛利
+        gross_profit = sale - cost - test_cost
+
+        # 订单成本与采购差额
+        balance =  cost + test_cost - purchase
 
         return {
             'sale': str(sale),
             'cost': str(cost),
             'test_cost': str(test_cost),
             'gross_profit': str(gross_profit),
-            'purchase': str(purchase)
+            'purchase': str(purchase),
+            'balance': str(balance)
         }
 
 

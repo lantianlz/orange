@@ -45,6 +45,13 @@ $(document).ready(function(){
                 new countUp("test_cost", 0, data.test_cost, 2, 0.5).start();
                 new countUp("gross_profit", 0, data.gross_profit, 2, 0.5).start();
                 new countUp("purchase", 0, data.purchase, 2, 0.5).start();
+
+                if(parseFloat(data.balance) >= 0){
+                    $('#balance').removeClass('co-EF7B32 co-19BA40 co-FF0000').addClass('co-19BA40');
+                } else {
+                    $('#balance').removeClass('co-EF7B32 co-19BA40 co-FF0000').addClass('co-FF0000');
+                }
+                new countUp("balance", 0, data.balance, 2, 0.5).start();
             }
         );
     });
@@ -94,7 +101,7 @@ $(document).ready(function(){
         </form>
     </div>
     <div class="col-md-12 pt-20">
-        <div class="col-md-11 bgc-ffffff pt-20 box" style="">
+        <div class="col-md-12 bgc-ffffff pt-20 box" style="">
             <div class="co-ADADAD pt-10">总销售额</div>
             <div class="pb-10">
                 <span class="f50 co-1DABD9 pr-10" id="sale">0</span>
@@ -103,11 +110,13 @@ $(document).ready(function(){
         </div>
     </div>
     <div class="col-md-12 pt-10">
-        <div class="col-md-6 bgc-ffffff pt-20 box" style="border-right: 10px solid #EEF3F6;">
-            <div class="co-ADADAD pt-10">总原材料成本</div>
-            <div class="pb-10">
-                <span class="f50 co-EF7B32 pr-10" id="cost">0</span>
-                <span class="co-ADADAD">元</span>
+        <div class="col-md-7 bgc-ffffff pl-0 pr-0" style="border-right: 10px solid #EEF3F6;">
+            <div class="box pt-20">
+                <div class="co-ADADAD pt-10">总订单成本</div>
+                <div class="pb-10">
+                    <span class="f50 co-EF7B32 pr-10" id="cost">0</span>
+                    <span class="co-ADADAD">元</span>
+                </div>
             </div>
         </div>
         <div class="col-md-5 bgc-ffffff pt-20 pl-20 box" style="">
@@ -121,20 +130,30 @@ $(document).ready(function(){
             </a>
         </div>
     </div>
+
     <div class="col-md-12 pt-10">
-        <div class="col-md-11 bgc-ffffff pt-20 box">
-            <a href="#" class="no-underline show-purchase" title="点击查看详情">
-                <div class="co-ADADAD pt-10">总采购金额</div>
-                <div class="pb-10">
-                    <span class="f50 co-EF7B32 pr-10" id="purchase">0</span>
-                    <span class="co-ADADAD">元</span>
-                </div>
-                <i class="fa fa-angle-right pa co-e1e1e1" style="font-size: 90px; right: 20px; top: 20px;"></i>
-            </a>
+        <div class="col-md-7 bgc-ffffff pl-0 pr-0" style="border-right: 10px solid #EEF3F6;">
+            <div class="box pt-20">
+                <a href="#" class="no-underline show-purchase" title="点击查看详情">
+                    <div class="co-ADADAD pt-10">总采购金额</div>
+                    <div class="pb-10">
+                        <span class="f50 co-EF7B32 pr-10" id="purchase">0</span>
+                        <span class="co-ADADAD">元</span>
+                    </div>
+                    <i class="fa fa-angle-right pa co-e1e1e1" style="font-size: 90px; right: 20px; top: 20px;"></i>
+                </a>
+            </div>
+        </div>
+        <div class="col-md-5 bgc-ffffff pt-20 pl-20 box" style="">
+            <div class="co-ADADAD pt-10">订单成本与采购差额</div>
+            <div class="pb-10">
+                <span class="f50 co-EF7B32 pr-10" id="balance">0</span>
+                <span class="co-ADADAD">元</span>
+            </div>
         </div>
     </div>
     <div class="col-md-12 pt-10">
-        <div class="col-md-11 bgc-ffffff pt-20 box" style="">
+        <div class="col-md-12 bgc-ffffff pt-20 box">
             <div class="co-ADADAD pt-10">总毛利</div>
             <div class="pb-10">
                 <span class="f50 co-7696DB pr-10" id="gross_profit">0</span>
