@@ -31,7 +31,7 @@ def format_account(objs, num):
             'account_id': x.id,
             'balance': str(x.balance),
             'company_id': company.id if company else '',
-            'company_name': company.name if company else '',
+            'company_name': ('%s [ %s ]' % (company.name, company.short_name or '-')) if company else '',
             'overdraft': str(x.max_overdraft)
         })
 

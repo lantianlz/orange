@@ -39,13 +39,20 @@
         </a>
     </li>
     <li>
+        <a href="#drink" data-toggle="pill">
+            <i class="fa fa-glass pr-5"></i>
+            <span class="hidden-sm hidden-md hidden-lg">饮料</span>
+            <span class="hidden-xs">饮料 ( {{drink.count}}种 )</span>
+        </a>
+    </li>
+    <li class="hidden-xs">
         <a href="#supplies" data-toggle="pill">
             <i class="fa fa-cutlery pr-5"></i>
             <span class="hidden-sm hidden-md hidden-lg">耗材</span>
             <span class="hidden-xs">一次性耗材 ( {{supplies.count}}种 )</span>
         </a>
     </li>
-    <li>
+    <li class="hidden-xs">
         <a href="#recycle" data-toggle="pill">
             <i class="fa fa-recycle pr-5"></i>
             <span class="hidden-sm hidden-md hidden-lg">容器</span>
@@ -77,6 +84,23 @@
             <div class="col-md-12">
                 <ul class="list-inline">
                     {% for item in cake %}
+                    <li class="col-md-3 col-xs-6 pt-25">
+                        <div class="col-md-12 bgc-ffffff pt-15">
+                            <img src="{{item.get_img}}" class="w">
+                            <div class="pt-10 pb-10 text-center">{{item.name}}</div>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-pane fade in" id="drink">
+        <div class="row">
+            <div class="col-md-12">
+                <ul class="list-inline">
+                    {% for item in drink %}
                     <li class="col-md-3 col-xs-6 pt-25">
                         <div class="col-md-12 bgc-ffffff pt-15">
                             <img src="{{item.get_img}}" class="w">
