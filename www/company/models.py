@@ -56,7 +56,7 @@ class CashAccount(models.Model):
     max_overdraft = models.DecimalField(verbose_name=u"最大透支额", max_digits=20, decimal_places=2, default=1000, db_index=True)
 
     class Meta:
-        ordering = ['balance']
+        ordering = ['balance', 'id']
 
 class CashRecord(models.Model):
 
