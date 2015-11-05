@@ -24,11 +24,11 @@ def user(request, template_name='pc/admin/user.html'):
 def search(request):
     user_nick = request.REQUEST.get('user_nick')
     page_index = int(request.REQUEST.get('page_index', 1))
-    email = request.REQUEST.get('email')
+    des = request.REQUEST.get('des')
 
     users = []
     ub = UserBase()
-    users = ub.get_user_for_admin(user_nick, email)
+    users = ub.get_user_for_admin(user_nick, des)
 
     page_objs = page.Cpt(users, count=10, page=page_index).info
 

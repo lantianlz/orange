@@ -1247,7 +1247,7 @@ class SupplierBase(object):
         if name and name not in (".", u"。"):
             objs = objs.filter(name__contains=name)
 
-        return objs[:10]
+        return objs[:15]
 
 
 class SupplierCashAccountBase(object):

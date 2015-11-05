@@ -43,18 +43,21 @@ $(document).ready(function(){
             'registerDate': 'register_date'
         },
 
-        search: function(email, userNick, pageIndex){
-            var me = this;
+        search: function(userNick, des, pageIndex){
+            var me = this,
+                userNick = userNick||'',
+                des = des||'',
+                pageIndex = pageIndex||1;
 
             ajaxSend(
                 "/admin/user/search", 
-                {'email': email||'', 'user_nick': userNick||'', 'page_index': pageIndex||1}, 
+                {'user_nick': userNick, 'des': des, 'page_index': pageIndex}, 
                 function(data){
                     
                     me.pageIndex = pageIndex;
                     me.pageCount = data.page_count;
-                    me.userNick = userNick||'';
-                    me.email = email||'';
+                    me.userNick = userNick;
+                    me.des = des;
 
                     me.reset($.Global.Utils.dictMapParse(data.data, me._modelMaps));
                 }
@@ -156,7 +159,7 @@ $(document).ready(function(){
             this.pagination.render(
                 this.collection.pageIndex||1, 
                 this.collection.pageCount, 
-                'search/' + this.collection.email + '/' + this.collection.userNick
+                'search/' + this.collection.userNick + '/' + this.collection.des
             );
         },
 
@@ -167,9 +170,9 @@ $(document).ready(function(){
 
         searchUser: function(){
             var userNick = this.$('.name').val(),
-                email = this.$('.email').val();
+                des = this.$('.des').val();
 
-            router.navigate(String.format('/search/{0}/{1}/1', email, userNick), {trigger: true});
+            router.navigate(String.format('/search/{0}/{1}/1', userNick, des), {trigger: true});
         },
 
         modifyUser: function(sender){
@@ -360,15 +363,15 @@ $(document).ready(function(){
     var Router = Backbone.Router.extend({
         routes: {
             "":                              "search",
-            "search/(:email)/(:userNick)/:pageIndex": "search",
+            "search/(:userNick)/(:des)/:pageIndex": "search",
             "modify/:userId":                "modify",
             "add":                   "add",
             "changePwd/:userId":             "changePwd"
         },
 
         // 获取推荐用户
-        search: function(email, userNick, pageIndex){
-            users.search(email||'', userNick||'', pageIndex||1);
+        search: function(userNick, des, pageIndex){
+            users.search(userNick, des, pageIndex);
         },
 
         modify: function(userId){
@@ -428,12 +431,12 @@ $(document).ready(function(){
     <div class="tab-pane fade pt-15 in active" id="user_list">
         <form action="." class="form-inline" onsubmit="javascript: return false;">
             <div class="input-group input-group-sm pb-10">
-                <span class="input-group-addon">用户邮箱</span>
-                <input type="text" class="form-control email" placeholder="" />
+                <span class="input-group-addon">用户名称</span>
+                <input type="text" class="form-control name" placeholder="" />
             </div>
             <div class="input-group input-group-sm pb-10">
-                <span class="input-group-addon">用户呢称</span>
-                <input type="text" class="form-control name" placeholder="" />
+                <span class="input-group-addon">用户备注</span>
+                <input type="text" class="form-control des" placeholder="" />
                 <span class="input-group-btn">
                     <button class="btn btn-default search-user bgc-eeeeee" type="submit">查询</button>
                 </span>

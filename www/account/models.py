@@ -110,6 +110,9 @@ class Profile(models.Model):
     def __unicode__(self):
         return u'%s, %s' % (self.id, self.nick)
 
+    class Meta:
+        ordering = ["-create_time"]
+
 
 class UserChangeLog(models.Model):
     change_type_choices = ((0, u'密码'), (1, u'邮箱'), (2, u'手机'), )

@@ -68,9 +68,9 @@ if (!String.format) {
     $.Global.Utils.dictMapParse = function(data, maps){
         var temp = [];
 
-            _.each(data, function(d){
-                temp.push($.Global.Utils.dictMap(d, maps));
-            });
+        _.each(data, function(d){
+            temp.push($.Global.Utils.dictMap(d, maps));
+        });
 
         return temp;
     };
@@ -118,7 +118,7 @@ if (!String.format) {
 
         var str = "",
             year = $.Global.Utils.addZero(date.getFullYear()),
-            month = $.Global.Utils.addZero(date.getMonth()+1), 
+            month = $.Global.Utils.addZero(date.getMonth()+1),
             day = $.Global.Utils.addZero(date.getDate()),
             hours = $.Global.Utils.addZero(date.getHours()),
             minutes = $.Global.Utils.addZero(date.getMinutes()),
@@ -390,6 +390,7 @@ if (!String.format) {
             plugins: {
                 autocomplete: {
                     minLength: 1, // 最小字符
+                    maxResults: 15,
                     queryRemote: true, // 远程查询
                     placeholder: options.placeholder,
                     searchAll: options.searchAll,
@@ -398,7 +399,7 @@ if (!String.format) {
                     remote: {
                         url: options.url, 
                         param: options.param,
-                        loadPlaceholder: options.loadPlaceholder,
+                        loadPlaceholder: options.loadPlaceholder
                     }
                 }
             }
