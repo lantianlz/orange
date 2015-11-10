@@ -208,11 +208,14 @@ class CompanyBase(object):
 
         return objs
 
-    def search_companys_for_admin(self, name):
+    def search_companys_for_admin(self, name, short_name):
         objs = self.get_all_company()
 
         if name:
             objs = objs.filter(name__contains=name)
+
+        if short_name:
+            objs = objs.filter(short_name__contains=short_name)
 
         return objs
 

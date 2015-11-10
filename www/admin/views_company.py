@@ -66,9 +66,10 @@ def search(request):
     data = []
 
     name = request.REQUEST.get('name')
+    short_name = request.REQUEST.get('short_name')
     page_index = int(request.REQUEST.get('page_index'))
 
-    objs = CompanyBase().search_companys_for_admin(name)
+    objs = CompanyBase().search_companys_for_admin(name, short_name)
 
     page_objs = page.Cpt(objs, count=10, page=page_index).info
 

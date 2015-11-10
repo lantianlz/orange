@@ -55,18 +55,20 @@ $(document).ready(function(){
         },
 
         // 查询
-        search: function(name, pageIndex){
+        search: function(name, short_name, pageIndex){
             var me = this,
                 name = name||'',
+                short_name = short_name||'',
                 pageIndex = pageIndex||1;
 
             ajaxSend(
                 "/admin/company/search", 
-                {'name': name, 'page_index': pageIndex}, 
+                {'name': name, 'short_name': short_name, 'page_index': pageIndex}, 
                 function(data){
                     me.pageIndex = pageIndex;
                     me.pageCount = data.page_count;
                     me.name = name;
+                    me.short_name = short_name;
 
                     me.reset($.Global.Utils.dictMapParse(data.data, me._modelMaps));
                 }
@@ -143,9 +145,9 @@ $(document).ready(function(){
             this.$('tbody').html(this.template({'companys': data}));
 
             this.pagination.render(
-                this.collection.pageIndex||1, 
-                this.collection.pageCount, 
-                'search/' + this.collection.name
+                this.collection.pageIndex,
+                this.collection.pageCount,
+                'search/' + this.collection.name + '/' + this.collection.short_name
             );
         },
 
@@ -155,9 +157,10 @@ $(document).ready(function(){
         },
 
         search: function(){
-            var name = this.$('.key-word').val();
+            var name = this.$('.key-word').val(),
+                shortName = this.$('.short-name').val();
 
-            router.navigate(String.format('/search/{0}/1', name), {trigger: true});
+            router.navigate(String.format('/search/{0}/{1}/1', name, shortName), {trigger: true});
         },
 
         modifyCompany: function(sender){
@@ -425,13 +428,13 @@ $(document).ready(function(){
         routes: {
             "":                     "search",
             "modify/:companyId":       "modify",
-            "search/(:name)/:pageIndex":    "search",
+            "search/(:name)/(:short_name)/:pageIndex":    "search",
             "add":                   "add"
         },
 
         // 查询
-        search: function(name, pageIndex){
-            companys.search(name||'', pageIndex||1);
+        search: function(name, short_name, pageIndex){
+            companys.search(name, short_name, pageIndex||1);
         },
 
         // 显示修改界面
@@ -494,6 +497,10 @@ $(document).ready(function(){
             <div class="input-group input-group-sm pb-10">
                 <span class="input-group-addon">公司名称</span>
                 <input type="text" class="form-control key-word" placeholder="" />
+            </div>
+            <div class="input-group input-group-sm pb-10">
+                <span class="input-group-addon">公司简称</span>
+                <input type="text" class="form-control short-name" placeholder="" />
                 <span class="input-group-btn">
                     <button class="btn btn-default search bgc-eeeeee" type="submit">查询</button>
                 </span>

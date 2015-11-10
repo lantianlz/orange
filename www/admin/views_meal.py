@@ -83,10 +83,10 @@ def search(request):
 
     objs = MealBase().search_meals_for_admin(state, name)
 
-    page_objs = page.Cpt(objs, count=10, page=page_index).info
+    page_objs = page.Cpt(objs, count=20, page=page_index).info
 
     # 格式化json
-    num = 10 * (page_index - 1)
+    num = 20 * (page_index - 1)
     data = format_meal(page_objs[0], num)
 
     return HttpResponse(
