@@ -39,7 +39,7 @@ def format_record(objs, num):
             'record_id': x.id,
             'balance': str(x.cash_account.balance),
             'company_id': company.id if company else '',
-            'company_name': company.name if company else '',
+            'company_name': company.combine_name() if company else '',
             'value': str(x.value),
             'current_balance': str(x.current_balance),
             'operation': x.operation,

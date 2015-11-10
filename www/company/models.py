@@ -34,6 +34,13 @@ class Company(models.Model):
     def get_logo(self):
         return self.logo if self.logo else '%simg/logo.png' % settings.MEDIA_URL
 
+    def combine_name(self):
+        '''
+        组合名字：
+        成都乐动科技有点公司 [ 咕咚 ]
+        '''
+        return '%s [ %s ]' % (self.name, self.short_name or '-')
+
     class Meta:
         ordering = ["sort", "-create_time"]
 
@@ -172,6 +179,7 @@ class Meal(models.Model):
     @note: 套餐
     '''
     state_choices = ((0, u"停用"), (1, u"正常"))
+    type_choices = ((1, u"每周"), (2, u"隔周"), (3, u"单次"))
 
     company = models.ForeignKey("Company")
     name = models.CharField(verbose_name=u"名称", max_length=128, db_index=True)
@@ -180,6 +188,7 @@ class Meal(models.Model):
     start_date = models.DateField(verbose_name=u"开始日期", db_index=True)
     end_date = models.DateField(verbose_name=u"结束日期", db_index=True)
     cycle = models.CharField(verbose_name=u"配送频率", max_length=32, null=True)
+    t_type = models.IntegerField(verbose_name=u"配送类型", default=1, choices=type_choices)
     state = models.IntegerField(verbose_name=u"状态", default=1, choices=state_choices)
     create_time = models.DateTimeField(verbose_name=u"创建时间", auto_now_add=True, db_index=True)
 
@@ -198,14 +207,35 @@ class Meal(models.Model):
 
         return "-".join(temp)
 
-    def get_expect_price_per_month(self):
+    def get_expect_price_per_month(self, start_date, end_date):
         '''
         计算每月的预期销售额
         '''
-        cycle = self.cycle or "0-0-0-0-0-0-0"
-        temp = cycle.split('-')
-        count = len(temp) - temp.count('0')
-        return self.price * 4 * count
+        expect_price = 0
+
+        # 每周
+        if self.t_type == 1:
+            cycle = self.cycle or "0-0-0-0-0-0-0"
+            temp = cycle.split('-')
+            count = len(temp) - temp.count('0')
+            expect_price = self.price * 4 * count
+
+        # 隔周
+        if self.t_type == 2:
+            cycle = self.cycle or "0-0-0-0-0-0-0"
+            temp = cycle.split('-')
+            count = len(temp) - temp.count('0')
+            expect_price = self.price * 2 * count
+
+        # 单次
+        if self.t_type == 3:
+            import datetime
+            today = datetime.datetime.now()
+            # 如果在查询的时间段
+            if (start_date <= today) and (today < end_date):
+                expect_price = self.price
+
+        return expect_price
 
     class Meta:
         ordering = ["-create_time"]

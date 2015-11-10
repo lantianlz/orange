@@ -342,7 +342,7 @@ class MealBase(object):
         return "-".join(temp)
 
     @transaction.commit_manually(using=DEFAULT_DB)
-    def add_meal(self, company_id, name, price, start_date, end_date, cycle, des='', meal_items=[]):
+    def add_meal(self, company_id, name, price, start_date, end_date, cycle, t_type, des='', meal_items=[]):
         if not (company_id and name and price and start_date and end_date and cycle):
             return 99800, dict_err.get(99800)
 
@@ -359,6 +359,7 @@ class MealBase(object):
                 start_date=start_date,
                 end_date=end_date,
                 cycle=self._get_cycle_str(cycle),
+                t_type=t_type,
                 des=des
             )
 
@@ -380,7 +381,7 @@ class MealBase(object):
         return 0, meal
 
     @transaction.commit_manually(using=DEFAULT_DB)
-    def modify_meal(self, meal_id, company_id, name, price, start_date, end_date, state, cycle, des='', meal_items=[]):
+    def modify_meal(self, meal_id, company_id, name, price, start_date, end_date, state, cycle, t_type, des='', meal_items=[]):
         if not (company_id and name and price and start_date and end_date and cycle):
             return 99800, dict_err.get(99800)
 
@@ -406,7 +407,12 @@ class MealBase(object):
             obj.end_date = end_date
             obj.des = des
             obj.state = state
-            obj.cycle = self._get_cycle_str(cycle)
+            # 非单次计算频次
+            if t_type != "3":
+                obj.cycle = self._get_cycle_str(cycle)
+            else:
+                obj.cycle = cycle[0]
+            obj.t_type = t_type
             obj.save()
 
             # 套餐下的项目
@@ -814,6 +820,18 @@ class OrderBase(object):
         """
         
         return raw_sql.exec_sql(sql, ['%%%s%%' % name, str(start_date), str(end_date)])
+
+    def get_latest_order_of_company(self, company_id):
+        '''
+        获取公司最近一次订单
+        '''
+        obj = None
+        try:
+            obj = Order.objects.filter(state=3, company=company_id).latest('id')
+        except Exception, e:
+            pass
+
+        return obj
 
 
 class BookingBase(object):
@@ -1609,7 +1627,7 @@ class StatisticsBase(object):
             SELECT DATE_FORMAT(confirm_time, "%%Y-%%m-%%d"), COUNT(id) 
             FROM company_order 
             WHERE %s <= confirm_time AND confirm_time <= %s
-            AND state = 3 AND is_test = 0
+            AND state = 3
             GROUP BY DATE_FORMAT(confirm_time, "%%Y-%%m-%%d")
         """
 
@@ -1626,7 +1644,7 @@ class StatisticsBase(object):
             FROM company_order AS a, company_company AS b
             WHERE %s <= a.confirm_time AND a.confirm_time <= %s
             AND a.company_id = b.id
-            AND a.state = 3 AND a.is_test = 0
+            AND a.state = 3
             GROUP BY DATE_FORMAT(a.confirm_time, "%%Y-%%m-%%d")
         """
 

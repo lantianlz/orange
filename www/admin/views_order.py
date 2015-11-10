@@ -10,7 +10,7 @@ from www.misc.decorators import staff_required, common_ajax_response, verify_per
 from www.misc import qiniu_client
 from common import utils, page
 
-from www.company.models import Order, Item
+from www.company.models import Order, Item, Meal
 from www.company.interface import OrderBase, MealBase, CompanyBase, SupplierBase
 from www.account.interface import UserBase
 
@@ -19,6 +19,7 @@ def order(request, template_name='pc/admin/order.html'):
     states = [{'value': x[0], 'name': x[1]} for x in Order.state_choices]
     all_states = [{'value': x[0], 'name': x[1]} for x in Order.state_choices]
     all_states.append({'value': -2, 'name': u"全部有效订单"})
+    types = [{'name': x[1], 'value': x[0]} for x in Meal.type_choices]
 
     today = datetime.datetime.now()
     today_str = today.strftime('%Y-%m-%d')
@@ -28,6 +29,7 @@ def order(request, template_name='pc/admin/order.html'):
 
 @verify_permission('')
 def create_order(request, template_name='pc/admin/create_order.html'):
+    types = [{'name': x[1], 'value': x[0]} for x in Meal.type_choices]
 
     today = datetime.datetime.now()
     weekday = today.date().weekday() + 2
@@ -95,11 +97,35 @@ def format_order(objs, num, show_items=False):
     
     return data
 
-def format_uncreate_order(objs, num):
+def _need_notice(obj):
+    '''
+    是否需要提示
+    '''
+    flag = False
     today = datetime.datetime.now()
     weekday = today.date().weekday() + 2
     weekday = 1 if weekday == 8 else weekday
 
+    # 每周
+    if obj.t_type == 1:
+        flag = ((obj.cycle or '0-0-0-0-0-0-0').find(str(weekday)) > -1)
+
+    # 隔周
+    if obj.t_type == 2:
+        temp = OrderBase().get_latest_order_of_company(obj.company.id)
+        if not temp:
+            flag = ((obj.cycle or '0-0-0-0-0-0-0').find(str(weekday)) > -1)
+        else:
+            flag = (((today - temp.confirm_time).days > 7) and ((obj.cycle or '0-0-0-0-0-0-0').find(str(weekday)) > -1))
+    
+    # 单次
+    if obj.t_type == 3:
+        flag = (obj.cycle == (today+datetime.timedelta(days=1)).strftime('%Y-%m-%d'))
+
+    return int(flag)
+
+def format_uncreate_order(objs, num):
+    
     data = []
 
     for x in objs:
@@ -119,8 +145,9 @@ def format_uncreate_order(objs, num):
             'total_price': '',
             'is_test': '',
             'cycle': x.cycle or '0-0-0-0-0-0-0',
-            'need_notice': int((x.cycle or '0-0-0-0-0-0-0').find(str(weekday)) > -1),
-            'cycle_str': x.get_cycle_str(),
+            't_type': x.t_type or '1',
+            'need_notice': _need_notice(x),
+            'cycle_str': x.get_cycle_str() if x.t_type != 3 else '',
             'state': -1
         })
 

@@ -126,14 +126,15 @@ def get_statistics_sale_top_data(request):
                 'companys': []
             }
 
-        data[key]['total'] += x.get_expect_price_per_month()
+        data[key]['total'] += x.get_expect_price_per_month(start_date, end_date)
         data[key]['meals'].append({
             'meal_name': x.name,
             'company_name': x.company.name,
             'sale_date': str(x.company.sale_date)[:10],
             'cycle': x.cycle,
+            't_type': x.get_t_type_display(),
             'price': str(x.price),
-            'expect_price': str(x.get_expect_price_per_month())
+            'expect_price': str(x.get_expect_price_per_month(start_date, end_date))
         })
         data[key]['companys'].append(x.company.id)
 

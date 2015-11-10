@@ -34,7 +34,7 @@ def format_manager(objs, num):
             'user_nick': user.nick if user else '',
             'user_desc': user.des if user else '',
             'company_id': x.company.id if x.company else '',
-            'company_name': x.company.name if x.company else '',
+            'company_name': x.company.combine_name() if x.company else '',
             'role': x.role
         })
 

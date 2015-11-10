@@ -16,6 +16,7 @@ def meal(request, template_name='pc/admin/meal.html'):
     states = [{'name': x[1], 'value': x[0]} for x in Meal.state_choices]
     all_states = [{'name': x[1], 'value': x[0]} for x in Meal.state_choices]
     all_states.insert(0, {'name': u'全部', 'value': -1})
+    types = [{'name': x[1], 'value': x[0]} for x in Meal.type_choices]
     
     init_add_item_ids = json.dumps([x.id for x in ItemBase().get_init_add_items()])
 
@@ -64,6 +65,7 @@ def format_meal(objs, num, show_items=False):
             'end_date': str(x.end_date),
             'state': x.state,
             'cycle': x.cycle or '0-0-0-0-0-0-0',
+            't_type': x.t_type or '1',
             'items': items
         })
 
@@ -126,6 +128,7 @@ def modify_meal(request):
     des = request.POST.get('des')
     state = request.POST.get('state')
     cycle = request.POST.getlist('cycle')
+    t_type = request.POST.get('t_type')
 
     # 套餐项目
     item_ids = request.POST.getlist('item-ids')
@@ -133,7 +136,7 @@ def modify_meal(request):
 
     return MealBase().modify_meal(
         meal_id, company, name, price, start_date, 
-        end_date, state, cycle, des, _get_items(item_ids, item_amounts)
+        end_date, state, cycle, t_type, des, _get_items(item_ids, item_amounts)
     )
 
 @verify_permission('add_meal')
@@ -146,13 +149,14 @@ def add_meal(request):
     end_date = request.POST.get('end_date')
     des = request.POST.get('des')
     cycle = request.POST.getlist('cycle')
+    t_type = request.POST.get('t_type')
 
     # 套餐项目
     item_ids = request.POST.getlist('item-ids')
     item_amounts = request.POST.getlist('item-amounts')
 
     flag, msg = MealBase().add_meal(
-        company, name, price, start_date, end_date, cycle, des,
+        company, name, price, start_date, end_date, cycle, t_type, des,
         _get_items(item_ids, item_amounts)
     )
     return flag, msg.id if flag == 0 else msg

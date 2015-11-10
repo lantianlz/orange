@@ -48,6 +48,8 @@ $(document).ready(function(){
             'rate': 'rate',
             'isTest': 'is_test',
             'cycle': 'cycle',
+            'tType': 't_type',
+            'needNotice': 'need_notice',
             'state': 'state'
         },
 
@@ -333,6 +335,7 @@ $(document).ready(function(){
                     <th>#</th>
                     <th>套餐名称</th>
                     <th class="hidden-xs">所属公司</th>
+                    <th>配送类型</th>
                     <th>配送频次</th>
                     <th>状态</th>
                 </tr>
@@ -356,11 +359,18 @@ $(document).ready(function(){
 </div>
 
 <script type="text/template" id="order_list_template">
-<% _.each(orders, function(order){ %>
-    <tr class="pointer <% if(order.cycle.indexOf('{{weekday}}')>-1){ %>co-EF7B32<% } %> " data-order_id="<%= order.orderId %>" data-meal_id="<%= order.mealId %>" data-meal_name="<%= order.mealName %>">
-        <td><%= order.num %></td>
+<% _.each(orders, function(order, index){ %>
+    <tr class="pointer <% if(order.needNotice == '1'){ %>co-EF7B32<% } %> " data-order_id="<%= order.orderId %>" data-meal_id="<%= order.mealId %>" data-meal_name="<%= order.mealName %>">
+        <td><%= index+1 %></td>
         <td><%= order.mealName %></td>
         <td class="hidden-xs"><%= order.companyName %></td>
+        <td class="hidden-xs">
+        {% for type in types %}
+            <% if(order.tType == '{{type.value}}'){ %>
+            {{type.name}}
+            <% } %>
+        {% endfor %}
+        </td>
         <td><%= order.cycle %></td>
         <td>待创建</td>
     </tr>
