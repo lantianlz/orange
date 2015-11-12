@@ -14,7 +14,9 @@ from www.company.interface import CompanyBase, CashAccountBase
 
 @verify_permission('')
 def cash_account(request, template_name='pc/admin/cash_account.html'):
-    
+    today = datetime.datetime.now()
+    start_date = (today.replace(day=1)).strftime('%Y-%m-%d')
+    end_date = today.strftime('%Y-%m-%d')
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
 
 
@@ -31,7 +33,8 @@ def format_account(objs, num):
             'account_id': x.id,
             'balance': str(x.balance),
             'company_id': company.id if company else '',
-            'company_name': company.combine_name() if company else '',
+            'company_name': company.name if company else '',
+            'combine_name': company.combine_name() if company else '',
             'overdraft': str(x.max_overdraft)
         })
 

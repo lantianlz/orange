@@ -33,6 +33,7 @@ $(document).ready(function(){
             'accountId': 'account_id',
             'companyId': 'company_id',
             'companyName': 'company_name',
+            'combineName': 'combine_name',
             'balance': 'balance',
             'overdraft': 'overdraft'
         },
@@ -330,10 +331,12 @@ $(document).ready(function(){
 <!-- 客户经理列表 -->
 <script type="text/template" id="account_template">
     <% _.each(accounts, function(account){ %>
-        <tr class="pointer" data-account_id="<%= account.accountId %>">
+        <tr>
             <td><%= account.num %></td>
-            <td><%= account.companyName %></td>
-            <td><%= account.balance %></td>
+            <td class="pointer" data-account_id="<%= account.accountId %>"><%= account.combineName %></td>
+            <td>
+                <a target="_blank" href="/admin/cash_record#search/{{start_date}}/{{end_date}}/<%= account.companyName %>/-1/1"><%= account.balance %></a>
+            </td>
             <td><%= account.overdraft %></td>
         </tr>
     <% }) %>
