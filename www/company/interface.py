@@ -520,6 +520,7 @@ class OrderBase(object):
                 create_operator=create_operator,
                 total_price=total_price,
                 is_test=is_test,
+                person_count=meal.company.person_count,
                 note=note
             )
 
@@ -802,7 +803,7 @@ class OrderBase(object):
         获取有效人次
         '''
         objs = Order.objects.select_related('company').filter(state=3)
-        return objs.aggregate(Sum('company__person_count'))['company__person_count__sum']
+        return objs.aggregate(Sum('person_count'))['person_count__sum']
 
     def get_purchase_statement(self, name, start_date, end_date):
         '''
@@ -1576,7 +1577,7 @@ class StatisticsBase(object):
         person_count = Company.objects.filter(state=1).aggregate(Sum('person_count'))['person_count__sum']
 
         # 总服务人次
-        person_time_count = Order.objects.select_related('company').filter(state=3).aggregate(Sum('company__person_count'))['company__person_count__sum']
+        person_time_count = Order.objects.filter(state=3).aggregate(Sum('person_count'))['person_count__sum']
 
         # 总供货商数
         supplier_count = Supplier.objects.filter(state=1).count()
@@ -1597,7 +1598,7 @@ class StatisticsBase(object):
         rate = round((1 - (cost / sale)) * 100, 1)
 
         # 根据订单汇总的总服务人次
-        temp_person_time_count = Order.objects.select_related('company').filter(state=3, is_test=0).aggregate(Sum('company__person_count'))['company__person_count__sum']
+        temp_person_time_count = Order.objects.filter(state=3, is_test=0).aggregate(Sum('person_count'))['person_count__sum']
         
         # 平均客单价
         per_customer_transaction = round(sale / temp_person_time_count, 1)
@@ -1643,7 +1644,7 @@ class StatisticsBase(object):
         [2014-01-01, 15], [2014-01-02, 23]
         '''
         sql = """
-            SELECT DATE_FORMAT(a.confirm_time, "%%Y-%%m-%%d"), SUM(b.person_count)
+            SELECT DATE_FORMAT(a.confirm_time, "%%Y-%%m-%%d"), SUM(a.person_count)
             FROM company_order AS a, company_company AS b
             WHERE %s <= a.confirm_time AND a.confirm_time <= %s
             AND a.company_id = b.id

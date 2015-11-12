@@ -271,6 +271,7 @@ class Order(models.Model):
     confirm_time = models.DateTimeField(verbose_name=u"订单确认时间", null=True)
     total_price = models.DecimalField(verbose_name=u"订单价格", max_digits=10, decimal_places=2, default=0)
     note = models.TextField(verbose_name=u"备注", null=True)
+    person_count = models.IntegerField(verbose_name=u"员工总数", default=0)
     is_test = models.BooleanField(verbose_name=u"是否试吃", default=False)
     cost_price = models.DecimalField(verbose_name=u"成本价", max_digits=10, decimal_places=2, default=0)
     state = models.IntegerField(verbose_name=u"状态", default=1, choices=state_choices, db_index=True)
