@@ -611,15 +611,16 @@ if (!String.format) {
 
         // 计算分类总价
         _calculateTypePrice: function(){
-            
-            $.map(this._itemTypes, function(itemType){
+            var me = this;
+
+            $.map(me._itemTypes, function(itemType){
                 var sum = 0;
 
-                $.map(this.$('.item-type-'+itemType.value+' .total-price'), function(price){
+                $.map(me.$('.item-type-'+itemType.value+' .total-price'), function(price){
                     sum += parseFloat(price.innerHTML);
                 });
                 
-                this.$('.sum-' + itemType.value).html($.Global.Utils.formatPrice(sum));
+                me.$('.sum-' + itemType.value).html($.Global.Utils.formatPrice(sum));
             });
             
         },
