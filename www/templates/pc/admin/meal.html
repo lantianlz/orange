@@ -41,21 +41,25 @@ $(document).ready(function(){
             'state': 'state'
         },
 
-        search: function(state, name, pageIndex){
+        search: function(state, name, cycle, tType, pageIndex){
             var me = this,
                 state = state || 1,
                 name = name || '',
+                cycle = cycle || '',
+                tType = tType || '{{types_str}}',
                 pageIndex = pageIndex || 1;
 
             ajaxSend(
                 "/admin/meal/search", 
-                {'state': state, 'name': name, 'page_index': pageIndex}, 
+                {'state': state, 'name': name, 'cycle': cycle, 't_type': tType, 'page_index': pageIndex}, 
                 function(data){
                     
                     me.pageIndex = pageIndex;
                     me.pageCount = data.page_count;
                     me.state = state;
                     me.name = name;
+                    me.cycle = cycle;
+                    me.tType = tType;
 
                     me.reset($.Global.Utils.dictMapParse(data.data, me._modelMaps));
                 }
@@ -129,7 +133,13 @@ $(document).ready(function(){
             this.pagination.render(
                 this.collection.pageIndex||1, 
                 this.collection.pageCount, 
-                'search/' + this.collection.state + '/' + this.collection.name
+                String.format(
+                    'search/{0}/{1}/{2}/{3}', 
+                    this.collection.state,
+                    this.collection.name,
+                    this.collection.cycle,
+                    this.collection.tType
+                )
             );
         },
 
@@ -140,9 +150,15 @@ $(document).ready(function(){
 
         searchMeal: function(){
             var state = this.$('.state').val(),
-                name = this.$('.name').val();
+                name = this.$('.name').val(),
+                cycle = this.$('.cycle').val(),
+                tType = $.map(
+                    this.$('.ttype input').filter(function(i){
+                        return $('.ttype input').eq(i).attr('checked');
+                    })
+                , function(i){return i.value}).join('-');
 
-            router.navigate(String.format('/search/{0}/{1}/1', state, name), {trigger: true});
+            router.navigate(String.format('/search/{0}/{1}/{2}/{3}/1', state, name, cycle, tType), {trigger: true});
         },
 
         modifyMeal: function(sender){
@@ -439,14 +455,14 @@ $(document).ready(function(){
     var Router = Backbone.Router.extend({
         routes: {
             "":                             "search",
-            "search/(:state)/(:name)/:pageIndex":    "search",
+            "search/(:state)/(:name)/(:cycle)/(:tType)/:pageIndex":    "search",
             "modify/:mealId":               "modify",
             "add":                          "add"
         },
 
         // 获取推荐用户
-        search: function(state, name, pageIndex){
-            meals.search(state, name, pageIndex);
+        search: function(state, name, cycle, tType, pageIndex){
+            meals.search(state, name, cycle, tType, pageIndex);
         },
 
         modify: function(mealId){
@@ -511,6 +527,19 @@ $(document).ready(function(){
             <div class="input-group input-group-sm pb-10">
                 <span class="input-group-addon">套餐名称</span>
                 <input type="text" class="form-control name" placeholder="" />
+            </div>
+            <div class="input-group input-group-sm pb-10">
+                <span class="input-group-addon">配送频次</span>
+                <input type="text" class="form-control cycle" placeholder="" />
+            </div>
+            <div class="input-group input-group-sm pb-10 pl-10 pr-5 ttype">
+                {% for type in types %}
+                <label class="checkbox-inline">
+                    <input type="checkbox" value="{{type.value}}" checked> {{type.name}}
+                </label>
+                {% endfor %}
+            </div>
+            <div class="input-group input-group-sm pb-10">
                 <span class="input-group-btn">
                     <button class="btn btn-default search bgc-eeeeee" type="submit">查询</button>
                 </span>

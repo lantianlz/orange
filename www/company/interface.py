@@ -445,11 +445,14 @@ class MealBase(object):
 
         return objs
 
-    def search_meals_for_admin(self, state, name):
-        objs = self.get_all_meal(state)
+    def search_meals_for_admin(self, state, name, cycle, t_type):
+        objs = self.get_all_meal(state).filter(t_type__in=t_type)
 
         if name:
             objs = objs.filter(name__contains=name)
+
+        if cycle:
+            objs = objs.filter(cycle__contains=cycle)
 
         return objs
 

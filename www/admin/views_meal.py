@@ -17,6 +17,7 @@ def meal(request, template_name='pc/admin/meal.html'):
     all_states = [{'name': x[1], 'value': x[0]} for x in Meal.state_choices]
     all_states.insert(0, {'name': u'全部', 'value': -1})
     types = [{'name': x[1], 'value': x[0]} for x in Meal.type_choices]
+    types_str = '-'.join([str(x['value']) for x in types])
     
     init_add_item_ids = json.dumps([x.id for x in ItemBase().get_init_add_items()])
 
@@ -79,9 +80,12 @@ def search(request):
     name = request.REQUEST.get('name')
     state = request.REQUEST.get('state')
     state = None if state == "-1" else state
+    cycle = request.REQUEST.get('cycle')
+    t_type = request.REQUEST.get('t_type')
+    t_type = t_type.split('-')
     page_index = int(request.REQUEST.get('page_index'))
 
-    objs = MealBase().search_meals_for_admin(state, name)
+    objs = MealBase().search_meals_for_admin(state, name, cycle, t_type)
 
     page_objs = page.Cpt(objs, count=20, page=page_index).info
 
