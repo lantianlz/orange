@@ -319,3 +319,19 @@ label.error {
   border-color: #EEA31F;
   z-index: 1099;
 }
+
+.item-detail-small-img{
+  cursor: pointer;
+}
+
+.item-detail-big-img{
+    display: none;
+    position: absolute;
+    background-color: #ffffff;
+    left: 60px;
+    bottom: 8px;
+}
+
+.item-detail-small-img:hover~.item-detail-big-img{
+    display: block;
+}

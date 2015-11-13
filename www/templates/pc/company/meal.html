@@ -12,6 +12,7 @@
 <script type="text/javascript">
 $(document).ready(function(){
     var itemDetailView = new $.Global.ComponentView.ItemDetailView({el: '#item_detail'});
+    itemDetailView.showItemImage = true;
     itemDetailView.render();
     itemDetailView.getItemsByMealId('{{meal.id}}');
 });

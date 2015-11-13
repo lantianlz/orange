@@ -700,17 +700,19 @@ if (!String.format) {
 
         showSupplier: false,
 
+        showItemImage: false,
+
         _items: [],
 
         _html: function(){
             var me = this;
 
             return [
-            '<table class="table table-hover">',
+            '<table class="table table-hover pr">',
                 '<thead>',
                     '<tr>',
                         '<th>#</th>',
-                        '<th class="hidden-xs">产品编号</th>',
+                        me.showItemImage ? '<th class="hidden-xs">产品图片</th>' : '<th class="hidden-xs">产品编号</th>',
                         '<th>产品名称</th>',
                         '<th>数量</th>',
                         '<th>规格</th>',
@@ -739,7 +741,7 @@ if (!String.format) {
             return _.template([
                 '<tr>',
                     '<td></td>',
-                    '<td class="hidden-xs"><%= code %></td>',
+                    me.showItemImage ? '<td class="hidden-xs pr"><img src="<%= img %>" class="w35 item-detail-small-img" /><img src="<%= img %>" class="w250 item-detail-big-img" /></td>' : '<td class="hidden-xs"><%= code %></td>',
                     '<td><%= name %><%= smart_des %></td>',
                     '<td><%= amount %></td>',
                     '<td><%= spec_str %></td>',
