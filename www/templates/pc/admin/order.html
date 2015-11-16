@@ -48,6 +48,7 @@ $(document).ready(function(){
             'confirmTime': 'confirm_time',
             'totalPrice': 'total_price',
             'costPrice': 'cost_price',
+            'personCount': 'person_count',
             'note': 'note',
             'rate': 'rate',
             'isTest': 'is_test',
@@ -683,6 +684,12 @@ $(document).ready(function(){
         <label class="col-sm-2 control-label">价格</label>
         <div class="col-sm-3">
             <input type="text" required class="form-control order-total-price" name='total_price' value='<%= totalPrice %>'>
+        </div>
+    </div>
+    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+        <label class="col-sm-2 control-label">人数</label>
+        <div class="col-sm-3">
+            <input type="text" required class="form-control person-count" name='person_count' value='<%= personCount %>'>
         </div>
     </div>
     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">

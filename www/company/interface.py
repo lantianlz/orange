@@ -509,9 +509,9 @@ class OrderBase(object):
         return postfix
 
     @transaction.commit_manually(using=DEFAULT_DB)
-    def add_order(self, meal_id, create_operator, total_price, order_items, is_test=False, note=''):
+    def add_order(self, meal_id, create_operator, total_price, order_items, person_count, is_test=False, note=''):
 
-        if not (meal_id and create_operator and total_price and order_items):
+        if not (meal_id and create_operator and total_price and order_items and person_count):
             return 99800, dict_err.get(99800)
 
         meal = MealBase().get_meal_by_id(meal_id)
@@ -533,7 +533,7 @@ class OrderBase(object):
                 create_operator=create_operator,
                 total_price=total_price,
                 is_test=is_test,
-                person_count=meal.company.person_count,
+                person_count=person_count,
                 note=note
             )
 
@@ -571,7 +571,7 @@ class OrderBase(object):
         return 0, obj
 
     @transaction.commit_manually(using=DEFAULT_DB)
-    def modify_order(self, order_id, order_items, total_price, note, is_test):
+    def modify_order(self, order_id, order_items, total_price, note, is_test, person_count):
 
         obj = self.get_order_by_id(order_id)
         if not obj:
@@ -582,6 +582,7 @@ class OrderBase(object):
             obj.total_price = total_price
             obj.note = note
             obj.is_test = is_test
+            obj.person_count = person_count
 
             temp = decimal.Decimal(0)
 

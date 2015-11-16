@@ -59,6 +59,7 @@ def format_meal(objs, num, show_items=False):
             'meal_id': x.id,
             'company_id': company.id if company else '',
             'company_name': u'%s [%s人]' % (company.name, company.person_count) if company else '',
+            'person_count': company.person_count,
             'name': x.name,
             'des': x.des,
             'price': str(x.price),

@@ -88,6 +88,7 @@ def format_order(objs, num, show_items=False):
             'confirm_time': str(x.confirm_time) if x.confirm_time else '',
             'total_price': str(x.total_price),
             'cost_price': str(x.cost_price),
+            'person_count': x.person_count,
             'note': x.note,
             'rate': x.rate(),
             'is_test': x.is_test,
@@ -239,13 +240,14 @@ def modify_order(request):
     is_test = request.POST.get('is_test')
     is_test = True if is_test == "1" else False
     note = request.POST.get('note')
+    person_count = request.POST.get('person_count')
     
     # 套餐项目
     item_ids = request.POST.getlist('item-ids')
     item_amounts = request.POST.getlist('item-amounts')
 
     return OrderBase().modify_order(
-        order_id, _get_items(item_ids, item_amounts), total_price, note, is_test
+        order_id, _get_items(item_ids, item_amounts), total_price, note, is_test, person_count
     )
 
 @verify_permission('add_order')
@@ -256,6 +258,7 @@ def add_order(request):
     is_test = request.POST.get('is_test')
     is_test = True if is_test == "1" else False
     note = request.POST.get('note')
+    person_count = request.POST.get('person_count')
     create_operator = request.user.id
 
     # 套餐项目
@@ -264,7 +267,7 @@ def add_order(request):
 
     flag, msg = OrderBase().add_order(
         meal_id, create_operator, total_price, 
-        _get_items(item_ids, item_amounts), is_test, note
+        _get_items(item_ids, item_amounts), person_count, is_test, note
     )
 
     return flag, msg.id if flag == 0 else msg
