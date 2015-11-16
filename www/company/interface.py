@@ -332,7 +332,17 @@ class CompanyBase(object):
         return objs[:10]
 
     def get_companys_by_show(self):
+        '''
+        查询开放显示的公司
+        '''
+
         return self.get_all_company(state=True).filter(is_show=1).order_by('-sort', 'id')
+
+    def get_serviced_company_count(self):
+        '''
+        获取已经服务过的公司
+        '''
+        return Order.objects.select_related('company').filter(state=3).values('company__id').annotate(Count('company__id')).count() 
 
 
 class MealBase(object):
