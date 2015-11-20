@@ -228,7 +228,8 @@ class CompanyBase(object):
             return ""
 
     def add_company(self, name, staff_name, mobile, tel, addr, city_id, \
-        sort, des, person_count, invite_by, is_show, logo, short_name, sale_date, sale_by):
+        sort, des, person_count, invite_by, is_show, logo, short_name, \
+        sale_date, sale_by, longitude, latitude):
 
         if not (name and staff_name and mobile and addr and city_id):
             return 99800, dict_err.get(99800)
@@ -261,6 +262,8 @@ class CompanyBase(object):
                 invite_by=invite.id if invite else None,
                 is_show=is_show,
                 logo=logo,
+                longitude=longitude,
+                latitude=latitude,
                 short_name=short_name,
                 sale_date = sale_date,
                 sale_by = sale_by
@@ -277,7 +280,7 @@ class CompanyBase(object):
 
     def modify_company(self, company_id, name, staff_name, mobile, tel, \
         addr, city_id, sort, des, state, person_count, invite_by, \
-        is_show, logo, short_name, sale_date, sale_by):
+        is_show, logo, short_name, sale_date, sale_by, longitude, latitude):
         if not (name and staff_name and mobile and addr and city_id):
             return 99800, dict_err.get(99800)
 
@@ -313,6 +316,8 @@ class CompanyBase(object):
             obj.invite_by = invite.id if invite else None
             obj.is_show = is_show 
             obj.logo = logo 
+            obj.longitude = longitude
+            obj.latitude = latitude
             obj.short_name = short_name
             obj.sale_date = sale_date
             obj.sale_by = sale_by

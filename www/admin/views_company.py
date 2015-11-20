@@ -47,6 +47,8 @@ def format_company(objs, num):
             'invite_id': invite.id if invite else '',
             'invite_name': invite.nick if invite else '',
             'person_count': x.person_count,
+            'longitude': x.longitude,
+            'latitude': x.latitude,
             'source': x.source,
             'state': x.state,
             'sort': x.sort,
@@ -110,6 +112,8 @@ def modify_company(request):
     state = request.REQUEST.get('state')
     sale_date = request.REQUEST.get('sale_date')
     sale_by = request.REQUEST.get('sale_by')
+    longitude = request.REQUEST.get('longitude')
+    latitude = request.REQUEST.get('latitude')
 
     obj = CompanyBase().get_company_by_id(company_id)
     img_name = obj.logo
@@ -122,7 +126,7 @@ def modify_company(request):
     flag, msg = CompanyBase().modify_company(
         company_id, name, staff_name, mobile, tel, addr, 
         city_id, sort, des, state, person_count, invite, is_show, 
-        img_name, short_name, sale_date, sale_by
+        img_name, short_name, sale_date, sale_by, longitude, latitude
     )
 
     if flag == 0:
@@ -149,6 +153,8 @@ def add_company(request):
     short_name = request.REQUEST.get('short_name')
     sale_date = request.REQUEST.get('sale_date')
     sale_by = request.REQUEST.get('sale_by')
+    longitude = request.REQUEST.get('longitude')
+    latitude = request.REQUEST.get('latitude')
 
     img_name = ''
     img = request.FILES.get('img')
@@ -158,7 +164,7 @@ def add_company(request):
 
     flag, msg = CompanyBase().add_company(name, staff_name, 
         mobile, tel, addr, city_id, sort, des, person_count, invite, is_show, 
-        img_name, short_name, sale_date, sale_by)
+        img_name, short_name, sale_date, sale_by, longitude, latitude)
 
     if flag == 0:
         url = "/admin/company?#modify/%s" % (msg.id)

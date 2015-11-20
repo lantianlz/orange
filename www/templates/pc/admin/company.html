@@ -46,6 +46,8 @@ $(document).ready(function(){
             'source': 'source',
             'state': 'state',
             'sort': 'sort',
+            'longitude': 'longitude',
+            'latitude': 'latitude',
             'shortName': 'short_name',
             'isShow': 'is_show',
             'saleById': 'sale_by_id',
@@ -609,6 +611,18 @@ $(document).ready(function(){
             </div>
         </div>
         <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+            <label class="col-sm-2 control-label">经度</label>
+            <div class="col-sm-3">
+                <input type="text" class="form-control" required name="longitude" value='<%= longitude %>'>
+            </div>
+        </div>
+        <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+            <label class="col-sm-2 control-label">纬度</label>
+            <div class="col-sm-3">
+                <input type="text" class="form-control" required name="latitude" value='<%= latitude %>'>
+            </div>
+        </div>
+        <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
             <label class="col-sm-2 control-label">所属城市</label>
             <div class="col-sm-3">
                 <input type="text" class="form-control" id="city_modify" required name="city_id" value=''>
@@ -736,6 +750,18 @@ $(document).ready(function(){
                         <label class="col-sm-3 control-label">地址</label>
                         <div class="col-sm-9">
                             <input type="text" class="form-control" required name="addr" value=''>
+                        </div>
+                    </div>
+                    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+                        <label class="col-sm-3 control-label">经度</label>
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control" required name="longitude" value=''>
+                        </div>
+                    </div>
+                    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+                        <label class="col-sm-3 control-label">纬度</label>
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control" required name="latitude" value=''>
                         </div>
                     </div>
                     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">

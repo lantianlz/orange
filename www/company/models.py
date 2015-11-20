@@ -21,6 +21,8 @@ class Company(models.Model):
     tel = models.CharField(verbose_name=u"座机", max_length=32, null=True)
     addr = models.CharField(verbose_name=u"地址", max_length=256, null=True)
     person_count = models.IntegerField(verbose_name=u"员工总数", default=0)
+    longitude = models.CharField(verbose_name=u"经度", max_length=32, null=True)
+    latitude = models.CharField(verbose_name=u"纬度", max_length=32, null=True)
     invite_by = models.CharField(verbose_name=u"邀请人", max_length=32, null=True)
     city_id = models.IntegerField(verbose_name=u"所属城市", default=0)
     source = models.IntegerField(verbose_name=u"来源", default=0, choices=source_choices)

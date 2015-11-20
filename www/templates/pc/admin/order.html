@@ -1,9 +1,9 @@
 {% extends "pc/admin/home.html" %}
 {% load custom_tags %}
 {% load custom_filters %}
-{% block title %}订单管理{% endblock %}
-{% block admin_title %}订单管理{% endblock %}
-{% block admin_title_m %}订单管理{% endblock %}
+{% block title %}订单列表{% endblock %}
+{% block admin_title %}订单列表{% endblock %}
+{% block admin_title_m %}订单列表{% endblock %}
 
 {% block css %}
 <link rel="stylesheet" type="text/css" href="{{MEDIA_URL}}css/autocomplete/styles.css">
@@ -12,12 +12,44 @@
     .form-inline .input-group>.form-control {
         width: 130px;
     }
+
+    .modal-dialog {
+         width: 98%; 
+        margin: 10px auto;
+    }
+}
+
+#order_list>ul{
+    overflow-y: auto;
+}
+#order_list_switch{
+    width: 40px; 
+    height: 40px; 
+    left: 0px; 
+    top: -50px; 
+    background-color: #ffffff; 
+    position: absolute; 
+    box-shadow: 0 2px 6px #555; 
+    padding: 10px;
+    cursor: pointer;
+}
+#order_list_switch>span{
+    width: 20px; 
+    height: 20px; 
+    border: #08c solid 2px; 
+    display: inline-block;
+}
+.order-list-item:hover{
+    background-color: #eee;
 }
 </style>
 {% endblock %}
 
 {% block javascript %}
 <script type="text/javascript" src="{{MEDIA_URL}}js/jquery/jquery.autocomplete.js"></script>
+<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=o4O12xsCGirt60xLVt1GLTI6"></script>
+<script type="text/javascript" src="http://api.map.baidu.com/library/TextIconOverlay/1.2/src/TextIconOverlay_min.js"></script>
+<script type="text/javascript" src="http://api.map.baidu.com/library/MarkerClusterer/1.2/src/MarkerClusterer_min.js"></script>
 <script type="text/javascript">
 $(document).ready(function(){
     var Order = Backbone.Model.extend({
@@ -36,6 +68,11 @@ $(document).ready(function(){
             'mealName': 'meal_name',
             'companyId': 'company_id',
             'companyName': 'company_name',
+            'companyAddr': 'company_addr',
+            'companyLogo': 'company_logo',
+            'companyTel': 'company_tel',
+            'longitude': 'longitude',
+            'latitude': 'latitude',
             'orderNo': 'order_no',
             'createOperatorId': 'create_operator_id',
             'createOperatorName': 'create_operator_name',
@@ -56,7 +93,7 @@ $(document).ready(function(){
             'state': 'state'
         },
 
-        search: function(startDate, endDate, state, company, isTest, pageIndex){
+        search: function(startDate, endDate, state, company, isTest, pageIndex, callback){
             var me = this,
                 startDate = startDate || '{{start_date}}',
                 endDate = endDate || '{{today_str}}',
@@ -79,6 +116,11 @@ $(document).ready(function(){
                     me.isTest = isTest;
 
                     me.reset($.Global.Utils.dictMapParse(data.data, me._modelMaps));
+
+                    if(callback){
+                        callback($.Global.Utils.dictMapParse(data.data, me._modelMaps));
+                    }
+
                 }
             );
         },
@@ -225,14 +267,30 @@ $(document).ready(function(){
             $('.orange-nav-pills a[href="#order_list"]').tab('show');
         },
 
-        searchOrder: function(){
-            var startDate = this.$('#start_date_search').val(),
-                endDate = this.$('#end_date_search').val(),
-                state = this.$('.state').val(),
-                company = this.$('.company').val(),
-                isTest = this.$('.is-test').attr('checked') ? 1 : 0;
+        getSearchParam: function(){
+            return {
+                startDate: this.$('#start_date_search').val(),
+                endDate: this.$('#end_date_search').val(),
+                state: this.$('.state').val(),
+                company: this.$('.company').val(),
+                isTest: this.$('.is-test').attr('checked') ? 1 : 0
+            }
+        },
 
-            router.navigate(String.format('/search/{0}/{1}/{2}/{3}/{4}/1', startDate, endDate, state, company, isTest), {trigger: true});
+        searchOrder: function(){
+            var param = this.getSearchParam();
+
+            router.navigate(
+                String.format(
+                    '/search/{0}/{1}/{2}/{3}/{4}/1', 
+                    param.startDate, 
+                    param.endDate, 
+                    param.state, 
+                    param.company, 
+                    param.isTest
+                ), 
+                {trigger: true}
+            );
         },
 
         modifyOrder: function(sender){
@@ -394,12 +452,15 @@ $(document).ready(function(){
     });
 
     
-    var AddView = Backbone.View.extend({
+    var MapView = Backbone.View.extend({
         el: 'body',
 
-        template: _.template($('#add_order_template').html()),
+        template: _.template($('#map_order_template').html()),
 
-        itemsView: null,
+        events: {
+            'mouseenter .order-list-item': '_panToOrder',
+            'click #order_list_switch': '_toggleSwitch',
+        },
 
         showPanel: function(mealId, mealName){
             var me = this;
@@ -407,94 +468,159 @@ $(document).ready(function(){
             me.render(mealId, mealName);
         },
 
-        mealTextBox: null,
-        initMealTextBox: function(name, value){
+        // 百度地图对象
+        _map: null,
+
+        // 初始化地图
+        _initMap: function(){
+            this._map = new BMap.Map("order_map");
+            // this._map.centerAndZoom("成都", 13);
+            this._map.centerAndZoom(new BMap.Point(104.06065,30.595477), 13);
+            this._map.addControl(
+                new BMap.NavigationControl({
+                    anchor: BMAP_ANCHOR_BOTTOM_RIGHT
+                })
+            );
+            this._map.enableScrollWheelZoom(true);
+        },
+
+        // 百度地图弹出层样式
+        _getInfoContent: function(companyName, companyAddr, companyTel, companyLogo){
+            return [
+                '<div class="row">',
+                    '<div class="col-md-9">',
+                        '<div class="fb f16">'+companyName+'</div>',
+                        '<div class="pt-10">地址：'+companyAddr+'</div>',
+                        '<div class="pt-5">电话：'+companyTel+'</div>',
+                    '</div>',
+                    '<div class="col-md-3 pr-25 pl-0">',
+                        '<img class="w" src="'+companyLogo+'" >',
+                    '</div>',
+                '</div>'
+            ].join('');
+        },
+
+        // 添加订单到地图
+        _addOrderToMap: function(data){
+
+            var me = this, points = [], markers = [];
+
+            // 清除地图
+            me._map.clearOverlays();
+            // 添加订单位置
+            data.map(function(per){
+                var point = new BMap.Point(per.longitude, per.latitude),
+                    marker = new BMap.Marker(point),
+                    infoContent = me._getInfoContent(
+                        per.companyName, 
+                        per.companyAddr, 
+                        per.companyTel, 
+                        per.companyLogo
+                    );
+                
+                points.push(point);
+                markers.push(marker);
+                
+                me._map.addOverlay(marker);
+                // 鼠标移动事件
+                marker.addEventListener("mouseover", function(){
+                    var infoWindow = new BMap.InfoWindow(infoContent);
+                    this.openInfoWindow(infoWindow);
+                });
+            });
+            var markerClusterer = new BMapLib.MarkerClusterer(me._map, {markers: markers});
+
+            // 设置合适视距
+            window.setTimeout(function(){
+                me._map.setViewport(points);
+            }, 500);
+        },
+
+        // 添加订单到列表
+        _addOrderToList: function(data){
             var me = this;
 
-            me.mealTextBox = $.Global.TextboxList.create('#meal_add', {
-                max: 1,
-                placeholder: '选择套餐',
-                url: '/admin/meal/get_meals_by_name',
-                param: 'meal_name',
-                loadPlaceholder: '正在加载...'
-            });
-            
-             // 选择套餐之后导入套餐项目
-            me.mealTextBox.target.onAdd = function(target){
-                var meal_id = target.getValue()[0];
-
-                me.loadMealItems(meal_id);
-            }
-
-            if(value){
-                me.mealTextBox.add(name, value);
-            }
-        },
-
-        // 加载套餐下的项目
-        loadMealItems: function(meal_id){
-            
-            var me = this;
-
-            orders.getMeal(meal_id, function(data){
-                me.itemsView._loadItems(data.items, true);
-                me.$('#meal_id_add').val(meal_id);
-                me.$('.total-price').val(data.price);
-
-                // 计算毛利
-                me.itemsView.totalSalePrice = parseFloat(me.$('.order-total-price').val());
-                me.itemsView.calculatePrice();
+            me.$('#order_list>ul>li').remove();
+            data.map(function(per){
+                var html = [
+                    '<li class="list-group-item order-list-item" data-longitude="'+per.longitude+'" data-latitude="'+per.latitude+'" data-company-name="'+per.companyName+'" data-company-addr="'+per.companyAddr+'" data-company-tel="'+per.companyTel+'" data-company-logo="'+per.companyLogo+'" >',
+                        '<div class="f14 fb">'+per.companyName+'</div>',
+                        '<div class="f12 pt-5 co-888888">'+per.companyAddr+'</div>',
+                    '</li>'
+                ].join('');
+                
+                me.$('#order_list>ul').append(html);
+                    
             });
         },
 
-        initOrderItems: function(){
-            this.itemsView = new $.Global.ComponentView.ItemsView({el: "#items_view_add"});
-            this.itemsView.render();
+        // 移动地图
+        _panToOrder: function(sender){
+            var me = this,
+                target = $(sender.currentTarget),
+                point = new BMap.Point(target.data('longitude'), target.data('latitude')),
+                companyName = target.data('company-name'),
+                companyAddr = target.data('company-addr'),
+                companyTel = target.data('company-tel'),
+                companyLogo = target.data('company-logo');
+
+            me._map.panTo(point);
+
+            var infoWindow = new BMap.InfoWindow(
+                me._getInfoContent(
+                    companyName, 
+                    companyAddr, 
+                    companyTel, 
+                    companyLogo
+                )
+            );
+            
+            this._map.openInfoWindow(infoWindow, point);
         },
 
+        // 显示or隐藏列表
+        _toggleSwitch: function(){
+            var target = this.$('#order_list>ul');
+            target.css('display') == "block" ? target.hide() : target.show();
+        },
+
+        // 渲染
         render: function(mealId, mealName){
-            var me = this;
-
-            $('#add_order_modal').remove();
+            var me = this,
+                param = listView.getSearchParam();
             
-            $('body').append(this.template());
+            // 如果是第一次打开地图
+            if($('#map_order_modal').length > 0){
+                $('#map_order_modal').modal('show');
+            } else {
+                $('body').append(this.template());
 
-            // 绑定事件
-            $('#add_order_modal .cancel').bind('click', function(){
-                history.go(-1);
-            });
-            $('#add_order_modal .ok').bind('click', function(){
-                me.addOrder();
-            });
-            $('#add_order_modal .total-price').on('input', function(){
-                me.itemsView.totalSalePrice = parseFloat($(this).val());
-                me.itemsView.calculatePrice();
-            });
-            
-            $('#add_order_modal').modal({'show': true, 'backdrop': 'static'});
+                $('#map_order_modal .close').bind('click', function(){
+                    $('#map_order_modal').modal('hide');
+                    history.go(-1);
+                });
+                
+                me.$('#map_order_modal').modal({'show': true, 'backdrop': 'static', 'keyboard': false});
+                me.$('#order_map').height($(window).height() - 100);
+                me.$('#order_list>ul').height($(window).height() - 200);
 
-            me.initMealTextBox(mealName, mealId);
-            me.initOrderItems();
-            
-        },
-
-        addOrder: function(){
-            var me = this;
-            
-            if(!$('#add_order_modal form').valid()){
-                return;
+                me._initMap();
             }
-
-            g_ajax_processing_obj_id = $("#add_order_modal .ok").setUUID().attr('id');
-            orders.addOrder($.Global.Utils.formToDict($('#add_order_modal form')), function(data){
-                if(data.errcode == "0"){
-                    router.navigate('modify/' + data.errmsg, {trigger: true});
-                    $('#add_order_modal').modal('hide');
-                    $.Global.Notice.SuccessTopNotice("操作成功");
-                } else {
-                    $.Global.Notice.ErrorTopNotice(data.errmsg);
+            
+            orders.search(
+                param.startDate, 
+                param.endDate, 
+                param.state, 
+                param.company, 
+                param.isTest,
+                1,
+                function(data){
+                    
+                    me._addOrderToMap(data);
+                    me._addOrderToList(data);
                 }
-            })
+            );
+            
         }
 
     });
@@ -505,7 +631,7 @@ $(document).ready(function(){
             "":                             "search",
             "search/(:startDate)/(:endDate)/(:state)/(:company)/(:isTest)/:pageIndex":    "search",
             "modify/:orderId":              "modify",
-            "add/(:mealId)/(:mealName)":                          "add"
+            "map_order":                          "map"
         },
 
         // 获取推荐用户
@@ -517,8 +643,8 @@ $(document).ready(function(){
             modifyView.modifyOrder(orderId);
         },
 
-        add: function(mealId, mealName){
-            addView.showPanel(mealId, mealName);
+        map: function(){
+            mapView.showPanel();
         }
 
     });
@@ -526,7 +652,7 @@ $(document).ready(function(){
     var orders = new Orders(),
         listView = new ListView({collection: orders}),
         modifyView = new ModifyView({collection: orders}),
-        addView = new AddView(),
+        mapView = new MapView(),
         router = new Router();
 
     Backbone.history.start();
@@ -563,6 +689,13 @@ $(document).ready(function(){
             <i class="fa fa-pencil-square-o pr-5"></i>
             <span class="hidden-sm hidden-md hidden-lg">修改</span>
             <span class="hidden-xs">修改订单信息</span>
+        </a>
+    </li>
+    <li class="pull-right hidden-xs">
+        <a href="#map_order">
+            <i class="fa fa-map-o pr-5"></i>
+            <span class="hidden-sm hidden-md hidden-lg">地图</span>
+            <span class="hidden-xs">地图显示</span>
         </a>
     </li>
 </ul>
@@ -840,56 +973,31 @@ $(document).ready(function(){
 </form>
 </script>
 
-<script type="text/template" id="add_order_template">
-<div class="modal fade" id="add_order_modal" tabindex="-1" role="dialog">
+<script type="text/template" id="map_order_template">
+<div class="modal fade" id="map_order_modal" tabindex="-1" role="dialog">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header pb-5">
-                <h4 class="modal-title">添加订单</h4>
+                <button type="button" class="close"><span>X</span></button>
+                <h4 class="modal-title">订单地图</h4>
             </div>
-            <div class="modal-body">
-                <form class="form-horizontal" role="form" method="post" action="">
-                    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
-                        <label class="col-sm-2 control-label">套餐</label>
-                        <div class="col-sm-10">
-                            <input type="text" id="meal_add" class="form-control" name='meal' value=''>
-                        </div>
-                    </div>
-                    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
-                        <input type="hidden" id="meal_id_add" value="" />
-                        <label class="col-sm-2 control-label">套餐项目</label>
-                        <div class="col-sm-10" id="items_view_add">
-                            
-                        </div>
-                    </div>
-                    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
-                        <label class="col-sm-2 control-label">价格</label>
-                        <div class="col-sm-3">
-                            <input type="text" required class="form-control order-total-price" name='total_price' value='0'>
-                        </div>
-                    </div>
-                    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
-                        <label class="col-sm-2 control-label">描述</label>
-                        <div class="col-sm-10">
-                            <textarea name="note" rows="6" class="form-control" placeholder=""></textarea>
-                        </div>
-                    </div>
-                    <div class="form-group pt-20 pb-20 mb-0">
-                        <label class="col-sm-2 control-label">是否试吃</label>
-                        <div class="col-sm-10">
-                            <label class="radio-inline">
-                                <input type="radio" name="is_test" value="0" checked> 否
-                            </label>
-                            <label class="radio-inline">
-                                <input type="radio" name="is_test" value="1"> 是
-                            </label>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default cancel" data-dismiss="modal">取消</button>
-                <button type="button" class="btn btn-primary ok">确定</button>
+            <div class="modal-body pr">
+                <div id="order_map"></div>
+                <div id="order_list" class="pa" style="left: 25px; top: 75px; max-width: 250px;">
+                    <span id="order_list_switch">
+                        <span></span>
+                    </span>
+                    <ul class="list-group">
+                        <li class="list-group-item">
+                            <div class="f14 fb">咕咚</div>
+                            <div class="f12 pt-5 co-888888">天府软件园D7-13</div>
+                        </li>
+                        <li class="list-group-item">
+                            <div class="f14 fb">有名堂</div>
+                            <div class="f12 pt-5 co-888888">成都市高新区天府三街新希望国际B座1704</div>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
