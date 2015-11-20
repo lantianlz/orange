@@ -76,6 +76,7 @@ def format_order(objs, num, show_items=False):
             'meal_name': u'%s [¥%s]' % (meal.name, meal.price),
             'company_id': company.id,
             'company_name': company.name,
+            'company_combine_name': company.combine_name(),
             'company_addr': company.addr,
             'company_logo': company.get_logo(),
             'company_tel': company.tel,

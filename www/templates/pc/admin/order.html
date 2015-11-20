@@ -68,6 +68,7 @@ $(document).ready(function(){
             'mealName': 'meal_name',
             'companyId': 'company_id',
             'companyName': 'company_name',
+            'companyCombineName': 'company_combine_name',
             'companyAddr': 'company_addr',
             'companyLogo': 'company_logo',
             'companyTel': 'company_tel',
@@ -509,10 +510,14 @@ $(document).ready(function(){
             me._map.clearOverlays();
             // 添加订单位置
             data.map(function(per){
+                if(!per.longitude){
+                    return;
+                }
+
                 var point = new BMap.Point(per.longitude, per.latitude),
                     marker = new BMap.Marker(point),
                     infoContent = me._getInfoContent(
-                        per.companyName, 
+                        per.companyCombineName, 
                         per.companyAddr, 
                         per.companyTel, 
                         per.companyLogo
@@ -542,9 +547,14 @@ $(document).ready(function(){
 
             me.$('#order_list>ul>li').remove();
             data.map(function(per){
+                console.log(per.longitude)
+                if(!per.longitude){
+                    return;
+                }
+
                 var html = [
-                    '<li class="list-group-item order-list-item" data-longitude="'+per.longitude+'" data-latitude="'+per.latitude+'" data-company-name="'+per.companyName+'" data-company-addr="'+per.companyAddr+'" data-company-tel="'+per.companyTel+'" data-company-logo="'+per.companyLogo+'" >',
-                        '<div class="f14 fb">'+per.companyName+'</div>',
+                    '<li class="list-group-item order-list-item" data-longitude="'+per.longitude+'" data-latitude="'+per.latitude+'" data-company-name="'+per.companyCombineName+'" data-company-addr="'+per.companyAddr+'" data-company-tel="'+per.companyTel+'" data-company-logo="'+per.companyLogo+'" >',
+                        '<div class="f14 fb">'+per.companyCombineName+'</div>',
                         '<div class="f12 pt-5 co-888888">'+per.companyAddr+'</div>',
                     '</li>'
                 ].join('');
