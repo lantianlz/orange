@@ -118,12 +118,12 @@ $(document).ready(function(){
     // 第一次效果
     window.setTimeout(function(){
         
-        $('.banner-box').eq(0).css('opacity', 1);
+        $('.banner-box').eq(3).css('opacity', 1);
         window.setTimeout(function(){
-            $('.banner-box').eq(0).addClass('active');
+            $('.banner-box').eq(3).addClass('active');
         }, 300);
         window.setTimeout(function(){
-            _textTrans(0);
+            _textTrans(3);
         }, 800);
 
     }, 300);

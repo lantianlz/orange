@@ -836,12 +836,14 @@
     width: 75px;
     left: 15px;
     top: 30px;
+    opacity: 0;
 }
 .banner-box-4 .text-2{
     position: absolute;
     width: 50px;
     left: 110px;
     top: 15px;
+    opacity: 0;
 }
 .banner-box-4 .text-3{
     color: #c4804a;
