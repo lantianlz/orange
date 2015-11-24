@@ -369,6 +369,7 @@ class MealBase(object):
             return 20202, dict_err.get(20202)
 
         try:
+
             # 套餐
             meal = Meal.objects.create(
                 company_id=company_id,
@@ -376,10 +377,16 @@ class MealBase(object):
                 price=price,
                 start_date=start_date,
                 end_date=end_date,
-                cycle=self._get_cycle_str(cycle),
+                cycle='',
                 t_type=t_type,
                 des=des
             )
+            # 非单次计算频次
+            if t_type != "3":
+                meal.cycle = self._get_cycle_str(cycle)
+            else:
+                meal.cycle = cycle[0]
+            meal.save()
 
             # 套餐下的项目
             for x in meal_items:
