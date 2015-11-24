@@ -57,7 +57,7 @@ def format_order(objs, num, show_items=False):
                 items.append({
                     'item_id': i.item.id,
                     'name': i.item.name,
-                    'price': str(i.item.price),
+                    'price': str(i.price),
                     'sale_price': str(i.item.sale_price),
                     'item_type': i.item.item_type,
                     'spec': i.item.spec,

@@ -152,14 +152,6 @@ def show_index(request):
         return home_welcome(request)
 
 
-def customers(request):
-    from www.company.interface import CompanyBase, OrderBase
-    companys = CompanyBase().get_companys_by_show()
-    serviced_company_count = CompanyBase().get_serviced_company_count()
-    person_time_count = OrderBase().get_active_person_time_count()
-    return render_to_response('static_templates/customers.html', locals(), context_instance=RequestContext(request))
-
-
 def qrcode(request):
     import qrcode, cStringIO
 

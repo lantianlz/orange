@@ -194,3 +194,21 @@ def product_list(request, company_id, template_name='pc/company/product_list.htm
     drink = ItemBase().get_items_by_type(3, [1])
 
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
+
+
+def customers(request):
+    from www.company.interface import CompanyBase, OrderBase
+    companys = CompanyBase().get_companys_by_show()
+    serviced_company_count = CompanyBase().get_serviced_company_count()
+    person_time_count = OrderBase().get_active_person_time_count()
+    return render_to_response('static_templates/customers.html', locals(), context_instance=RequestContext(request))
+
+def anonymous_product_list(request):
+
+    fruit = ItemBase().get_items_by_type(1, [1])
+    cake = ItemBase().get_items_by_type(2, [1])
+    # supplies = ItemBase().get_items_by_type(90, [1])
+    # recycle = ItemBase().get_items_by_type(91, [1])
+    drink = ItemBase().get_items_by_type(3, [1])
+
+    return render_to_response('static_templates/product_list.html', locals(), context_instance=RequestContext(request))
