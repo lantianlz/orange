@@ -1,0 +1,698 @@
+{% extends "pc/admin/home.html" %}
+{% load custom_tags %}
+{% load custom_filters %}
+{% block title %}发票记录{% endblock %}
+{% block admin_title %}发票记录{% endblock %}
+{% block admin_title_m %}发票记录{% endblock %}
+
+{% block css %}
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript">
+$(document).ready(function(){
+    // models
+    var Record = Backbone.Model.extend({
+
+        // 默认值
+        defaults: {
+            'num': ''
+        }
+
+    });
+
+    // collections
+    var Records = Backbone.Collection.extend({
+        model: Record,
+
+        _modelMaps: {
+            'num': 'num',
+            'recordId': 'record_id',
+            'companyId': 'company_id',
+            'companyName': 'company_name',
+            'companyCombineName': 'company_combine_name',
+            'title': 'title',
+            'invoiceAmount': 'invoice_amount',
+            'content': 'content',
+            'transporterId': 'transporter_id',
+            'transporterName': 'transporter_name',
+            'state': 'state',
+            'stateStr': 'state_str',
+            'invoiceDate': 'invoice_date',
+            'operatorId': 'operator_id',
+            'operatorName': 'operator_name',
+            'img': 'img',
+            'createTime': 'create_time'
+        },
+
+        // 查询
+        search: function(name, state, startDate, endDate, pageIndex){
+            var me = this,
+                name = name||'',
+                state = state||0,
+                startDate = startDate||'{{start_date}}',
+                endDate = endDate||'{{end_date}}',
+                pageIndex = pageIndex||1;
+
+            ajaxSend(
+                "/admin/invoice_record/search", 
+                {'name': name, 'state': state, 'start_date': startDate, 'end_date': endDate, 'page_index': pageIndex}, 
+                function(data){
+                    me.pageIndex = pageIndex;
+                    me.pageCount = data.page_count;
+                    me.name = name;
+                    me.state = state;
+                    me.startDate = startDate;
+                    me.endDate = endDate;
+                    me.sumPrice = data.sum_price;
+
+                    me.reset($.Global.Utils.dictMapParse(data.data, me._modelMaps));
+                }
+            );
+        },
+
+        // 获取一个提问的model
+        getOne: function(recordId, callback){
+            var me = this;
+
+            ajaxSend(
+                "/admin/invoice_record/get_record_by_id", 
+                {'record_id': recordId},
+                function(data){
+                    if(callback){
+                        callback($.Global.Utils.dictMap(data, me._modelMaps));
+                    }
+                }
+            );
+        },
+
+        //
+        modifyRecord: function(data, callback){
+
+            ajaxSend(
+                "/admin/invoice_record/modify_record", 
+                data,
+                function(response){
+                    if(callback){
+                        callback(response);
+                    }
+                }
+            );
+        },
+
+        addRecord: function(data, callback){
+
+            ajaxSend(
+                "/admin/invoice_record/add_record", 
+                data,
+                function(response){
+                    if(callback){
+                        callback(response);
+                    }
+                }
+            );
+        }
+
+    });
+
+    // listView
+    var ListView = Backbone.View.extend({
+        el: '#record_list',
+
+        pagination: new $.Global.Pagination.PaginationView(),
+
+        template: _.template($('#record_template').html()),
+
+        initialize: function(){
+            this.listenTo(this.collection, 'reset', this.render);
+        },
+
+        events: {
+            'click .search': 'search',
+            'click .pointer': 'modifyRecord'
+        },
+
+        // 渲染函数
+        render: function(){
+            var data = this.collection.toJSON();
+
+            this.showPanel();
+
+            this.$('tbody').html(this.template({'records': data}));
+
+            this.pagination.render(
+                this.collection.pageIndex||1, 
+                this.collection.pageCount, 
+                String.format(
+                    'search/{0}/{1}/{2}/{3}', 
+                    this.collection.name,
+                    this.collection.state,
+                    this.collection.startDate,
+                    this.collection.endDate
+                )
+            );
+
+            this.$('.state').val(this.collection.state);
+            this.$('#start_date_search').val(this.collection.startDate);
+            this.$('#end_date_search').val(this.collection.endDate);
+            this.$('.name').val(this.collection.name);
+        },
+
+        // 显示面板
+        showPanel: function(){
+            $('.orange-nav-pills a[href="#record_list"]').tab('show');
+        },
+
+        search: function(){
+            var name = this.$('.name').val(),
+                startDate = this.$('#start_date_search').val(),
+                endDate = this.$('#end_date_search').val(),
+                state = this.$('.state').val();
+
+            router.navigate(
+                String.format('/search/{0}/{1}/{2}/{3}/1', name, state, startDate, endDate), 
+                {trigger: true}
+            );
+        },
+
+        modifyRecord: function(sender){
+            var target = $(sender.currentTarget),
+                recordId = target.data('record_id');
+
+            router.navigate('/modify/' + recordId, {trigger: true});
+        }
+    });
+
+    // modifyView
+    var ModifyView = Backbone.View.extend({
+        
+        el: '#modify_record',
+
+        template: _.template($('#modify_record_template').html()),
+
+        events: {
+            'click .save': 'save',
+            'click .full-image': 'fullImage'
+        },
+
+        // 显示面板
+        showPanel: function(){
+            $('.orange-nav-pills a[href="#modify_record"]').tab('show');
+        },
+
+        fullImage: function(sender){
+            var target = $(sender.currentTarget),
+                imgUrl = target.attr('src');
+
+            $.Global.Image.FullImage(imgUrl);
+        },
+
+        initInvoiceDate: function(){
+            $('#invoice_date_modify').datetimepicker({
+                format: 'yyyy-mm-dd',
+                language: 'zh-CN',
+                minView: 2,
+                autoclose: true
+            });
+        },
+
+        companyTextBox: null,
+        initCompanyTextBox: function(name, value){
+            var me = this;
+
+            this.companyTextBox = $.Global.TextboxList.create('#company_modify', {
+                max: 1,
+                placeholder: '选择所属公司',
+                url: '/admin/company/get_companys_by_name',
+                param: 'company_name',
+                loadPlaceholder: '正在加载...'
+            });
+            
+            if(value){
+                this.companyTextBox.add(name, value);
+            }
+        },
+
+        transporterTextBox: null,
+        initTransporterTextBox: function(name, value){
+            var me = this;
+
+            this.transporterTextBox = $.Global.TextboxList.create('#transporter_modify', {
+                max: 1,
+                placeholder: '选择配送人',
+                url: '/admin/user/get_user_by_nick',
+                param: 'nick',
+                loadPlaceholder: '正在加载...'
+            });
+
+            if(value){
+                this.transporterTextBox.add(name, value);
+            }
+        },
+
+        // 渲染
+        render: function(data){
+            this.$el.html(this.template(data));
+
+            this.initInvoiceDate();
+            this.initCompanyTextBox(data.companyName, data.companyId);
+            this.initTransporterTextBox(data.transporterName, data.transporterId);
+        },
+
+        // 显示提问信息
+        modifyRecord: function(recordId){
+            var me = this;
+
+            this.collection.getOne(recordId, function(data){
+                if(data){
+                    me.render(data);
+                    me.showPanel();
+                } else {
+                    setTimeout(function(){history.go(-1);}, 3000);
+                    $.Global.Notice.ErrorTopNotice("没有找到对应的发票记录!");
+                }
+            });
+        },
+
+        // 保存
+        save: function(sender){
+            if(this.companyTextBox.getValues().length == 0){
+                $.Global.Notice.InfoTopNotice('请输入正确的公司!');
+                return;
+            }
+
+            if(!this.$('form').valid()){
+                return;
+            }
+            
+            this.$('form').submit();
+
+        }
+
+
+    });
+
+    
+    var AddView = Backbone.View.extend({
+        el: 'body',
+
+        template: _.template($('#add_record_template').html()),
+
+        showPanel: function(){
+            var me = this;
+
+            me.render();
+        },
+
+        events: {
+            'click .number': '_focusItem' 
+        },
+
+        // 点击选中
+        _focusItem: function(sender){
+            var target = $(sender.currentTarget);
+
+            target[0].select();
+        },
+
+        initInvoiceDate: function(){
+            $('#invoice_date_add').datetimepicker({
+                format: 'yyyy-mm-dd',
+                language: 'zh-CN',
+                minView: 2,
+                autoclose: true
+            });
+        },
+
+        companyTextBox: null,
+        initCompanyTextBox: function(name, value){
+            var me = this;
+
+            this.companyTextBox = $.Global.TextboxList.create('#company_add', {
+                max: 1,
+                placeholder: '选择所属公司',
+                url: '/admin/company/get_companys_by_name',
+                param: 'company_name',
+                loadPlaceholder: '正在加载...'
+            });
+            
+        },
+
+        transporterTextBox: null,
+        initTransporterTextBox: function(name, value){
+            var me = this;
+
+            this.transporterTextBox = $.Global.TextboxList.create('#transporter_add', {
+                max: 1,
+                placeholder: '选择配送人',
+                url: '/admin/user/get_user_by_nick',
+                param: 'nick',
+                loadPlaceholder: '正在加载...'
+            });
+            
+        },
+
+        render: function(){
+            var me = this;
+
+            $('#add_record_modal').remove();
+            
+            $('body').append(this.template());
+
+            // 绑定事件
+            $('#add_record_modal .cancel').bind('click', function(){
+                history.go(-1);
+            });
+            $('#add_record_modal .ok').bind('click', function(){
+
+                me.addRecord();
+            });
+            
+            $('#add_record_modal').modal({'show': true, 'backdrop': 'static'});
+
+            me.initCompanyTextBox();
+            me.initTransporterTextBox();
+            me.initInvoiceDate();
+        },
+
+        addRecord: function(){
+            
+            if(this.companyTextBox.getValues().length == 0){
+                $.Global.Notice.InfoTopNotice('请输入正确的公司!');
+                return;
+            }
+
+            if(!$('#add_record_modal form').valid()){
+                return;
+            }
+
+            g_ajax_processing_obj_id = $('#add_record_modal .ok').setUUID().attr('id');
+            show_ajax_processing();
+
+            $('#add_record_modal form').submit();
+
+        }
+
+    });
+
+    
+    // router
+    var Router = Backbone.Router.extend({
+
+        routes: {
+            "":                     "search",
+            "modify/:recordId":       "modify",
+            "search/(:name)/(:state)/(:startDate)/(:endDate)/:pageIndex":    "search",
+            "add":                   "add"
+        },
+
+        // 查询
+        search: function(name, state, startDate, endDate, pageIndex){
+            records.search(name, state, startDate, endDate, pageIndex);
+        },
+
+        // 显示修改界面
+        modify: function(recordId){
+            modifyView.modifyRecord(recordId);
+        },
+
+        add: function(){
+            addView.showPanel();
+        }
+
+    });
+    
+    // 初始化
+    var records = new Records(),
+        listView = new ListView({'collection': records}),
+        modifyView = new ModifyView({'collection': records}),
+        addView = new AddView(),
+        router = new Router();
+ 
+    Backbone.history.start();
+
+    if(window.location.href.indexOf('?') > -1){
+        $.Global.Notice.ErrorTopNotice(decodeURI(window.location.search).substring(1));
+    }
+
+    $('#start_date_search').datetimepicker({
+        format: 'yyyy-mm-dd',
+        language: 'zh-CN',
+        minView: 2,
+        autoclose: true
+    });
+
+    $('#end_date_search').datetimepicker({
+        format: 'yyyy-mm-dd',
+        language: 'zh-CN',
+        minView: 2,
+        autoclose: true
+    });
+});
+
+</script>
+{% endblock %}
+
+{% block admin_main %}
+<ul class="nav nav-pills orange-nav-pills">
+    <li class="active">
+        <a href="#record_list" data-toggle="pill">
+            <i class="fa fa-list-ol pr-5"></i>
+            <span class="hidden-sm hidden-md hidden-lg">列表</span>
+            <span class="hidden-xs">发票列表</span>
+        </a>
+    </li>
+    <li>
+        <a href="#modify_record" data-toggle="pill">
+            <i class="fa fa-pencil-square-o pr-5"></i>
+            <span class="hidden-sm hidden-md hidden-lg">修改</span>
+            <span class="hidden-xs">修改发票</span>
+        </a>
+    </li>
+    <li class="pull-right">
+        <a href="#add">
+            <i class="fa fa-plus-circle pr-5"></i>
+            <span class="hidden-sm hidden-md hidden-lg">添加</span>
+            <span class="hidden-xs">添加发票</span>
+        </a>
+    </li>
+</ul>
+
+<div class="tab-content">
+    <!-- 客户经理列表 -->
+    <div class="tab-pane fade pt-15 in active" id="record_list">
+        <form action="." class="form-inline" onsubmit="javascript: return false;">
+            <div class="input-group input-group-sm pb-10">
+                <span class="input-group-addon">状态</span>
+                <select class="form-control state">
+                    {% for state in all_states %}
+                    <option value="{{state.value}}" {% if state.value == 0 %}selected{% endif %} >{{state.name}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="input-group input-group-sm pb-10">
+                <span class="input-group-addon">开始日期</span>
+                <input type="text" class="form-control" id="start_date_search" value="{{start_date}}"  />
+            </div>
+            <div class="input-group input-group-sm pb-10">
+                <span class="input-group-addon">结束日期</span>
+                <input type="text" class="form-control" id="end_date_search" value="{{end_date}}"  />
+            </div>
+            <div class="input-group input-group-sm pb-10">
+                <span class="input-group-addon">公司名称</span>
+                <input type="text" class="form-control name" placeholder="" />
+                <span class="input-group-btn">
+                    <button class="btn btn-default search bgc-eeeeee" type="submit">查询</button>
+                </span>
+            </div>
+        </form>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>公司名称</th>
+                    <th>发票金额</th>
+                    <th>开票日期</th>
+                    <th>配送人</th>
+                    <th class="hidden-xs">操作时间</th>
+                    <th>状态</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+            </tbody>
+        </table>
+
+        <div class="text-center">
+            <ul class="pagination pagination-sm qx-pagination">
+                
+            </ul>
+        </div>
+        
+    </div>
+
+    <!-- 修改客户经理信息 -->
+    <div class="tab-pane fade" id="modify_record">
+        
+    </div>
+</div>
+
+<!-- 客户经理列表 -->
+<script type="text/template" id="record_template">
+    <% _.each(records, function(record){ %>
+        <tr class="pointer" data-record_id="<%= record.recordId %>">
+            <td><%= record.num %></td>
+            <td><%= record.companyCombineName %></td>
+            <td><%= record.invoiceAmount %></td>
+            <td><%= record.invoiceDate %></td>
+            <td><%= record.transporterName %></td>
+            <td class="hidden-xs"><%= record.createTime %></td>
+            <td><%= record.stateStr %></td>
+        </tr>
+    <% }) %>
+</script>
+
+<!-- 修改问题模板 -->
+<script type="text/template" id="modify_record_template">
+    <form class="form-horizontal" data-record_id="<%= recordId %>" method="post" action="/admin/invoice_record/modify_record" enctype="multipart/form-data">
+        <input type="hidden" name="record_id" value="<%= recordId %>" />
+        <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+            <label class="col-sm-2 control-label">所属公司</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" id="company_modify" required name="company_id" value=''>
+            </div>
+        </div>
+        <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+            <label class="col-sm-2 control-label">发票抬头</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" required name="title" value='<%= title %>'>
+            </div>
+        </div>
+        <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+            <label class="col-sm-2 control-label">开票金额</label>
+            <div class="col-sm-3">
+                <input type="text" class="form-control number" required name="invoice_amount" value='<%= invoiceAmount %>'>
+            </div>
+        </div>
+        <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+            <label class="col-sm-2 control-label">开票日期</label>
+            <div class="col-sm-3">
+                <input type="text" id="invoice_date_modify" required class="form-control date" name='invoice_date' value='<%= invoiceDate %>'>
+            </div>
+        </div>
+        <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+            <label class="col-sm-2 control-label">发票内容</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" required name="content" value='<%= content %>'>
+            </div>
+        </div>
+        <div class="form-group pt-20 pb-20 mb-0">
+            <label class="col-sm-2 control-label">配送人</label>
+            <div class="col-sm-3">
+                <input type="text" class="form-control" id="transporter_modify" required name="transporter" value=''>
+            </div>
+        </div>
+        <div class="form-group pt-20 pb-20 mb-0">
+            <label class="col-sm-2 control-label">流水图片</label>
+            <div class="col-sm-6">
+                <img src="<%= img %>" >
+                <input name="img" type="file" />
+            </div>
+        </div>
+        <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+            <label class="col-sm-2 control-label">状态</label>
+            <div class="col-sm-5">
+                
+                {% for state in states %}
+                <label class="radio-inline">
+                    <input type="radio" name="state" value="{{state.value}}" <% if({{state.value}}==state){ %>checked<% } %> > {{state.name}}
+                </label>
+                {% endfor %}
+                
+            </div>
+        </div>
+        <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+            <label class="col-sm-2 control-label">操作人</label>
+            <div class="col-sm-5">
+                <p class="form-control-static"><%= operatorName %></p>
+            </div>
+        </div>
+        <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+            <label class="col-sm-2 control-label">创建时间</label>
+            <div class="col-sm-5">
+                <p class="form-control-static"><%= createTime %></p>
+            </div>
+        </div>
+        <div class="form-group pt-20 pb-20 mb-0">
+            <div class="col-sm-12">
+                <button type="button" class="btn btn-primary save">提交你的修改</button>
+            </div>
+        </div>
+    </form>
+</script>
+
+
+<script type="text/template" id="add_record_template">
+<div class="modal fade" id="add_record_modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header pb-5">
+                <!-- <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button> -->
+                <h4 class="modal-title">添加发票</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" role="form" method="post" action="/admin/invoice_record/add_record" enctype="multipart/form-data">
+                    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+                        <label class="col-sm-2 control-label">所属公司</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" id="company_add" required name="company_id" value=''>
+                        </div>
+                    </div>
+                    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+                        <label class="col-sm-2 control-label">发票抬头</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" required name="title" value=''>
+                        </div>
+                    </div>
+                    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+                        <label class="col-sm-2 control-label">开票金额</label>
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control number" required name="invoice_amount" value='0'>
+                        </div>
+                    </div>
+                    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+                        <label class="col-sm-2 control-label">开票日期</label>
+                        <div class="col-sm-3">
+                            <input type="text" id="invoice_date_add" required class="form-control date" name='invoice_date' value='{{end_date}}'>
+                        </div>
+                    </div>
+                    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+                        <label class="col-sm-2 control-label">发票内容</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" required name="content" value=''>
+                        </div>
+                    </div>
+                    <div class="form-group pt-20 pb-20 mb-0">
+                        <label class="col-sm-2 control-label">配送人</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" id="transporter_add" required name="transporter" value=''>
+                        </div>
+                    </div>
+                    <div class="form-group pt-20 pb-20 mb-0">
+                        <label class="col-sm-2 control-label">流水图片</label>
+                        <div class="col-sm-6">
+                            <input name="img" type="file" />
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default cancel" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary ok">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+</script>
+
+{% endblock %}

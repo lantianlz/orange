@@ -17,7 +17,8 @@ from www.misc import consts
 from www.account.interface import UserBase, ExternalTokenBase
 from models import Item, Company, Meal, MealItem, Order, OrderItem, \
     Booking, CompanyManager, CashAccount, CashRecord, Supplier, \
-    SupplierCashAccount, SupplierCashRecord, PurchaseRecord, SaleMan
+    SupplierCashAccount, SupplierCashRecord, PurchaseRecord, SaleMan, \
+    InvoiceRecord
 
 DEFAULT_DB = 'default'
 
@@ -50,6 +51,8 @@ dict_err = {
     20901: u'没有找到对应的采购流水',
 
     21001: u'没有找到对应的销售人员',
+
+    21101: u'没有找到对应的发票记录',
 }
 dict_err.update(consts.G_DICT_ERROR)
 
@@ -1094,15 +1097,17 @@ class CashRecordBase(object):
                     u"账户余额：%.2f 元" % balance
                 )
 
-    def get_all_records(self, operation=None):
+    def get_all_records(self, operation=None, is_invoice=None):
         objs = CashRecord.objects.all()
         if operation:
             objs = objs.filter(operation=operation)
+        if is_invoice:
+            objs = objs.filter(is_invoice=is_invoice)
 
         return objs
 
-    def get_records_for_admin(self, start_date, end_date, name, operation=None):
-        objs = self.get_all_records(operation).filter(create_time__range=(start_date, end_date))
+    def get_records_for_admin(self, start_date, end_date, name, operation=None, is_invoice=None):
+        objs = self.get_all_records(operation, is_invoice).filter(create_time__range=(start_date, end_date))
 
         if name:
             objs = objs.filter(cash_account__company__name__contains=name)
@@ -1129,9 +1134,9 @@ class CashRecordBase(object):
         assert value > 0 and notes and company
 
     @transaction.commit_manually(using=DEFAULT_DB)
-    def add_cash_record_with_transaction(self, company_id, value, operation, notes, ip=None):
+    def add_cash_record_with_transaction(self, company_id, value, operation, notes, ip=None, is_invoice=1):
         try:
-            errcode, errmsg = self.add_cash_record(company_id, value, operation, notes, ip)
+            errcode, errmsg = self.add_cash_record(company_id, value, operation, notes, ip, is_invoice)
             if errcode == 0:
                 transaction.commit(using=DEFAULT_DB)
             else:
@@ -1142,7 +1147,7 @@ class CashRecordBase(object):
             transaction.rollback(using=DEFAULT_DB)
             return 99900, dict_err.get(99900)
 
-    def add_cash_record(self, company_id, value, operation, notes, ip=None):
+    def add_cash_record(self, company_id, value, operation, notes, ip=None, is_invoice=1):
         try:
             try:
                 value = decimal.Decimal(value)
@@ -1165,7 +1170,8 @@ class CashRecordBase(object):
                 current_balance=account.balance,
                 operation=operation,
                 notes=notes,
-                ip=ip
+                ip=ip,
+                is_invoice=is_invoice
             )
 
             # 转出时判断是否超过透支额  发送提醒
@@ -1197,6 +1203,22 @@ class CashRecordBase(object):
         )
 
         return objs
+
+    def get_records_group_by_company(self, start_date, end_date, operation=None, is_invoice=None):
+        '''
+        根据公司分组获取现金流水记录
+
+        '''
+        objs = CashRecord.objects.filter(
+            create_time__range=(start_date, end_date)
+        )
+        if operation is not None:
+            objs = objs.filter(operation=operation)
+
+        if is_invoice is not None:
+            objs = objs.filter(is_invoice=is_invoice)
+
+        return objs.values('cash_account__company_id').annotate(recharge=Sum('value'))
 
 
 class SupplierBase(object):
@@ -1753,8 +1775,111 @@ class StatisticsBase(object):
         }
 
 
+class InvoiceRecordBase(object):
+
+    def get_all_records(self, state=None):
+        objs = InvoiceRecord.objects.all()
+
+        if state:
+            objs = objs.filter(state=state)
+
+        return objs
+
+    def search_records_for_admin(self, name, state, start_date, end_date):
+        objs = self.get_all_records(state).filter(
+            create_time__range = (start_date, end_date)
+        )
+
+        if name:
+            objs = objs.select_related('company').filter(
+                company__name__contains=name
+            )
+
+        return objs, objs.aggregate(Sum('invoice_amount'))['invoice_amount__sum']
+
+    def get_record_by_id(self, record_id):
+        try:
+            return InvoiceRecord.objects.select_related("company").get(id=record_id)
+        except InvoiceRecord.DoesNotExist:
+            return ''
+
+    def add_record(self, company_id, title, invoice_amount, content, invoice_date, operator, transporter=None, img=None):
+        
+        if not (company_id, title, invoice_amount, content, invoice_date, operator):
+            return 99800, dict_err.get(99800)
+
+        obj = CompanyBase().get_company_by_id(company_id)
+        if not obj:
+            return 20802, dict_err.get(20802)
+
+        try:
+            assert invoice_amount > 0
+
+            record = InvoiceRecord.objects.create(
+                company_id = company_id,
+                title = title,
+                invoice_amount = invoice_amount,
+                content = content,
+                invoice_date = invoice_date,
+                operator = operator,
+                transporter = transporter,
+                img = img
+            )
+
+        except Exception, e:
+            debug.get_debug_detail_and_send_email(e)
+            return 99900, dict_err.get(99900)
+
+        return 0, record
+
+    def modify_record(self, record_id, company_id, title, invoice_amount, content, invoice_date, operator, state, transporter=None, img=None):
+        
+        if not (record_id, company_id, title, invoice_amount, content, invoice_date, operator):
+            return 99800, dict_err.get(99800)
+        
+        company = CompanyBase().get_company_by_id(company_id)
+        if not company:
+            return 20802, dict_err.get(20802)
+
+        obj = self.get_record_by_id(record_id)
+        if not obj:
+            return 21101, dict_err.get(21101)
+
+        try:
+            assert invoice_amount > 0
+
+            obj.company_id = company_id
+            obj.title = title
+            obj.invoice_amount = invoice_amount
+            obj.content = content
+            obj.invoice_date = invoice_date
+            obj.operator = operator
+            obj.state = state
+            obj.transporter = transporter
+            obj.img = img
+            obj.save()
+
+        except Exception, e:
+            debug.get_debug_detail_and_send_email(e)
+            return 99900, dict_err.get(99900)
+
+        return 0, obj
 
 
+    def get_invoice_amount_group_by_company(self, company_name, start_date, end_date):
+        '''
+        根据公司分组获取发票金额
+        '''
+        objs = InvoiceRecord.objects.filter(
+            state__in=[1, 2],
+            create_time__range=(start_date, end_date)
+        )
+
+        if company_name:
+            objs = objs.filter(company__name__contains=company_name)
+
+        return objs.values('company_id').annotate(invoice_amount=Sum('invoice_amount'))
+        
 
 
 

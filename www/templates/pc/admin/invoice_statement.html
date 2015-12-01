@@ -1,0 +1,226 @@
+{% extends "pc/admin/home.html" %}
+{% load custom_tags %}
+{% load custom_filters %}
+{% block title %}发票对账{% endblock %}
+{% block admin_title %}发票对账{% endblock %}
+{% block admin_title_m %}发票对账{% endblock %}
+
+{% block css %}
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript">
+$(document).ready(function(){
+    var Record = Backbone.Model.extend({
+        defaults: {
+
+        }
+    });
+
+    var Records = Backbone.Collection.extend({
+        model: Record,
+
+        _modelMaps: {
+            'name': 'name',
+            'combineName': 'combine_name',
+            'account': 'account',
+            'recharge': 'recharge',
+            'invoiceAmount': 'invoice_amount'
+        },
+
+        search: function(start_date, end_date, name){
+            var me = this,
+                start_date = start_date || '{{start_date}}',
+                end_date = end_date || '{{end_date}}',
+                name = name || '';
+
+            ajaxSend(
+                "/admin/invoice_statement/get_invoice_statement", 
+                {'start_date': start_date, 'end_date': end_date, 'name': name}, 
+                function(data){
+                    me.reset($.Global.Utils.dictMapParse(data.data, me._modelMaps));
+                }
+            );
+        }
+
+    });
+    
+    var ListView = Backbone.View.extend({
+        el: '#record_list',
+
+        template: _.template($('#record_list_template').html()),
+
+        events: {
+            'click .search': 'searchRecord',
+            'click .go-invoice-record': 'goInvoiceRecord',
+            'click .go-cash-record': 'goCashRecord'
+        },
+
+        initialize: function(){
+            this.listenTo(this.collection, 'reset', this.render);
+        },
+
+        render: function(){
+            var data = this.collection.toJSON();
+            
+            this.showPanel();
+            this.$('tbody').html(this.template({'records': data}));
+        },
+
+        // 跳转到发票记录
+        goInvoiceRecord: function(sender){
+
+            var target = $(sender.currentTarget),
+                startDate = this.$('#start_date_search').val(),
+                endDate = this.$('#end_date_search').val(),
+                companyName = target.data('company-name'),
+                url = String.format(
+                    '/admin/invoice_record#search/{0}/0/{1}/{2}/1',
+                    companyName,
+                    startDate,
+                    endDate
+                );
+            
+            window.open(url);
+
+            sender.preventDefault();
+        },
+
+        // 跳转到现金记录
+        goCashRecord: function(sender){
+
+            var target = $(sender.currentTarget),
+                startDate = this.$('#start_date_search').val(),
+                endDate = this.$('#end_date_search').val(),
+                companyName = target.data('company-name'),
+                url = String.format(
+                    '/admin/cash_record#search/{0}/{1}/{2}/0/1/1',
+                    startDate,
+                    endDate,
+                    companyName
+                );
+            
+            window.open(url);
+
+            sender.preventDefault();
+        },
+
+        // 显示面板
+        showPanel: function(){
+            $('.orange-nav-pills a[href="#record_list"]').tab('show');
+        },
+
+        searchRecord: function(){
+            var name = this.$('.name').val(),
+                startDate = this.$('#start_date_search').val(),
+                endDate = this.$('#end_date_search').val();
+
+            router.navigate(String.format('/search/{0}/{1}/{2}', startDate, endDate, name), {trigger: true});
+        }
+        
+    });
+
+
+    var Router = Backbone.Router.extend({
+        routes: {
+            "":                                           "search",
+            "search/(:start_date)/(:end_date)/(:name)":   "search",
+        },
+
+        // 获取推荐用户
+        search: function(start_date, end_date, name){
+            records.search(start_date, end_date, name);
+        },
+
+    });
+
+    var records = new Records(),
+        listView = new ListView({collection: records}),
+        router = new Router();
+
+    Backbone.history.start();
+
+    $('#start_date_search').datetimepicker({
+        format: 'yyyy-mm-dd',
+        language: 'zh-CN',
+        minView: 2,
+        autoclose: true
+    });
+
+    $('#end_date_search').datetimepicker({
+        format: 'yyyy-mm-dd',
+        language: 'zh-CN',
+        minView: 2,
+        autoclose: true
+    });
+});
+
+</script>
+{% endblock %}
+
+{% block admin_main %}
+<ul class="nav nav-pills orange-nav-pills">
+    <li class="active">
+        <a href="#record_list" data-toggle="pill">
+            <i class="fa fa-list-ol pr-5"></i>
+            <span class="hidden-sm hidden-md hidden-lg">列表</span>
+            <span class="hidden-xs">记录列表</span>
+        </a>
+    </li>
+</ul>
+
+<div class="tab-content">
+    <!-- 用户列表 -->
+    <div class="tab-pane fade pt-15 in active" id="record_list">
+        <form action="." class="form-inline" onsubmit="javascript: return false;">
+            <div class="input-group input-group-sm pb-10">
+                <span class="input-group-addon">开始日期</span>
+                <input type="text" class="form-control" id="start_date_search" value="{{start_date}}" />
+            </div>
+            <div class="input-group input-group-sm pb-10">
+                <span class="input-group-addon">结束日期</span>
+                <input type="text" class="form-control" id="end_date_search" value="{{end_date}}" />
+            </div>
+            <div class="input-group input-group-sm pb-10">
+                <span class="input-group-addon">公司名称</span>
+                <input type="text" class="form-control name" placeholder="" />
+                <span class="input-group-btn">
+                    <button class="btn btn-default search bgc-eeeeee" type="submit">查询</button>
+                </span>
+            </div>
+        </form>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>公司名称</th>
+                    <th>现金账户</th>
+                    <th>总充值流水</th>
+                    <th>总开票金额</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+            </tbody>
+        </table>
+
+    </div>
+</div>
+
+<script type="text/template" id="record_list_template">
+<% _.each(records, function(record, index){ %>
+    <tr>
+        <td><%= index+1 %></td>
+        <td><%= record.combineName %></td>
+        <td><%= record.account %></td>
+        <td>
+            <a href="#" data-company-name="<%= record.name %>" class="go-cash-record"><%= record.recharge %></a>
+        </td>
+        <td>
+            <a href="#" data-company-name="<%= record.name %>" class="go-invoice-record"><%= record.invoiceAmount %></a>
+        </td>
+    </tr>
+<% }) %>
+</script>
+
+{% endblock %}

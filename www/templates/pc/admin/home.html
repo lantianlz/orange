@@ -470,6 +470,17 @@ $(document).ready(function(){
                 <a href="/admin/booking"><i class="fa fa-clock-o pr-3" style="font-size: 21px; top: 13px"></i>预约信息管理</a>
             </li>
             <li class="list-group-item">
+                <a><i class="fa fa-credit-card pr-3"></i>发票管理</a>
+                <ul class="list-group sub-nav">
+                    <li class="list-group-item {% if '/admin/invoice_record' == request.path %}active{% endif %}">
+                        <a href="/admin/invoice_record"><i class="point"></i>发票记录</a>
+                    </li>
+                    <li class="list-group-item {% if '/invoice_statement' in request.path %}active{% endif %}">
+                        <a href="/admin/invoice_statement"><i class="point"></i>发票对账</a>
+                    </li>
+                </ul>
+            </li>
+            <li class="list-group-item">
                 <a><i class="fa fa-bar-chart pr-3"></i>统计管理</a>
                 <ul class="list-group sub-nav">
                     

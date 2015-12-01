@@ -170,6 +170,23 @@ urlpatterns += patterns('www.admin.views_booking',
     url(r'^booking$', 'booking'),
 )
 
+# 发票流水
+urlpatterns += patterns('www.admin.views_invoice_record',
+
+    url(r'^invoice_record/modify_record$', 'modify_record'),
+    url(r'^invoice_record/add_record$', 'add_record'),
+    url(r'^invoice_record/get_record_by_id$', 'get_record_by_id'),
+    url(r'^invoice_record/search$', 'search'),
+    url(r'^invoice_record$', 'invoice_record'),
+)
+
+# 发票对账
+urlpatterns += patterns('www.admin.views_invoice_statement',
+
+    url(r'^invoice_statement/get_invoice_statement$', 'get_invoice_statement'),
+    url(r'^invoice_statement$', 'invoice_statement'),
+)
+
 # 统计管理
 urlpatterns += patterns('www.admin.views_statistics',
     url(r'^statistics_commission$', 'statistics_commission'),

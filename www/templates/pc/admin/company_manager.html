@@ -274,7 +274,7 @@ $(document).ready(function(){
         initManagerTextBox: function(name, value){
             var me = this;
 
-            this.userTextBox = $.Global.TextboxList.create('#manager_add', {
+            this.managerTextBox = $.Global.TextboxList.create('#manager_add', {
                 max: 1,
                 placeholder: '选择管理员',
                 url: '/admin/user/get_user_by_nick',

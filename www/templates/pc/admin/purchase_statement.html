@@ -115,7 +115,7 @@ $(document).ready(function(){
             var target = $(sender.currentTarget),
                 startDate = this.$('#start_date_search').val(),
                 endDate = this.$('#end_date_search').val(),
-                supplierName = target.data('supplier-name');
+                supplierName = target.data('supplier-name'),
                 url = String.format(
                     '/admin/purchase_record#search/{0}/1/{1}/{2}/1',
                     supplierName,

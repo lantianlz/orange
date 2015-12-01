@@ -18,6 +18,7 @@ def cash_record(request, template_name='pc/admin/cash_record.html'):
     operation_choices = [{'value': x[0], 'name': x[1]} for x in CashRecord.operation_choices]
     all_operations = [{'name': x[1], 'value': x[0]} for x in CashRecord.operation_choices]
     all_operations.insert(0, {'name': u'全部', 'value': -1})
+    all_invoices = [{'name': u'全部', 'value': -1}, {'name': u'不记录', 'value': 0}, {'name': u'记录', 'value': 1}]
 
     today = datetime.datetime.now()
     start_date= (today - datetime.timedelta(days=30)).strftime('%Y-%m-%d')
@@ -43,6 +44,7 @@ def format_record(objs, num):
             'value': str(x.value),
             'current_balance': str(x.current_balance),
             'operation': x.operation,
+            'is_invoice': x.is_invoice,
             'notes': x.notes,
             'ip': x.ip,
             'create_time': str(x.create_time)
@@ -61,10 +63,12 @@ def search(request):
     name = request.REQUEST.get('name')
     operation = request.REQUEST.get('operation')
     operation = None if operation == "-1" else operation
+    is_invoice = request.REQUEST.get('is_invoice')
+    is_invoice = None if is_invoice == "-1" else is_invoice
     
     page_index = int(request.REQUEST.get('page_index'))
     
-    objs, sum_price = CashRecordBase().get_records_for_admin(start_date, end_date, name, operation)
+    objs, sum_price = CashRecordBase().get_records_for_admin(start_date, end_date, name, operation, is_invoice)
 
     page_objs = page.Cpt(objs, count=10, page=page_index).info
 
@@ -86,6 +90,8 @@ def add_cash_record(request):
     operation = request.REQUEST.get('operation')
     notes = request.REQUEST.get('notes')
     ip = utils.get_clientip(request)
+    is_invoice = request.REQUEST.get('is_invoice')
+    is_invoice = 1 if is_invoice == "1" else 0
 
-    return CashRecordBase().add_cash_record_with_transaction(company_id, value, operation, notes, ip)
+    return CashRecordBase().add_cash_record_with_transaction(company_id, value, operation, notes, ip, is_invoice)
 

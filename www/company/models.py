@@ -79,6 +79,7 @@ class CashRecord(models.Model):
     current_balance = models.DecimalField(verbose_name=u"当时余额", max_digits=20, decimal_places=2, db_index=True)
     operation = models.IntegerField(verbose_name=u"操作类型", choices=operation_choices, db_index=True)
     notes = models.CharField(verbose_name=u"备注", max_length=256)
+    is_invoice = models.IntegerField(verbose_name=u"是否记录开票金额", default=1, null=True, db_index=True)
     ip = models.CharField(verbose_name=u"ip", max_length=32, null=True)
     create_time = models.DateTimeField(verbose_name=u"流水时间", auto_now_add=True, db_index=True) 
 
@@ -301,26 +302,22 @@ class OrderItem(models.Model):
     class Meta:
         unique_together = [("order", "item"), ]
 
-class Invoice(models.Model):
 
+class InvoiceRecord(models.Model):
     '''
     @note: 发票
     '''
-    customer_type_choices = ((0, u"个人"), (1, u"企业"))
-    taxpayer_type_choices = ((0, u"增值税普通发票"), (1, u"增值税专用发票"))
+    state_choices = ((1, u"未打款"), (2, u"已打款"), (9, u"已作废"))
 
     company = models.ForeignKey("Company")
-    un_invoice_amount = models.DecimalField(verbose_name=u"未开发票金额", max_digits=10, decimal_places=2, default=0)
-    title = models.CharField(verbose_name=u"发票抬头", max_length=32)
-    customer_type = models.IntegerField(verbose_name=u"开具类型", default=0, choices=customer_type_choices)
-    taxpayer_type = models.IntegerField(verbose_name=u"发票类型", default=0, choices=taxpayer_type_choices)
-
-
-class InvoiceRecord(models.Model):
-
-    invoice = models.ForeignKey("Invoice")
+    title = models.CharField(verbose_name=u"发票抬头", max_length=128)
     invoice_amount = models.DecimalField(verbose_name=u"发票金额", max_digits=10, decimal_places=2, default=0)
-    operator = models.CharField(verbose_name=u"开票人", max_length=32)
+    content = models.CharField(verbose_name=u"发票内容", max_length=256)
+    transporter = models.CharField(verbose_name=u"配送人", max_length=32, null=True)
+    state = models.IntegerField(verbose_name=u"状态", default=1, choices=state_choices)
+    invoice_date = models.DateField(verbose_name=u"开票日期")
+    img = models.CharField(verbose_name=u"图片", max_length=128, null=True)
+    operator = models.CharField(verbose_name=u"操作人", max_length=32)
     create_time = models.DateTimeField(verbose_name=u"创建时间", auto_now_add=True, db_index=True)
 
 
