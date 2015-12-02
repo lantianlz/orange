@@ -210,7 +210,7 @@ class Meal(models.Model):
 
         return "-".join(temp)
 
-    def get_expect_price_per_month(self, start_date, end_date):
+    def get_expect_price_per_month(self, start_date, end_date, sale_date):
         '''
         计算每月的预期销售额
         '''
@@ -232,10 +232,10 @@ class Meal(models.Model):
 
         # 单次
         if self.t_type == 3:
-            import datetime
-            today = datetime.datetime.now()
+            # import datetime
+            # today = datetime.datetime.now()
             # 如果在查询的时间段
-            if (start_date <= today) and (today < end_date):
+            if (start_date <= sale_date) and (sale_date < end_date):
                 expect_price = self.price
 
         return expect_price

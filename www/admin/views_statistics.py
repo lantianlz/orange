@@ -134,7 +134,7 @@ def get_statistics_sale_top_data(request):
             'cycle': x.cycle,
             't_type': x.get_t_type_display(),
             'price': str(x.price),
-            'expect_price': str(x.get_expect_price_per_month(start_date, end_date))
+            'expect_price': str(x.get_expect_price_per_month(start_date, end_date, x.company.sale_date))
         })
         data[key]['companys'].append(x.company.id)
 
