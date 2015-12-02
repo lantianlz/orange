@@ -303,9 +303,24 @@ class OrderItem(models.Model):
         unique_together = [("order", "item"), ]
 
 
-class InvoiceRecord(models.Model):
+class Invoice(models.Model):
     '''
     @note: 发票
+    '''
+    invoice_type_choices = ((1, u"增值税普通发票"),)
+
+    company = models.ForeignKey("Company", unique=True)
+    title = models.CharField(verbose_name=u"发票抬头", max_length=128)
+    content = models.CharField(verbose_name=u"发票内容", max_length=256)
+    invoice_type = models.IntegerField(verbose_name=u"发票类型", default=1, choices=invoice_type_choices)
+    create_time = models.DateTimeField(verbose_name=u"创建时间", auto_now_add=True, db_index=True)
+    
+    class Meta:
+        ordering = ["-create_time"]
+
+class InvoiceRecord(models.Model):
+    '''
+    @note: 发票记录
     '''
     state_choices = ((1, u"未打款"), (2, u"已打款"), (9, u"已作废"))
 

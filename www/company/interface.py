@@ -18,7 +18,7 @@ from www.account.interface import UserBase, ExternalTokenBase
 from models import Item, Company, Meal, MealItem, Order, OrderItem, \
     Booking, CompanyManager, CashAccount, CashRecord, Supplier, \
     SupplierCashAccount, SupplierCashRecord, PurchaseRecord, SaleMan, \
-    InvoiceRecord
+    InvoiceRecord, Invoice
 
 DEFAULT_DB = 'default'
 
@@ -53,6 +53,8 @@ dict_err = {
     21001: u'没有找到对应的销售人员',
 
     21101: u'没有找到对应的发票记录',
+
+    21201: u'没有找到对应的发票',
 }
 dict_err.update(consts.G_DICT_ERROR)
 
@@ -1881,9 +1883,74 @@ class InvoiceRecordBase(object):
         return objs.values('company_id').annotate(invoice_amount=Sum('invoice_amount'))
         
 
+class InvoiceBase(object):
+    
+    def search_invoices_for_admin(self, name):
+        objs = Invoice.objects.all()
+        if name:
+            objs = objs.filter(company__name__contains=name)
 
+        return objs 
 
+    def get_invoice_by_id(self, invoice_id):
+        try:
+            return Invoice.objects.select_related("company").get(id=invoice_id)
+        except Invoice.DoesNotExist:
+            return ''
 
+    def get_invoice_by_company_id(self, company_id):
+        try:
+            return Invoice.objects.select_related("company").get(company_id=company_id)
+        except Invoice.DoesNotExist:
+            return ''
+
+    def add_invoice(self, company_id, title, content):
+        
+        if not (company_id, title, content):
+            return 99800, dict_err.get(99800)
+
+        obj = CompanyBase().get_company_by_id(company_id)
+        if not obj:
+            return 20802, dict_err.get(20802)
+
+        try:
+
+            record = Invoice.objects.create(
+                company_id = company_id,
+                title = title,
+                content = content
+            )
+
+        except Exception, e:
+            debug.get_debug_detail_and_send_email(e)
+            return 99900, dict_err.get(99900)
+
+        return 0, record
+
+    def modify_invoice(self, invoice_id, company_id, title, content):
+        
+        if not (invoice_id, company_id, title, content):
+            return 99800, dict_err.get(99800)
+
+        company = CompanyBase().get_company_by_id(company_id)
+        if not company:
+            return 20802, dict_err.get(20802)
+
+        obj = self.get_invoice_by_id(invoice_id)
+        if not obj:
+            return 21201, dict_err.get(21201)
+
+        try:
+
+            obj.title = title
+            obj.content = content
+            obj.save()
+
+        except Exception, e:
+            debug.get_debug_detail_and_send_email(e)
+            return 99900, dict_err.get(99900)
+
+        return 0, obj
 
 
 

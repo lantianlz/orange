@@ -146,3 +146,5 @@ def modify_record(request):
         url = "/admin/invoice_record?%s#modify/%s" % (msg, obj.id)
 
     return HttpResponseRedirect(url)
+
+

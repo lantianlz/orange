@@ -170,7 +170,18 @@ urlpatterns += patterns('www.admin.views_booking',
     url(r'^booking$', 'booking'),
 )
 
-# 发票流水
+# 发票
+urlpatterns += patterns('www.admin.views_invoice',
+
+    url(r'^invoice/modify_invoice$', 'modify_invoice'),
+    url(r'^invoice/add_invoice$', 'add_invoice'),
+    url(r'^invoice/get_invoice_by_id$', 'get_invoice_by_id'),
+    url(r'^invoice/get_invoice_by_company_id$', 'get_invoice_by_company_id'),
+    url(r'^invoice/search$', 'search'),
+    url(r'^invoice$', 'invoice'),
+)
+
+# 发票记录
 urlpatterns += patterns('www.admin.views_invoice_record',
 
     url(r'^invoice_record/modify_record$', 'modify_record'),

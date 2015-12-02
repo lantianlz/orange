@@ -111,6 +111,18 @@ $(document).ready(function(){
                     }
                 }
             );
+        },
+
+        getInvoiceInfo: function(company_id, callback){
+            ajaxSend(
+                "/admin/invoice/get_invoice_by_company_id", 
+                {'company_id': company_id},
+                function(response){
+                    if(callback){
+                        callback(response);
+                    }
+                }
+            );
         }
 
     });
@@ -335,7 +347,23 @@ $(document).ready(function(){
                 param: 'company_name',
                 loadPlaceholder: '正在加载...'
             });
+
+            // 选择套餐之后导入套餐项目
+            me.companyTextBox.target.onAdd = function(target){
+                var company_id = target.getValue()[0];
+
+                me.loadInvoiceInfo(company_id);
+            }
             
+        },
+
+        loadInvoiceInfo: function(company_id){
+            var me = this;
+
+            records.getInvoiceInfo(company_id, function(data){
+                $('#add_record_modal .title').val(data.title);
+                $('#add_record_modal .content').val(data.content);
+            });
         },
 
         transporterTextBox: null,
@@ -651,30 +679,30 @@ $(document).ready(function(){
                     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
                         <label class="col-sm-2 control-label">发票抬头</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control" required name="title" value=''>
-                        </div>
-                    </div>
-                    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
-                        <label class="col-sm-2 control-label">开票金额</label>
-                        <div class="col-sm-3">
-                            <input type="text" class="form-control number" required name="invoice_amount" value='0'>
-                        </div>
-                    </div>
-                    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
-                        <label class="col-sm-2 control-label">开票日期</label>
-                        <div class="col-sm-3">
-                            <input type="text" id="invoice_date_add" required class="form-control date" name='invoice_date' value='{{end_date}}'>
+                            <input type="text" class="form-control title" required name="title" value=''>
                         </div>
                     </div>
                     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
                         <label class="col-sm-2 control-label">发票内容</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control" required name="content" value=''>
+                            <input type="text" class="form-control content" required name="content" value=''>
+                        </div>
+                    </div>
+                    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+                        <label class="col-sm-2 control-label">开票金额</label>
+                        <div class="col-sm-4">
+                            <input type="text" class="form-control number" required name="invoice_amount" value='0'>
+                        </div>
+                    </div>
+                    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+                        <label class="col-sm-2 control-label">开票日期</label>
+                        <div class="col-sm-4">
+                            <input type="text" id="invoice_date_add" required class="form-control date" name='invoice_date' value='{{end_date}}'>
                         </div>
                     </div>
                     <div class="form-group pt-20 pb-20 mb-0">
                         <label class="col-sm-2 control-label">配送人</label>
-                        <div class="col-sm-8">
+                        <div class="col-sm-4">
                             <input type="text" class="form-control" id="transporter_add" required name="transporter" value=''>
                         </div>
                     </div>
