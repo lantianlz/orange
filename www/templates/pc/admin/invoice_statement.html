@@ -215,7 +215,7 @@ $(document).ready(function(){
         <td><%= index+1 %></td>
         <td><%= record.combineName %></td>
         <td class="fb <% if(record.offset < 0){ %> co-FF0000 <% } else { %> co-19BA40 <% } %>">
-            <%= record.offset %>
+            <% if(record.offset > 0){ %>+<% } %><%= record.offset %>
         </td>
         <td>
             <a href="#" data-company-name="<%= record.name %>" class="go-cash-record"><%= record.recharge %></a>
