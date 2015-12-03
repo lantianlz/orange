@@ -69,7 +69,20 @@ def get_invoice_by_id(request):
 def get_invoice_by_company_id(request):
     company_id = request.REQUEST.get('company_id')
 
-    data = format_invoice([InvoiceBase().get_invoice_by_company_id(company_id)], 1)[0]
+    data = {
+        'title': '',
+        'content': u'水果和点心'
+    }
+
+    result = InvoiceBase().get_invoice_by_company_id(company_id)
+    if result and result.title:
+        data['title'] = result.title
+    else:
+        company = CompanyBase().get_company_by_id(company_id)
+        data['title'] = company.name
+
+    if result and result.content:
+        data['content'] = result.content
 
     return HttpResponse(json.dumps(data), mimetype='application/json')
 

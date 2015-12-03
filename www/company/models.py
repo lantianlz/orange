@@ -335,6 +335,8 @@ class InvoiceRecord(models.Model):
     operator = models.CharField(verbose_name=u"操作人", max_length=32)
     create_time = models.DateTimeField(verbose_name=u"创建时间", auto_now_add=True, db_index=True)
 
+    class Meta:
+        ordering = ["-invoice_date", "-create_time"]
 
 class Supplier(models.Model):
     '''
