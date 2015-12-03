@@ -63,12 +63,13 @@ def get_invoice_statement(request):
             'account': account_dict.get(key, 0),
             'recharge': recharge_dict.get(key, 0),
             'invoice_amount': str(x['invoice_amount']),
-            'offset': abs(float(x['invoice_amount']) - float(recharge_dict.get(key, 0)))
+            'offset_abs': abs(float(recharge_dict.get(key, 0)) - float(x['invoice_amount'])),
+            'offset': float(recharge_dict.get(key, 0)) - float(x['invoice_amount'])
         }
 
     data = data.values()
     # 排序 需要提醒的排列在前面
-    data.sort(key=lambda x:x['offset'], reverse=True)
+    data.sort(key=lambda x:x['offset_abs'], reverse=True)
 
     return HttpResponse(
         json.dumps({'data': data}),
