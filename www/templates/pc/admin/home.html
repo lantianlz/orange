@@ -472,11 +472,11 @@ $(document).ready(function(){
             <li class="list-group-item">
                 <a><i class="fa fa-credit-card pr-3"></i>发票管理</a>
                 <ul class="list-group sub-nav">
-                    <li class="list-group-item {% if '/admin/invoice' == request.path %}active{% endif %}">
-                        <a href="/admin/invoice"><i class="point"></i>发票管理</a>
-                    </li>
                     <li class="list-group-item {% if '/admin/invoice_record' == request.path %}active{% endif %}">
-                        <a href="/admin/invoice_record"><i class="point"></i>发票记录</a>
+                        <a href="/admin/invoice_record"><i class="point"></i>发票列表</a>
+                    </li>
+                    <li class="list-group-item {% if '/admin/invoice' == request.path %}active{% endif %}">
+                        <a href="/admin/invoice"><i class="point"></i>发票信息管理</a>
                     </li>
                     <li class="list-group-item {% if '/invoice_statement' in request.path %}active{% endif %}">
                         <a href="/admin/invoice_statement"><i class="point"></i>发票对账</a>

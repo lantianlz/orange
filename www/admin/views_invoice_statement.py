@@ -16,6 +16,7 @@ from www.company.interface import InvoiceRecordBase, UserBase, CashRecordBase, C
 def invoice_statement(request, template_name='pc/admin/invoice_statement.html'):
     today = datetime.datetime.now()
     start_date = today.replace(day=1).strftime('%Y-%m-%d')
+    start_date = datetime.datetime(2015, 8, 1).strftime('%Y-%m-%d')[:10]
     end_date = today.strftime('%Y-%m-%d')
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
 
@@ -61,8 +62,13 @@ def get_invoice_statement(request):
             'combine_name': company_dict[key][1],
             'account': account_dict.get(key, 0),
             'recharge': recharge_dict.get(key, 0),
-            'invoice_amount': str(x['invoice_amount'])
+            'invoice_amount': str(x['invoice_amount']),
+            'offset': abs(float(x['invoice_amount']) - float(recharge_dict.get(key, 0)))
         }
+
+    data = data.values()
+    # 排序 需要提醒的排列在前面
+    data.sort(key=lambda x:x['offset'], reverse=True)
 
     return HttpResponse(
         json.dumps({'data': data}),

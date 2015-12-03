@@ -83,6 +83,11 @@ PERMISSIONS = [
     {'code': 'query_booking', 'name': u'查询预订', 'parent': 'booking_manage'},
     {'code': 'modify_booking', 'name': u'修改预订', 'parent': 'booking_manage'},
 
+    {'code': 'invoice_manage', 'name': u'发票管理', 'parent': None},
+    {'code': 'add_invoice', 'name': u'添加发票', 'parent': 'invoice_manage'},
+    {'code': 'query_invoice', 'name': u'查询发票', 'parent': 'invoice_manage'},
+    {'code': 'modify_invoice', 'name': u'修改发票', 'parent': 'invoice_manage'},
+
     {'code': 'invoice_record_manage', 'name': u'发票记录管理', 'parent': None},
     {'code': 'add_invoice_record', 'name': u'添加发票记录', 'parent': 'invoice_record_manage'},
     {'code': 'query_invoice_record', 'name': u'查询发票记录', 'parent': 'invoice_record_manage'},
