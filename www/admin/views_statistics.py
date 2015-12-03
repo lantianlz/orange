@@ -126,7 +126,7 @@ def get_statistics_sale_top_data(request):
                 'companys': []
             }
 
-        data[key]['total'] += x.get_expect_price_per_month(start_date, end_date)
+        data[key]['total'] += x.get_expect_price_per_month(start_date, end_date, x.company.sale_date)
         data[key]['meals'].append({
             'meal_name': x.name,
             'company_name': x.company.name,
