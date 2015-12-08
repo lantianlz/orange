@@ -1867,7 +1867,6 @@ class InvoiceRecordBase(object):
 
         return 0, obj
 
-
     def get_invoice_amount_group_by_company(self, company_name, start_date, end_date):
         '''
         根据公司分组获取发票金额
@@ -1881,7 +1880,61 @@ class InvoiceRecordBase(object):
             objs = objs.filter(company__name__contains=company_name)
 
         return objs.values('company_id').annotate(invoice_amount=Sum('invoice_amount'))
-        
+
+    def send_invoice_notice(self, companys):
+        # 发送催发票提醒
+        from www.tasks import async_send_email
+
+        title = u"催款跟进"
+        content = u"以下公司开票金额与充值金额不符，请及时跟进：\n%s" % (companys)
+
+        async_send_email("web@3-10.cc", title, content)
+    
+    def get_invoice_statement(self, company_name, start_date, end_date):
+        '''
+        发票对账
+        '''
+
+        data = {}
+
+        # 发票金额数据
+        invoice_record_data = InvoiceRecordBase().get_invoice_amount_group_by_company(company_name, start_date, end_date)
+
+        # 充值金额数据
+        recharge_data = CashRecordBase().get_records_group_by_company(start_date, end_date, 0, 1)
+        recharge_dict = {}
+        for x in recharge_data:
+            recharge_dict[x['cash_account__company_id']] = str(x['recharge'])
+
+        # 公司数据
+        company_data = CompanyBase().get_all_company(1).values('id', 'name', 'short_name')
+        company_dict = {}
+        for x in company_data:
+            company_dict[x['id']] = [x['name'], '%s [ %s ]' % (x['name'], x['short_name'] or '-')]
+
+        # 公司现金账户
+        account_data = CashAccountBase().get_all_accounts().values('company_id', 'balance')
+        account_dict = {}
+        for x in account_data:
+            account_dict[x['company_id']] = str(x['balance'])
+
+        for x in invoice_record_data:
+            key = x['company_id']
+            data[key] = {
+                'name': company_dict[key][0],
+                'combine_name': company_dict[key][1],
+                'account': account_dict.get(key, 0),
+                'recharge': recharge_dict.get(key, 0),
+                'invoice_amount': str(x['invoice_amount']),
+                'offset_abs': abs(float(recharge_dict.get(key, 0)) - float(x['invoice_amount'])),
+                'offset': float(recharge_dict.get(key, 0)) - float(x['invoice_amount'])
+            }
+
+        data = data.values()
+        # 排序 需要提醒的排列在前面
+        data.sort(key=lambda x:x['offset_abs'], reverse=True)
+
+        return data
 
 class InvoiceBase(object):
     
