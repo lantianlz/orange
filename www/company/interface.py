@@ -1888,7 +1888,7 @@ class InvoiceRecordBase(object):
         title = u"催款跟进"
         content = u"以下公司开票金额与充值金额不符，请及时跟进：\n%s" % (companys)
 
-        async_send_email("web@3-10.cc", title, content)
+        async_send_email("vip@3-10.cc", title, content)
     
     def get_invoice_statement(self, company_name, start_date, end_date):
         '''
