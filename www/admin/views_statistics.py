@@ -158,10 +158,12 @@ def get_statistics_sale_top_data(request):
         x['companys'] = len(set(x['companys']))
         all_company += x['companys']
 
+    average_company = round(all_total / (all_company or 1 ), 1)
+    average_company = str(average_company)
     all_total = str(all_total)
 
     return HttpResponse(
-        json.dumps({'data': data, 'all_total': all_total, 'all_company': all_company}),
+        json.dumps({'data': data, 'all_total': all_total, 'all_company': all_company, 'average_company': average_company}),
         mimetype='application/json'
     )
 
