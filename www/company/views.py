@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
 
 import json
-import time, datetime
+import time
+import datetime
 
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 
 from common import utils, page
-from misc.decorators import common_ajax_response, member_required, company_manager_required_for_request
+from misc.decorators import common_ajax_response, member_required, company_manager_required_for_request, request_limit_by_ip
 from www.company.interface import BookingBase, CompanyManagerBase, MealBase, OrderBase, CashRecordBase, CashAccountBase, ItemBase
 from www.account.interface import UserBase
 from www.weixin.interface import WeixinBase, Sign
@@ -16,11 +17,11 @@ from www.company.models import Item
 
 
 def booking(request, template_name='mobile/booking.html'):
-    
+
     url = u'http://%s' % (request.get_host() + request.get_full_path())
     sign = Sign(WeixinBase().get_weixin_jsapi_ticket(WeixinBase().init_app_key()), url)
     sign_dict = sign.sign()
-    
+
     invite_by = request.REQUEST.get('invite_by')
     if invite_by:
         invite = UserBase().get_user_by_id(invite_by)
@@ -29,6 +30,7 @@ def booking(request, template_name='mobile/booking.html'):
 
 
 @common_ajax_response
+@request_limit_by_ip(10, 600)
 def get_booking(request):
 
     company_name = request.REQUEST.get('company')
@@ -50,6 +52,7 @@ def invite(request, template_name='mobile/invite.html'):
 
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
 
+
 @member_required
 def index(request):
 
@@ -60,6 +63,7 @@ def index(request):
 
     err_msg = u'权限不足，你还不是公司管理员，如有疑问请联系三点十分客服'
     return render_to_response('error.html', locals(), context_instance=RequestContext(request))
+
 
 def format_order(objs, num):
     data = []
@@ -93,6 +97,7 @@ def format_order(objs, num):
 
     return data
 
+
 @member_required
 @company_manager_required_for_request
 def orders(request, company_id, template_name='pc/company/orders.html'):
@@ -104,7 +109,7 @@ def orders(request, company_id, template_name='pc/company/orders.html'):
     end_date = request.REQUEST.get('end_date')
     start_date, end_date = utils.get_date_range(start_date, end_date)
     order_no = request.REQUEST.get('order_no')
-    
+
     objs = OrderBase().search_orders_by_company(company_id, start_date, end_date, order_no)
 
     page_index = int(request.REQUEST.get('page', 1))
@@ -124,11 +129,13 @@ def meal(request, company_id, template_name='pc/company/meal.html'):
 
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
 
+
 @member_required
 @company_manager_required_for_request
 def deposit(request, company_id, template_name='pc/company/deposit.html'):
 
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
+
 
 def format_record(objs, num):
     data = []
@@ -147,6 +154,7 @@ def format_record(objs, num):
         })
 
     return data
+
 
 @member_required
 @company_manager_required_for_request
@@ -168,6 +176,7 @@ def record(request, company_id, template_name='pc/company/record.html'):
 
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
 
+
 @member_required
 @company_manager_required_for_request
 def feedback(request, company_id, template_name='pc/company/feedback.html'):
@@ -180,8 +189,9 @@ def introduction_m(request, template_name='mobile/introduction_m.html'):
     url = u'http://%s' % (request.get_host() + request.get_full_path())
     sign = Sign(WeixinBase().get_weixin_jsapi_ticket(WeixinBase().init_app_key()), url)
     sign_dict = sign.sign()
-    
+
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
+
 
 @member_required
 @company_manager_required_for_request
@@ -202,6 +212,7 @@ def customers(request):
     serviced_company_count = CompanyBase().get_serviced_company_count()
     person_time_count = OrderBase().get_active_person_time_count()
     return render_to_response('static_templates/customers.html', locals(), context_instance=RequestContext(request))
+
 
 def anonymous_product_list(request):
 

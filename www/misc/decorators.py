@@ -119,7 +119,11 @@ def common_ajax_response(func):
     @note: 通用的ajax返回值格式化，格式为：dict(errcode=errcode, errmsg=errmsg)
     """
     def _decorator(request, *args, **kwargs):
-        errcode, errmsg = func(request, *args, **kwargs)
+        result = func(request, *args, **kwargs)
+        if isinstance(result, HttpResponse):
+            return result
+        errcode, errmsg = result
+
         # 将对象转义
         errmsg = 'ok' if (errcode == 0 and not isinstance(errmsg, (list, int, bool, long, float, unicode, str, type(None)))) else errmsg
         r = dict(errcode=errcode, errmsg=errmsg)
@@ -223,3 +227,38 @@ def company_manager_required_for_request(func):
         request.company = company
         return func(request, company_id, *args, **kwargs)
     return _decorator
+
+
+class request_limit_by_ip(object):
+
+    """
+    @note: 根据ip地址限制操作次数
+    """
+
+    def __init__(self, max_count, cycle=3600 * 24):
+        self.max_count = max_count
+        self.cycle = cycle
+
+    def __call__(self, func):
+        import datetime
+
+        def _decorator(request, *args, **kwargs):
+            cache_obj = cache.Cache()
+            cache_key = u'%s_%s_%s' % (utils.get_function_code(func), utils.get_clientip(request),
+                                       str(datetime.datetime.now().date()))
+            cache_count = cache_obj.get(cache_key, original=True)
+            if cache_count is None:
+                cache_obj.set(cache_key, 1, time_out=self.cycle, original=True)
+            else:
+                cache_count = int(cache_count)
+                cache_count += 1
+                cache_obj.incr(cache_key)
+                if cache_count > self.max_count:
+                    if request.is_ajax():
+                        # return 99900, "test"
+                        return HttpResponse(json.dumps(dict(errcode=99900, errmsg=u'request limited by ip')), mimetype='application/json')
+                    else:
+                        return render_to_response('error.html', dict(err_msg=u'request limited by ip'),
+                                                  context_instance=RequestContext(request))
+            return func(request, *args, **kwargs)
+        return _decorator

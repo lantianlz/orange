@@ -32,5 +32,3 @@ def async_clear_count_info_by_code(user_id, code):
 def async_change_profile_from_weixin(user, app_key, openid):
     from www.account.interface import UserBase
     UserBase().change_profile_from_weixin(user, app_key, openid)
-
-

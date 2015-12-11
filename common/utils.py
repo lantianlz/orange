@@ -281,8 +281,8 @@ def exec_command(command, timeout=25):
     content = commands.getoutput(command)
     return True, content
 
-def get_date_range(start_date, end_date):
 
+def get_date_range(start_date, end_date):
     start_date = start_date or datetime.datetime.now().strftime('%Y-%m-%d')
     start_date += " 00:00:00"
     start_date = datetime.datetime.strptime(start_date, '%Y-%m-%d %H:%M:%S')
@@ -405,6 +405,9 @@ def format_user_agent(user_agent):
     except:
         return dict(device_type=device_type, device_name="other", os_name="other", os_version="1.0")
 
+
+def get_function_code(func):
+    return '%s_%s' % (func.__name__, func.func_code.co_filename.split('orange')[-1].replace('/', '_').replace('\\', '_').replace(".py", ""))
 
 if __name__ == '__main__':
     us = [
