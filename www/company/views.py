@@ -10,14 +10,16 @@ from django.shortcuts import render_to_response
 
 from common import utils, page
 from misc.decorators import common_ajax_response, member_required, company_manager_required_for_request, request_limit_by_ip
-from www.company.interface import BookingBase, CompanyManagerBase, MealBase, OrderBase, CashRecordBase, CashAccountBase, ItemBase
+from www.company.interface import BookingBase, CompanyManagerBase, MealBase, OrderBase, CashRecordBase, CashAccountBase, ItemBase, RechargeOrderBase
 from www.account.interface import UserBase
 from www.weixin.interface import WeixinBase, Sign
 from www.company.models import Item
 
 
 def booking(request, template_name='mobile/booking.html'):
-
+    '''
+    手机版预定
+    '''
     url = u'http://%s' % (request.get_host() + request.get_full_path())
     sign = Sign(WeixinBase().get_weixin_jsapi_ticket(WeixinBase().init_app_key()), url)
     sign_dict = sign.sign()
@@ -32,7 +34,9 @@ def booking(request, template_name='mobile/booking.html'):
 @common_ajax_response
 @request_limit_by_ip(10, 600)
 def get_booking(request):
-
+    '''
+    提交预定试吃
+    '''
     company_name = request.REQUEST.get('company')
     staff_name = request.REQUEST.get('name')
     mobile = request.REQUEST.get('mobile')
@@ -44,7 +48,9 @@ def get_booking(request):
 
 @member_required
 def invite(request, template_name='mobile/invite.html'):
-
+    '''
+    手机版邀请
+    '''
     # 微信key
     url = u'http://%s' % (request.get_host() + request.get_full_path())
     sign = Sign(WeixinBase().get_weixin_jsapi_ticket(WeixinBase().init_app_key()), url)
@@ -55,7 +61,9 @@ def invite(request, template_name='mobile/invite.html'):
 
 @member_required
 def index(request):
-
+    '''
+    公司管理首页
+    '''
     # 判断是否是公司管理员
     cm = CompanyManagerBase().get_cm_by_user_id(request.user.id)
     if cm:
@@ -101,7 +109,9 @@ def format_order(objs, num):
 @member_required
 @company_manager_required_for_request
 def orders(request, company_id, template_name='pc/company/orders.html'):
-
+    '''
+    订单列表
+    '''
     types = [{'value': x[0], 'name': x[1]} for x in Item.type_choices]
 
     now = datetime.datetime.now()
@@ -125,6 +135,9 @@ def orders(request, company_id, template_name='pc/company/orders.html'):
 @member_required
 @company_manager_required_for_request
 def meal(request, company_id, template_name='pc/company/meal.html'):
+    '''
+    套餐
+    '''
     meal = MealBase().get_meal_by_company(company_id)
 
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
@@ -133,6 +146,32 @@ def meal(request, company_id, template_name='pc/company/meal.html'):
 @member_required
 @company_manager_required_for_request
 def deposit(request, company_id, template_name='pc/company/deposit.html'):
+    '''
+    在线充值
+    '''
+    account = CashAccountBase().get_account_by_company(company_id)
+
+    total_fee = abs(account.balance)
+
+    if request.method == "POST":
+        from common.alipay import alipay_pc
+        total_fee = request.POST.get('total_fee')
+        pay_type = request.POST.get('pay_type')
+        
+        flag, msg = RechargeOrderBase().create_order(company_id, total_fee, pay_type, utils.get_clientip(request))
+        
+        if flag == 0:
+            order = msg
+
+            return HttpResponseRedirect(
+                alipay_pc.create_direct_pay_by_user(
+                    order.trade_id, 
+                    u"三点十分下午茶", 
+                    u"水果，点心，热饮",
+                    total_fee
+                )
+            )
+        warning_msg = msg
 
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
 
@@ -159,6 +198,9 @@ def format_record(objs, num):
 @member_required
 @company_manager_required_for_request
 def record(request, company_id, template_name='pc/company/record.html'):
+    '''
+    充值记录
+    '''
     now = datetime.datetime.now()
     start_date = request.REQUEST.get('start_date', now.replace(day=1).strftime('%Y-%m-%d'))
     end_date = request.REQUEST.get('end_date')
@@ -180,11 +222,16 @@ def record(request, company_id, template_name='pc/company/record.html'):
 @member_required
 @company_manager_required_for_request
 def feedback(request, company_id, template_name='pc/company/feedback.html'):
-
+    '''
+    反馈
+    '''
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
 
 
 def introduction_m(request, template_name='mobile/introduction_m.html'):
+    '''
+    手机版产品介绍
+    '''
     # 微信key
     url = u'http://%s' % (request.get_host() + request.get_full_path())
     sign = Sign(WeixinBase().get_weixin_jsapi_ticket(WeixinBase().init_app_key()), url)
@@ -196,7 +243,9 @@ def introduction_m(request, template_name='mobile/introduction_m.html'):
 @member_required
 @company_manager_required_for_request
 def product_list(request, company_id, template_name='pc/company/product_list.html'):
-
+    '''
+    产品目录
+    '''
     fruit = ItemBase().get_items_by_type(1, [1])
     cake = ItemBase().get_items_by_type(2, [1])
     supplies = ItemBase().get_items_by_type(90, [1])
@@ -207,6 +256,9 @@ def product_list(request, company_id, template_name='pc/company/product_list.htm
 
 
 def customers(request):
+    '''
+    官网典型客户
+    '''
     from www.company.interface import CompanyBase, OrderBase
     companys = CompanyBase().get_companys_by_show()
     serviced_company_count = CompanyBase().get_serviced_company_count()
@@ -215,6 +267,9 @@ def customers(request):
 
 
 def anonymous_product_list(request):
+    '''
+    匿名产品目录
+    '''
 
     fruit = ItemBase().get_items_by_type(1, [1])
     cake = ItemBase().get_items_by_type(2, [1])
@@ -223,3 +278,23 @@ def anonymous_product_list(request):
     drink = ItemBase().get_items_by_type(3, [1])
 
     return render_to_response('static_templates/product_list.html', locals(), context_instance=RequestContext(request))
+
+@member_required
+def success(request, template_name='pc/company/success.html'):
+    '''
+    成功页面
+    '''
+
+    return render_to_response(template_name, locals(), context_instance=RequestContext(request))
+
+@member_required
+def error(request, template_name='pc/company/error.html'):
+    '''
+    失败页面
+    '''
+    
+    return render_to_response(template_name, locals(), context_instance=RequestContext(request))
+
+
+
+

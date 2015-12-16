@@ -40,7 +40,7 @@
             color: #ffffff;
             position: absolute;
             left: 70px;
-            top: 35px;
+            top: 40px;
         }
 
         .text2{
@@ -108,14 +108,14 @@
         <div class="container">
             <div class="header text-center">
                 <div style="position: relative; margin: 0 auto; width: 180px;">
-                    <img class="logo" src="{{MEDIA_URL}}img/logo_white_1.png">
+                    <img class="logo" src="{{MEDIA_URL}}img/logo_white.png">
                     <span class="text1">三点十分</span>
                 </div>
             </div>
             <div style="height: 100%; padding-top: 100px;">
-                <div class="text-center" style="padding-top: 40px; color: #696969;">{{success_msg|default:"成功"}}</div>
+                <div class="text-center" style="padding-top: 50px; color: #009A2B; font-size: 16px;">{{success_msg|default:"成功"}}</div>
                 {% if timeinterval %}
-                <div class="text-center" style="padding-top: 40px; color: #696969;">{{timeinterval}} 秒后页面即将跳转</div>
+                <div class="text-center" style="padding-top: 15px; color: #999; font-size: 14px;">{{timeinterval}} 秒后页面即将跳转</div>
                 {% endif %}
                 <div class="text4">
                     <i class="fa fa-check"></i>

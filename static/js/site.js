@@ -140,6 +140,7 @@ if(jQuery.validator){
     });
 }
 
+
 $(document).ready(function(){
 
     // 给不支持placeholder的浏览器添加此属性

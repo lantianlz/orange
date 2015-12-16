@@ -18,7 +18,7 @@ from www.account.interface import UserBase, ExternalTokenBase
 from models import Item, Company, Meal, MealItem, Order, OrderItem, \
     Booking, CompanyManager, CashAccount, CashRecord, Supplier, \
     SupplierCashAccount, SupplierCashRecord, PurchaseRecord, SaleMan, \
-    InvoiceRecord, Invoice
+    InvoiceRecord, Invoice, RechargeOrder
 
 DEFAULT_DB = 'default'
 
@@ -55,6 +55,10 @@ dict_err = {
     21101: u'没有找到对应的发票记录',
 
     21201: u'没有找到对应的发票',
+
+    21301: u"没有找到对应的订单",
+    21302: u"订单已支付",
+    21303: u"付款金额和订单金额不符，支付失败，请联系客服人员"
 }
 dict_err.update(consts.G_DICT_ERROR)
 
@@ -1077,11 +1081,15 @@ class CashRecordBase(object):
                     u"感谢您的支持，祝工作愉快"
                 )
 
-    def send_recharge_success_notice(self, company, amount, balance):
+    def send_recharge_success_notice(self, company, amount, balance, pay_type=1):
+
+        PAY_TYPE_DICT = {1: u'人工转账', 2: u'支付宝在线支付'}
+        pay_type_str = PAY_TYPE_DICT.get(pay_type, u'人工转账')
+
         # 发送邮件提醒
         from www.tasks import async_send_email
         title = u'账户充值成功'
-        content = u'账户「%s」成功充值「%.2f」元，当前余额「%.2f」元。' % (company.name, amount, balance)
+        content = u'账户「%s」通过「%s」成功充值「%.2f」元，当前余额「%.2f」元。' % (company.name, pay_type_str, amount, balance)
         async_send_email("vip@3-10.cc", title, content)
 
         # 发送微信提醒
@@ -1136,9 +1144,9 @@ class CashRecordBase(object):
         assert value > 0 and notes and company
 
     @transaction.commit_manually(using=DEFAULT_DB)
-    def add_cash_record_with_transaction(self, company_id, value, operation, notes, ip=None, is_invoice=1):
+    def add_cash_record_with_transaction(self, company_id, value, operation, notes, ip=None, is_invoice=1, pay_type=1):
         try:
-            errcode, errmsg = self.add_cash_record(company_id, value, operation, notes, ip, is_invoice)
+            errcode, errmsg = self.add_cash_record(company_id, value, operation, notes, ip, is_invoice, pay_type)
             if errcode == 0:
                 transaction.commit(using=DEFAULT_DB)
             else:
@@ -1149,7 +1157,7 @@ class CashRecordBase(object):
             transaction.rollback(using=DEFAULT_DB)
             return 99900, dict_err.get(99900)
 
-    def add_cash_record(self, company_id, value, operation, notes, ip=None, is_invoice=1):
+    def add_cash_record(self, company_id, value, operation, notes, ip=None, is_invoice=1, pay_type=1):
         try:
             try:
                 value = decimal.Decimal(value)
@@ -1189,7 +1197,8 @@ class CashRecordBase(object):
                 self.send_recharge_success_notice(
                     account.company,
                     value,
-                    account.balance
+                    account.balance,
+                    pay_type
                 )
 
             return 0, dict_err.get(0)
@@ -1455,7 +1464,7 @@ class PurchaseRecordBase(object):
     @transaction.commit_manually(using=DEFAULT_DB)
     def add_record(self, supplier_id, des, price, img, operator, ip):
         
-        if not (supplier_id, des, price, operator):
+        if not (supplier_id and des and price and operator):
             return 99800, dict_err.get(99800)
 
         obj = SupplierBase().get_supplier_by_id(supplier_id)
@@ -1807,7 +1816,7 @@ class InvoiceRecordBase(object):
 
     def add_record(self, company_id, title, invoice_amount, content, invoice_date, operator, transporter=None, img=None):
         
-        if not (company_id, title, invoice_amount, content, invoice_date, operator):
+        if not (company_id and title and invoice_amount and content and invoice_date and operator):
             return 99800, dict_err.get(99800)
 
         obj = CompanyBase().get_company_by_id(company_id)
@@ -1836,7 +1845,7 @@ class InvoiceRecordBase(object):
 
     def modify_record(self, record_id, company_id, title, invoice_amount, content, invoice_date, operator, state, transporter=None, img=None):
         
-        if not (record_id, company_id, title, invoice_amount, content, invoice_date, operator):
+        if not (record_id and company_id and title and invoice_amount and content and invoice_date and operator):
             return 99800, dict_err.get(99800)
         
         company = CompanyBase().get_company_by_id(company_id)
@@ -2004,6 +2013,103 @@ class InvoiceBase(object):
             return 99900, dict_err.get(99900)
 
         return 0, obj
+
+class RechargeOrderBase(object):
+
+    def generate_order_trade_id(self, pr):
+        """
+        @note: 生成订单的id，传入不同前缀来区分订单类型
+        参数pr:
+        1.充值 ====> CZ
+        """
+        postfix = '%s' % datetime.datetime.now().strftime('%Y%m%d%H%M%S%f')[:-3]  # 纯数字
+        if pr:
+            postfix = '%s%s%02d' % (pr, postfix, random.randint(0, 99))
+        return postfix
+
+    def get_order_by_trade_id(self, trade_id):
+        obj = None
+        try:
+            obj = RechargeOrder.objects.get(trade_id=trade_id)
+        except Exception, e:
+            debug.get_debug_detail_and_send_email(e)
+        return obj
+
+    def create_order(self, company_id, total_fee, pay_type, ip):
+
+        try:
+            
+            if not (company_id and total_fee and pay_type and ip):
+                return 99800, dict_err.get(99800)
+            
+            try:
+                total_fee = decimal.Decimal(total_fee)
+                pay_type = int(pay_type)
+                assert pay_type in (1,)
+            except Exception, e:
+                return 99801, dict_err.get(99801)
+
+            obj = CompanyBase().get_company_by_id(company_id)
+            if not obj:
+                return 20202, dict_err.get(20202)
+
+            order = RechargeOrder.objects.create(
+                trade_id = self.generate_order_trade_id("CZ"),
+                company_id = company_id,
+                total_fee = total_fee,
+                discount_fee = 0,
+                pay_fee = total_fee,
+                pay_type = pay_type
+            )
+
+        except Exception, e:
+            debug.get_debug_detail_and_send_email(e)
+            return 99900, dict_err.get(99900)
+
+        return 0, order
+
+    @transaction.commit_manually(using=DEFAULT_DB)
+    def order_pay_callback(self, trade_id, payed_fee, pay_info):
+
+        try:
+            # 订单是否存在
+            order = self.get_order_by_trade_id(trade_id)
+            
+            if not order:
+                transaction.rollback(using=DEFAULT_DB)
+                return 21301, dict_err.get(21301)
+
+            # 订单是否已经支付
+            if order.order_state == 1:
+                transaction.rollback(using=DEFAULT_DB)
+                return 21302, dict_err.get(21302)
+
+            # 订单金额不符
+            if order.pay_fee != decimal.Decimal(payed_fee):
+                transaction.rollback(using=DEFAULT_DB)
+                return 21303, dict_err.get(21303)
+
+            # 添加充值流水
+            flag, msg = CashRecordBase().add_cash_record(order.company_id, order.pay_fee, 0, u'支付宝在线充值', '', 1, 2)
+            if flag != 0:
+                transaction.rollback(using=DEFAULT_DB)
+                return flag, msg
+
+            order.payed_fee = payed_fee
+            order.pay_info = pay_info
+            order.pay_time = datetime.datetime.now()
+            order.order_state = 1
+            order.save()
+            transaction.commit(using=DEFAULT_DB)
+            return flag, msg
+
+        except Exception, e:
+            debug.get_debug_detail_and_send_email(e)
+            transaction.rollback(using=DEFAULT_DB)
+            return 99900, dict_err.get(99900)
+
+
+
 
 
 
