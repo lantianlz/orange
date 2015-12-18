@@ -28,7 +28,9 @@ $(document).ready(function(){
             $.Global.Notice.InfoTopNotice("金额格式错误");
             return false;
         }
-        
+
+        $('#recharge_modal').modal({'show': true, 'backdrop': 'static'});
+        return false;
     });
 });
 </script>
@@ -54,7 +56,7 @@ $(document).ready(function(){
 
 <div class="tab-content">
     <div class="tab-pane fade in active" id="online-recharge">
-        <form class="pt-20 form-horizontal recharge" action="./deposit" method="post">
+        <form class="pt-20 form-horizontal recharge" action="./deposit" method="post" target="_blank">
             <div class="col-md-12 f18 pb-30 pl-0">
                 <span>当前账户余额: <span class="co-1DABD9 fb">{{account.balance}}</span> 元</span>
             </div>
@@ -80,5 +82,40 @@ $(document).ready(function(){
     </div>
 </div>
 
+<div class="modal fade" id="recharge_modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body pb-0" style="background-color: #E7F9FF; ">
+                <div class="row">
+                    <div class="col-md-12 f30 text-center co-428bca pb-20 pt-10">
+                        <span class="pl-35">正在支付...</span>
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    </div>
+                    <div class="col-md-12 pt-15 pb-15 pl-0 pr-0 bgc-ffffff">
+                        <div class="col-md-6 border-right-1 bdc-dddddd pt-20 pb-30">
+                            <div class="col-md-2 pt-20 col-md-offset-1">
+                                <i class="fa fa-close co-C33333 f35"></i>
+                            </div>
+                            <div class="col-md-9">
+                                <div class="f20 pt-10">支付失败...</div>
+                                <div class="f13 pt-10 co-888888">请联系三点十分管理员</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 bgc-ffffff pt-20 pb-30">
+                            <div class="col-md-2 pt-20 col-md-offset-1">
+                                <i class="fa fa-check co-19BA40 f35"></i>
+                            </div>
+                            <div class="col-md-9">
+                                <div class="f20 pt-10">支付成功!</div>
+                                <div class="f13 pt-10 co-888888">立即查看<a href="/company/">账户余额</a></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 {% endblock %}
