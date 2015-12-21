@@ -112,7 +112,7 @@ def sign_verify(request_params):
     
     _, prestr = params_filter(request_params)
     mysign = build_mysign(prestr, settings.ALIPAY_KEY, settings.ALIPAY_SIGN_TYPE)
-    return  mysign != request_params.get('sign'):
+    return mysign == request_params.get('sign')
 
 
 def notify_verify(request_params):
