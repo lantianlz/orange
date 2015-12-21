@@ -94,7 +94,7 @@ def alipaynotify(request):
     logging.error(u"alipaynotify info is: %s" % request.REQUEST)
 
     result = 'fail'
-    flag = alipay_pc.sign_verify(request.POST) and alipay_pc.notify_verify(request.POST):
+    flag = alipay_pc.sign_verify(request.POST) and alipay_pc.notify_verify(request.POST)
     if flag:
         params = request.POST
 
