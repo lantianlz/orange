@@ -105,22 +105,26 @@ def create_direct_pay_by_user(tn, subject, body, total_fee):
     return _GATEWAY + urlencode(params)
 
 
-def notify_verify(post):
-    # 初级验证--签名
-    _, prestr = params_filter(post)
+def sign_verify(request_params):
+    '''
+    验证--签名
+    '''
+    
+    _, prestr = params_filter(request_params)
     mysign = build_mysign(prestr, settings.ALIPAY_KEY, settings.ALIPAY_SIGN_TYPE)
-    if mysign != post.get('sign'):
-        return False
+    return  mysign != request_params.get('sign'):
 
-    # 二级验证--查询支付宝服务器此条信息是否有效
+
+def notify_verify(request_params):
+    '''
+    查询支付宝服务器此条信息是否有效
+    '''
+    
     params = {}
     params['partner'] = settings.ALIPAY_PARTNER
-    params['notify_id'] = post.get('notify_id')
-    if settings.ALIPAY_TRANSPORT == 'https':
-        params['service'] = 'notify_verify'
-        gateway = 'https://mapi.alipay.com/gateway.do'
-    else:
-        gateway = 'http://notify.alipay.com/trade/notify_query.do'
+    params['notify_id'] = request_params.get('notify_id')
+    params['service'] = 'notify_verify'
+    gateway = 'https://mapi.alipay.com/gateway.do'
     veryfy_result = urlopen(gateway, urlencode(params)).read()
     if veryfy_result.lower().strip() == 'true':
         return True

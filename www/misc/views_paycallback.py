@@ -45,7 +45,7 @@ def alipaycallback(request):
     """
     logging.error(u"alipaycallback info is: %s" % request.REQUEST)
 
-    flag = alipay_pc.notify_verify(request.GET)
+    flag = alipay_pc.sign_verify(request.GET)
     if flag:
         timeinterval = 3
         # 成功跳转url控制
@@ -94,21 +94,24 @@ def alipaynotify(request):
     logging.error(u"alipaynotify info is: %s" % request.REQUEST)
 
     result = 'fail'
-    flag = alipay_pc.notify_verify(request.POST)
+    flag = alipay_pc.sign_verify(request.POST) and alipay_pc.notify_verify(request.POST):
     if flag:
         params = request.POST
 
-        buyer_email = params.get('buyer_email')
-        buyer_id = params.get('buyer_id')
-        trade_no = params.get('trade_no')
-        trade_id = params.get('out_trade_no')
-        total_fee = float(params.get('total_fee'))
+        # 验证支付宝发来的交易状态
+        if params.get('trade_status') in ('TRADE_FINISHED', 'TRADE_SUCCESS'):
 
-        pay_info = 'trade_no:%s, buyer_email:%s, buyer_id:%s' % (trade_no, buyer_email, buyer_id)
+            buyer_email = params.get('buyer_email')
+            buyer_id = params.get('buyer_id')
+            trade_no = params.get('trade_no')
+            trade_id = params.get('out_trade_no')
+            total_fee = float(params.get('total_fee'))
 
-        errcode, errmsg = RechargeOrderBase().order_pay_callback(trade_id=trade_id, payed_fee=total_fee, pay_info=pay_info)
-        # 不存在的订单返回成功防止一直补发
-        result = u'success' if errcode in (0, 20301) else 'fail'  
+            pay_info = 'trade_no:%s, buyer_email:%s, buyer_id:%s' % (trade_no, buyer_email, buyer_id)
+
+            errcode, errmsg = RechargeOrderBase().order_pay_callback(trade_id=trade_id, payed_fee=total_fee, pay_info=pay_info)
+            # 不存在的订单返回成功防止一直补发
+            result = u'success' if errcode in (0, 21301) else 'fail'
 
     return HttpResponse(result)
 
