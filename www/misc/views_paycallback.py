@@ -106,7 +106,7 @@ def alipaynotify(request):
             buyer_id = params.get('buyer_id')
             trade_no = params.get('trade_no')
             trade_id = params.get('out_trade_no')
-            total_fee = float(params.get('total_fee'))
+            total_fee = params.get('total_fee')
 
             pay_info = 'trade_no:%s, buyer_email:%s, buyer_id:%s' % (trade_no, buyer_email, buyer_id)
 
