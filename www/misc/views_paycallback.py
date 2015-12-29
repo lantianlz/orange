@@ -12,6 +12,7 @@ from common import debug
 from common.alipay import alipay_pc
 # from common.weixinpay.weixinpay import Weixinpay
 from www.company.interface import RechargeOrderBase
+from www.tasks import async_send_email
 
 
 # def alipaycallback_m(request):
@@ -95,7 +96,7 @@ def alipaynotify(request):
 
     result = 'fail'
     flag = alipay_pc.sign_verify(request.POST) and alipay_pc.notify_verify(request.POST)
-    logging.error(u"flag ======> %s" % flag)
+    # logging.error(u"flag ======> %s" % flag)
     if flag:
         params = request.POST
 
@@ -114,7 +115,13 @@ def alipaynotify(request):
             # 不存在的订单返回成功防止一直补发
             result = u'success' if errcode in (0, 21301, 20302) else 'fail'
 
-            logging.error(u"errcode, errmsg, result ======> %s,%s,%s" % (errcode, errmsg, result))
+            # logging.error(u"errcode, errmsg, result ======> %s,%s,%s" % (errcode, errmsg, result))
+            if result != u"success":
+                async_send_email(
+                    "vip@3-10.cc", 
+                    u"在线支付失败", 
+                    u"errcode==>%s \n errmsg==>%s \n result==>%s \n trade_id==>%s \n total_fee==>%s \n pay_info==>%s \n" % (errcode, errmsg, result, trade_id, total_fee, pay_info)
+                )
 
     return HttpResponse(result)
 

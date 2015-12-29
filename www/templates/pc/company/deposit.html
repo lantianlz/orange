@@ -30,6 +30,7 @@ $(document).ready(function(){
         }
 
         $('#recharge_modal').modal({'show': true, 'backdrop': 'static'});
+        return false;
     });
 });
 </script>
@@ -62,8 +63,16 @@ $(document).ready(function(){
             <input name="pay_type" value="1" type="hidden" />
             <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
                 <label class="col-sm-1 control-label pl-0">充值金额</label>
-                <div class="col-sm-4">
+                <div class="col-sm-3">
                     <input type="text" class="form-control total-fee" name="total_fee" value="{{total_fee}}">
+                </div>
+            </div>
+            <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+                <label class="col-sm-1 control-label pl-0">充值方式</label>
+                <div class="col-md-2">
+                    <label class="radio-inline">
+                        <input type="radio" name="pay_type" value="1" checked> <img style="width: 70px;" src="{{MEDIA_URL}}img/alipay.png">
+                    </label>
                 </div>
             </div>
             <div class="form-group pt-20 pb-20 mb-0">
@@ -80,31 +89,34 @@ $(document).ready(function(){
         <p>开户行：<span class="co-1DABD9">招商银行成都世纪城支行</span></p>
     </div>
 </div>
+{% endblock %}
 
+{% block body_tail %}
 <div class="modal fade" id="recharge_modal" tabindex="-1" role="dialog">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-body pb-0" style="background-color: #E7F9FF; ">
                 <div class="row">
-                    <div class="col-md-12 f30 text-center co-428bca pb-20 pt-10">
+                    <div class="col-md-12 col-xs-12 f30 text-center co-428bca pb-20 pt-10">
                         <span class="pl-35">正在支付...</span>
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                     </div>
-                    <div class="col-md-12 pt-15 pb-15 pl-0 pr-0 bgc-ffffff">
-                        <div class="col-md-6 border-right-1 bdc-dddddd pt-20 pb-30">
-                            <div class="col-md-2 pt-20 col-md-offset-1">
+                    <div class="col-md-12 col-xs-12 pt-15 pb-15 pl-0 pr-0 bgc-ffffff">
+                        <div class="col-md-6 col-xs-6 border-right-1 bdc-dddddd pt-20 pb-30">
+                            <div class="col-md-2 col-xs-2 pt-20 col-md-offset-1 col-xs-offset-1">
                                 <i class="fa fa-close co-C33333 f35"></i>
                             </div>
-                            <div class="col-md-9">
+                            <div class="col-md-9 col-xs-12 pr-0">
                                 <div class="f20 pt-10">支付失败...</div>
                                 <div class="f13 pt-10 co-888888">请联系三点十分管理员</div>
+                                <div class="f13 pt-0 co-888888">客服电话: 4008-920-310</div>
                             </div>
                         </div>
-                        <div class="col-md-6 bgc-ffffff pt-20 pb-30">
-                            <div class="col-md-2 pt-20 col-md-offset-1">
+                        <div class="col-md-6 col-xs-6 bgc-ffffff pt-20 pb-30">
+                            <div class="col-md-2 col-xs-2 pt-20 col-md-offset-1 col-xs-offset-1">
                                 <i class="fa fa-check co-19BA40 f35"></i>
                             </div>
-                            <div class="col-md-9">
+                            <div class="col-md-9 col-xs-12">
                                 <div class="f20 pt-10">支付成功!</div>
                                 <div class="f13 pt-10 co-888888">立即查看<a href="/company/">账户余额</a></div>
                             </div>
@@ -116,5 +128,4 @@ $(document).ready(function(){
         </div>
     </div>
 </div>
-
 {% endblock %}
