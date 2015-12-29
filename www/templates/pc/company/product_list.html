@@ -45,6 +45,13 @@
             <span class="hidden-xs">饮料 ( {{drink.count}}种 )</span>
         </a>
     </li>
+    <li>
+        <a href="#luwei" data-toggle="pill">
+            <i class="fa fa-tint pr-5 f16"></i>
+            <span class="hidden-sm hidden-md hidden-lg">卤味</span>
+            <span class="hidden-xs">卤味 ( {{luwei.count}}种 )</span>
+        </a>
+    </li>
     <li class="hidden-xs">
         <a href="#supplies" data-toggle="pill">
             <i class="fa fa-cutlery pr-5"></i>
@@ -101,6 +108,23 @@
             <div class="col-md-12">
                 <ul class="list-inline">
                     {% for item in drink %}
+                    <li class="col-md-3 col-xs-6 pt-25">
+                        <div class="col-md-12 bgc-ffffff pt-15">
+                            <img src="{{item.get_img}}" class="w">
+                            <div class="pt-10 pb-10 text-center">{{item.name}}{{item.smart_des}}</div>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-pane fade in" id="luwei">
+        <div class="row">
+            <div class="col-md-12">
+                <ul class="list-inline">
+                    {% for item in luwei %}
                     <li class="col-md-3 col-xs-6 pt-25">
                         <div class="col-md-12 bgc-ffffff pt-15">
                             <img src="{{item.get_img}}" class="w">
