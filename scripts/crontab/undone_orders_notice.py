@@ -21,7 +21,7 @@ def undone_orders_notice():
 
 	if undone_orders:
 		content = u"，\n".join(undone_orders)
-		send_email('web@3-10.cc', u'共「%s」单订单未结：' % undone_orders, content)
+		send_email('web@3-10.cc', u'共「%s」单订单未结：' % len(undone_orders), content)
 
 if __name__ == '__main__':
 	undone_orders_notice()
