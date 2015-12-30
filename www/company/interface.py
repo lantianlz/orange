@@ -872,6 +872,13 @@ class OrderBase(object):
 
         return obj
 
+    def get_undone_orders_before_yesterdey(self):
+        '''
+        获取未完成的订单
+        '''
+        yesterday = datetime.datetime.now() - datetime.timedelta(days=1)
+        return Order.objects.filter(state__in=[1,2], create_time__lt=yesterday)
+
 
 class BookingBase(object):
 
