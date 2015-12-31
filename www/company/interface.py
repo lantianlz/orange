@@ -1736,6 +1736,22 @@ class StatisticsBase(object):
 
         return raw_sql.exec_sql(sql, [start_date, end_date])
 
+    def get_order_price_group_by_confirm_time_of_month(self, start_date, end_date):
+        '''
+        查询月订单总金额 按订单确认时间分组
+        数据格式：
+        [2014-01, 15], [2014-02, 23]
+        '''
+        sql = """
+            SELECT DATE_FORMAT(confirm_time, "%%Y-%%m"), SUM(total_price) 
+            FROM company_order 
+            WHERE %s <= confirm_time AND confirm_time <= %s
+            AND state = 3 AND is_test = 0
+            GROUP BY DATE_FORMAT(confirm_time, "%%Y-%%m")
+        """
+
+        return raw_sql.exec_sql(sql, [start_date, end_date])
+
     def statistics_commission(self, start_date, end_date):
         '''
         '''

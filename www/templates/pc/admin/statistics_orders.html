@@ -22,7 +22,8 @@ require(
     [
         "echarts", 
         "echarts/chart/line", 
-        "echarts/chart/bar"
+        "echarts/chart/bar",
+        "echarts/chart/pie",
     ],
     function(ec){
         echarts = ec;
@@ -74,6 +75,14 @@ var echarts,
                         data['order_price'],
                         data['order_per_day_price'],
                         data['order_per_price']
+                    );
+                }
+                if(data['order_price_of_month_x_data'].length > 0){
+                    orderPriceOfMonthChart(
+                        data['order_price_of_month_x_data'], 
+                        data['order_price_of_month_y_data'], 
+                        data['order_price_of_month'],
+                        data['order_per_price_of_month']
                     );
                 }
             }
@@ -361,7 +370,102 @@ var echarts,
         $('.order-price-total').html(total);
         $('.order-per-day-price').html(perDayPrice);
         $('.order-per-price').html(perPrice);
+    },
+
+    orderPriceOfMonthChart = function(xData, yData, total, perPrice){
+        var main = echarts.init(document.getElementById('order_price_of_month_chart'));
+        
+        main.setOption({
+            title: {
+                text: '月订单总金额'
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'line',
+                    lineStyle: {
+                      color: '#ddd',
+                      width: 1,
+                      type: 'solid'
+                    }
+                },
+                formatter: '{b}<br />{a}: {c} '
+            },
+            legend: {
+                data:['月订单总金额']
+            },
+            toolbox: {
+                show: false
+            },
+            dataZoom : {
+                show : true,
+                realtime : true,
+                start : calculatePercent(xData.length),
+                end : 100,
+                handleColor: 'rgba(29, 171, 217, 0.8)',
+                fillerColor: 'rgba(29, 171, 217, 0.2)'
+            },
+            calculable: false,
+            xAxis: [{
+                type: 'category',
+                boundaryGap: false,
+                data: xData,
+                splitLine: {
+                    show: true,
+                    lineStyle: {
+                        color: ['#e2e2e2'],
+                        width: 1,
+                        type: 'solid'
+                    }
+                },
+                axisLine: {
+                    show: true,
+                    lineStyle: {
+                        color: '#888',
+                        width: 2,
+                        type: 'solid'
+                    }
+                }
+            }],
+            yAxis: [{
+                type : 'value',
+                splitLine: {
+                    show: true,
+                    lineStyle: {
+                        color: ['#e2e2e2'],
+                        width: 1,
+                        type: 'solid'
+                    }
+                },
+                axisLine: {
+                    show: true,
+                    lineStyle: {
+                        color: '#888',
+                        width: 2,
+                        type: 'solid'
+                    }
+                }
+            }],
+            color: ['#1DABD9'],
+            series : [{
+                name:'月订单总金额',
+                type:'line',
+                smooth: true,
+                itemStyle: {
+                    normal: {
+                        areaStyle: {
+                            type: 'default'
+                        }
+                    }
+                },
+                data: yData
+            }]
+        });
+    
+        $('.order-price-total-of-month').html(total);
+        $('.order-per-price-of-month').html(perPrice);
     };
+
 
 $(document).ready(function(){
     $('#start_date_search').datetimepicker({
@@ -427,6 +531,13 @@ $(document).ready(function(){
                     <span class="hidden-xs">日订单总金额</span>
                 </a>
             </li>
+            <li>
+                <a href="#order_price_of_month" data-toggle="pill">
+                    <i class="fa fa-area-chart pr-5"></i>
+                    <span class="hidden-sm hidden-md hidden-lg">月订单额</span>
+                    <span class="hidden-xs">月订单总金额</span>
+                </a>
+            </li>
         </ul>
 
         <div class="tab-content">
@@ -460,6 +571,16 @@ $(document).ready(function(){
                     <span class="f20 fb co-1DABD9 order-per-day-price pl-5">0</span>
                     <span>，平均每单金额: </span>
                     <span class="f20 fb co-1DABD9 order-per-price pl-5">0</span>
+                </div>
+            </div>
+
+            <div class="tab-pane fade pt-15 in" id="order_price_of_month">
+                <div id="order_price_of_month_chart" style="height: 400px;"></div>
+                <div class="text-right pt-20">
+                    <span>总订单额: </span>
+                    <span class="f20 fb co-1DABD9 order-price-total-of-month pl-5">0</span>
+                    <span>，平均月订单额: </span>
+                    <span class="f20 fb co-1DABD9 order-per-price-of-month pl-5">0</span>
                 </div>
             </div>
 
