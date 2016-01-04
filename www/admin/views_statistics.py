@@ -235,7 +235,7 @@ def get_statistics_orders_data(request):
         order_price += x[1]
     days = len(order_price_x_data) if order_price_x_data else 1
     order_per_day_price = '%.2f' % (order_price / days)
-    order_per_price = '%.2f' % (order_price / order_count)
+    order_per_price = '%.2f' % (order_price / (order_count if order_count != 0 else 1) )
 
     # =================== 获取月订单总金额
     order_price_of_month_x_data = []
