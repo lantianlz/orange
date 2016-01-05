@@ -199,7 +199,7 @@ def get_statistics_orders_data(request):
     end_date = request.POST.get('end_date')
     start_date, end_date = utils.get_date_range(start_date, end_date)
 
-    #=================== 获取日订单的数量
+    # =================== 获取日订单的数量
     order_count_x_data = []
     order_count_y_data = []
     order_count = 0
@@ -211,7 +211,7 @@ def get_statistics_orders_data(request):
     days = len(order_count_x_data) if order_count_x_data else 1
     order_per_count = (order_count / days) if (order_count % days) == 0 else (order_count / days + 1)
 
-    #=================== 获取日服务人次的数量
+    # =================== 获取日服务人次的数量
     person_count_x_data = []
     person_count_y_data = []
     person_count = 0
@@ -223,7 +223,7 @@ def get_statistics_orders_data(request):
     days = len(person_count_x_data) if person_count_x_data else 1
     person_per_count = '%.f' % (person_count / days)
 
-    #=================== 获取日订单总金额
+    # =================== 获取日订单总金额
     order_price_x_data = []
     order_price_y_data = []
     order_price = 0
@@ -235,7 +235,19 @@ def get_statistics_orders_data(request):
         order_price += x[1]
     days = len(order_price_x_data) if order_price_x_data else 1
     order_per_day_price = '%.2f' % (order_price / days)
-    order_per_price = '%.2f' % (order_price / order_count)
+    order_per_price = '%.2f' % (order_price / (order_count if order_count != 0 else 1) )
+
+    # =================== 获取月订单总金额
+    order_price_of_month_x_data = []
+    order_price_of_month_y_data = []
+    order_price_of_month = 0
+    order_per_price_of_month = 0
+    for x in StatisticsBase().get_order_price_group_by_confirm_time_of_month(start_date, end_date):
+        order_price_of_month_x_data.append(x[0])
+        order_price_of_month_y_data.append(str(x[1]))
+        order_price_of_month += x[1]
+    months = len(order_price_of_month_x_data) if order_price_of_month_x_data else 1
+    order_per_price_of_month = '%.2f' % (order_price_of_month / months)
 
     data = {
         'order_count': str(order_count),
@@ -250,7 +262,11 @@ def get_statistics_orders_data(request):
         'order_per_day_price': str(order_per_day_price),
         'order_per_price': str(order_per_price),
         'order_price_x_data': order_price_x_data,
-        'order_price_y_data': order_price_y_data
+        'order_price_y_data': order_price_y_data,
+        'order_price_of_month_x_data': order_price_of_month_x_data,
+        'order_price_of_month_y_data': order_price_of_month_y_data,
+        'order_price_of_month': str(order_price_of_month),
+        'order_per_price_of_month': order_per_price_of_month
     }
     return HttpResponse(
         json.dumps(data),

@@ -370,7 +370,7 @@ class SupplierCashAccount(models.Model):
     balance = models.DecimalField(verbose_name=u"最新余额", max_digits=20, decimal_places=2, default=0, db_index=True)
 
     class Meta:
-        ordering = ['-balance']
+        ordering = ['-balance', 'id']
 
 class SupplierCashRecord(models.Model):
 
