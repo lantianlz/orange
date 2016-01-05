@@ -12,7 +12,6 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'www.settings'
 
 
 import datetime
-import datetime
 from django.conf import settings
 from www.company.interface import InvoiceRecordBase
 
