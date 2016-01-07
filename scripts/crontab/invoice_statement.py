@@ -7,6 +7,7 @@ import os
 SITE_ROOT = os.path.dirname(os.path.abspath(__file__))
 sys.path.extend([os.path.abspath(os.path.join(SITE_ROOT, '../')),
                  os.path.abspath(os.path.join(SITE_ROOT, '../../')),
+                 os.path.abspath(os.path.join(SITE_ROOT, '../../www')),
                  ])
 os.environ['DJANGO_SETTINGS_MODULE'] = 'www.settings'
 
@@ -14,6 +15,7 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'www.settings'
 import datetime
 from django.conf import settings
 from www.company.interface import InvoiceRecordBase
+
 
 def get_invoice_statement():
     data = InvoiceRecordBase().get_invoice_statement('', '2015-08-21', datetime.datetime.now())
