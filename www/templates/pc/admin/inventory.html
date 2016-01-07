@@ -1,0 +1,506 @@
+{% extends "pc/admin/home.html" %}
+{% load custom_tags %}
+{% load custom_filters %}
+{% block title %}库存产品管理{% endblock %}
+{% block admin_title %}库存产品管理{% endblock %}
+{% block admin_title_m %}库存产品管理{% endblock %}
+
+{% block css %}
+<style type="text/css">
+
+</style>
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript">
+$(document).ready(function(){
+    // models
+    var Inventory = Backbone.Model.extend({
+
+        // 默认值
+        defaults: {
+            'num': ''
+        }
+
+    });
+
+    // collections
+    var Inventorys = Backbone.Collection.extend({
+        model: Inventory,
+
+        _modelMaps: {
+            'num': 'num',
+            'inventoryId': 'inventory_id',
+            'itemId': 'item_id',
+            'itemName': 'item_name',
+            'amount': 'amount',
+            'warningValue': 'warning_value',
+            'state': 'state',
+            'createTime': 'create_time'
+        },
+
+        // 查询
+        search: function(name, state, pageIndex){
+            var me = this,
+                name = name||'',
+                state = state||'1',
+                pageIndex = pageIndex||1;
+
+            ajaxSend(
+                "/admin/inventory/search", 
+                {'name': name, 'state': state, 'page_index': pageIndex}, 
+                function(data){
+                    me.pageIndex = pageIndex;
+                    me.pageCount = data.page_count;
+                    me.name = name;
+                    me.state = state;
+
+                    me.reset($.Global.Utils.dictMapParse(data.data, me._modelMaps));
+                }
+            );
+        },
+
+        // 获取一个提问的model
+        getOne: function(inventoryId, callback){
+            var me = this;
+
+            ajaxSend(
+                "/admin/inventory/get_inventory_by_id", 
+                {'inventory_id': inventoryId},
+                function(data){
+                    if(callback){
+                        callback($.Global.Utils.dictMap(data, me._modelMaps));
+                    }
+                }
+            );
+        },
+
+        //
+        modifyInventory: function(data, callback){
+
+            ajaxSend(
+                "/admin/inventory/modify_inventory", 
+                data,
+                function(response){
+                    if(callback){
+                        callback(response);
+                    }
+                }
+            );
+        },
+
+        addInventory: function(data, callback){
+
+            ajaxSend(
+                "/admin/inventory/add_inventory", 
+                data,
+                function(response){
+                    if(callback){
+                        callback(response);
+                    }
+                }
+            );
+        }
+
+    });
+
+    // listView
+    var ListView = Backbone.View.extend({
+        el: '#inventory_list',
+
+        pagination: new $.Global.Pagination.PaginationView(),
+
+        template: _.template($('#inventory_template').html()),
+
+        initialize: function(){
+            this.listenTo(this.collection, 'reset', this.render);
+        },
+
+        events: {
+            'click .search': 'search',
+            'click .pointer': 'modifyInventory'
+        },
+
+        // 渲染函数
+        render: function(){
+            var data = this.collection.toJSON();
+
+            this.showPanel();
+
+            this.$('tbody').html(this.template({'inventorys': data}));
+
+            this.pagination.render(
+                this.collection.pageIndex,
+                this.collection.pageCount,
+                'search/' + this.collection.name + '/' + this.collection.state
+            );
+        },
+
+        // 显示面板
+        showPanel: function(){
+            $('.orange-nav-pills a[href="#inventory_list"]').tab('show');
+        },
+
+        search: function(){
+            var name = this.$('.name').val(),
+                state = this.$('.state').val();
+
+            router.navigate(String.format('/search/{0}/{1}/1', name, state), {trigger: true});
+        },
+
+        modifyInventory: function(sender){
+            var target = $(sender.currentTarget),
+                inventoryId = target.data('inventory_id');
+
+            router.navigate('/modify/' + inventoryId, {trigger: true});
+        }
+    });
+
+    // modifyView
+    var ModifyView = Backbone.View.extend({
+        
+        el: '#modify_inventory',
+
+        template: _.template($('#modify_inventory_template').html()),
+
+        events: {
+            'click .save': 'save'
+        },
+
+        // 显示面板
+        showPanel: function(){
+            $('.orange-nav-pills a[href="#modify_inventory"]').tab('show');
+        },
+
+        // 渲染
+        render: function(data){
+            this.$el.html(this.template(data));
+        },
+
+        // 显示提问信息
+        modifyInventory: function(inventoryId){
+            var me = this;
+
+            this.collection.getOne(inventoryId, function(data){
+                if(data){
+                    me.render(data);
+                    me.showPanel();
+                } else {
+                    setTimeout(function(){history.go(-1);}, 3000);
+                    $.Global.Notice.ErrorTopNotice("没有找到对应的库存产品!");
+                }
+            });
+        },
+
+        // 保存
+        save: function(sender){
+            var inventoryId = this.$('form').data('inventory_id'),
+                target = $(sender.currentTarget),
+                me = this;
+
+            if(!this.$('form').valid()){
+                return;
+            }
+
+            g_ajax_processing_obj_id = target.setUUID().attr('id');
+            me.collection.modifyInventory($.Global.Utils.formToDict(this.$('form')), function(data){
+                if(data.errcode == "0"){
+                    $.Global.Notice.SuccessTopNotice('操作成功!');
+                    router.navigate('modify/' + inventoryId, {'trigger': true});
+                } else {
+                    $.Global.Notice.ErrorTopNotice(data.errmsg);
+                }
+            });
+            
+        }
+
+
+    });
+
+    
+    var AddView = Backbone.View.extend({
+        el: 'body',
+
+        template: _.template($('#add_inventory_template').html()),
+
+        showPanel: function(){
+            var me = this;
+
+            me.render();
+        },
+
+        itemTextBox: null,
+        initItemTextBox: function(name, value){
+            var me = this;
+
+            this.itemTextBox = $.Global.TextboxList.create('#item_add', {
+                max: 1,
+                placeholder: '选择产品',
+                url: '/admin/item/get_items_by_name_for_combox',
+                param: 'name',
+                loadPlaceholder: '正在加载...'
+            });
+
+            if(value){
+                this.itemTextBox.add(name, value);
+            }
+            
+        },
+
+        render: function(){
+            var me = this;
+
+            $('#add_inventory_modal').remove();
+            
+            $('body').append(this.template());
+
+            // 绑定事件
+            $('#add_inventory_modal .cancel').bind('click', function(){
+                history.go(-1);
+            });
+            $('#add_inventory_modal .ok').bind('click', function(){
+                me.addInventory();
+            });
+            
+            $('#add_inventory_modal').modal({'show': true, 'backdrop': 'static'});
+
+            me.initItemTextBox();
+        },
+
+        addInventory: function(){
+            var me = this;
+            
+            if(!$('#add_inventory_modal form').valid()){
+                return;
+            }
+
+            g_ajax_processing_obj_id = $("#add_inventory_modal .ok").setUUID().attr('id');
+            inventorys.addInventory($.Global.Utils.formToDict($('#add_inventory_modal form')), function(data){
+                if(data.errcode == "0"){
+                    router.navigate('modify/' + data.errmsg, {trigger: true});
+                    $('#add_inventory_modal').modal('hide');
+                    $.Global.Notice.SuccessTopNotice("操作成功");
+                } else {
+                    $.Global.Notice.ErrorTopNotice(data.errmsg);
+                }
+            })
+
+        }
+
+    });
+
+    
+    // router
+    var Router = Backbone.Router.extend({
+
+        routes: {
+            "":                     "search",
+            "modify/:inventoryId":       "modify",
+            "search/(:name)/(:state)/:pageIndex":    "search",
+            "add":                   "add"
+        },
+
+        // 查询
+        search: function(name, state, pageIndex){
+            inventorys.search(name, state, pageIndex);
+        },
+
+        // 显示修改界面
+        modify: function(inventoryId){
+            modifyView.modifyInventory(inventoryId);
+        },
+
+        add: function(){
+            addView.showPanel();
+        }
+
+    });
+    
+    // 初始化
+    var inventorys = new Inventorys(),
+        listView = new ListView({'collection': inventorys}),
+        modifyView = new ModifyView({'collection': inventorys}),
+        addView = new AddView(),
+        router = new Router();
+ 
+    Backbone.history.start();
+
+});
+
+</script>
+{% endblock %}
+
+{% block admin_main %}
+<ul class="nav nav-pills orange-nav-pills">
+    <li class="active">
+        <a href="#inventory_list" data-toggle="pill">
+            <i class="fa fa-list-ol pr-5"></i>
+            <span class="hidden-sm hidden-md hidden-lg">列表</span>
+            <span class="hidden-xs">库存产品列表</span>
+        </a>
+    </li>
+    <li>
+        <a href="#modify_inventory" data-toggle="pill">
+            <i class="fa fa-pencil-square-o pr-5"></i>
+            <span class="hidden-sm hidden-md hidden-lg">修改</span>
+            <span class="hidden-xs">修改库存产品信息</span>
+        </a>
+    </li>
+    <li class="pull-right">
+        <a href="#add">
+            <i class="fa fa-plus-circle pr-5"></i>
+            <span class="hidden-sm hidden-md hidden-lg">添加</span>
+            <span class="hidden-xs">添加库存产品</span>
+        </a>
+    </li>
+</ul>
+
+<div class="tab-content">
+    <!-- 客户经理列表 -->
+    <div class="tab-pane fade pt-15 in active" id="inventory_list">
+        <form action="." class="form-inline" onsubmit="javascript: return false;">
+            <div class="input-group input-group-sm pb-10">
+                <span class="input-group-addon">状态</span>
+                <select class="form-control state">
+                    {% for state in all_states %}
+                    <option value="{{state.value}}" {% if state.value == 1 %}selected{% endif %} >{{state.name}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="input-group input-group-sm pb-10">
+                <span class="input-group-addon">产品名称</span>
+                <input type="text" class="form-control name" placeholder="" />
+                <span class="input-group-btn">
+                    <button class="btn btn-default search bgc-eeeeee" type="submit">查询</button>
+                </span>
+            </div>
+        </form>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>产品名称</th>
+                    <th>库存</th>
+                    <th>预警值</th>
+                    <th class="hidden-xs">状态</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+            </tbody>
+        </table>
+
+        <div class="text-center">
+            <ul class="pagination pagination-sm qx-pagination">
+                
+            </ul>
+        </div>
+    </div>
+
+    <!-- 修改客户经理信息 -->
+    <div class="tab-pane fade" id="modify_inventory">
+        
+    </div>
+</div>
+
+<!-- 客户经理列表 -->
+<script type="text/template" id="inventory_template">
+    <% _.each(inventorys, function(inventory){ %>
+        <tr class="pointer" data-inventory_id="<%= inventory.inventoryId %>">
+            <td><%= inventory.num %></td>
+            <td><%= inventory.itemName %></td>
+            <td><%= inventory.amount %></td>
+            <td><%= inventory.warningValue %></td>
+            <td class="hidden-xs">
+                <% if(inventory.state){ %>
+                    <span class="fa fa-check co-3B99FC"></span>
+                <% } else { %>
+                    <span class="fa fa-times co-C33333"></span>
+                <% } %>
+            </td>
+        </tr>
+    <% }) %>
+</script>
+
+<!-- 修改问题模板 -->
+<script type="text/template" id="modify_inventory_template">
+    <form class="form-horizontal" data-inventory_id="<%= inventoryId %>" role="form" method="post" action="">
+        <input type="hidden" name="inventory_id" value="<%= inventoryId %>" />
+        <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+            <label class="col-sm-2 control-label">库存产品</label>
+            <div class="col-sm-4">
+                <p class="form-control-static"><%= itemName %></p>
+            </div>
+        </div>
+        <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+            <label class="col-sm-2 control-label">库存</label>
+            <div class="col-sm-4">
+                <input type="text" class="form-control" required name="amount" value='<%= amount %>'>
+            </div>
+        </div>
+        <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+            <label class="col-sm-2 control-label">预警值</label>
+            <div class="col-sm-3">
+                <input type="text" class="form-control" required name="warning_value" value='<%= warningValue %>'>
+            </div>
+        </div>
+        <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+            <label class="col-sm-2 control-label">状态</label>
+            <div class="col-sm-2">
+                <select name="state" class="form-control">
+                    {% for state in states %}
+                    <option value="{{state.value}}" <% if(state == {{state.value}}){ %>selected<% } %> >{{state.name}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="form-group pt-20 pb-20 mb-0">
+            <div class="col-sm-12">
+                <button type="button" class="btn btn-primary save">提交你的修改</button>
+            </div>
+        </div>
+    </form>
+</script>
+
+
+<script type="text/template" id="add_inventory_template">
+<div class="modal fade" id="add_inventory_modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header pb-5">
+                <!-- <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button> -->
+                <h4 class="modal-title">添加库存产品信息</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" role="form" method="post" action="">
+                    
+                    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+                        <label class="col-sm-3 control-label">库存产品</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" required name="item" value='' id="item_add">
+                        </div>
+                    </div>
+                    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+                        <label class="col-sm-3 control-label">库存</label>
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" required name="amount" value='0'>
+                        </div>
+                    </div>
+                    <div class="form-group pt-20 pb-20 mb-0">
+                        <label class="col-sm-3 control-label">预警值</label>
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" required name="warning_value" value='0'>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default cancel" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary ok">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+</script>
+
+{% endblock %}

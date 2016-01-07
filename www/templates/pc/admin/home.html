@@ -484,6 +484,20 @@ $(document).ready(function(){
                 </ul>
             </li>
             <li class="list-group-item">
+                <a><i class="fa fa-cubes pr-3"></i>库存管理</a>
+                <ul class="list-group sub-nav">
+                    <li class="list-group-item {% if '/admin/inventory' == request.path %}active{% endif %}">
+                        <a href="/admin/inventory"><i class="point"></i>库存产品列表</a>
+                    </li>
+                    <li class="list-group-item {% if '/admin/inventory_record' == request.path %}active{% endif %}">
+                        <a href="/admin/inventory_record"><i class="point"></i>产品出入库记录</a>
+                    </li>
+                    <li class="list-group-item {% if '/inventory_to_item' in request.path %}active{% endif %}">
+                        <a href="/admin/inventory_to_item"><i class="point"></i>库存产品对照</a>
+                    </li>
+                </ul>
+            </li>
+            <li class="list-group-item">
                 <a><i class="fa fa-bar-chart pr-3"></i>统计管理</a>
                 <ul class="list-group sub-nav">
                     

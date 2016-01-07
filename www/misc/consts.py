@@ -93,6 +93,21 @@ PERMISSIONS = [
     {'code': 'query_invoice_record', 'name': u'查询发票记录', 'parent': 'invoice_record_manage'},
     {'code': 'modify_invoice_record', 'name': u'修改发票记录', 'parent': 'invoice_record_manage'},
 
+    {'code': 'inventory_manage', 'name': u'库存产品管理', 'parent': None},
+    {'code': 'add_inventory', 'name': u'添加库存产品', 'parent': 'inventory_manage'},
+    {'code': 'query_inventory', 'name': u'查询库存产品', 'parent': 'inventory_manage'},
+    {'code': 'modify_inventory', 'name': u'修改库存产品', 'parent': 'inventory_manage'},
+
+    {'code': 'inventory_record_manage', 'name': u'库存产品记录管理', 'parent': None},
+    {'code': 'add_inventory_record', 'name': u'添加库存产品记录', 'parent': 'inventory_record_manage'},
+    {'code': 'query_inventory_record', 'name': u'查询库存产品记录', 'parent': 'inventory_record_manage'},
+    {'code': 'modify_inventory_record', 'name': u'修改库存产品记录', 'parent': 'inventory_record_manage'},
+
+    {'code': 'inventory_to_item_manage', 'name': u'库存产品对照管理', 'parent': None},
+    {'code': 'add_inventory_to_item', 'name': u'添加库存产品对照', 'parent': 'inventory_to_item_manage'},
+    {'code': 'query_inventory_to_item', 'name': u'查询库存产品对照', 'parent': 'inventory_to_item_manage'},
+    {'code': 'modify_inventory_to_item', 'name': u'修改库存产品对照', 'parent': 'inventory_to_item_manage'},
+
     {'code': 'statistics_manage', 'name': u'统计管理', 'parent': None},
     {'code': 'statistics_sale_top', 'name': u'销售排行', 'parent': 'statistics_manage'},
     {'code': 'statistics_summary', 'name': u'综合统计', 'parent': 'statistics_manage'},

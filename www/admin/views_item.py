@@ -172,6 +172,23 @@ def get_items_by_name(request):
 
     return HttpResponse(json.dumps(data), mimetype='application/json')
 
+@verify_permission('query_item')
+def get_items_by_name_for_combox(request):
+    '''
+    根据名字查询套餐
+    '''
+    name = request.REQUEST.get('name')
+
+    result = []
+
+    items = ItemBase().get_items_by_name(name)[:10]
+
+    if items:
+        for x in items:
+            result.append([x.id, u'%s' % (x.name), None, u'%s' % (x.name)])
+
+    return HttpResponse(json.dumps(result), mimetype='application/json')
+
 def get_item_types(request):
     from www.company.models import Item
 

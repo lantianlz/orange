@@ -18,7 +18,8 @@ from www.account.interface import UserBase, ExternalTokenBase
 from models import Item, Company, Meal, MealItem, Order, OrderItem, \
     Booking, CompanyManager, CashAccount, CashRecord, Supplier, \
     SupplierCashAccount, SupplierCashRecord, PurchaseRecord, SaleMan, \
-    InvoiceRecord, Invoice, RechargeOrder
+    InvoiceRecord, Invoice, RechargeOrder, Inventory, InventoryRecord, \
+    InventoryToItem
 
 DEFAULT_DB = 'default'
 
@@ -58,7 +59,11 @@ dict_err = {
 
     21301: u"没有找到对应的订单",
     21302: u"订单已支付",
-    21303: u"付款金额和订单金额不符，支付失败，请联系客服人员"
+    21303: u"付款金额和订单金额不符，支付失败，请联系客服人员",
+
+    21401: u'没有找到对应的库存产品',
+
+    21401: u'没有找到对应的库存产品对照信息',
 }
 dict_err.update(consts.G_DICT_ERROR)
 
@@ -741,6 +746,7 @@ class OrderBase(object):
             if obj.is_test:
                 transaction.commit(using=DEFAULT_DB)
             else:
+                # 操作现金账户
                 code, msg = CashRecordBase().add_cash_record(
                     obj.company_id,
                     obj.total_price,
@@ -748,7 +754,12 @@ class OrderBase(object):
                     u"订单「%s」确认" % obj.order_no,
                     ip
                 )
+                if code != 0:
+                    transaction.rollback(using=DEFAULT_DB)
+                    return code, dict_err.get(code)
 
+                # 库存产品消耗
+                code, msg = InventoryBase().calculate_inventory_cost_by_order(obj.id)
                 if code == 0:
                     transaction.commit(using=DEFAULT_DB)
                 else:
@@ -2014,7 +2025,7 @@ class InvoiceBase(object):
 
     def modify_invoice(self, invoice_id, company_id, title, content):
         
-        if not (invoice_id, company_id, title, content):
+        if not (invoice_id and company_id and title and content):
             return 99800, dict_err.get(99800)
 
         company = CompanyBase().get_company_by_id(company_id)
@@ -2130,6 +2141,309 @@ class RechargeOrderBase(object):
             debug.get_debug_detail_and_send_email(e)
             transaction.rollback(using=DEFAULT_DB)
             return 99900, dict_err.get(99900)
+
+
+class InventoryBase(object):
+    '''
+    库存产品
+    '''
+    
+    def get_all_inventory(self, state):
+        objs = Inventory.objects.all()
+
+        if state != None:
+            objs = objs.filter(state=state)
+
+        return objs
+
+    def search_inventorys_for_admin(self, name, state):
+        objs = self.get_all_inventory(state)
+
+        if name:
+            objs = objs.filter(item__name__contains=name)
+
+        return objs
+
+    def get_inventorys_by_name(self, name):
+        objs = self.get_all_inventory(True)
+        if name:
+            objs = objs.filter(item__name__contains=name)
+        return objs
+
+    def get_inventory_by_id(self, inventory_id):
+        try:
+            return Inventory.objects.get(id=inventory_id)
+        except Inventory.DoesNotExist:
+            return ''
+
+    def add_inventory(self, item_id, amount=0, warning_value=0, state=1):
+
+        if not item_id:
+            return 99800, dict_err.get(99800)
+
+        try:
+            obj = Inventory.objects.create(
+                item_id = item_id,
+                amount = amount,
+                warning_value = warning_value,
+                state = state
+            )
+        except Exception, e:
+            debug.get_debug_detail_and_send_email(e)
+            return 99900, dict_err.get(99900)
+
+        return 0, obj
+
+    def modify_inventory(self, inventory_id, amount=0, warning_value=0, state=1):
+
+        if not inventory_id:
+            return 99800, dict_err.get(99800)
+
+        try:
+            obj = self.get_inventory_by_id(inventory_id)
+            if not obj:
+                return 21401, dict_err.get(21401)
+
+            obj.amount = amount
+            obj.warning_value = warning_value
+            obj.state = state
+            obj.save()
+
+        except Exception, e:
+            debug.get_debug_detail_and_send_email(e)
+            return 99900, dict_err.get(99900)
+
+        return 0, dict_err.get(0)
+
+    def send_inventory_notice(self, inventory):
+        # 发送库存不足提醒
+        from www.tasks import async_send_email
+
+        title = u"库存不足"
+        content = u"「%s」库存不足，当前余量：「%s」" % (inventory.item.name, inventory.amount)
+
+        async_send_email("web@3-10.cc", title, content)
+
+    def check_need_notice(self, inventory_id):
+        '''
+        '''
+        try:
+            obj = self.get_inventory_by_id(inventory_id)
+
+            # 如果需要提醒
+            if obj.amount <= obj.warning_value:
+                self.send_inventory_notice(obj)
+
+        except Exception, e:
+            debug.get_debug_detail_and_send_email(e)
+    
+    def calculate_inventory_cost_by_order(self, order_id):
+        '''
+        根据订单计算消耗产品
+        '''
+
+        order = OrderBase().get_order_by_id(order_id)
+
+        # 查找出所有需要操作的库存产品
+        # {'产品': [{'库存产品', '库存产品消耗数量'}]}
+        inventory_cost_dict = {}
+        inventory_dict = {}
+        for x in self.get_all_inventory(True):
+            key = str(x.item_id)
+            inventory_dict[key] = [{'inventory_id': x.id, 'cost_count': 1}]
+            inventory_cost_dict[x.id] = 0
+
+        # 查找出产品与消耗库存产品的关系
+        # {'产品': [{'库存产品', '库存产品消耗数量'}, {'库存产品', '库存产品消耗数量'}]}
+        inventory_to_item_dict = {}
+        for x in InventoryToItem.objects.all():
+            key = str(x.item_id)
+
+            if not inventory_to_item_dict.has_key(key):
+                inventory_to_item_dict[key] = []
+            inventory_to_item_dict[key].append({'inventory_id': x.inventory_id, 'cost_count': x.amount})
+
+        # 合并
+        inventory_dict.update(inventory_to_item_dict)
+
+        # 根据订单来确认消耗的产品
+        for order_item in OrderItem.objects.filter(order=order):
+            key = str(order_item.item_id)
+            temp = inventory_dict.get(key, None)
+
+            if not temp:
+                continue
+
+            # 如果有消耗
+            for x in temp:
+                inventory_cost_dict[x['inventory_id']] += order_item.amount * x['cost_count']
+
+        code = 0
+        msg = ''
+        # 循环扣除消耗
+        for k, v in inventory_cost_dict.items():
+            code, msg = InventoryRecordBase().add_record(k, 1, v, order.confirm_operator, u"订单「%s」确认" % order.order_no)
+            
+            if code > 0:
+                break
+
+        return code, msg
+
+
+class InventoryToItemBase(object):
+    '''
+    库存产品对照
+    '''
+
+    def search_relationship_for_admin(self, name):
+        objs = InventoryToItem.objects.all()
+
+        if name:
+            objs = objs.filter(item__name__contains=name)
+
+        return objs
+
+    def get_relationship_by_id(self, relationship_id):
+        try:
+            return InventoryToItem.objects.get(id=relationship_id)
+        except InventoryToItem.DoesNotExist:
+            return ''
+
+    def add_relationship(self, inventory_id, item_id, amount=0):
+        '''
+        添加对照关系
+        '''
+
+        if not (inventory_id and item_id):
+            return 99800, dict_err.get(99800)
+
+        try:
+            obj = InventoryToItem.objects.create(
+                inventory_id = inventory_id,
+                item_id = item_id,
+                amount = amount
+            )
+        except Exception, e:
+            debug.get_debug_detail_and_send_email(e)
+            return 99900, dict_err.get(99900)
+
+        return 0, obj
+
+    def drop_relationship(self, relationship_id):
+        '''
+        删除对照关系
+        '''
+        if not relationship_id:
+            return 99800, dict_err.get(99800)
+
+        try:
+            obj = self.get_relationship_by_id(relationship_id)
+            if not obj:
+                return 21501, dict_err.get(21501)
+
+            obj.delete()
+
+        except Exception, e:
+            debug.get_debug_detail_and_send_email(e)
+            return 99900, dict_err.get(99900)
+
+        return 0, dict_err.get(0)
+
+
+class InventoryRecordBase(object):
+
+    def get_all_records(self, operation=None):
+        objs = InventoryRecord.objects.all()
+
+        if operation:
+            objs = objs.filter(operation=operation)
+
+        return objs
+
+    def search_records_for_admin(self, start_date, end_date, name, operation=None):
+        objs = self.get_all_records(operation).filter(
+            create_time__range = (start_date, end_date)
+        )
+
+        if name:
+            objs = objs.select_related('inventory', 'item').filter(
+                inventory__item__name__contains=name
+            )
+
+        return objs
+
+
+    def add_record(self, inventory_id, operation, value, operator, notes):
+        '''
+        '''
+        if not (inventory_id and operation and value and operator and notes):
+            return 99800, dict_err.get(99800)
+
+        # 检验参数
+        try:
+            value = int(value)
+            operation = int(operation)
+            assert value > 0
+            assert operation in (0, 1)
+        except Exception, e:
+            return 99801, dict_err.get(99801)
+
+        try:
+            obj = InventoryRecord.objects.create(
+                inventory_id = inventory_id,
+                operation = operation,
+                operator = operator,
+                notes = notes,
+                value = value
+            )
+
+            # 更新库存产品数量
+            if operation == 0:
+                obj.inventory.amount += value
+            else:
+                obj.inventory.amount -= value
+            obj.inventory.save()
+            # 更新记录表的余量
+            obj.current_value = obj.inventory.amount
+            obj.save()
+
+            #是否需要提醒
+            InventoryBase().check_need_notice(obj.inventory.id)
+
+        except Exception, e:
+            debug.get_debug_detail_and_send_email(e)
+            return 99900, dict_err.get(99900)
+
+        return 0, obj
+
+
+    @transaction.commit_manually(using=DEFAULT_DB)
+    def add_record_with_transaction(self, inventory_id, operation, value, operator, notes):
+        '''
+        '''
+        try:
+            errcode, errmsg = self.add_record(inventory_id, operation, value, operator, notes)
+            
+            if errcode == 0:
+                transaction.commit(using=DEFAULT_DB)
+            else:
+                transaction.rollback(using=DEFAULT_DB)
+            return errcode, errmsg
+        except Exception, e:
+            debug.get_debug_detail_and_send_email(e)
+            transaction.rollback(using=DEFAULT_DB)
+            return 99900, dict_err.get(99900)
+
+
+
+
+
+
+
+
+
+
+
 
 
 

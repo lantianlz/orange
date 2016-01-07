@@ -425,10 +425,56 @@ class SaleMan(models.Model):
 
 
 
+class Inventory(models.Model):
+
+    '''
+    库存表
+    '''
+    state_choices = ((0, u"无效"), (1, u"有效"))
+
+    item = models.ForeignKey("Item", unique=True)
+    amount = models.IntegerField(verbose_name=u"库存数量", default=0)
+    warning_value = models.IntegerField(verbose_name=u"预警值", default=0)
+    state = models.IntegerField(verbose_name=u"状态", default=1, choices=state_choices)
+    create_time = models.DateTimeField(verbose_name=u"创建时间", auto_now_add=True, db_index=True)
+
+    class Meta:
+        ordering = ["-id"]
 
 
+class InventoryRecord(models.Model):
+    
+    '''
+    库存出入库记录表
+    '''
+    operation_choices = ((0, u"入库"), (1, u"出库"))
+
+    inventory = models.ForeignKey("Inventory")
+    operation = models.IntegerField(verbose_name=u"操作类型", choices=operation_choices, db_index=True)
+    operator = models.CharField(verbose_name=u"操作人", max_length=128)
+    create_time = models.DateTimeField(verbose_name=u"操作时间", auto_now_add=True, db_index=True)
+    notes = models.CharField(verbose_name=u"备注", max_length=256)
+    value = models.IntegerField(verbose_name=u"操作数量", default=0)
+    current_value = models.IntegerField(verbose_name=u"当时余量", default=0)
+
+    class Meta:
+        ordering = ['-id']
 
 
+class InventoryToItem(models.Model):
+
+    '''
+    库存与项目对照表
+    '''
+    
+    inventory = models.ForeignKey('Inventory')
+    item = models.ForeignKey('Item')
+    amount = models.IntegerField(verbose_name=u"数量", default=0)
+    create_time = models.DateTimeField(verbose_name=u"操作时间", auto_now_add=True, db_index=True)
+
+    class Meta:
+        unique_together = [("inventory", "item"), ]
+        ordering = ['-id']
 
 
 

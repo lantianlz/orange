@@ -4,7 +4,7 @@ from django.conf.urls import patterns, url
 # from django.conf import settings
 
 urlpatterns = patterns('www.admin.views',
-	url(r'^$', 'home'),
+    url(r'^$', 'home'),
     url(r'^nav$', 'nav'),
 )
 
@@ -100,6 +100,7 @@ urlpatterns += patterns('www.admin.views_item',
     
     url(r'^item/get_item_types$', 'get_item_types'),
     url(r'^item/get_items_by_name$', 'get_items_by_name'),
+    url(r'^item/get_items_by_name_for_combox$', 'get_items_by_name_for_combox'),
     url(r'^item/add_item$', 'add_item'),
     url(r'^item/modify_item$', 'modify_item'),
     url(r'^item/get_item_by_id$', 'get_item_by_id'),
@@ -198,6 +199,35 @@ urlpatterns += patterns('www.admin.views_invoice_statement',
     url(r'^invoice_statement$', 'invoice_statement'),
 )
 
+# 库存产品
+urlpatterns += patterns('www.admin.views_inventory',
+
+    url(r'^inventory/modify_inventory$', 'modify_inventory'),
+    url(r'^inventory/add_inventory$', 'add_inventory'),
+    url(r'^inventory/get_inventory_by_id$', 'get_inventory_by_id'),
+    url(r'^inventory/get_inventorys_by_name$', 'get_inventorys_by_name'),
+    url(r'^inventory/search$', 'search'),
+    url(r'^inventory$', 'inventory'),
+)
+
+# 库存产品出入库记录
+urlpatterns += patterns('www.admin.views_inventory_record',
+
+    url(r'^inventory_record/add_record$', 'add_record'),
+    url(r'^inventory_record/search$', 'search'),
+    url(r'^inventory_record$', 'inventory_record'),
+)
+
+# 库存产品对照
+urlpatterns += patterns('www.admin.views_inventory_to_item',
+
+    url(r'^inventory_to_item/drop_relationship$', 'drop_relationship'),
+    url(r'^inventory_to_item/add_relationship$', 'add_relationship'),
+    url(r'^inventory_to_item/get_relationship_by_id$', 'get_relationship_by_id'),
+    url(r'^inventory_to_item/search$', 'search'),
+    url(r'^inventory_to_item$', 'inventory_to_item'),
+)
+
 # 统计管理
 urlpatterns += patterns('www.admin.views_statistics',
     url(r'^statistics_commission$', 'statistics_commission'),
@@ -243,25 +273,25 @@ urlpatterns += patterns('www.admin.views_district',
 # 缓存管理
 urlpatterns += patterns('www.admin.views_caches',
 
-	url(r'^caches/get_cache$', 'get_cache'),
-	url(r'^caches/remove_cache$', 'remove_cache'),
-	url(r'^caches/modify_cache$', 'modify_cache'),
-	url(r'^caches$', 'caches'),
+    url(r'^caches/get_cache$', 'get_cache'),
+    url(r'^caches/remove_cache$', 'remove_cache'),
+    url(r'^caches/modify_cache$', 'modify_cache'),
+    url(r'^caches$', 'caches'),
 )
 
 # 敏感操作日志管理
 urlpatterns += patterns('www.admin.views_sensitive_operation_log',
 
-	url(r'^sensitive_operation_log/get_sensitive_operation_log$', 'get_sensitive_operation_log'),
-	url(r'^sensitive_operation_log$', 'sensitive_operation_log'),
+    url(r'^sensitive_operation_log/get_sensitive_operation_log$', 'get_sensitive_operation_log'),
+    url(r'^sensitive_operation_log$', 'sensitive_operation_log'),
 )
 
 # 权限
 urlpatterns += patterns('www.admin.views_permission',
 
-	url(r'^permission/cancel_admin$', 'cancel_admin'),
-	url(r'^permission/save_user_permission$', 'save_user_permission'),
-	url(r'^permission/get_user_permissions$', 'get_user_permissions'),
-	url(r'^permission/get_all_administrators$', 'get_all_administrators'),
-	url(r'^permission$', 'permission'),
+    url(r'^permission/cancel_admin$', 'cancel_admin'),
+    url(r'^permission/save_user_permission$', 'save_user_permission'),
+    url(r'^permission/get_user_permissions$', 'get_user_permissions'),
+    url(r'^permission/get_all_administrators$', 'get_all_administrators'),
+    url(r'^permission$', 'permission'),
 )
