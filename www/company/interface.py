@@ -746,6 +746,13 @@ class OrderBase(object):
             if obj.is_test:
                 transaction.commit(using=DEFAULT_DB)
             else:
+                # 库存产品消耗
+                code, msg = InventoryBase().calculate_inventory_cost_by_order(obj.id)
+                
+                if code != 0:
+                    transaction.rollback(using=DEFAULT_DB)
+                    return code, dict_err.get(code)
+
                 # 操作现金账户
                 code, msg = CashRecordBase().add_cash_record(
                     obj.company_id,
@@ -754,12 +761,6 @@ class OrderBase(object):
                     u"订单「%s」确认" % obj.order_no,
                     ip
                 )
-                if code != 0:
-                    transaction.rollback(using=DEFAULT_DB)
-                    return code, dict_err.get(code)
-
-                # 库存产品消耗
-                code, msg = InventoryBase().calculate_inventory_cost_by_order(obj.id)
                 if code == 0:
                     transaction.commit(using=DEFAULT_DB)
                 else:

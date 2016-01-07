@@ -1,9 +1,9 @@
 {% extends "pc/admin/home.html" %}
 {% load custom_tags %}
 {% load custom_filters %}
-{% block title %}库存产品对照管理{% endblock %}
-{% block admin_title %}库存产品对照管理{% endblock %}
-{% block admin_title_m %}库存产品对照管理{% endblock %}
+{% block title %}库存产品关联管理{% endblock %}
+{% block admin_title %}库存产品关联管理{% endblock %}
+{% block admin_title_m %}库存产品关联管理{% endblock %}
 
 {% block css %}
 <style type="text/css">
@@ -195,7 +195,7 @@ $(document).ready(function(){
                 target = $(sender.currentTarget),
                 me = this;
 
-            if(!confirm('确认删除对照关系?')){
+            if(!confirm('确认删除关联关系?')){
                 return false;
             }
 
@@ -353,21 +353,21 @@ $(document).ready(function(){
         <a href="#relationship_list" data-toggle="pill">
             <i class="fa fa-list-ol pr-5"></i>
             <span class="hidden-sm hidden-md hidden-lg">列表</span>
-            <span class="hidden-xs">库存产品对照列表</span>
+            <span class="hidden-xs">库存产品关联列表</span>
         </a>
     </li>
     <li>
         <a href="#modify_relationship" data-toggle="pill">
             <i class="fa fa-pencil-square-o pr-5"></i>
             <span class="hidden-sm hidden-md hidden-lg">修改</span>
-            <span class="hidden-xs">修改库存产品对照信息</span>
+            <span class="hidden-xs">修改库存产品关联信息</span>
         </a>
     </li>
     <li class="pull-right">
         <a href="#add">
             <i class="fa fa-plus-circle pr-5"></i>
             <span class="hidden-sm hidden-md hidden-lg">添加</span>
-            <span class="hidden-xs">添加库存产品对照</span>
+            <span class="hidden-xs">添加库存产品关联</span>
         </a>
     </li>
 </ul>
@@ -447,7 +447,7 @@ $(document).ready(function(){
         </div>
         <div class="form-group pt-20 pb-20 mb-0">
             <div class="col-sm-12">
-                <button type="button" class="btn btn-danger save">删除对照关系</button>
+                <button type="button" class="btn btn-danger save">删除关联关系</button>
             </div>
         </div>
     </form>
@@ -460,7 +460,7 @@ $(document).ready(function(){
         <div class="modal-content">
             <div class="modal-header pb-5">
                 <!-- <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button> -->
-                <h4 class="modal-title">添加库存产品对照信息</h4>
+                <h4 class="modal-title">添加库存产品关联信息</h4>
             </div>
             <div class="modal-body">
                 <form class="form-horizontal" role="form" method="post" action="">
