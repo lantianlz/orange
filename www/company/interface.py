@@ -2283,6 +2283,10 @@ class InventoryBase(object):
         msg = ''
         # 循环扣除消耗
         for k, v in inventory_cost_dict.items():
+            # 跳过值为0的
+            if v == 0:
+                continue
+
             code, msg = InventoryRecordBase().add_record(k, 1, v, order.confirm_operator, u"订单「%s」确认" % order.order_no)
             
             if code > 0:
