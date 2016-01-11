@@ -753,9 +753,9 @@ $(document).ready(function(){
             <thead>
                 <tr>
                     <th>#</th>
-                    <th class="hidden-xs">订单号</th>
                     <th>套餐名称</th>
                     <th class="hidden-xs">所属公司</th>
+                    <th>备注</th>
                     <th class="hidden-xs">创建时间</th>
                     <th>价格</th>
                     <th>试吃</th>
@@ -784,9 +784,9 @@ $(document).ready(function(){
 <% _.each(orders, function(order){ %>
     <tr class="pointer <% if(order.createTime.substring(0,10) == '{{today_str}}'){ %>co-1DABD9<% } %>" data-order_id="<%= order.orderId %>" data-meal_id="<%= order.mealId %>" data-meal_name="<%= order.mealName %>">
         <td><%= order.num %></td>
-        <td class="hidden-xs"><%= order.orderNo %></td>
         <td><%= order.mealName %></td>
         <td class="hidden-xs"><%= order.companyName %></td>
+        <td class="fi fb"><%= order.note %></td>
         <td class="hidden-xs"><%= order.createTime %></td>
         <td><%= order.totalPrice %></td>
         <td>

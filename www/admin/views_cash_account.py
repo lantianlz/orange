@@ -49,7 +49,7 @@ def search(request):
     
     page_index = int(request.REQUEST.get('page_index'))
 
-    objs = CashAccountBase().get_accounts_for_admin(company_name)
+    objs, sum_price = CashAccountBase().get_accounts_for_admin(company_name)
 
     page_objs = page.Cpt(objs, count=10, page=page_index).info
 
@@ -58,7 +58,7 @@ def search(request):
     data = format_account(page_objs[0], num)
 
     return HttpResponse(
-        json.dumps({'data': data, 'page_count': page_objs[4], 'total_count': page_objs[5]}),
+        json.dumps({'data': data, 'sum_price': str(sum_price), 'page_count': page_objs[4], 'total_count': page_objs[5]}),
         mimetype='application/json'
     )
 

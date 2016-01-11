@@ -1050,7 +1050,7 @@ class CashAccountBase(object):
         if name:
             objs = objs.select_related('company').filter(company__name__contains=name)
 
-        return objs
+        return objs, objs.filter(balance__lt=0).aggregate(Sum('balance'))['balance__sum']
 
     def get_cash_account_by_id(self, account_id):
         try:
