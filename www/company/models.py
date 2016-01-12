@@ -385,6 +385,7 @@ class SupplierCashRecord(models.Model):
     operation = models.IntegerField(verbose_name=u"操作类型", choices=operation_choices, db_index=True)
     notes = models.CharField(verbose_name=u"备注", max_length=256)
     ip = models.CharField(verbose_name=u"ip", max_length=32, null=True)
+    purchase_record_id = models.CharField(verbose_name=u"采购流水id", max_length=32, null=True)
     create_time = models.DateTimeField(verbose_name=u"流水时间", auto_now_add=True, db_index=True) 
 
     class Meta:

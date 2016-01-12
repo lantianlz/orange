@@ -39,6 +39,7 @@ $(document).ready(function(){
             'operation': 'operation',
             'notes': 'notes',
             'ip': 'ip',
+            'purchaseRecordId': 'purchase_record_id',
             'createTime': 'create_time'
         },
 
@@ -96,7 +97,15 @@ $(document).ready(function(){
         },
 
         events: {
-            'click .search': 'search'
+            'click .search': 'search',
+            'click .pointer': 'goPurchaseRecord'
+        },
+
+        goPurchaseRecord: function(sender){
+            var target = $(sender.currentTarget),
+                purchaseRecordId = target.data('purchase_record_id');
+
+            window.open('/admin/purchase_record#modify/' + purchaseRecordId);
         },
 
         // 渲染函数
@@ -335,7 +344,7 @@ $(document).ready(function(){
 <!-- 客户经理列表 -->
 <script type="text/template" id="record_template">
     <% _.each(records, function(record){ %>
-        <tr class="pointer" data-record_id="<%= record.recordId %>">
+        <tr <% if(record.purchaseRecordId!=''){ %> class="pointer" data-purchase_record_id="<%= record.purchaseRecordId %>" <% } %> >
             <td><%= record.num %></td>
             <td><%= record.supplierName %></td>
             <td class="hidden-xs">

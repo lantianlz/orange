@@ -11,28 +11,29 @@
 {% endblock %}
 
 {% block javascript %}
-<script type="text/javascript" src="{{MEDIA_URL}}js/echarts/echarts.js"></script>
+<!-- <script type="text/javascript" src="{{MEDIA_URL}}js/echarts/echarts.js"></script> -->
+<script type="text/javascript" src="{{MEDIA_URL}}js/echarts/echarts.common.min.js"></script>
 <script type="text/javascript">
-require.config({
-    paths: {
-        echarts: '{{MEDIA_URL}}js/echarts'
-    }
-});
-require(
-    [
-        "echarts", 
-        "echarts/chart/line", 
-        "echarts/chart/bar",
-        "echarts/chart/pie",
-    ],
-    function(ec){
-        echarts = ec;
+// require.config({
+//     paths: {
+//         echarts: '{{MEDIA_URL}}js/echarts'
+//     }
+// });
+// require(
+//     [
+//         "echarts", 
+//         "echarts/chart/line", 
+//         "echarts/chart/bar",
+//         "echarts/chart/pie",
+//     ],
+//     function(ec){
+//         echarts = ec;
 
-        $('.search').click();
-        // loadData();
-        // orderChart(['2015-08-01', '2015-08-02', '2015-08-03', '2015-08-04'], [5, 6, 7, 8]);
-    }
-);
+//         $('.search').click();
+//         // loadData();
+//         // orderChart(['2015-08-01', '2015-08-02', '2015-08-03', '2015-08-04'], [5, 6, 7, 8]);
+//     }
+// );
 
 var echarts,
     calculatePercent = function(length){
@@ -458,6 +459,12 @@ var echarts,
                         }
                     }
                 },
+                label: {
+                    normal: {
+                        show: true,
+                        position: 'top'
+                    }
+                },
                 data: yData
             }]
         });
@@ -487,6 +494,7 @@ $(document).ready(function(){
         loadData($('#start_date_search').val(), $('#end_date_search').val());
     });
 
+    $('.search').click();
 });
 </script>
 {% endblock %}

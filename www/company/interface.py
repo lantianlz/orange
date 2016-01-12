@@ -1413,9 +1413,9 @@ class SupplierCashRecordBase(object):
         assert value > 0 and notes and supplier
 
     @transaction.commit_manually(using=DEFAULT_DB)
-    def add_cash_record_with_transaction(self, supplier_id, value, operation, notes, ip=None):
+    def add_cash_record_with_transaction(self, supplier_id, value, operation, notes, ip=None, purchase_record_id=None):
         try:
-            errcode, errmsg = self.add_cash_record(supplier_id, value, operation, notes, ip)
+            errcode, errmsg = self.add_cash_record(supplier_id, value, operation, notes, ip, purchase_record_id)
             if errcode == 0:
                 transaction.commit(using=DEFAULT_DB)
             else:
@@ -1426,7 +1426,7 @@ class SupplierCashRecordBase(object):
             transaction.rollback(using=DEFAULT_DB)
             return 99900, dict_err.get(99900)
 
-    def add_cash_record(self, supplier_id, value, operation, notes, ip=None):
+    def add_cash_record(self, supplier_id, value, operation, notes, ip=None, purchase_record_id=None):
         try:
             try:
                 value = decimal.Decimal(value)
@@ -1449,7 +1449,8 @@ class SupplierCashRecordBase(object):
                 current_balance=account.balance,
                 operation=operation,
                 notes=notes,
-                ip=ip
+                ip=ip,
+                purchase_record_id=purchase_record_id
             )
 
             return 0, dict_err.get(0)
@@ -1503,7 +1504,7 @@ class PurchaseRecordBase(object):
             )
             
             errcode, errmsg = SupplierCashRecordBase().add_cash_record(
-                supplier_id, price, 0, u'来自采购流水', ip
+                supplier_id, price, 0, u'来自采购流水', ip, record.id
             )
 
             if errcode == 0:
@@ -1541,7 +1542,7 @@ class PurchaseRecordBase(object):
             obj.save()
             
             errcode, errmsg = SupplierCashRecordBase().add_cash_record(
-                obj.supplier_id, obj.price, 1, u'采购流水作废', ip
+                obj.supplier_id, obj.price, 1, u'采购流水作废', ip, obj.id
             )
 
             if errcode == 0:

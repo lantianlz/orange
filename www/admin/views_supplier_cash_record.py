@@ -45,6 +45,7 @@ def format_record(objs, num):
             'operation': x.operation,
             'notes': x.notes,
             'ip': x.ip,
+            'purchase_record_id': x.purchase_record_id or '',
             'create_time': str(x.create_time)
         })
 
