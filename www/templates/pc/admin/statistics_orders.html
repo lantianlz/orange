@@ -82,6 +82,7 @@ var echarts,
                     orderPriceOfMonthChart(
                         data['order_price_of_month_x_data'], 
                         data['order_price_of_month_y_data'], 
+                        data['order_price_of_month_mark_point_data'],
                         data['order_price_of_month'],
                         data['order_per_price_of_month']
                     );
@@ -373,7 +374,7 @@ var echarts,
         $('.order-per-price').html(perPrice);
     },
 
-    orderPriceOfMonthChart = function(xData, yData, total, perPrice){
+    orderPriceOfMonthChart = function(xData, yData, markPointData, total, perPrice){
         var main = echarts.init(document.getElementById('order_price_of_month_chart'));
         
         main.setOption({
@@ -398,14 +399,14 @@ var echarts,
             toolbox: {
                 show: false
             },
-            dataZoom : {
-                show : true,
-                realtime : true,
-                start : calculatePercent(xData.length),
-                end : 100,
-                handleColor: 'rgba(29, 171, 217, 0.8)',
-                fillerColor: 'rgba(29, 171, 217, 0.2)'
-            },
+            // dataZoom : {
+            //     show : true,
+            //     realtime : true,
+            //     start : calculatePercent(xData.length),
+            //     end : 100,
+            //     handleColor: 'rgba(29, 171, 217, 0.8)',
+            //     fillerColor: 'rgba(29, 171, 217, 0.2)'
+            // },
             calculable: false,
             xAxis: [{
                 type: 'category',
@@ -426,6 +427,14 @@ var echarts,
                         width: 2,
                         type: 'solid'
                     }
+                },
+                axisLabel: {
+                    margin: 20
+                },
+                axisTick: {
+                    lineStyle: {
+                        opacity: 1
+                    }
                 }
             }],
             yAxis: [{
@@ -441,9 +450,18 @@ var echarts,
                 axisLine: {
                     show: true,
                     lineStyle: {
-                        color: '#888',
+                        color: '#999',
                         width: 2,
                         type: 'solid'
+                    }
+                },
+                axisLabel: {
+                    margin: 15,
+                    formatter: '{value}   k'
+                },
+                axisTick: {
+                    lineStyle: {
+                        opacity: 1
                     }
                 }
             }],
@@ -452,18 +470,24 @@ var echarts,
                 name:'月订单总金额',
                 type:'line',
                 smooth: true,
-                itemStyle: {
-                    normal: {
-                        areaStyle: {
-                            type: 'default'
-                        }
-                    }
-                },
+                // itemStyle: {
+                //     normal: {
+                //         areaStyle: {
+                //             type: 'default'
+                //         }
+                //     }
+                // },
                 label: {
                     normal: {
-                        show: true,
+                        show: false,
                         position: 'top'
                     }
+                },
+                markPoint : {
+                    symbol: 'pin',
+                    symbolOffset: [0, -3],
+                    symbolSize: [63, 60],
+                    data: markPointData
                 },
                 data: yData
             }]
@@ -505,7 +529,7 @@ $(document).ready(function(){
         <form action="." class="form-inline" onsubmit="javascript: return false;">
             <div class="input-group input-group-sm pb-10">
                 <span class="input-group-addon">开始日期</span>
-                <input type="text" class="form-control" id="start_date_search" value="{{start_date}}" />
+                <input type="text" class="form-control" id="start_date_search" value="2015-01-01" />
             </div>
             <div class="input-group input-group-sm pb-10">
                 <span class="input-group-addon">结束日期</span>

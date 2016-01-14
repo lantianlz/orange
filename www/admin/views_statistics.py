@@ -3,6 +3,7 @@
 import json
 import random
 import datetime
+import decimal
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext
 from django.shortcuts import render_to_response
@@ -240,12 +241,20 @@ def get_statistics_orders_data(request):
     # =================== 获取月订单总金额
     order_price_of_month_x_data = []
     order_price_of_month_y_data = []
+    order_price_of_month_mark_point_data = []
     order_price_of_month = 0
     order_per_price_of_month = 0
     for x in StatisticsBase().get_order_price_group_by_confirm_time_of_month(start_date, end_date):
+        v = '%.2f' % (x[1]/decimal.Decimal(1000.0))
         order_price_of_month_x_data.append(x[0])
-        order_price_of_month_y_data.append(str(x[1]))
+        order_price_of_month_y_data.append(v)
         order_price_of_month += x[1]
+        order_price_of_month_mark_point_data.append({
+            'coord': [x[0], v], 
+            'name': '订单总金额', 
+            'value': str(x[1])
+        })
+        
     months = len(order_price_of_month_x_data) if order_price_of_month_x_data else 1
     order_per_price_of_month = '%.2f' % (order_price_of_month / months)
 
@@ -266,7 +275,8 @@ def get_statistics_orders_data(request):
         'order_price_of_month_x_data': order_price_of_month_x_data,
         'order_price_of_month_y_data': order_price_of_month_y_data,
         'order_price_of_month': str(order_price_of_month),
-        'order_per_price_of_month': order_per_price_of_month
+        'order_per_price_of_month': order_per_price_of_month,
+        'order_price_of_month_mark_point_data': order_price_of_month_mark_point_data
     }
     return HttpResponse(
         json.dumps(data),
