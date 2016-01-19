@@ -39,6 +39,8 @@ $(document).ready(function(){
                 "/admin/invoice_statement/get_invoice_statement", 
                 {'start_date': start_date, 'end_date': end_date, 'name': name}, 
                 function(data){
+                    me.sumPrice = data.sum_price;
+
                     me.reset($.Global.Utils.dictMapParse(data.data, me._modelMaps));
                 }
             );
@@ -66,6 +68,8 @@ $(document).ready(function(){
             
             this.showPanel();
             this.$('tbody').html(this.template({'records': data}));
+
+            this.$('.sum-price').html(this.collection.sumPrice);
         },
 
         // 跳转到发票记录
@@ -206,6 +210,7 @@ $(document).ready(function(){
             </tbody>
         </table>
 
+        <div class="text-right border-top-2 bdc-dddddd mt-25">总差额 <span class="fb f18 co-1DABD9 sum-price">0</span> 元</div>
     </div>
 </div>
 

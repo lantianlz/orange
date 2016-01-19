@@ -1979,7 +1979,7 @@ class InvoiceRecordBase(object):
         # 排序 需要提醒的排列在前面
         data.sort(key=lambda x:x['offset_abs'], reverse=True)
 
-        return data
+        return data, sum([x['offset'] for x in data if x['offset'] < 0])
 
 class InvoiceBase(object):
     

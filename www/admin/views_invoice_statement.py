@@ -29,10 +29,10 @@ def get_invoice_statement(request):
     end_date = request.POST.get('end_date')
     start_date, end_date = utils.get_date_range(start_date, end_date)
 
-    data = InvoiceRecordBase().get_invoice_statement(company_name, start_date, end_date)
+    data, sum_price = InvoiceRecordBase().get_invoice_statement(company_name, start_date, end_date)
 
     return HttpResponse(
-        json.dumps({'data': data}),
+        json.dumps({'data': data, 'sum_price': sum_price}),
         mimetype='application/json'
     )
 
