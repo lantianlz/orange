@@ -79,13 +79,14 @@ var echarts,
                         'perPrice': data['order_per_price']
                     };
 
-                    orderPriceChart(
-                        data['order_price_x_data'], 
-                        data['order_price_y_data'], 
-                        data['order_price'],
-                        data['order_per_day_price'],
-                        data['order_per_price']
-                    );
+                    filterOrderPriceChartFun();
+                    // orderPriceChart(
+                    //     data['order_price_x_data'], 
+                    //     data['order_price_y_data'], 
+                    //     data['order_price'],
+                    //     data['order_per_day_price'],
+                    //     data['order_per_price']
+                    // );
                 }
                 if(data['order_price_of_month_x_data'].length > 0){
                     orderPriceOfMonthChart(
@@ -286,6 +287,55 @@ var echarts,
     },
 
     orderPriceChartCacheData = {},
+    filterOrderPriceChartFun = function(){
+        if($('.exclude-data').attr("checked") == "checked"){
+            var tempXData = [], 
+                tempYData = [], 
+                tempIndex = 0,
+                maxOrderPrice = $('.max-order-price').val(),
+                minOrderPrice = $('.min-order-price').val();
+
+            // 过滤数据
+            $.map(orderPriceChartCacheData['yData'], function(per, i){
+
+                // 排除金额大于8000的订单
+                if(parseFloat(per) > maxOrderPrice){
+                    return true;
+                }
+
+                // 排除日期在周末且金额小于500的订单
+                var tempDate = orderPriceChartCacheData['xData'][i];
+                tempDate = new Date(tempDate);
+                // 周末
+                if([0, 6].indexOf(tempDate.getDay()) != -1){
+                    // 订单金额小于500
+                    if(parseFloat(per) <= minOrderPrice){
+                        return true;
+                    }
+                }
+
+                tempXData.push(orderPriceChartCacheData['xData'][i]);
+                tempYData.push(per);
+
+            });
+
+            orderPriceChart(
+                tempXData,
+                tempYData,
+                orderPriceChartCacheData['total'],
+                orderPriceChartCacheData['perDayPrice'],
+                orderPriceChartCacheData['perPrice']
+            )
+        } else {
+            orderPriceChart(
+                orderPriceChartCacheData['xData'],
+                orderPriceChartCacheData['yData'],
+                orderPriceChartCacheData['total'],
+                orderPriceChartCacheData['perDayPrice'],
+                orderPriceChartCacheData['perPrice']
+            )
+        }
+    },
     orderPriceChart = function(xData, yData, total, perDayPrice, perPrice){
         var main = echarts.init(document.getElementById('order_price_chart'));
         
@@ -529,53 +579,7 @@ $(document).ready(function(){
 
     $('.exclude-data').on('click', function(){
         // 排除异常数据
-        if($(this).attr("checked") == "checked"){
-            var tempXData = [], 
-                tempYData = [], 
-                tempIndex = 0,
-                maxOrderPrice = $('.max-order-price').val(),
-                minOrderPrice = $('.min-order-price').val();
-
-            // 过滤数据
-            $.map(orderPriceChartCacheData['yData'], function(per, i){
-
-                // 排除金额大于8000的订单
-                if(parseFloat(per) > maxOrderPrice){
-                    return true;
-                }
-
-                // 排除日期在周末且金额小于500的订单
-                var tempDate = orderPriceChartCacheData['xData'][i];
-                tempDate = new Date(tempDate);
-                // 周末
-                if([0, 6].indexOf(tempDate.getDay()) != -1){
-                    // 订单金额小于500
-                    if(parseFloat(per) <= minOrderPrice){
-                        return true;
-                    }
-                }
-
-                tempXData.push(orderPriceChartCacheData['xData'][i]);
-                tempYData.push(per);
-
-            });
-
-            orderPriceChart(
-                tempXData,
-                tempYData,
-                orderPriceChartCacheData['total'],
-                orderPriceChartCacheData['perDayPrice'],
-                orderPriceChartCacheData['perPrice']
-            )
-        } else {
-            orderPriceChart(
-                orderPriceChartCacheData['xData'],
-                orderPriceChartCacheData['yData'],
-                orderPriceChartCacheData['total'],
-                orderPriceChartCacheData['perDayPrice'],
-                orderPriceChartCacheData['perPrice']
-            )
-        }
+        filterOrderPriceChartFun();
         
     });
 
