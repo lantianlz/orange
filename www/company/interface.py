@@ -2361,7 +2361,7 @@ class InventoryRecordBase(object):
     def get_all_records(self, operation=None):
         objs = InventoryRecord.objects.all()
 
-        if operation:
+        if operation is not None:
             objs = objs.filter(operation=operation)
 
         return objs
