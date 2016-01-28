@@ -1,0 +1,370 @@
+{% extends "mobile/base.html" %}
+
+{% block title %}2015 年终抽奖{% endblock title %}
+
+{% block base_css %}
+<style type="text/css">
+html,body{
+    background-color: #E32949;
+}
+.container{
+    width: 350px;
+    /*background-color: black;*/
+}
+.title{
+    margin-top: 20%;
+    margin-bottom: 20%;
+    font-size: 28px;
+    font-weight: bold;
+    text-align: center;
+    color: #eee;
+}
+.foot{
+    text-align: right;
+    color: #ccc;
+    padding-right: 0;
+    margin-top: 20%;
+}
+.box-container{
+    background-color: #F93257;
+    padding: 10px;
+    border-radius: 10px;
+}
+.box-border{
+    background-color: #000;
+    padding: 7px;
+    border-radius: 10px;
+}
+.box{
+    height: 71.5px;
+    color: #fff;
+    line-height: 63.5px;
+    text-align: center;
+    padding: 4px;
+}
+.box-content{
+    background-color: #E32949;
+    border-radius: 10px;
+    /*font-weight: bold;*/
+    /*font-size: 15px;*/
+    /*transition: all 0.3s;*/
+}
+.box-content.active{
+    background-color: #FEEC6C;
+    color: #A31755;
+}
+.box-content.used{
+    background-color: #A2A2A2;
+    color: #FFFFFF;
+}
+.start{
+    font-size: 20px;
+    font-weight: bold;
+    background-color: #FEEC6C;
+    color: #A31755;
+    border-radius: 10px;
+    cursor: pointer;
+}
+.modal-dialog{
+    margin: 13%;
+    margin-top: 40%;
+}
+.modal-content{
+    background-color: #F3D092;
+}
+.modal-footer{
+    border-top: 0;
+    text-align: center;
+}
+.btn-default{
+    background-color: #DE4849;
+    color: #FAEED4;
+    border-color: #FDDDA4;
+}
+.btn-default:hover, .btn-default:focus, .btn-default:active, .btn-default.active, .open>.dropdown-toggle.btn-default{
+    background-color: #DE4849;
+    color: #FAEED4;
+}
+.btn{
+    border-radius: 20px;
+    padding: 5px 15px;
+}
+
+.text-title{
+    margin-top: 20px;
+    color: #D85950;
+    font-size: 20px;
+    text-align: center;
+}
+.text-person{
+    margin-top: 20px;
+    color: #222222;
+    font-size: 28px;
+    font-weight: bold;
+    text-align: center;
+}
+.text-des{
+    margin-top: 20px;
+    color: #D85950;
+    font-size: 14px;
+    text-align: center;
+}
+.light{
+    width: 120%;
+    position: absolute;
+    top: -30%;
+    left: -10%;
+    -webkit-animation: spin 8s linear infinite;
+            animation: spin 8s linear infinite;
+}
+
+@keyframes spin{
+  to {
+    -webkit-transform: rotateZ(360deg);
+            transform: rotateZ(360deg);
+  }
+}
+
+@-webkit-keyframes spin{
+  to {
+    -webkit-transform: rotateZ(360deg);
+            transform: rotateZ(360deg);
+  }
+}
+
+</style>
+{% endblock %}
+
+{% block base_js %}
+<script type="text/javascript">
+$(document).ready(function(){
+        // 参与抽奖的总人数
+    var maxPerson = $('.box-content').length,
+        // 当前位置
+        index = 0,
+        // 当前循环第几圈
+        loop = 0,
+        // 最大循环圈数
+        maxLoop = 10,
+        // 循环是否结束
+        finish = false,
+        // 速度(跳动间隔毫秒数)
+        speed = 400,
+        // 中奖位置
+        stopIndex = -1,
+        // 已经中奖的人集合
+        usedPersons = [],
+        // 单步跳动函数
+        setActive = function(){
+            index += 1;
+            // 跳过已经中奖的人
+            while(usedPersons.indexOf(index) > -1){
+                index += 1;
+            }
+            // 循环圈数计数
+            if(index > maxPerson){
+                index = 1;
+                loop += 1;
+            }
+            // 更改样式
+            $('.box-content').removeClass('active');
+            $('.person-' + index).addClass('active');
+        },
+        
+        // 跳动控制函数
+        play = function(){
+            // 到达最大循环次数之后开始减速
+            if(loop >= maxLoop){
+                if(speed >= 400){
+                    // 标记循环结束
+                    finish = true;
+                }
+                else {
+                    speed += 35;
+                }
+            }
+            else{
+                if(speed <= 55){
+                    speed = 30;
+                }
+                else {
+                    speed -= 25;
+                }
+            }
+            
+            // 是否结束
+            if(finish){
+                
+                // 获取当前索引在哪个人身上
+                var tempIndex = 0;
+                $('.box-content').filter(function(i){
+                    if($('.box-content').eq(i).hasClass('active')){
+                        tempIndex = $('.box-content').eq(i).data("index");
+                    }
+                });
+                
+                // 如果是中奖的人则停止跳动
+                if(tempIndex == stopIndex){
+                    console.log(stopIndex, tempIndex)
+                    // 将此人记录已领奖人列表
+                    usedPersons.push(stopIndex);
+
+                    // 显示获奖人
+                    $('.text-person').text($('.person-'+stopIndex).text());
+                    $('#myModal').modal('show');
+
+                    // 重置数据
+                    isPlaying = false;
+                    loop = 0;
+                    finish = false;
+                    speed = 400;
+                    return;
+                }
+            } 
+            
+            // 跳动到下一格
+            setActive();
+            
+            window.setTimeout(function(){
+                play();
+            }, speed);
+
+        },
+        isPlaying = false;
+        // console.log(stopIndex);
+    
+    $('.start').on('click', function(){
+        // 防止重复点击
+        if(isPlaying){
+            return;
+        }
+        isPlaying = true;
+
+        // 去掉已经领奖的人
+        if(stopIndex != -1){
+            $('.person-'+stopIndex).addClass('used').removeClass('active');
+        }
+
+        // 防止重复中奖
+        stopIndex = Math.round(Math.random()*(maxPerson-1)) + 1;
+        while(usedPersons.indexOf(stopIndex) > -1){
+            stopIndex = Math.round(Math.random()*(maxPerson-1)) + 1;
+            console.log('stopIndex===>',stopIndex);
+        }
+
+        play();
+    });
+
+    // 点击人名字 开启或者关闭参与抽奖
+    $('.box-content').on('click', function(){
+        var target = $(this);
+            targetIndex = parseInt(target.data('index'));
+
+        if(target.hasClass('used')){
+            // 开启参与抽奖
+            target.removeClass('used');
+            usedPersons.splice(usedPersons.indexOf(targetIndex), 1);
+        } else {
+            // 关闭参与抽奖
+            target.addClass('used').removeClass('active');
+            usedPersons.push(targetIndex);
+        }
+        
+    });
+
+    
+});
+</script>
+{% endblock %}
+
+{% block body %}
+<div class="container">
+    <div class="col-xs-12 title">
+        三点十分<br>2015 年终抽奖
+    </div>
+    <div class="col-xs-12 box-container">
+        <div class="col-xs-12 box-border">
+            <div class="col-xs-3 box">
+                <div class="box-content person-1" data-index="1">
+                    李政
+                </div>
+            </div>
+            <div class="col-xs-3 box">
+                <div class="box-content person-2" data-index="2">
+                    雷成铭
+                </div>
+            </div>
+            <div class="col-xs-3 box">
+                <div class="box-content person-3" data-index="3">
+                    李聪
+                </div>
+            </div>
+            <div class="col-xs-3 box">
+                <div class="box-content person-4" data-index="4">
+                    白雨雪
+                </div>
+            </div>
+            <div class="col-xs-3 box">
+                <div class="box-content person-10" data-index="10">
+                    曹艳珺
+                </div>
+            </div>
+            <div class="col-xs-6 box">
+                <div class="start">
+                    猛击抽奖
+                </div>
+            </div>
+            <div class="col-xs-3 box">
+                <div class="box-content person-5" data-index="5">
+                    肖仁凡
+                </div>
+            </div>
+            <div class="col-xs-3 box">
+                <div class="box-content person-9" data-index="9">
+                    罗杰
+                </div>
+            </div>
+            <div class="col-xs-3 box">
+                <div class="box-content person-8" data-index="8">
+                    李瑶
+                </div>
+            </div>
+            <div class="col-xs-3 box">
+                <div class="box-content person-7" data-index="7">
+                    周国年
+                </div>
+            </div>
+            <div class="col-xs-3 box">
+                <div class="box-content person-6" data-index="6">
+                    洛思琪
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-12 foot">
+    powered by 机智的CTO
+    </div>
+</div>
+
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <img src="{{MEDIA_URL}}img/light.png" class="light">
+        <div class="modal-content">
+            <!-- <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel"></h4>
+            </div> -->
+            <div class="modal-body">
+                <div class="text-title">恭喜</div>
+                <div class="text-person"></div>
+                <div class="text-des">成为本轮抽奖获奖者</div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">继续抽奖</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
