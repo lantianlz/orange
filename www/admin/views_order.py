@@ -177,13 +177,14 @@ def search(request):
     is_test = True if is_test == "1" else False
     
     page_index = int(request.REQUEST.get('page_index'))
+    sum_price = 0
     
     if state == -1:
         end_date = str(start_date)[:10]+' 23:59:59'
         end_date = datetime.datetime.strptime(end_date, '%Y-%m-%d %H:%M:%S')
         objs = OrderBase().search_uncreate_orders_for_admin(start_date, end_date)
     else:
-        objs = OrderBase().search_orders_for_admin(start_date, end_date, state, company, is_test)
+        objs, sum_price = OrderBase().search_orders_for_admin(start_date, end_date, state, company, is_test)
 
     page_objs = page.Cpt(objs, count=1000, page=page_index).info
 
@@ -192,7 +193,7 @@ def search(request):
     data = format_uncreate_order(page_objs[0], num) if state == -1 else format_order(page_objs[0], num)
 
     return HttpResponse(
-        json.dumps({'data': data, 'page_count': page_objs[4], 'total_count': page_objs[5]}),
+        json.dumps({'data': data, 'sum_price': str(sum_price or 0), 'page_count': page_objs[4], 'total_count': page_objs[5]}),
         mimetype='application/json'
     )
 

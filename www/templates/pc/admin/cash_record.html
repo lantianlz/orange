@@ -199,11 +199,34 @@ $(document).ready(function(){
            
         },
 
+        // 是否包含特殊词汇
+        _checkKeyWords: function(text){
+            var keyWords = ['返现', '补偿', '首单', '试吃'],
+                flag = true;
+
+            $.map(keyWords, function(per){
+                if(text.indexOf(per) > -1){
+                    flag = false;
+                }
+            })
+
+            return flag;
+        },
+
         addRecord: function(){
-            var me = this;
+            var me = this,
+                notes = $('#add_record_modal .notes').val(),
+                isInvoice = $('#add_record_modal .is-invoice').attr('checked');
             
             if(!$('#add_record_modal form').valid()){
                 return;
+            }
+            
+            // 包含特殊词汇时检查是否要记录开票金额
+            if(isInvoice && !me._checkKeyWords(notes)){
+                if(!confirm('确认要记录开票金额吗？')){
+                    return false;
+                }
             }
 
             g_ajax_processing_obj_id = $("#add_record_modal .ok").setUUID().attr('id');
@@ -414,7 +437,7 @@ $(document).ready(function(){
                         <div class="col-sm-3">
                             <div class="checkbox">
                                 <label>
-                                    <input type="checkbox" name="is_invoice" value="1" checked> 是
+                                    <input type="checkbox" class="is-invoice" name="is_invoice" value="1" checked> 是
                                 </label>
                             </div>
                         </div>
@@ -428,7 +451,7 @@ $(document).ready(function(){
                     <div class="form-group pt-20 pb-20 mb-0">
                         <label class="col-sm-2 control-label">备注</label>
                         <div class="col-sm-8">
-                            <input type="text" required class="form-control" name="notes" value=''>
+                            <input type="text" required class="form-control notes" name="notes" value=''>
                         </div>
                     </div>
                 </form>

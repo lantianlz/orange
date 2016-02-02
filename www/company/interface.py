@@ -669,7 +669,7 @@ class OrderBase(object):
             company__name__contains=company
         )
 
-        return objs
+        return objs, objs.aggregate(Sum('total_price'))['total_price__sum']
 
     def search_uncreate_orders_for_admin(self, start_date, end_date):
         # 查询出日期需要配送的套餐
@@ -1050,7 +1050,7 @@ class CashAccountBase(object):
         if name:
             objs = objs.select_related('company').filter(company__name__contains=name)
 
-        return objs, objs.filter(balance__lt=0).aggregate(Sum('balance'))['balance__sum']
+        return objs, objs.filter(balance__lt=0).aggregate(Sum('balance'))['balance__sum'] or 0
 
     def get_cash_account_by_id(self, account_id):
         try:

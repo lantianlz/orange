@@ -117,6 +117,7 @@ $(document).ready(function(){
                     me.state = state;
                     me.company = company;
                     me.isTest = isTest;
+                    me.sumPrice = data.sum_price;
 
                     me.reset($.Global.Utils.dictMapParse(data.data, me._modelMaps));
 
@@ -258,6 +259,7 @@ $(document).ready(function(){
                 )
             );
 
+            this.$('.sum-price').html(this.collection.sumPrice);
             this.$('#start_date_search').val(this.collection.startDate);
             this.$('#end_date_search').val(this.collection.endDate);
             this.$('.state').val(this.collection.state);
@@ -772,6 +774,7 @@ $(document).ready(function(){
                 
             </ul>
         </div>
+        <div class="text-right border-top-2 bdc-dddddd mt-25">订单总金额 <span class="fb f18 co-1DABD9 sum-price">0</span> 元</div>
     </div>
 
     <!-- 修改用户信息 -->
