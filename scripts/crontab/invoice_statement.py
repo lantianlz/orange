@@ -18,7 +18,7 @@ from www.company.interface import InvoiceRecordBase
 
 
 def get_invoice_statement():
-    data = InvoiceRecordBase().get_invoice_statement('', '2015-08-21', datetime.datetime.now())
+    data, total = InvoiceRecordBase().get_invoice_statement('', '2015-08-21', datetime.datetime.now())
     companys = []
 
     # 找出所有充值金额不匹配
