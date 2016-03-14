@@ -112,7 +112,7 @@ def orders(request, company_id, template_name='pc/company/orders.html'):
     '''
     订单列表
     '''
-    types = [{'value': x[0], 'name': x[1]} for x in Item.type_choices]
+    # types = [{'value': x[0], 'name': x[1]} for x in Item.type_choices]
 
     now = datetime.datetime.now()
     start_date = request.REQUEST.get('start_date', now.replace(day=1).strftime('%Y-%m-%d'))
@@ -120,7 +120,7 @@ def orders(request, company_id, template_name='pc/company/orders.html'):
     start_date, end_date = utils.get_date_range(start_date, end_date)
     order_no = request.REQUEST.get('order_no')
 
-    objs = OrderBase().search_orders_by_company(company_id, start_date, end_date, order_no)
+    objs, total_price = OrderBase().search_orders_by_company(company_id, start_date, end_date, order_no)
 
     page_index = int(request.REQUEST.get('page', 1))
     page_objs = page.Cpt(objs, count=10, page=page_index).info
@@ -296,6 +296,26 @@ def error(request, template_name='pc/company/error.html'):
     
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
 
+@company_manager_required_for_request
+def list_orders(request, company_id, template_name='pc/company/list_orders.html'):
+    '''
+    订单汇总
+    '''
 
+    now = datetime.datetime.now()
+    start_date = request.REQUEST.get('start_date', now.replace(day=1).strftime('%Y-%m-%d'))
+    end_date = request.REQUEST.get('end_date')
+    start_date, end_date = utils.get_date_range(start_date, end_date)
+    order_no = request.REQUEST.get('order_no')
 
+    objs, total_price = OrderBase().search_orders_by_company(company_id, start_date, end_date, order_no)
+
+    page_index = int(request.REQUEST.get('page', 1))
+    page_objs = page.Cpt(objs, count=1000, page=page_index).info
+    page_params = (page_objs[1], page_objs[4])
+
+    num = 1000 * (page_index - 1)
+    data = format_order(page_objs[0], num)
+
+    return render_to_response(template_name, locals(), context_instance=RequestContext(request))
 

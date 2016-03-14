@@ -742,17 +742,17 @@ class OrderBase(object):
             obj.confirm_time = datetime.datetime.now()
             obj.save()
 
+            # 库存产品消耗
+            code, msg = InventoryBase().calculate_inventory_cost_by_order(obj.id)
+            
+            if code != 0:
+                transaction.rollback(using=DEFAULT_DB)
+                return code, dict_err.get(code)
+                
             # 试吃订单不操作账户
             if obj.is_test:
                 transaction.commit(using=DEFAULT_DB)
             else:
-                # 库存产品消耗
-                code, msg = InventoryBase().calculate_inventory_cost_by_order(obj.id)
-                
-                if code != 0:
-                    transaction.rollback(using=DEFAULT_DB)
-                    return code, dict_err.get(code)
-
                 # 操作现金账户
                 code, msg = CashRecordBase().add_cash_record(
                     obj.company_id,
@@ -835,7 +835,7 @@ class OrderBase(object):
         else:
             objs = objs.filter(create_time__range=(start_date, end_date))
 
-        return objs
+        return objs, objs.aggregate(Sum('total_price'))['total_price__sum'] or 0
 
     @cache_required(cache_key='active_order_count', expire=43200, cache_config=cache.CACHE_TMP)
     def get_active_order_count(self):

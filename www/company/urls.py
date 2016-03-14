@@ -11,6 +11,7 @@ urlpatterns = patterns('www.company.views',
     url(r'^(?P<company_id>\d+)/record$', 'record'),
     url(r'^(?P<company_id>\d+)/feedback$', 'feedback'),
     url(r'^(?P<company_id>\d+)/product_list$', 'product_list'),
+    url(r'^(?P<company_id>\d+)/list_orders$', 'list_orders'),
 
     url(r'^booking$', 'booking'),
     url(r'^invite$', 'invite'),
