@@ -113,7 +113,7 @@ def alipaynotify(request):
 
             errcode, errmsg = RechargeOrderBase().order_pay_callback(trade_id=trade_id, payed_fee=total_fee, pay_info=pay_info)
             # 不存在的订单返回成功防止一直补发
-            result = u'success' if errcode in (0, 21301, 20302) else 'fail'
+            result = u'success' if errcode in (0, 21301, 21302) else 'fail'
 
             # logging.error(u"errcode, errmsg, result ======> %s,%s,%s" % (errcode, errmsg, result))
             if result != u"success":
