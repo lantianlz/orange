@@ -322,6 +322,8 @@ def get_weixin_login_state(request):
         auth.login(request, user)
 
         next_url = request.session.get('next_url') or '/'
+        if user.is_staff() and next_url.startswith("/company"):  # 系统管理员登陆后跳转到管理平台
+            next_url = "/admin"
         request.session.update(dict(next_url=''))
         # cache_obj.delete(key)
 
