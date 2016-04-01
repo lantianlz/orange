@@ -158,6 +158,16 @@ $(document).ready(function(){
 
     $('.search').click();
     
+    // 查询昨天的汇总信息
+    $('.search-yesterday').on('click', function(){
+        var today = new Date(), yesterday = "";
+        today.setDate(today.getDate() - 1);
+        yesterday = $.Global.Utils.formatDate(today, 'y-m-d');
+
+        $('#start_date_search').val(yesterday);
+        $('.search').click();
+    });
+
 });
 </script>
 {% endblock %}
@@ -202,6 +212,9 @@ $(document).ready(function(){
                 <span class="input-group-btn">
                     <button class="btn btn-default search bgc-eeeeee" type="submit">查询</button>
                 </span>
+            </div>
+            <div class="input-group input-group-sm pb-10">
+                <button class="btn btn-info btn-sm search-yesterday" type="button">昨日汇总</button>
             </div>
         </form>
         <table class="table table-hover">
