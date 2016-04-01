@@ -1250,6 +1250,21 @@ class CashRecordBase(object):
 
         return objs.values('cash_account__company_id').annotate(recharge=Sum('value'))
 
+    def change_is_invoice(self, record_id):
+        try:
+            obj = CashRecord.objects.get(id = record_id)
+            if obj.is_invoice == 1:
+                obj.is_invoice = 0
+            else:
+                obj.is_invoice = 1
+
+            obj.save()
+            return 0, obj.is_invoice
+
+        except Exception, e:
+            debug.get_debug_detail_and_send_email(e)
+            return 99900, dict_err.get(99900)
+
 
 class SupplierBase(object):
 

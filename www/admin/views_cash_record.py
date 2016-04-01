@@ -95,3 +95,8 @@ def add_cash_record(request):
 
     return CashRecordBase().add_cash_record_with_transaction(company_id, value, operation, notes, ip, is_invoice)
 
+@verify_permission('modify_cash_record')
+@common_ajax_response
+def change_is_invoice(request):
+    record_id = request.REQUEST.get('record_id')
+    return CashRecordBase().change_is_invoice(record_id)

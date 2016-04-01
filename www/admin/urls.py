@@ -64,6 +64,7 @@ urlpatterns += patterns('www.admin.views_cash_account',
 # 公司现金流水
 urlpatterns += patterns('www.admin.views_cash_record',
 
+    url(r'^cash_record/change_is_invoice$', 'change_is_invoice'),
     url(r'^cash_record/add_cash_account$', 'add_cash_record'),
     url(r'^cash_record/search$', 'search'),
     url(r'^cash_record$', 'cash_record'),

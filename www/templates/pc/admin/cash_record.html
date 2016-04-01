@@ -94,7 +94,27 @@ $(document).ready(function(){
                     }
                 }
             );
+
+        },
+
+        changeIsInvoice: function(recordId){
+            var me = this;
+
+            ajaxSend(
+                "/admin/cash_record/change_is_invoice",  
+                {'record_id': recordId},
+                function(response){
+                    if(response.errcode == "0"){
+                        me.findWhere({'recordId': recordId}).set('isInvoice', response.errmsg);
+                        me.reset(me.toJSON());
+                    } else {
+                        $.Global.Notice.ErrorTopNotice(response.errmsg);
+                    }
+                }
+            );
+
         }
+
     });
 
     // listView
@@ -110,7 +130,8 @@ $(document).ready(function(){
         },
 
         events: {
-            'click .search': 'search'
+            'click .search': 'search',
+            'click .pointer': 'changeIsInvoice'
         },
 
         // 渲染函数
@@ -148,6 +169,18 @@ $(document).ready(function(){
                 is_invoice = this.$('.is_invoice').val();
 
             router.navigate(String.format('/search/{0}/{1}/{2}/{3}/{4}/1', startDate, endDate, name, operation, is_invoice), {trigger: true});
+        },
+
+        // 操作是否记录开篇金额
+        changeIsInvoice: function(sender){
+            var target = $(sender.currentTarget),
+                recordId = target.data('record_id'),
+                isInvoice = target.data('is_invoice'),
+                text = (isInvoice == "1" ? "确认要取消记录开票金额吗？" : "确认记录开票金额？");
+
+            if(confirm(text)){
+                records.changeIsInvoice(recordId);
+            }
         }
 
     });
@@ -375,7 +408,7 @@ $(document).ready(function(){
 <!-- 客户经理列表 -->
 <script type="text/template" id="record_template">
     <% _.each(records, function(record){ %>
-        <tr class="pointer" data-record_id="<%= record.recordId %>">
+        <tr data-record_id="<%= record.recordId %>">
             <td><%= record.num %></td>
             <td><%= record.companyName %></td>
             <td class="hidden-xs">
@@ -393,7 +426,7 @@ $(document).ready(function(){
                 <% } %>
             </td>
             <td class="hidden-xs"><%= record.currentBalance %></td>
-            <td>
+            <td class="pointer" data-record_id="<%= record.recordId %>" data-is_invoice="<%= record.isInvoice %>">
                 <% if(record.isInvoice == 1){ %>
                     <span class="fa fa-check co-3B99FC"></span>
                 <% } else { %>

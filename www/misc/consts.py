@@ -45,6 +45,7 @@ PERMISSIONS = [
     {'code': 'cash_record_manage', 'name': u'现金流水管理', 'parent': None},
     {'code': 'add_cash_record', 'name': u'添加现金流水', 'parent': 'cash_record_manage'},
     {'code': 'query_cash_record', 'name': u'查询现金流水', 'parent': 'cash_record_manage'},
+    {'code': 'modify_cash_record', 'name': u'修改现金流水', 'parent': 'cash_record_manage'},
 
     {'code': 'supplier_manage', 'name': u'供货商管理', 'parent': None},
     {'code': 'add_supplier', 'name': u'添加供货商', 'parent': 'supplier_manage'},
