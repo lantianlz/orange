@@ -10,7 +10,7 @@
 <style type="text/css">
 @media (min-width: 768px){
     .form-inline .input-group>.form-control {
-        width: 130px;
+        width: 110px;
     }
 
     .modal-dialog {
@@ -49,9 +49,9 @@
 
 {% block javascript %}
 <script type="text/javascript" src="{{MEDIA_URL}}js/jquery/jquery.autocomplete.js"></script>
-<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=o4O12xsCGirt60xLVt1GLTI6"></script>
+<!-- <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=o4O12xsCGirt60xLVt1GLTI6"></script>
 <script type="text/javascript" src="http://api.map.baidu.com/library/TextIconOverlay/1.2/src/TextIconOverlay_min.js"></script>
-<script type="text/javascript" src="http://api.map.baidu.com/library/MarkerClusterer/1.2/src/MarkerClusterer_min.js"></script>
+<script type="text/javascript" src="http://api.map.baidu.com/library/MarkerClusterer/1.2/src/MarkerClusterer_min.js"></script> -->
 <script type="text/javascript">
 $(document).ready(function(){
     var Order = Backbone.Model.extend({
@@ -234,7 +234,8 @@ $(document).ready(function(){
 
         events: {
             'click .search': 'searchOrder',
-            'click .pointer': 'modifyOrder'
+            'click .pointer': 'modifyOrder',
+            'click .batch-print': 'batchPrint'
         },
 
         initialize: function(){
@@ -309,6 +310,16 @@ $(document).ready(function(){
             } else {
                 router.navigate('/add/' + mealId + '/' + mealName, {trigger: true});
             }
+            
+        },
+
+        // 批量打印
+        batchPrint: function(){
+            
+            $.map(this.$('.pointer'), function(per){
+                var orderId = $(per).data('order_id');
+                window.open('/admin/order/print_order?order_id=' + orderId);
+            });
             
         }
         
@@ -749,6 +760,9 @@ $(document).ready(function(){
             </div>
             <div class="input-group input-group-sm pb-10">
                 <button class="btn btn-default btn-sm search bgc-eeeeee" type="submit">查询</button>
+            </div>
+            <div class="input-group input-group-sm pb-10">
+                <button class="btn btn-info btn-sm batch-print" type="submit">批量打印</button>
             </div>
         </form>
         <table class="table table-hover">
