@@ -982,12 +982,16 @@ class CompanyManagerBase(object):
         """
         @note: 判断用户是否是某个公司管理员
         """
-        if isinstance(user, (str, unicode)):
-            user = UserBase().get_user_by_id(user)
 
-        cm = CompanyManager.objects.filter(company__id=company_id, user_id=user.id)
+        try:
+            if isinstance(user, (str, unicode)):
+                user = UserBase().get_user_by_id(user)
 
-        return True if (cm or user.is_staff()) else False
+            cm = CompanyManager.objects.filter(company__id=company_id, user_id=user.id)
+
+            return True if (cm or user.is_staff()) else False
+        except Exception, e:
+            return False
 
     def add_company_manager(self, company_id, user_id):
         if not (company_id and user_id):
