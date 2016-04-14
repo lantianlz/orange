@@ -277,6 +277,7 @@ def anonymous_product_list(request):
     # supplies = ItemBase().get_items_by_type(90, [1])
     # recycle = ItemBase().get_items_by_type(91, [1])
     drink = ItemBase().get_items_by_type(3, [1])
+    luwei = ItemBase().get_items_by_type(4, [1])
 
     return render_to_response('static_templates/product_list.html', locals(), context_instance=RequestContext(request))
 
