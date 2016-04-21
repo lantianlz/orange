@@ -80,7 +80,7 @@ class ItemBase(object):
         last_code = 0
 
         # 查询此类别最后一个
-        obj = Item.objects.filter(item_type=item_type).order_by('-id')
+        obj = Item.objects.filter(item_type=item_type).order_by('-code')
         if obj:
             last_code = obj[0].code
             last_code = int(last_code[1:])
