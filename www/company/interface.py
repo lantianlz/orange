@@ -833,7 +833,7 @@ class OrderBase(object):
         if order_no:
             objs = objs.filter(order_no=order_no)
         else:
-            objs = objs.filter(create_time__range=(start_date, end_date))
+            objs = objs.filter(confirm_time__range=(start_date, end_date))
 
         return objs, objs.aggregate(Sum('total_price'))['total_price__sum'] or 0
 
