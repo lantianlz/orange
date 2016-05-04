@@ -309,7 +309,7 @@ def list_orders(request, company_id, template_name='pc/company/list_orders.html'
     start_date, end_date = utils.get_date_range(start_date, end_date)
     order_no = request.REQUEST.get('order_no')
 
-    objs, total_price = OrderBase().search_orders_by_company(company_id, start_date, end_date, order_no)
+    objs, total_price = OrderBase().search_orders_by_company(company_id, start_date, end_date, order_no, True)
 
     page_index = int(request.REQUEST.get('page', 1))
     page_objs = page.Cpt(objs, count=1000, page=page_index).info

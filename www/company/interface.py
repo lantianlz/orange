@@ -821,7 +821,7 @@ class OrderBase(object):
         return objs
 
 
-    def search_orders_by_company(self, company_id, start_date, end_date, order_no):
+    def search_orders_by_company(self, company_id, start_date, end_date, order_no, search_by_confirm_time=False):
         '''
         公司平台查询订单
         '''
@@ -833,7 +833,11 @@ class OrderBase(object):
         if order_no:
             objs = objs.filter(order_no=order_no)
         else:
-            objs = objs.filter(confirm_time__range=(start_date, end_date))
+            # 是否按确认时间查询
+            if search_by_confirm_time:
+                objs = objs.filter(confirm_time__range=(start_date, end_date))
+            else:
+                objs = objs.filter(create_time__range=(start_date, end_date))
 
         return objs, objs.aggregate(Sum('total_price'))['total_price__sum'] or 0
 
