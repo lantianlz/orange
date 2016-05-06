@@ -43,7 +43,52 @@ def get_upload_token(img_key=None, img_type='avatar', scope='orange-img0'):
     return uptoken
 
 
-def upload_img(file_data, img_type='other', file_name=None):
+def _resize_img(obj, dst_w=0, dst_h=0):
+    ''' 
+    等比压缩图片
+    只给了宽或者高，或者两个都给了，然后取比例合适的 
+    如果图片比给要压缩的尺寸都要小，就不压缩了 
+    ''' 
+    if dst_w or dst_h:
+        from PIL import Image
+
+        img = Image.open(obj)
+        ori_w, ori_h = img.size
+        width_ratio = height_ratio = None
+        ratio = 1
+
+        if (ori_w and ori_w > dst_w) or (ori_h and ori_h  > dst_h):
+            if dst_w and ori_w > dst_w:
+                width_ratio = float(dst_w) / ori_w
+            if dst_h and ori_h > dst_h:
+                height_ratio = float(dst_h) / ori_h
+      
+            if width_ratio and height_ratio:
+                if width_ratio < height_ratio:
+                    ratio = width_ratio
+                else:
+                    ratio = height_ratio
+      
+            if width_ratio and not height_ratio:
+                ratio = width_ratio
+      
+            if height_ratio and not width_ratio:
+                ratio = height_ratio
+      
+            new_width = int(ori_w * ratio)
+            new_height = int(ori_h * ratio)
+        else:
+            new_width = ori_w
+            new_height = ori_h
+
+        img.resize((new_width, new_height), Image.ANTIALIAS)
+
+        return img
+    else:
+        return obj
+
+def upload_img(file_data, img_type='other', file_name=None, dst_w=0, dst_h=0):
+
     # extra = qiniu.io.PutExtra()
     # extra.mime_type = "image/jpeg"
 
@@ -52,6 +97,10 @@ def upload_img(file_data, img_type='other', file_name=None):
         data = StringIO.StringIO(file_data)
     else:
         data = StringIO.StringIO(file_data.read())
+
+    # ============= 图片预处理 ===============
+    data = _resize_img(data, dst_w, dst_h)
+    # =======================================
 
     uptoken = get_upload_token(img_type=img_type)
     key = '%s_%s' % (img_type, file_name or utils.uuid_without_dash())
