@@ -93,7 +93,7 @@ def add_record(request):
     img_name = ''
     img = request.FILES.get('img')
     if img:
-        flag, img_name = qiniu_client.upload_img(img, img_type='purchase', file_name=None, dst_w=750, dst_h=1000)
+        flag, img_name = qiniu_client.upload_img(img, img_type='purchase', file_name=None, dst_w=600, dst_h=800)
         img_name = '%s/%s' % (settings.IMG0_DOMAIN, img_name)
 
     flag, msg = PurchaseRecordBase().add_record(

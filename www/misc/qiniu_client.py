@@ -80,10 +80,13 @@ def _resize_img(obj, dst_w=0, dst_h=0):
         else:
             new_width = ori_w
             new_height = ori_h
+        
+        img = img.resize((new_width, new_height), Image.ANTIALIAS)
 
-        img.resize((new_width, new_height), Image.ANTIALIAS)
+        temp = StringIO.StringIO()
+        img.save(temp, "gif")
 
-        return img
+        return temp
     else:
         return obj
 
