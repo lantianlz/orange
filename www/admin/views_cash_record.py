@@ -65,10 +65,12 @@ def search(request):
     operation = None if operation == "-1" else operation
     is_invoice = request.REQUEST.get('is_invoice')
     is_invoice = None if is_invoice == "-1" else is_invoice
+    is_alipay = request.REQUEST.get('is_alipay')
+    is_alipay = True if is_alipay == "1" else False
     
     page_index = int(request.REQUEST.get('page_index'))
     
-    objs, sum_price = CashRecordBase().get_records_for_admin(start_date, end_date, name, operation, is_invoice)
+    objs, sum_price = CashRecordBase().get_records_for_admin(start_date, end_date, name, operation, is_invoice, is_alipay)
 
     page_objs = page.Cpt(objs, count=10, page=page_index).info
 

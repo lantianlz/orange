@@ -9,7 +9,7 @@
 <style type="text/css">
 @media (min-width: 768px){
     .form-inline .input-group>input.form-control {
-        width: 130px;
+        width: 110px;
     }
 }
 </style>
@@ -48,14 +48,15 @@ $(document).ready(function(){
         },
 
         // 查询
-        search: function(start_date, end_date, name, operation, is_invoice, pageIndex){
+        search: function(start_date, end_date, name, operation, is_invoice, is_alipay, pageIndex){
             var me = this,
                 start_date = start_date||'{{start_date}}',
                 end_date = end_date||'{{end_date}}',
                 name = name||'',
-                operation = operation||"-1",
-                is_invoice = is_invoice||'-1',
-                pageIndex = pageIndex||1;
+                operation = operation || "-1",
+                is_invoice = is_invoice || '-1',
+                is_alipay = is_alipay || '0',
+                pageIndex = pageIndex || 1;
 
             ajaxSend(
                 "/admin/cash_record/search", 
@@ -65,6 +66,7 @@ $(document).ready(function(){
                     'name': name, 
                     'operation': operation,
                     'is_invoice': is_invoice, 
+                    'is_alipay': is_alipay,
                     'page_index': pageIndex
                 }, 
                 function(data){
@@ -75,6 +77,7 @@ $(document).ready(function(){
                     me.name = name;
                     me.operation = operation;
                     me.is_invoice = is_invoice;
+                    me.isAlipay = is_alipay;
                     me.sumPrice = data.sum_price;
 
                     me.reset($.Global.Utils.dictMapParse(data.data, me._modelMaps));
@@ -145,7 +148,7 @@ $(document).ready(function(){
             this.pagination.render(
                 this.collection.pageIndex||1, 
                 this.collection.pageCount, 
-                String.format('search/{0}/{1}/{2}/{3}/{4}', this.collection.startDate, this.collection.endDate, this.collection.name, this.collection.operation, this.collection.is_invoice)
+                String.format('search/{0}/{1}/{2}/{3}/{4}/{5}', this.collection.startDate, this.collection.endDate, this.collection.name, this.collection.operation, this.collection.is_invoice, this.collection.isAlipay)
             );
 
             this.$('.sum-price').html(this.collection.sumPrice);
@@ -166,9 +169,10 @@ $(document).ready(function(){
                 endDate = this.$('#end_date_search').val(),
                 name = this.$('.name').val(),
                 operation = this.$('.operation').val(),
-                is_invoice = this.$('.is_invoice').val();
+                is_invoice = this.$('.is_invoice').val(),
+                isAlipay = this.$('.is-alipay').attr('checked') ? 1 : 0;
 
-            router.navigate(String.format('/search/{0}/{1}/{2}/{3}/{4}/1', startDate, endDate, name, operation, is_invoice), {trigger: true});
+            router.navigate(String.format('/search/{0}/{1}/{2}/{3}/{4}/{5}/1', startDate, endDate, name, operation, is_invoice, isAlipay), {trigger: true});
         },
 
         // 操作是否记录开篇金额
@@ -267,7 +271,7 @@ $(document).ready(function(){
                 if(data.errcode == "0"){
                     $('#add_record_modal').modal('hide');
                     $.Global.Notice.SuccessTopNotice("操作成功");
-                    router.navigate('search//////1', {trigger: true});
+                    router.navigate('search///////1', {trigger: true});
                 } else {
                     $.Global.Notice.ErrorTopNotice(data.errmsg);
                 }
@@ -281,14 +285,14 @@ $(document).ready(function(){
     var Router = Backbone.Router.extend({
 
         routes: {
-            "":                     "search",
-            'add': 'add',
-            "search/(:start_date)/(:end_date)/(:name)/(:operation)/(:is_invoice)/:pageIndex":    "search",
+            "":     "search",
+            'add':  'add',
+            "search/(:start_date)/(:end_date)/(:name)/(:operation)/(:is_invoice)/(:is_alipay)/:pageIndex":    "search",
         },
 
         // 查询
-        search: function(start_date, end_date, name, operation, is_invoice, pageIndex){
-            records.search(start_date, end_date, name, operation, is_invoice, pageIndex);
+        search: function(start_date, end_date, name, operation, is_invoice, is_alipay, pageIndex){
+            records.search(start_date, end_date, name, operation, is_invoice, is_alipay, pageIndex);
         },
 
         add: function(){
@@ -369,6 +373,13 @@ $(document).ready(function(){
             <div class="input-group input-group-sm pb-10">
                 <span class="input-group-addon">结束日期</span>
                 <input type="text" class="form-control" id="end_date_search" value="{{end_date}}"  />
+            </div>
+            <div class="input-group input-group-sm pb-10 pl-10 pr-10">
+                <div class="checkbox">
+                    <label>
+                        <input class="is-alipay" type="checkbox" value="1"> 支付宝
+                    </label>
+                </div>
             </div>
             <div class="input-group input-group-sm pb-10">
                 <span class="input-group-addon">公司名称</span>

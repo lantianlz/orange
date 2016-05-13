@@ -1143,11 +1143,14 @@ class CashRecordBase(object):
 
         return objs
 
-    def get_records_for_admin(self, start_date, end_date, name, operation=None, is_invoice=None):
+    def get_records_for_admin(self, start_date, end_date, name, operation=None, is_invoice=None, is_alipay=False):
         objs = self.get_all_records(operation, is_invoice).filter(create_time__range=(start_date, end_date))
 
         if name:
             objs = objs.filter(cash_account__company__name__contains=name)
+
+        if operation == None and is_alipay:
+            objs = objs.filter(notes=u'支付宝在线充值')
 
         all_sum = 0
         # 如果没有指定操作类型
