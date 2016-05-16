@@ -424,11 +424,11 @@ class WeixinBase(object):
                 "value":"%(info)s",
                 "color":"#EF7B32"
             },
-            "keynote1": {
+            "keyword1": {
                 "value":"%(job)s",
                 "color":"#000000"
             },
-            "keynote2":{
+            "keyword2":{
                 "value":"%(priority)s",
                 "color":"#000000"
             },

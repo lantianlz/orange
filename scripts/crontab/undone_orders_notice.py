@@ -27,7 +27,7 @@ def undone_orders_notice():
 
         from www.weixin.interface import WeixinBase
         from www.account.interface import ExternalTokenBase
-        to_user_openid = ExternalTokenBase().get_weixin_openid_by_user_id('f02d7bea3c2b11e58be400163e001bb1')
+        to_user_openid = ExternalTokenBase().get_weixin_openid_by_user_id('541798fc416311e5a8ba00163e001bb1')
 
         WeixinBase().send_todo_list_template_msg(
             to_user_openid, 
