@@ -1150,7 +1150,7 @@ class CashRecordBase(object):
             objs = objs.filter(cash_account__company__name__contains=name)
 
         if operation == None and is_alipay:
-            objs = objs.filter(notes=u'支付宝在线充值')
+            objs = objs.filter(operation=0, notes=u'支付宝在线充值')
 
         all_sum = 0
         # 如果没有指定操作类型
