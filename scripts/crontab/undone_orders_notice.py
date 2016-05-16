@@ -25,5 +25,17 @@ def undone_orders_notice():
         content = u"，\n".join(undone_orders)
         send_email('web@3-10.cc', u'共「%s」单订单未结：' % len(undone_orders), content)
 
+        from www.weixin.interface import WeixinBase
+        from www.account.interface import ExternalTokenBase
+        to_user_openid = ExternalTokenBase().get_weixin_openid_by_user_id('f02d7bea3c2b11e58be400163e001bb1')
+
+        WeixinBase().send_todo_list_template_msg(
+            to_user_openid, 
+            u'瓜娃子，单子又没结完', 
+            u'结束当日订单', 
+            u'高', 
+            u"搞紧哈，下次莫忘咯"
+        )
+
 if __name__ == '__main__':
     undone_orders_notice()

@@ -412,6 +412,35 @@ class WeixinBase(object):
 
         return self.send_template_msg(app_key, openid, content, template_id)
 
+    def send_todo_list_template_msg(self, openid, info, job, priority, remark, app_key=None):
+        '''
+        发送待办任务提醒通知
+        '''
+        template_id = "-rAhCPV9q3lUoslRYQUlHhpwvJXraX7BDuJgfKW2Bss"
+        app_key = app_key or self.init_app_key()
+        content = u'''
+         {
+            "first": {
+                "value":"%(info)s",
+                "color":"#EF7B32"
+            },
+            "keynote1": {
+                "value":"%(job)s",
+                "color":"#000000"
+            },
+            "keynote2":{
+                "value":"%(priority)s",
+                "color":"#000000"
+            },
+            "remark":{
+                "value":"%(remark)s",
+                "color":"#000000"
+            }
+         }
+        ''' % dict(info=info, job=job, priority=priority, remark=remark)
+
+        return self.send_template_msg(app_key, openid, content, template_id)
+
     def get_weixin_jsapi_ticket(self, app_key):
         # 本地调试模式不走缓存
         if not settings.LOCAL_FLAG:
