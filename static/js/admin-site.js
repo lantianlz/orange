@@ -509,9 +509,9 @@ if (!String.format) {
                     '<div class="col-sm-10 pr-0 col-xs-10">',
                         '<div class="input-group">',
                             '<span class="input-group-addon"><%= item.value %><%= item.smartDes %></span>',
-                            '<input type="text" name="item-amounts" data-item_price="<%= item.price %>" required class="form-control number item" value="<%= item.amount %>">',
+                            '<input type="text" name="item-amounts" data-item_price="<%= item.price %>" data-item_sale_price="<%= item.salePrice %>" required class="form-control number item" value="<%= item.amount %>">',
                             '<input type="hidden" name="item-ids" value="<%= item.data %>">',
-                            '<span class="input-group-addon"><%= item.specText %>, <span class="total-price"><%= $.Global.Utils.formatPrice(item.price * item.amount) %></span> 元</span></span>',
+                            '<span class="input-group-addon"><%= item.specText %>, <span class="total-price" data-total_sale_price="<%= $.Global.Utils.formatPrice(item.salePrice * item.amount) %>"><%= $.Global.Utils.formatPrice(item.price * item.amount) %></span> 元</span></span>',
                         '</div>',
                     '</div>',
                     '<div class="col-sm-2 col-xs-2 text-right">',
@@ -524,7 +524,7 @@ if (!String.format) {
         // 项目类型模版
         _itemTypeTemplate: _.template([
             '<% _.each(types, function(type){ %>',
-            '<div class="fb fi pb-5 type-<%= type.value %>"><%= type.name %> ( 总价: <span class="sum-<%= type.value %>">0</span> )</div>',
+            '<div class="fb fi pb-5 type-<%= type.value %>"><%= type.name %> ( 总价: <span class="sum-<%= type.value %>">0</span>, 总售价: <span class="sum-sale-price-<%= type.value %>">0</span> )</div>',
             '<% }) %>'
         ].join('')),
 
@@ -600,12 +600,17 @@ if (!String.format) {
         _changeAmount: function(sender){
             var target = $(sender.currentTarget),
                 price = parseFloat(target.data("item_price")),
+                salePrice = parseFloat(target.data("item_sale_price")),
                 amount = parseFloat(target.val()),
                 totalPrice = $.Global.Utils.formatPrice(
                     price * amount
+                ),
+                totalSalePrice = $.Global.Utils.formatPrice(
+                    salePrice * amount
                 );
                 
             target.parents('li').find('.total-price').html(totalPrice);
+            target.parents('li').find('.total-price').data('total_sale_price', totalSalePrice);
             this.calculatePrice();
         },
 
@@ -614,13 +619,15 @@ if (!String.format) {
             var me = this;
 
             $.map(me._itemTypes, function(itemType){
-                var sum = 0;
+                var sum = 0, sumSalePrice = 0;
 
                 $.map(me.$('.item-type-'+itemType.value+' .total-price'), function(price){
                     sum += parseFloat(price.innerHTML);
+                    sumSalePrice += parseFloat($(price).data('total_sale_price'));
                 });
                 
                 me.$('.sum-' + itemType.value).html($.Global.Utils.formatPrice(sum));
+                me.$('.sum-sale-price-' + itemType.value).html($.Global.Utils.formatPrice(sumSalePrice));
             });
             
         },
