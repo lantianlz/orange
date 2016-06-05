@@ -2583,7 +2583,7 @@ class ParttimeRecordBase(object):
             hour = round((e - s).seconds/60/60.0, 1)
 
             # 一个人一天只能有一条记录
-            if ParttimeRecord.objects.filter(start_time__gt=start_date[:10] + " 00:00:00", start_time__lt=start_date[:10] + " 23:59:59"):
+            if ParttimeRecord.objects.filter(person_id=person_id, start_time__gt=start_date[:10] + " 00:00:00", start_time__lt=start_date[:10] + " 23:59:59"):
                 return 21502, dict_err.get(21502)
 
             record = ParttimeRecord.objects.create(
