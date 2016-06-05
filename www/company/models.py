@@ -478,10 +478,46 @@ class InventoryToItem(models.Model):
         ordering = ['-id']
 
 
+class ParttimePerson(models.Model):
+
+    '''
+    兼职人员表
+    '''
+
+    gender_choices = ((0, u"女"), (1, u"男"))
+    state_choices = ((0, u"无效"), (1, u"正常"))
+
+    name = models.CharField(verbose_name=u"姓名", max_length=32)
+    gender = models.IntegerField(verbose_name=u"性别", choices=gender_choices, default=1)
+    age = models.IntegerField(verbose_name=u"年龄", default=18)
+    tel = models.CharField(verbose_name=u"联系电话", max_length=32)
+    hourly_pay = models.FloatField(verbose_name=u"时薪", default=10)
+    state = models.IntegerField(verbose_name=u"状态", choices=state_choices, default=1)
+    note = models.CharField(verbose_name=u"备注", max_length=256, null=True, default='')
+    create_time = models.DateTimeField(verbose_name=u"操作时间", auto_now_add=True, db_index=True)
+
+    class Meta:
+        unique_together = [("name", "tel"), ]
+        ordering = ['-id']
 
 
+class ParttimeRecord(models.Model):
 
+    '''
+    兼职工作记录表
+    '''
 
+    person = models.ForeignKey('ParttimePerson')
+    start_time = models.DateTimeField(verbose_name=u"开始时间")
+    end_time = models.DateTimeField(verbose_name=u"结束时间")
+    hour = models.FloatField(verbose_name=u"工作时长")
+    hourly_pay = models.FloatField(verbose_name=u"时薪")
+    pay = models.FloatField(verbose_name=u"结算金额")
+    note = models.CharField(verbose_name=u"备注", max_length=256, null=True)
+    create_time = models.DateTimeField(verbose_name=u"操作时间", auto_now_add=True, db_index=True)
+
+    class Meta:
+        ordering = ['-id']
 
 
 

@@ -229,6 +229,28 @@ urlpatterns += patterns('www.admin.views_inventory_to_item',
     url(r'^inventory_to_item$', 'inventory_to_item'),
 )
 
+# 兼职人员管理
+urlpatterns += patterns('www.admin.views_parttime_person',
+
+    url(r'^parttime_person/get_persons_by_name$', 'get_persons_by_name'),
+    url(r'^parttime_person/modify_person$', 'modify_person'),
+    url(r'^parttime_person/add_person$', 'add_person'),
+    url(r'^parttime_person/get_person_by_id$', 'get_person_by_id'),
+    url(r'^parttime_person/search$', 'search'),
+    url(r'^parttime_person$', 'parttime_person'),
+)
+
+# 兼职工作记录管理
+urlpatterns += patterns('www.admin.views_parttime_record',
+
+    url(r'^parttime_record/file_import$', 'file_import'),
+    url(r'^parttime_record/remove_record$', 'remove_record'),
+    url(r'^parttime_record/add_record$', 'add_record'),
+    url(r'^parttime_record/get_record_by_id$', 'get_record_by_id'),
+    url(r'^parttime_record/search$', 'search'),
+    url(r'^parttime_record$', 'parttime_record'),
+)
+
 # 统计管理
 urlpatterns += patterns('www.admin.views_statistics',
     url(r'^statistics_commission$', 'statistics_commission'),

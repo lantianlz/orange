@@ -115,3 +115,4 @@ def add_inventory(request):
     )
 
     return flag, msg.id if flag == 0 else msg
+    

@@ -1,0 +1,452 @@
+{% extends "pc/admin/home.html" %}
+{% load custom_tags %}
+{% load custom_filters %}
+{% block title %}兼职工作记录{% endblock %}
+{% block admin_title %}兼职工作记录{% endblock %}
+{% block admin_title_m %}兼职工作记录{% endblock %}
+
+{% block css %}
+<style type="text/css">
+
+</style>
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript">
+$(document).ready(function(){
+    // models
+    var Record = Backbone.Model.extend({
+
+        // 默认值
+        defaults: {
+            'num': ''
+        }
+
+    });
+
+    // collections
+    var Records = Backbone.Collection.extend({
+        model: Record,
+
+        _modelMaps: {
+            'num': 'num',
+            'recordId': 'record_id',
+            'personId': 'person_id',
+            'personName': 'person_name',
+            'startTime': 'start_time',
+            'endTime': 'end_time',
+            'hour': 'hour',
+            'hourlyPay': 'hourly_pay',
+            'pay': 'pay',
+            'note': 'note',
+            'createTime': 'create_time'
+        },
+
+        // 查询
+        search: function(start_date, end_date, name, pageIndex){
+            var me = this,
+                start_date = start_date||'{{start_date}}',
+                end_date = end_date||'{{end_date}}',
+                name = name||'',
+                pageIndex = pageIndex||1;
+
+            ajaxSend(
+                "/admin/parttime_record/search", 
+                {
+                    'start_date': start_date, 
+                    'end_date': end_date, 
+                    'name': name, 
+                    'page_index': pageIndex
+                }, 
+                function(data){
+                    me.pageIndex = pageIndex;
+                    me.pageCount = data.page_count;
+                    me.startDate = start_date;
+                    me.endDate = end_date;
+                    me.name = name;
+                    me.sumPrice = data.sum_price;
+
+                    me.reset($.Global.Utils.dictMapParse(data.data, me._modelMaps));
+                }
+            );
+        },
+
+        addRecord: function(data, callback){
+            var me = this;
+
+            ajaxSend(
+                "/admin/parttime_record/add_record",  
+                data,
+                function(response){
+                    if(callback){
+                        callback(response);
+                    }
+                }
+            );
+        },
+
+        removeRecord: function(record_id, callback){
+            var me = this;
+
+            ajaxSend(
+                "/admin/parttime_record/remove_record",  
+                {'record_id': record_id},
+                function(response){
+                    if(callback){
+                        callback(response);
+                    }
+                }
+            );
+        }
+
+    });
+
+    // listView
+    var ListView = Backbone.View.extend({
+        el: '#record_list',
+
+        pagination: new $.Global.Pagination.PaginationView(),
+
+        template: _.template($('#record_template').html()),
+
+        initialize: function(){
+            this.listenTo(this.collection, 'reset', this.render);
+        },
+
+        events: {
+            'click .search': 'search',
+            'click .remove-record': 'removeRecord'
+        },
+
+        // 渲染函数
+        render: function(){
+            var data = this.collection.toJSON();
+
+            this.showPanel();
+
+            this.$('tbody').html(this.template({'records': data}));
+
+            this.pagination.render(
+                this.collection.pageIndex||1, 
+                this.collection.pageCount, 
+                String.format('search/{0}/{1}/{2}', this.collection.startDate, this.collection.endDate, this.collection.name)
+            );
+            
+            this.$('.sum-price').html(this.collection.sumPrice);
+
+            this.$('#start_date_search').val(this.collection.startDate);
+            this.$('#end_date_search').val(this.collection.endDate);
+            this.$('.name').val(this.collection.name);
+        },
+
+        // 显示面板
+        showPanel: function(){
+            $('.orange-nav-pills a[href="#record_list"]').tab('show');
+        },
+
+        search: function(){
+            var startDate = this.$('#start_date_search').val(),
+                endDate = this.$('#end_date_search').val(),
+                name = this.$('.name').val();
+
+            router.navigate(String.format('/search/{0}/{1}/{2}/1', startDate, endDate, name), {trigger: true});
+        },
+
+        removeRecord: function(sender){
+            var target = $(sender.currentTarget),
+                recordId = target.data('record_id');
+
+            if(confirm('确认删除此记录？')){
+                this.collection.removeRecord(recordId ,function(data){
+                    if(data.errcode == "0"){
+                        $.Global.Notice.SuccessTopNotice("操作成功");
+                        router.navigate('search////1', {trigger: true});
+                    } else {
+                        $.Global.Notice.ErrorTopNotice(data.errmsg);
+                    }
+                });
+            }
+            
+        }
+
+    });
+
+
+    var AddView = Backbone.View.extend({
+        el: 'body',
+
+        template: _.template($('#add_record_template').html()),
+
+        showPanel: function(){
+            var me = this;
+
+            me.render();
+        },
+
+        personTextBox: null,
+        initPersonTextBox: function(name, value){
+            var me = this;
+
+            this.personTextBox = $.Global.TextboxList.create('#person_add', {
+                max: 1,
+                placeholder: '选择兼职人员',
+                url: '/admin/parttime_person/get_persons_by_name',
+                param: 'name',
+                loadPlaceholder: '正在加载...'
+            });
+
+            if(value){
+                this.personTextBox.add(name, value);
+            }
+            
+        },
+
+        initDate: function(){
+            $('#add_record_modal #start_date_add').datetimepicker({
+                format: 'yyyy-mm-dd hh:ii',
+                language: 'zh-CN',
+                minView: 1,
+                autoclose: true
+            });
+
+            $('#add_record_modal #end_date_add').datetimepicker({
+                format: 'yyyy-mm-dd hh:ii',
+                language: 'zh-CN',
+                minView: 1,
+                autoclose: true
+            });
+        },
+
+        render: function(){
+            var me = this;
+
+            $('#add_record_modal').remove();
+            
+            $('body').append(this.template());
+
+            // 绑定事件
+            $('#add_record_modal .cancel').bind('click', function(){
+                history.go(-1);
+            });
+            $('#add_record_modal .ok').bind('click', function(){
+                me.addRecord();
+            });
+            
+            $('#add_record_modal').modal({'show': true, 'backdrop': 'static'});
+
+            me.initPersonTextBox();
+            me.initDate();
+           
+        },
+
+        addRecord: function(){
+            var me = this;
+            
+            if(!$('#add_record_modal form').valid()){
+                return;
+            }
+
+            g_ajax_processing_obj_id = $("#add_record_modal .ok").setUUID().attr('id');
+            records.addRecord($.Global.Utils.formToDict($('#add_record_modal form')), function(data){
+                if(data.errcode == "0"){
+                    $('#add_record_modal').modal('hide');
+                    $.Global.Notice.SuccessTopNotice("操作成功");
+                    router.navigate('search////1', {trigger: true});
+                } else {
+                    $.Global.Notice.ErrorTopNotice(data.errmsg);
+                }
+            });
+        }
+
+    });
+
+
+    // router
+    var Router = Backbone.Router.extend({
+
+        routes: {
+            "":                     "search",
+            'add': 'add',
+            "search/(:start_date)/(:end_date)/(:name)/:pageIndex":    "search",
+        },
+
+        // 查询
+        search: function(start_date, end_date, name, pageIndex){
+            records.search(start_date, end_date, name, pageIndex);
+        },
+
+        add: function(){
+            addView.showPanel();
+        }
+
+    });
+    
+    // 初始化
+    var records = new Records(),
+        listView = new ListView({'collection': records}),
+        addView = new AddView(),
+        router = new Router();
+ 
+    Backbone.history.start();
+
+    $('#start_date_search').datetimepicker({
+        format: 'yyyy-mm-dd',
+        language: 'zh-CN',
+        minView: 2,
+        autoclose: true
+    });
+
+    $('#end_date_search').datetimepicker({
+        format: 'yyyy-mm-dd',
+        language: 'zh-CN',
+        minView: 2,
+        autoclose: true
+    });
+
+    $('.file_import').on('change', function(){
+        $(this).parents('form').submit();
+    });
+
+});
+
+</script>
+{% endblock %}
+
+{% block admin_main %}
+<ul class="nav nav-pills pt-15 orange-nav-pills">
+    <li class="active">
+        <a href="#record_list" data-toggle="pill">
+            <i class="fa fa-list-ol pr-5"></i>
+            <span class="hidden-sm hidden-md hidden-lg">列表</span>
+            <span class="hidden-xs">兼职工作记录</span>
+        </a>
+    </li>
+    <li class="pull-right">
+        <a class="pointer">
+            <form method="post" action="/admin/parttime_record/file_import" enctype="multipart/form-data">
+                <i class="fa fa-plus-circle pr-5"></i>
+                <span class="hidden-sm hidden-md hidden-lg">导入</span>
+                <span class="hidden-xs">批量导入</span>
+                <input type="file" name="parttime_record_file" class="file_import pa pointer" style="left: 0; top: 0; opacity: 0; height: 100%; width: 100%;" >
+            </form>
+        </a>
+    </li>
+    <li class="pull-right">
+        <a href="#add">
+            <i class="fa fa-plus-circle pr-5"></i>
+            <span class="hidden-sm hidden-md hidden-lg">添加</span>
+            <span class="hidden-xs">添加兼职工作记录</span>
+        </a>
+    </li>
+</ul>
+
+<div class="tab-content">
+    <!-- 客户经理列表 -->
+    <div class="tab-pane fade pt-15 in active" id="record_list">
+        <form action="." class="form-inline" onsubmit="javascript: return false;">
+            <div class="input-group input-group-sm pb-10">
+                <span class="input-group-addon">开始日期</span>
+                <input type="text" class="form-control" id="start_date_search" value="{{start_date}}"  />
+            </div>
+            <div class="input-group input-group-sm pb-10">
+                <span class="input-group-addon">结束日期</span>
+                <input type="text" class="form-control" id="end_date_search" value="{{end_date}}"  />
+            </div>
+            <div class="input-group input-group-sm pb-10">
+                <span class="input-group-addon">姓名</span>
+                <input type="text" class="form-control name" placeholder="" />
+                <span class="input-group-btn">
+                    <button class="btn btn-default search bgc-eeeeee" type="submit">查询</button>
+                </span>
+            </div>
+        </form>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>姓名</th>
+                    <th>开始时间</th>
+                    <th>结束时间</th>
+                    <th class="hidden-xs">兼职时长</th>
+                    <th class="hidden-xs">时薪</th>
+                    <th>结算金额</th>
+                    <th class="hidden-xs">备注</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+            </tbody>
+        </table>
+
+        <div class="text-center">
+            <ul class="pagination pagination-sm qx-pagination">
+                
+            </ul>
+        </div>
+        <div class="text-right border-top-2 bdc-dddddd mt-25">兼职总金额 <span class="fb f18 co-1DABD9 sum-price">0</span> 元</div>
+    </div>
+</div>
+
+<!-- 客户经理列表 -->
+<script type="text/template" id="record_template">
+    <% _.each(records, function(record){ %>
+        <tr class="pointer" data-record_id="<%= record.recordId %>">
+            <td><%= record.num %></td>
+            <td><%= record.personName %></td>
+            <td><%= record.startTime %></td>
+            <td><%= record.endTime %></td>
+            <td class="hidden-xs"><%= record.hour %></td>
+            <td class="hidden-xs"><%= record.hourlyPay %></td>
+            <td><%= record.pay %></td>
+            <td class="hidden-xs"><%= record.note %></td>
+            <td><a class="remove-record" href="#" data-record_id="<%= record.recordId %>">删除</a></td>
+        </tr>
+    <% }) %>
+</script>
+
+<script type="text/template" id="add_record_template">
+<div class="modal fade" id="add_record_modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header pb-5">
+                <!-- <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button> -->
+                <h4 class="modal-title">添加兼职工作记录</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal record-form" role="form" method="post" action="">
+                    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+                        <label class="col-sm-2 control-label">兼职人员</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" id="person_add" required name="person_id" value=''>
+                        </div>
+                    </div>
+                    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+                        <label class="col-sm-2 control-label">开始时间</label>
+                        <div class="col-sm-5">
+                            <input type="text" name="start_date" class="form-control" id="start_date_add" value="{{start_date}}"  />
+                        </div>
+                    </div>
+                    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+                        <label class="col-sm-2 control-label">结束时间</label>
+                        <div class="col-sm-5">
+                            <input type="text" name="end_date" class="form-control" id="end_date_add" value="{{start_date}}"  />
+                        </div>
+                    </div>
+                    <div class="form-group pt-20 pb-20 mb-0">
+                        <label class="col-sm-2 control-label">备注</label>
+                        <div class="col-sm-8">
+                            <textarea name="note" rows="6" class="form-control" placeholder=""></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default cancel" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary ok">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+</script>
+{% endblock %}

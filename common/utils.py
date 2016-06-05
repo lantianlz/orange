@@ -405,6 +405,45 @@ def format_user_agent(user_agent):
     except:
         return dict(device_type=device_type, device_name="other", os_name="other", os_version="1.0")
 
+def get_excel_data(file_path, sheet_index):
+    '''
+    读取excel数据
+    '''
+    import xlrd
+
+    excel_data = xlrd.open_workbook(file_path)
+    table = excel_data.sheet_by_index(sheet_index)
+    nrows = table.nrows
+    ncols = table.ncols
+
+    data = []
+
+    for i in range(0, nrows):
+        temp = []
+        for j in range(0, ncols):
+            temp.append(table.cell(i, j).value)
+        data.append(temp)
+
+    return data
+
+def get_range_date_of_week(date=None):
+    '''
+    获取当前周日期集合
+    '''
+    dates = []
+
+    today = datetime.datetime.today()
+    if date:
+        today = date
+
+    sunday = today + datetime.timedelta(6 - today.weekday())
+    for i in range(7):
+
+        dates.append((sunday - datetime.timedelta(i)).strftime('%Y-%m-%d'))
+    dates.reverse()
+    
+    return dates
+
 
 def get_function_code(func):
     return '%s_%s' % (func.__name__, func.func_code.co_filename.split('orange')[-1].replace('/', '_').replace('\\', '_').replace(".py", ""))

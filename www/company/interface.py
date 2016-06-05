@@ -19,7 +19,7 @@ from models import Item, Company, Meal, MealItem, Order, OrderItem, \
     Booking, CompanyManager, CashAccount, CashRecord, Supplier, \
     SupplierCashAccount, SupplierCashRecord, PurchaseRecord, SaleMan, \
     InvoiceRecord, Invoice, RechargeOrder, Inventory, InventoryRecord, \
-    InventoryToItem
+    InventoryToItem, ParttimePerson, ParttimeRecord
 
 DEFAULT_DB = 'default'
 
@@ -64,6 +64,9 @@ dict_err = {
     21401: u'没有找到对应的库存产品',
 
     21401: u'没有找到对应的库存产品对照信息',
+
+    21501: u'没有找到对应的兼职人员信息',
+    21502: u"同一天只能有一条记录",
 }
 dict_err.update(consts.G_DICT_ERROR)
 
@@ -2467,11 +2470,151 @@ class InventoryRecordBase(object):
             return 99900, dict_err.get(99900)
 
 
+class ParttimePersonBase(object):
+
+    '''
+    兼职人员
+    '''
+
+    def search_person_for_admin(self, state, name):
+        objs = ParttimePerson.objects.filter(state=state)
+
+        if name:
+            objs = objs.filter(name__contains=name)
+
+        return objs
+
+    def get_persons_by_name(self, name):
+        objs = ParttimePerson.objects.all()
+
+        if name:
+            objs = objs.filter(name__contains=name)
+
+        return objs
+
+    def get_person_by_id(self, person_id):
+        try:
+            return ParttimePerson.objects.get(id=person_id)
+        except ParttimePerson.DoesNotExist:
+            return ''
+
+    def get_person_by_name(self, person_name):
+        try:
+            return ParttimePerson.objects.get(name=person_name)
+        except ParttimePerson.DoesNotExist:
+            return ''
+
+    def add_person(self, name, gender, age, tel, hourly_pay=10, state=1, note=''):
+        
+        if not (name, gender, age, tel, hourly_pay):
+            return 99800, dict_err.get(99800)
+
+        try:
+
+            person = ParttimePerson.objects.create(
+                name = name,
+                gender = gender,
+                age = age,
+                tel = tel,
+                hourly_pay = hourly_pay,
+                note = note
+            )
+
+        except Exception, e:
+            debug.get_debug_detail_and_send_email(e)
+            return 99900, dict_err.get(99900)
+
+        return 0, person
+
+    def modify_person(self, person_id, name, gender, age, tel, hourly_pay=10, state=1, note=''):
+
+        if not person_id:
+            return 99800, dict_err.get(99800)
+
+        if not (name, gender, age, tel, hourly_pay):
+            return 99800, dict_err.get(99800)
+
+        try:
+            obj = self.get_person_by_id(person_id)
+            if not obj:
+                return 21501, dict_err.get(21501)
+
+            obj.name = name
+            obj.gender = gender
+            obj.age = age
+            obj.tel = tel
+            obj.hourly_pay = hourly_pay
+            obj.state = state
+            obj.note = note
+            obj.save()
+
+        except Exception, e:
+            debug.get_debug_detail_and_send_email(e)
+            return 99900, dict_err.get(99900)
+
+        return 0, dict_err.get(0)
 
 
+class ParttimeRecordBase(object):
+
+    '''
+    '''
+    def search_records_for_admin(self, start_date, end_date, name):
+        objs = ParttimeRecord.objects.filter(start_time__range=(start_date, end_date))
+
+        if name:
+            objs = objs.filter(person__name__contains=name)
+
+        return objs, objs.aggregate(Sum('pay'))['pay__sum']
 
 
+    def add_record(self, person_id, start_date, end_date, note):
+        
+        if not (person_id, start_date, end_date):
+            return 99800, dict_err.get(99800)
 
+        person = ParttimePersonBase().get_person_by_id(person_id)
+        if not person:
+            return 21501, dict_err.get(21501)
+
+        try:
+            s = datetime.datetime.strptime(start_date, '%Y-%m-%d %H:%M') 
+            e = datetime.datetime.strptime(end_date, '%Y-%m-%d %H:%M')
+            hour = round((e - s).seconds/60/60.0, 1)
+
+            # 一个人一天只能有一条记录
+            if ParttimeRecord.objects.filter(start_time__gt=start_date[:10] + " 00:00:00", start_time__lt=start_date[:10] + " 23:59:59"):
+                return 21502, dict_err.get(21502)
+
+            record = ParttimeRecord.objects.create(
+                person_id = person_id,
+                start_time = start_date,
+                end_time = end_date,
+                hour = hour,
+                hourly_pay = person.hourly_pay,
+                pay = round(hour * person.hourly_pay, 1),
+                note = note
+            )
+
+        except Exception, e:
+            debug.get_debug_detail_and_send_email(e)
+            return 99900, dict_err.get(99900)
+
+        return 0, record
+
+
+    def remove_record(self, record_id):
+
+        if not (record_id):
+            return 99800, dict_err.get(99800)
+
+        try:
+            ParttimeRecord.objects.filter(id=record_id).delete()
+        except Exception, e:
+            debug.get_debug_detail_and_send_email(e)
+            return 99900, dict_err.get(99900)
+
+        return 0, dict_err.get(0)
 
 
 

@@ -109,6 +109,16 @@ PERMISSIONS = [
     {'code': 'query_inventory_to_item', 'name': u'查询库存产品对照', 'parent': 'inventory_to_item_manage'},
     {'code': 'modify_inventory_to_item', 'name': u'修改库存产品对照', 'parent': 'inventory_to_item_manage'},
 
+    {'code': 'parttime_person_manage', 'name': u'兼职人员管理', 'parent': None},
+    {'code': 'add_parttime_person', 'name': u'添加兼职人员', 'parent': 'parttime_person_manage'},
+    {'code': 'query_parttime_person', 'name': u'查询兼职人员', 'parent': 'parttime_person_manage'},
+    {'code': 'modify_parttime_person', 'name': u'修改兼职人员', 'parent': 'parttime_person_manage'},
+
+    {'code': 'parttime_record_manage', 'name': u'兼职工作记录管理', 'parent': None},
+    {'code': 'add_parttime_record', 'name': u'添加兼职工作记录', 'parent': 'parttime_record_manage'},
+    {'code': 'query_parttime_record', 'name': u'查询兼职工作记录', 'parent': 'parttime_record_manage'},
+    {'code': 'remove_parttime_record', 'name': u'删除兼职工作记录', 'parent': 'parttime_record_manage'},
+
     {'code': 'statistics_manage', 'name': u'统计管理', 'parent': None},
     {'code': 'statistics_sale_top', 'name': u'销售排行', 'parent': 'statistics_manage'},
     {'code': 'statistics_summary', 'name': u'综合统计', 'parent': 'statistics_manage'},
