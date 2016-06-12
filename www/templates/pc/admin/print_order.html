@@ -49,7 +49,7 @@ $(document).ready(function(){
             <img class="logo" src="{{MEDIA_URL}}img/logo.png">
             <span class="logo-text">三点十分 - 配送单</span>
 
-            {% if order.company.id == 24 or order.company.id == 15 %}
+            {% if order.company.id == 185 or order.company.id == 187 %}
             <img class="tiaocode" src="{{MEDIA_URL}}img/69003101001.jpg">
             {% else %}
             <img class="qrcode" src="/qrcode?info=http://www.3-10.cc/admin/order/order_state?order_id={{order.id}}">
