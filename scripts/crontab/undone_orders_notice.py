@@ -27,15 +27,23 @@ def undone_orders_notice():
 
         from www.weixin.interface import WeixinBase
         from www.account.interface import ExternalTokenBase
-        to_user_openid = ExternalTokenBase().get_weixin_openid_by_user_id('541798fc416311e5a8ba00163e001bb1')
+        
 
-        WeixinBase().send_todo_list_template_msg(
-            to_user_openid, 
-            u'瓜娃子，单子又没结完', 
-            u'结束当日订单', 
-            u'高', 
-            u"搞紧哈，下次莫忘咯"
-        )
+        persons = []
+        persons.append('541798fc416311e5a8ba00163e001bb1') # 李聪
+        persons.append('de918ec6dfb911e5bb1d00163e001bb1') # 刘磊
+        persons.append('6ceca02e07ac11e69a9800163e001bb1') # 何翔
+
+        for person in persons:
+            to_user_openid = ExternalTokenBase().get_weixin_openid_by_user_id(person)
+
+            WeixinBase().send_todo_list_template_msg(
+                to_user_openid, 
+                u'瓜娃子，单子又没结完', 
+                u'结束当日订单', 
+                u'高', 
+                u"搞紧哈，下次莫忘咯"
+            )
 
 if __name__ == '__main__':
     undone_orders_notice()
