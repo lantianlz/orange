@@ -284,7 +284,7 @@ def print_order(request, template_name='pc/admin/print_order.html'):
     order_id = request.REQUEST.get('order_id')
 
     order = OrderBase().get_order_by_id(order_id)
-    items = OrderBase().get_items_of_order(order_id)
+    # items = OrderBase().get_items_of_order(order_id)
 
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
 
@@ -297,9 +297,12 @@ def get_items_of_order(request):
 
         supplier = SupplierBase().get_supplier_by_id(i.item.supplier_id)
 
+        # 比佳兔超市
+        show_code = True if i.order.company_id in (185, 187) else False
+
         data.append({
             'item_id': i.item.id,
-            'name': i.item.name,
+            'name': i.item.name + (' (69003101001)' if show_code else ''),
             'price': str(i.item.price),
             'sale_price': str(i.item.sale_price),
             'item_type': i.item.item_type,
