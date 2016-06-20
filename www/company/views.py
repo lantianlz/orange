@@ -320,3 +320,13 @@ def list_orders(request, company_id, template_name='pc/company/list_orders.html'
 
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
 
+
+def anonymous_fruit_price(request):
+    '''
+    匿名产品目录
+    '''
+
+    items = ItemBase().get_items_by_type(1, [1]).order_by('-update_time')
+    today = datetime.datetime.now()
+
+    return render_to_response('static_templates/fruit_price.html', locals(), context_instance=RequestContext(request))

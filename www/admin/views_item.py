@@ -48,7 +48,8 @@ def format_item(objs, num):
             'code': x.code,
             'img': x.get_img(),
             'integer': x.integer,
-            'sale_price': str(x.sale_price),
+            'sale_price': str(x.get_smart_sale_price()),
+            'gross_profit_rate': str(x.gross_profit_rate),
             'init_add': x.init_add,
             'des': x.des,
             'smart_des': x.smart_des(),
@@ -106,7 +107,7 @@ def modify_item(request):
     price = request.POST.get('price')
     integer = request.POST.get('integer')
     init_add = request.POST.get('init_add')
-    sale_price = request.POST.get('sale_price')
+    gross_profit_rate = request.POST.get('gross_profit_rate')
     sort = request.POST.get('sort')
     state = request.POST.get('state')
     supplier_id = request.POST.get('supplier_id')
@@ -121,7 +122,7 @@ def modify_item(request):
         img_name = '%s/%s' % (settings.IMG0_DOMAIN, img_name)
 
     flag, msg = ItemBase().modify_item(item_id, name, item_type, spec, 
-        price, sort, state, integer, sale_price, init_add, supplier_id, des, img_name
+        price, sort, state, integer, gross_profit_rate, init_add, supplier_id, des, img_name
     )
 
     if flag == 0:
@@ -141,7 +142,7 @@ def add_item(request):
     sort = request.POST.get('sort')
     integer = request.POST.get('integer')
     init_add = request.POST.get('init_add')
-    sale_price = request.POST.get('sale_price')
+    gross_profit_rate = request.POST.get('gross_profit_rate')
     supplier_id = request.POST.get('supplier_id')
     des = request.POST.get('des')
 
@@ -153,7 +154,7 @@ def add_item(request):
 
     flag, msg = ItemBase().add_item(
         name, item_type, spec, price, sort, integer, 
-        sale_price, init_add, supplier_id, des, img_name
+        gross_profit_rate, init_add, supplier_id, des, img_name
     )
 
     if flag == 0:

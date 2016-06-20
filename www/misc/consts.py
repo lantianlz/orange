@@ -69,6 +69,9 @@ PERMISSIONS = [
     {'code': 'query_meal', 'name': u'查询套餐', 'parent': 'meal_manage'},
     {'code': 'modify_meal', 'name': u'修改套餐', 'parent': 'meal_manage'},
 
+    {'code': 'fruit_price_manage', 'name': u'水果价格管理', 'parent': None},
+    {'code': 'modify_fruit_price', 'name': u'修改水果价格', 'parent': 'fruit_price_manage'},
+
     {'code': 'order_manage', 'name': u'订单管理', 'parent': None},
     {'code': 'add_order', 'name': u'添加订单', 'parent': 'order_manage'},
     {'code': 'query_order', 'name': u'查询订单', 'parent': 'order_manage'},

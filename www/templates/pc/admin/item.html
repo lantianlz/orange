@@ -39,6 +39,7 @@ $(document).ready(function(){
             'name': 'name',
             'price': 'price',
             'salePrice': 'sale_price',
+            'grossProfitRate': 'gross_profit_rate',
             'itemType': 'item_type',
             'spec': 'spec',
             'state': 'state',
@@ -179,7 +180,22 @@ $(document).ready(function(){
         template: _.template($('#modify_item_template').html()),
 
         events: {
-            'click .save': 'save'
+            'click .save': 'save',
+            'input .gross-profit-rate': 'calculateSalePrice'
+        },
+
+        calculateSalePrice: function(sender){
+            console.log(11)
+            var me = this,
+                target = $(sender.currentTarget),
+                grossProfitRate = target.val();
+
+            me.$('.sale-price').text(
+                $.Global.Utils.formatPrice(
+                    parseFloat(me.$('.price').val()) / parseFloat(grossProfitRate),
+                    2
+                )
+            )
         },
 
         showPanel: function(){
@@ -295,6 +311,19 @@ $(document).ready(function(){
             });
             $('#add_item_modal .ok').bind('click', function(){
                 me.addItem();
+            });
+            $('#add_item_modal .gross-profit-rate-add').on('input', function(){
+
+                var me = this,
+                    grossProfitRate = $(me).val();
+
+                $('#add_item_modal .sale-price-add').text(
+                    $.Global.Utils.formatPrice(
+                        parseFloat($('.price-add').val()) / parseFloat(grossProfitRate),
+                        2
+                    )
+                )
+            
             });
             
             $('#add_item_modal').modal({'show': true, 'backdrop': 'static'});
@@ -559,13 +588,20 @@ $(document).ready(function(){
     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
         <label class="col-sm-2 control-label">成本价</label>
         <div class="col-sm-3">
-            <input type="text" required class="form-control" name='price' value='<%= price %>'>
+            <input type="text" required class="form-control price" name='price' value='<%= price %>'>
+        </div>
+    </div>
+    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+        <label class="col-sm-2 control-label">毛利率</label>
+        <div class="col-sm-3">
+            <input type="text" required class="form-control gross-profit-rate" name='gross_profit_rate' value='<%= grossProfitRate %>'>
         </div>
     </div>
     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
         <label class="col-sm-2 control-label">售价</label>
         <div class="col-sm-3">
-            <input type="text" required class="form-control" name='sale_price' value='<%= salePrice %>'>
+            <!-- <input type="text" required class="form-control" name='sale_price' value='<%= salePrice %>'> -->
+            <p class="form-control-static sale-price"><%= salePrice %></p>
         </div>
     </div>
     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
@@ -672,13 +708,20 @@ $(document).ready(function(){
                     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
                         <label class="col-sm-3 control-label">成本价</label>
                         <div class="col-sm-3">
-                            <input type="text" required class="form-control" name='price' value='0'>
+                            <input type="text" required class="form-control price-add" name='price' value='0'>
+                        </div>
+                    </div>
+                    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+                        <label class="col-sm-3 control-label">毛利率</label>
+                        <div class="col-sm-3">
+                            <input type="text" required class="form-control gross-profit-rate-add" name='gross_profit_rate' value='0'>
                         </div>
                     </div>
                     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
                         <label class="col-sm-3 control-label">售价</label>
                         <div class="col-sm-3">
-                            <input type="text" required class="form-control" name='sale_price' value='0'>
+                            <!-- <input type="text" required class="form-control" name='sale_price' value='0'> -->
+                            <p class="form-control-static sale-price-add">0</p>
                         </div>
                     </div>
                     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">

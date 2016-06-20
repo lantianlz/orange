@@ -21,6 +21,7 @@ urlpatterns = patterns('',
     # url(r'^p/(?P<user_id>\w+)/user_answer$', 'www.account.views.user_answer'),
     url(r'^customers$', 'www.company.views.customers'),
     url(r'^product_list$', 'www.company.views.anonymous_product_list'),
+    url(r'^fruit_price$', 'www.company.views.anonymous_fruit_price'),
 
     url(r'^$', 'www.account.views.home_welcome'),
     url(r'^admin/', include('www.admin.urls')),

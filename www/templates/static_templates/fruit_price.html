@@ -1,0 +1,99 @@
+{% extends "pc/base/base.html" %}
+
+{% block title_all %}水果报价 - 三点十分{% endblock %}
+{% block base_css %}
+<style type="text/css">
+.table>thead>tr>th, 
+.table>tbody>tr>th, 
+.table>tfoot>tr>th, 
+.table>thead>tr>td, 
+.table>tbody>tr>td, 
+.table>tfoot>tr>td{
+    vertical-align: inherit;
+}
+@media (min-width: 768px){
+    .container{
+        width: 900px;
+    }
+}
+@media (max-width: 768px){
+    .f25{
+        font-size: 20px;
+    }
+}
+.big-img{
+    display: none;
+    position: absolute;
+    background-color: #ffffff;
+    left: 60px;
+    top: 10px;
+    z-index: 1;
+}
+
+.small-img:hover~.big-img{
+    display: block;
+}
+
+.seal{
+    position: absolute;
+    bottom: 40px;
+    right: 25px;
+    z-index: 99;
+    width: 150px;
+}
+</style>
+{% endblock %}
+
+{% block js %}
+{% endblock %}
+
+{% block base_container %}
+<div class="container">
+    <div class="row pb-15">
+        <div class="col-md-12 text-center f25 pt-30 pb-30">
+            三点十分 {{ today|date:'Y-m-d' }} 水果报价
+        </div>
+        <div class="col-md-12">
+            <table class="table table-hover price-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th class="hidden-xs">图片</th>
+                        <th>名称</th>
+                        <th class="hidden-xs">规格</th>
+                        <th>计量单位</th>
+                        <th>裸果价格</th>
+                        <th>洗切后价格</th>
+                        <th class="hidden-xs">最后更新时间</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in items %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td class="hidden-xs pr">
+                            <img src="{{ item.get_img }}" class="w35 small-img">
+                            <img src="{{ item.get_img }}" class="w250 big-img" />
+                        </td>
+                        <td>{{ item.name }}</td>
+                        <td class="hidden-xs">{{ item.smart_des }}</td>
+                        <td>{{ item.get_spec_display }}</td>
+                        <td class="fb">{{ item.get_smart_sale_price }}</td>
+                        <td>{{ item.smart_wash_floating_price }}</td>
+                        <td class="hidden-xs">{{ item.update_time|date:'Y-m-d H:i' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="col-md-12 pb-20 pt-30 bgc-EEF3F6 fi pr f13">
+            <p>PS：水果价格根据市场行情每天动态更新。</p>
+            <p>该报价包含了以下因素：原料成本、货损成本、流通成本、加工成本、税收成本等，我们的初心就是通过聚合客户形成规模，以一个合理的价格，稳定的给企业供应健康新鲜的产品，谢谢。</p>
+            <p>未经三点十分允许，请勿传播此报价。</p>
+            <img src="{{MEDIA_URL}}img/seal.png" class="seal">
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block footer %}{% endblock %}

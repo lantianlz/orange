@@ -121,6 +121,13 @@ urlpatterns += patterns('www.admin.views_meal',
     url(r'^meal$', 'meal'),
 )
 
+# 水果价格管理
+urlpatterns += patterns('www.admin.views_fruit_price',
+
+    url(r'^fruit_price/modify_fruit_price$', 'modify_fruit_price'),
+    url(r'^fruit_price$', 'fruit_price'),
+)
+
 # 订单管理
 urlpatterns += patterns('www.admin.views_order',
 

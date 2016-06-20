@@ -1,0 +1,208 @@
+{% extends "pc/admin/home.html" %}
+{% load custom_tags %}
+{% load custom_filters %}
+{% block title %}水果价格管理{% endblock %}
+{% block admin_title %}水果价格管理{% endblock %}
+{% block admin_title_m %}水果价格管理{% endblock %}
+
+{% block css %}
+<style type="text/css">
+.price-table .form-control{
+    width: 60px;
+    padding: 4px 8px;
+}
+.price-table .no-border-input{
+    border: 0;
+    width: 55px;
+    background-color: inherit;
+    box-shadow: none;
+}
+.price-table .no-border-input:focus{
+    border: 1px solid #ccc;
+}
+
+.table>thead>tr>th, 
+.table>tbody>tr>th, 
+.table>tfoot>tr>th, 
+.table>thead>tr>td, 
+.table>tbody>tr>td, 
+.table>tfoot>tr>td{
+    vertical-align: inherit;
+}
+</style>
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript">
+$(document).ready(function(){
+    var update_price = function(target){
+            var parent = target.parents('tr').eq(0),
+                price = parent.find('.price').val(),
+                itemId = parent.find('.item_id'),
+                netWeightRate = parent.find('.net_weight_rate'),
+                netWeightPrice = parent.find('.net_weight_price'),
+                fleshRate = parent.find('.flesh_rate'),
+                fleshPrice = parent.find('.flesh_price'),
+                grossProfitRate = parent.find('.gross_profit_rate'),
+                salePrice = parent.find('.sale_price'),
+                washFloatingRate = parent.find('.wash_floating_rate'),
+                washFloatingPrice = parent.find('.wash_floating_price');
+
+            ajaxSend(
+                "/admin/fruit_price/modify_fruit_price", 
+                {
+                    'item_id': itemId.val(),
+                    'price': price, 
+                    'net_weight_rate': netWeightRate.val(),
+                    'flesh_rate': fleshRate.val(),
+                    'gross_profit_rate': grossProfitRate.val(),
+                    'wash_floating_rate': washFloatingRate.val()
+                },
+                function(data){
+                    
+                    if(data.errcode === 0){
+                        $.Global.Notice.SuccessTopNotice('修改成功!');
+                        
+                    } else {
+                        $.Global.Notice.ErrorTopNotice(data.errmsg);
+                    }
+                }
+            )
+        },
+        calculate_price = function(target){
+            var parent = target.parents('tr').eq(0),
+                price = parent.find('.price').val(),
+                netWeightRate = parent.find('.net_weight_rate'),
+                netWeightPrice = parent.find('.net_weight_price'),
+                fleshRate = parent.find('.flesh_rate'),
+                fleshPrice = parent.find('.flesh_price'),
+                grossProfitRate = parent.find('.gross_profit_rate'),
+                salePrice = parent.find('.sale_price'),
+                washFloatingRate = parent.find('.wash_floating_rate'),
+                washFloatingPrice = parent.find('.wash_floating_price');
+
+            netWeightPrice.text($.Global.Utils.formatPrice(
+                parseFloat(price) / parseFloat(netWeightRate.val()),
+                1
+            ));
+            fleshPrice.text($.Global.Utils.formatPrice(
+                parseFloat(netWeightPrice.text()) / parseFloat(fleshRate.val()),
+                1
+            ));
+            salePrice.text($.Global.Utils.formatPrice(
+                parseFloat(netWeightPrice.text()) / parseFloat(grossProfitRate.val()),
+                1
+            ));
+            washFloatingPrice.text($.Global.Utils.formatPrice(
+                parseFloat(salePrice.text()) * parseFloat(washFloatingRate.val()),
+                1
+            ));
+        };
+
+    $('.form-control').on('focus', function(){
+        $(this).select();
+    });
+
+    $('.price').on('input', function(){
+        calculate_price($(this));
+    });
+    $('.net_weight_rate').on('input', function(){
+        calculate_price($(this));
+    });
+    $('.flesh_rate').on('input', function(){
+        calculate_price($(this));
+    });
+    $('.gross_profit_rate').on('input', function(){
+        calculate_price($(this));
+    });
+    $('.wash_floating_rate').on('input', function(){
+        calculate_price($(this));
+    });
+
+    // 修改毛重成本价
+    $('.price').on('blur', function(){
+        // 价格保护
+        if(parseFloat($(this).val()) > 30 || parseFloat($(this).val()) < 1){
+            if(!confirm('毛重成本不在 1 - 30 范围，确认继续修改吗？')){
+                $(this).focus();
+                return;
+            }
+        }
+        update_price($(this));
+    });
+    $('.net_weight_rate').on('blur', function(){
+        update_price($(this));
+    });
+    $('.flesh_rate').on('blur', function(){
+        update_price($(this));
+    });
+    $('.gross_profit_rate').on('blur', function(){
+        update_price($(this));
+    });
+    $('.wash_floating_rate').on('blur', function(){
+        update_price($(this));
+    });
+
+
+})
+</script>
+{% endblock %}
+
+{% block admin_main %}
+<div class="row pt-5 col-xs-12 pr-0">
+    <table class="table table-hover price-table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <!-- <th class="hidden-xs">图片</th> -->
+                <th>名称</th>
+                <th>毛重成本</th>
+                <th class="hidden-xs">净重比</th>
+                <th>净重成本</th>
+                <th class="hidden-xs">果肉率</th>
+                <th class="hidden-xs">果肉成本</th>
+                <th class="hidden-xs">毛利率</th>
+                <th>卖价</th>
+                <th class="hidden-xs">洗切上浮比</th>
+                <th class="hidden-xs">洗切后价格</th>
+                <th class="hidden-xs">最后更新时间</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+            <tr class="{% if item.last_update_days > 7 %}co-C33333{% endif %} ">
+                <input type="hidden" value="{{ item.id }}" class="item_id" >
+                <td>{{ forloop.counter }}</td>
+                <!-- <td class="hidden-xs"><img src="{{ item.get_img }}" style="width: 50px;"></td> -->
+                <td>{{ item.name }}</td>
+                <td class="">
+                    <input value="{{ item.smart_price }}" type="tel" class="form-control price" >
+                </td>
+
+                <td class="fi hidden-xs">
+                    <input value="{{ item.net_weight_rate }}" type="tel" class="form-control no-border-input net_weight_rate" >
+                </td>
+                <td class="fb net_weight_price">{{ item.smart_net_weight_price }}</td>
+
+                <td class="fi hidden-xs">
+                    <input value="{{ item.flesh_rate }}" type="tel" class="form-control no-border-input flesh_rate" >
+                </td>
+                <td class="fb hidden-xs flesh_price">{{ item.smart_flesh_price }}</td>
+
+                <td class="fi hidden-xs">
+                    <input value="{{ item.gross_profit_rate }}" type="tel" class="form-control no-border-input gross_profit_rate" >
+                </td>
+                <td class="fb sale_price">{{ item.get_smart_sale_price }}</td>
+
+                <td class="fi hidden-xs">
+                    <input value="{{ item.wash_floating_rate }}" type="tel" class="form-control no-border-input wash_floating_rate" >
+                </td>
+                <td class="fb hidden-xs wash_floating_price">{{ item.smart_wash_floating_price }}</td>
+
+                <td class="hidden-xs">{{ item.update_time|date:'Y-m-d H:i' }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

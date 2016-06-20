@@ -2,6 +2,8 @@
 
 from django.db import models
 from django.conf import settings
+import datetime
+import decimal
 
 class Company(models.Model):
 
@@ -152,11 +154,10 @@ class Item(models.Model):
 
     code = models.CharField(verbose_name=u"货号", max_length=32, unique=True)
     name = models.CharField(verbose_name=u"名称", max_length=128, unique=True)
-    price = models.DecimalField(verbose_name=u"成本价", max_digits=10, decimal_places=2, default=0)
-    sale_price = models.DecimalField(verbose_name=u"售价", max_digits=10, decimal_places=2, default=0)
+    
     item_type = models.IntegerField(verbose_name=u"类型", default=1, choices=type_choices)
     state = models.IntegerField(verbose_name=u"状态", default=1, choices=state_choices)
-    spec = models.IntegerField(verbose_name=u"规格", default=1, choices=spec_choices)
+    spec = models.IntegerField(verbose_name=u"单位", default=1, choices=spec_choices)
     sort = models.IntegerField(verbose_name=u"排序", default=0)
     integer = models.IntegerField(verbose_name=u"是否整数", default=1, choices=integer_choices)
     init_add = models.IntegerField(verbose_name=u"是否默认添加", default=2, choices=add_choices)
@@ -166,11 +167,65 @@ class Item(models.Model):
 
     img = models.CharField(verbose_name=u"图片", max_length=128, null=True)
 
+    price = models.DecimalField(verbose_name=u"毛重成本价", max_digits=10, decimal_places=2, default=0)
+    sale_price = models.DecimalField(verbose_name=u"售价", max_digits=10, decimal_places=2, default=0)
+
+    net_weight_rate = models.DecimalField(verbose_name=u"净重比", max_digits=6, decimal_places=3, default=1)
+    flesh_rate = models.DecimalField(verbose_name=u"果肉率", max_digits=6, decimal_places=3, default=1)
+    gross_profit_rate = models.DecimalField(verbose_name=u"毛利率", max_digits=6, decimal_places=3, default=0.6)
+    wash_floating_rate = models.DecimalField(verbose_name=u"洗切上浮比", max_digits=6, decimal_places=3, default=1.15)
+    update_time = models.DateTimeField(verbose_name=u"最后更新时间", auto_now=True, db_index=True)
+    # note = models.CharField(verbose_name=u"规格", max_length=256, null=True, default="")
+
     def get_img(self):
+        '''
+        图片
+        '''
         return self.img if self.img else '%simg/logo.png' % settings.MEDIA_URL
 
     def smart_des(self):
         return ('(%s)' % self.des) if self.des else ''
+
+    def smart_price(self):
+        return round(self.price, 1)
+
+    def net_weight_price(self):
+        '''
+        净重成本价格
+        '''
+        return decimal.Decimal(self.price) / decimal.Decimal(self.net_weight_rate)
+    def smart_net_weight_price(self):
+        return round(self.net_weight_price(), 1)
+
+    def flesh_price(self):
+        '''
+        果肉成本价格
+        '''
+        return self.net_weight_price() / decimal.Decimal(self.flesh_rate)
+    def smart_flesh_price(self):
+        return round(self.flesh_price(), 1)
+
+    def get_sale_price(self):
+        '''
+        获取卖价
+        '''
+        return self.net_weight_price() / decimal.Decimal(self.gross_profit_rate)
+    def get_smart_sale_price(self):
+        return round(self.get_sale_price(), 1)
+
+    def wash_floating_price(self):
+        '''
+        洗切后价格
+        '''
+        return self.get_sale_price() * decimal.Decimal(self.wash_floating_rate)
+    def smart_wash_floating_price(self):
+        return round(self.wash_floating_price(), 1)
+
+    def last_update_days(self):
+        '''
+        距离上次更新时间
+        '''
+        return (datetime.datetime.now() - self.update_time).days
 
     class Meta:
         ordering = ["sort", "-create_time"]

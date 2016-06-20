@@ -119,13 +119,15 @@ class ItemBase(object):
                 price=price,
                 sort=sort,
                 integer=integer,
-                sale_price=sale_price,
+                gross_profit_rate=gross_profit_rate,
                 init_add=init_add,
                 supplier_id=supplier_id,
                 des=des,
                 img=img,
                 code=self.generate_item_code(item_type)
             )
+            item.sale_price = item.get_sale_price()
+            item.save()
 
         except Exception, e:
             debug.get_debug_detail(e)
@@ -156,9 +158,9 @@ class ItemBase(object):
         return obj
 
     def modify_item(self, item_id, name, item_type, spec, price, sort,\
-                    state, integer, sale_price, init_add, supplier_id, des, img):
+                    state, integer, gross_profit_rate, init_add, supplier_id, des, img):
 
-        if not (name and item_type and price and supplier_id):
+        if not (name and item_type and price and supplier_id and gross_profit_rate):
             return 99800, dict_err.get(99800)
 
         if not SupplierBase().get_supplier_by_id(supplier_id):
@@ -186,7 +188,8 @@ class ItemBase(object):
             obj.state = state
             obj.integer = integer
             obj.init_add = init_add
-            obj.sale_price = sale_price
+            obj.gross_profit_rate = gross_profit_rate
+            obj.sale_price = obj.get_sale_price()
             obj.supplier_id = supplier_id
             obj.des = des
             obj.img = img
@@ -204,6 +207,28 @@ class ItemBase(object):
             objs = objs.filter(name__contains=name)
 
         return objs
+
+    def modify_fruit_price(self, item_id, price, net_weight_rate, flesh_rate, gross_profit_rate, wash_floating_rate):
+        if not (item_id and price and net_weight_rate and flesh_rate and gross_profit_rate and wash_floating_rate):
+            return 99800, dict_err.get(99800)
+        
+        obj = Item.objects.filter(id=item_id)
+        if not obj:
+            return 20102, dict_err.get(20102)
+        obj = obj[0]
+        try:
+            obj.price = price
+            obj.net_weight_rate = net_weight_rate
+            obj.flesh_rate = flesh_rate
+            obj.gross_profit_rate = gross_profit_rate
+            obj.wash_floating_rate = wash_floating_rate
+            obj.sale_price = obj.get_sale_price()
+            obj.save()
+        except Exception, e:
+            debug.get_debug_detail_and_send_email(e)
+            return 99900, dict_err.get(99900)
+
+        return 0, dict_err.get(0)
 
     def get_init_add_items(self):
         return self.get_all_item([1, 2]).filter(init_add=1)
