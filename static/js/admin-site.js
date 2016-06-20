@@ -440,7 +440,7 @@ if (!String.format) {
         _modelMaps: {
             'value': 'name',
             'data': 'item_id',
-            'price': 'price',
+            'price': 'net_weight_price',
             'salePrice': 'sale_price',
             'itemType': 'item_type',
             'spec': 'spec',
@@ -459,6 +459,7 @@ if (!String.format) {
                 
                 '<div class="border-top-1 bdc-e4e4e4 text-right mt-5 pt-10 item-footer">',
                     '<span>成本总价: <span class="sum fb">0</span> 元，</span>',
+                    '<span>总售价: <span class="sum-sale-price fb">0</span> 元，</span>',
                     '<span>毛利: <span class="rate">0</span>%</span>',
                 '</div>',
             '</ul>'
@@ -608,7 +609,7 @@ if (!String.format) {
                 totalSalePrice = $.Global.Utils.formatPrice(
                     salePrice * amount
                 );
-                
+            
             target.parents('li').find('.total-price').html(totalPrice);
             target.parents('li').find('.total-price').data('total_sale_price', totalSalePrice);
             this.calculatePrice();
@@ -616,7 +617,7 @@ if (!String.format) {
 
         // 计算分类总价
         _calculateTypePrice: function(){
-            var me = this;
+            var me = this, allSalePrice = 0;
 
             $.map(me._itemTypes, function(itemType){
                 var sum = 0, sumSalePrice = 0;
@@ -628,7 +629,11 @@ if (!String.format) {
                 
                 me.$('.sum-' + itemType.value).html($.Global.Utils.formatPrice(sum));
                 me.$('.sum-sale-price-' + itemType.value).html($.Global.Utils.formatPrice(sumSalePrice));
+
+                allSalePrice += sumSalePrice;
             });
+
+            me.$('.sum-sale-price').html($.Global.Utils.formatPrice(allSalePrice));
             
         },
 

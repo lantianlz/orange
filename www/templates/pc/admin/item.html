@@ -38,8 +38,10 @@ $(document).ready(function(){
             'itemId': 'item_id',
             'name': 'name',
             'price': 'price',
-            'salePrice': 'sale_price',
+            'netWeightRate': 'net_weight_rate',
+            'netWeightPrice': 'net_weight_price',
             'grossProfitRate': 'gross_profit_rate',
+            'salePrice': 'sale_price',
             'itemType': 'item_type',
             'spec': 'spec',
             'state': 'state',
@@ -181,21 +183,35 @@ $(document).ready(function(){
 
         events: {
             'click .save': 'save',
-            'input .gross-profit-rate': 'calculateSalePrice'
+            'input .price': 'calculatePrice',
+            'input .net-weight-rate': 'calculatePrice',
+            'input .gross-profit-rate': 'calculatePrice'
         },
 
-        calculateSalePrice: function(sender){
-            console.log(11)
+        // 计算价格
+        calculatePrice: function(sender){
+            
             var me = this,
-                target = $(sender.currentTarget),
-                grossProfitRate = target.val();
+                price = me.$('.price').val(),
+                netWeightRate = me.$('.net-weight-rate').val(),
+                netWeightPrice = me.$('.net-weight-price'),
+                grossProfitRate = me.$('.gross-profit-rate').val(),
+                salePrice = me.$('.sale-price');
 
-            me.$('.sale-price').text(
+            // 净重价
+            netWeightPrice.text(
                 $.Global.Utils.formatPrice(
-                    parseFloat(me.$('.price').val()) / parseFloat(grossProfitRate),
-                    2
+                    parseFloat(price) / parseFloat(netWeightRate)
                 )
-            )
+            );
+
+            // 售价
+            salePrice.text(
+                $.Global.Utils.formatPrice(
+                    parseFloat(netWeightPrice.text()) / (1 - parseFloat(grossProfitRate))
+                )
+            );
+           
         },
 
         showPanel: function(){
@@ -298,6 +314,31 @@ $(document).ready(function(){
             
         },
 
+        // 计算价格
+        calculatePrice: function(){
+            
+            var price = $('#add_item_modal .price-add').val(),
+                netWeightRate = $('#add_item_modal .net-weight-rate-add').val(),
+                netWeightPrice = $('#add_item_modal .net-weight-price-add'),
+                grossProfitRate = $('#add_item_modal .gross-profit-rate-add').val(),
+                salePrice = $('#add_item_modal .sale-price-add');
+            
+            // 净重价
+            netWeightPrice.text(
+                $.Global.Utils.formatPrice(
+                    parseFloat(price) / parseFloat(netWeightRate)
+                )
+            );
+
+            // 售价
+            salePrice.text(
+                $.Global.Utils.formatPrice(
+                    parseFloat(netWeightPrice.text()) / (1 - parseFloat(grossProfitRate))
+                )
+            );
+           
+        },
+
         render: function(){
             var me = this;
 
@@ -312,18 +353,14 @@ $(document).ready(function(){
             $('#add_item_modal .ok').bind('click', function(){
                 me.addItem();
             });
+            $('#add_item_modal .price-add').on('input', function(){
+                me.calculatePrice();
+            });
+            $('#add_item_modal .net-weight-rate-add').on('input', function(){
+                me.calculatePrice();
+            });
             $('#add_item_modal .gross-profit-rate-add').on('input', function(){
-
-                var me = this,
-                    grossProfitRate = $(me).val();
-
-                $('#add_item_modal .sale-price-add').text(
-                    $.Global.Utils.formatPrice(
-                        parseFloat($('.price-add').val()) / parseFloat(grossProfitRate),
-                        2
-                    )
-                )
-            
+                me.calculatePrice();
             });
             
             $('#add_item_modal').modal({'show': true, 'backdrop': 'static'});
@@ -456,7 +493,8 @@ $(document).ready(function(){
                     <th>名称</th>
                     <th class="hidden-xs">供货商</th>
                     <th>类型</th>
-                    <th>成本价</th>
+                    <th>净重成本价</th>
+                    <th>卖价</th>
                     <th class="hidden-xs">规格</th>
                     <th>状态</th>
                 </tr>
@@ -497,7 +535,8 @@ $(document).ready(function(){
             <% } %>
         {% endfor %}
         </td>
-        <td><%= item.price %></td>
+        <td><%= item.netWeightPrice %></td>
+        <td><%= item.salePrice %></td>
         <td class="hidden-xs">
         {% for spec in specs %}
             <% if(item.spec == '{{spec.value}}'){ %>
@@ -586,9 +625,21 @@ $(document).ready(function(){
         </div>
     </div>
     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
-        <label class="col-sm-2 control-label">成本价</label>
+        <label class="col-sm-2 control-label">毛重成本价</label>
         <div class="col-sm-3">
             <input type="text" required class="form-control price" name='price' value='<%= price %>'>
+        </div>
+    </div>
+    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+        <label class="col-sm-2 control-label">净重比</label>
+        <div class="col-sm-3">
+            <input type="text" required class="form-control net-weight-rate" name='net_weight_rate' value='<%= netWeightRate %>'>
+        </div>
+    </div>
+    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+        <label class="col-sm-2 control-label">净重成本价</label>
+        <div class="col-sm-3">
+            <p class="form-control-static net-weight-price"><%= netWeightPrice %></p>
         </div>
     </div>
     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
@@ -598,9 +649,8 @@ $(document).ready(function(){
         </div>
     </div>
     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
-        <label class="col-sm-2 control-label">售价</label>
+        <label class="col-sm-2 control-label">卖价</label>
         <div class="col-sm-3">
-            <!-- <input type="text" required class="form-control" name='sale_price' value='<%= salePrice %>'> -->
             <p class="form-control-static sale-price"><%= salePrice %></p>
         </div>
     </div>
@@ -706,9 +756,21 @@ $(document).ready(function(){
                         </div>
                     </div>
                     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
-                        <label class="col-sm-3 control-label">成本价</label>
+                        <label class="col-sm-3 control-label">毛重成本价</label>
                         <div class="col-sm-3">
                             <input type="text" required class="form-control price-add" name='price' value='0'>
+                        </div>
+                    </div>
+                    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+                        <label class="col-sm-3 control-label">净重比</label>
+                        <div class="col-sm-3">
+                            <input type="text" required class="form-control net-weight-rate-add" name='net_weight_rate' value='0'>
+                        </div>
+                    </div>
+                    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+                        <label class="col-sm-3 control-label">净重成本价</label>
+                        <div class="col-sm-3">
+                            <p class="form-control-static net-weight-price-add">0</p>
                         </div>
                     </div>
                     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
@@ -718,9 +780,8 @@ $(document).ready(function(){
                         </div>
                     </div>
                     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
-                        <label class="col-sm-3 control-label">售价</label>
+                        <label class="col-sm-3 control-label">卖价</label>
                         <div class="col-sm-3">
-                            <!-- <input type="text" required class="form-control" name='sale_price' value='0'> -->
                             <p class="form-control-static sale-price-add">0</p>
                         </div>
                     </div>

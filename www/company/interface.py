@@ -100,9 +100,9 @@ class ItemBase(object):
 
         return objs
 
-    def add_item(self, name, item_type, spec, price, sort, integer, sale_price, init_add, supplier_id, des, img):
+    def add_item(self, name, item_type, spec, price, sort, integer, net_weight_rate, gross_profit_rate, init_add, supplier_id, des, img):
 
-        if not (name and item_type and price and supplier_id):
+        if not (name and item_type and price and supplier_id and gross_profit_rate and net_weight_rate):
             return 99800, dict_err.get(99800)
 
         if not SupplierBase().get_supplier_by_id(supplier_id):
@@ -119,6 +119,7 @@ class ItemBase(object):
                 price=price,
                 sort=sort,
                 integer=integer,
+                net_weight_rate = net_weight_rate,
                 gross_profit_rate=gross_profit_rate,
                 init_add=init_add,
                 supplier_id=supplier_id,
@@ -158,9 +159,9 @@ class ItemBase(object):
         return obj
 
     def modify_item(self, item_id, name, item_type, spec, price, sort,\
-                    state, integer, gross_profit_rate, init_add, supplier_id, des, img):
+                    state, integer, net_weight_rate, gross_profit_rate, init_add, supplier_id, des, img):
 
-        if not (name and item_type and price and supplier_id and gross_profit_rate):
+        if not (name and item_type and price and supplier_id and gross_profit_rate and net_weight_rate):
             return 99800, dict_err.get(99800)
 
         if not SupplierBase().get_supplier_by_id(supplier_id):
@@ -188,6 +189,7 @@ class ItemBase(object):
             obj.state = state
             obj.integer = integer
             obj.init_add = init_add
+            obj.net_weight_rate = net_weight_rate
             obj.gross_profit_rate = gross_profit_rate
             obj.sale_price = obj.get_sale_price()
             obj.supplier_id = supplier_id
@@ -599,16 +601,16 @@ class OrderBase(object):
                 item = ItemBase().get_item_by_id(x['item_id'])
 
                 # 计算成本价
-                temp += item.price * decimal.Decimal(x['amount'])
+                temp += item.net_weight_price() * decimal.Decimal(x['amount'])
 
                 OrderItem.objects.create(
                     order=obj,
                     item_id=x['item_id'],
                     amount=x['amount'],
-                    price=item.price,
-                    sale_price=item.sale_price,
-                    total_price=item.price * decimal.Decimal(x['amount']),
-                    total_sale_price=item.sale_price * decimal.Decimal(x['amount'])
+                    price=item.net_weight_price(),
+                    sale_price=item.get_sale_price(),
+                    total_price=item.net_weight_price() * decimal.Decimal(x['amount']),
+                    total_sale_price=item.get_sale_price() * decimal.Decimal(x['amount'])
                 )
 
             # 计算成本价
@@ -647,16 +649,16 @@ class OrderBase(object):
                 item = ItemBase().get_item_by_id(x['item_id'])
 
                 # 计算成本价
-                temp += item.price * decimal.Decimal(x['amount'])
+                temp += item.net_weight_price() * decimal.Decimal(x['amount'])
 
                 OrderItem.objects.create(
                     order=obj,
                     item_id=x['item_id'],
                     amount=x['amount'],
-                    price=item.price,
-                    sale_price=item.sale_price,
-                    total_price=item.price * decimal.Decimal(x['amount']),
-                    total_sale_price=item.sale_price * decimal.Decimal(x['amount'])
+                    price=item.net_weight_price(),
+                    sale_price=item.get_sale_price(),
+                    total_price=item.net_weight_price() * decimal.Decimal(x['amount']),
+                    total_sale_price=item.get_sale_price() * decimal.Decimal(x['amount'])
                 )
 
             # 计算成本价

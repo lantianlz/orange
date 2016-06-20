@@ -154,7 +154,6 @@ class Item(models.Model):
 
     code = models.CharField(verbose_name=u"货号", max_length=32, unique=True)
     name = models.CharField(verbose_name=u"名称", max_length=128, unique=True)
-    
     item_type = models.IntegerField(verbose_name=u"类型", default=1, choices=type_choices)
     state = models.IntegerField(verbose_name=u"状态", default=1, choices=state_choices)
     spec = models.IntegerField(verbose_name=u"单位", default=1, choices=spec_choices)
@@ -164,12 +163,10 @@ class Item(models.Model):
     create_time = models.DateTimeField(auto_now_add=True, db_index=True)
     supplier = models.ForeignKey("Supplier")
     des = models.CharField(verbose_name=u"备注", max_length=256)
-
     img = models.CharField(verbose_name=u"图片", max_length=128, null=True)
 
     price = models.DecimalField(verbose_name=u"毛重成本价", max_digits=10, decimal_places=2, default=0)
     sale_price = models.DecimalField(verbose_name=u"售价", max_digits=10, decimal_places=2, default=0)
-
     net_weight_rate = models.DecimalField(verbose_name=u"净重比", max_digits=6, decimal_places=3, default=1)
     flesh_rate = models.DecimalField(verbose_name=u"果肉率", max_digits=6, decimal_places=3, default=1)
     gross_profit_rate = models.DecimalField(verbose_name=u"毛利率", max_digits=6, decimal_places=3, default=0.6)
@@ -209,7 +206,7 @@ class Item(models.Model):
         '''
         获取卖价
         '''
-        return self.net_weight_price() / decimal.Decimal(self.gross_profit_rate)
+        return self.net_weight_price() / (1 - decimal.Decimal(self.gross_profit_rate))
     def get_smart_sale_price(self):
         return round(self.get_sale_price(), 1)
 

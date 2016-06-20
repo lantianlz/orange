@@ -15,7 +15,7 @@ from www.company.interface import ItemBase
 
 @verify_permission('')
 def fruit_price(request, template_name='pc/admin/fruit_price.html'):
-    items = ItemBase().get_items_by_type(1, [1,2]).order_by('-update_time')
+    items = ItemBase().get_items_by_type(1, [1]).order_by('-update_time')
 
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
 

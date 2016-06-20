@@ -90,7 +90,7 @@ $(document).ready(function(){
                 1
             ));
             salePrice.text($.Global.Utils.formatPrice(
-                parseFloat(netWeightPrice.text()) / parseFloat(grossProfitRate.val()),
+                parseFloat(netWeightPrice.text()) / (1 - parseFloat(grossProfitRate.val())),
                 1
             ));
             washFloatingPrice.text($.Global.Utils.formatPrice(
