@@ -645,6 +645,7 @@ if (!String.format) {
 
         // 添加项目
         addItem: function(_data){
+            
             var data = $.extend({
                     value: '',
                     data: '0',
