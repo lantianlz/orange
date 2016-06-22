@@ -167,33 +167,33 @@ body{
     padding-bottom: 12px;
     padding-top: 12px;
 }
-.sub-nav>.list-group-item:hover{
+.sub-nav>.list-group-item:hover,
+.sub-nav>.list-group-item:focus{
     background-color: #3E445B;
     border-color: #363B4E;
     border-left: 3px solid #1DABD9;
-}
-.sub-nav>.list-group-item:hover>a{
     color: #5DF4B1;
 }
-.sub-nav>.list-group-item:hover>a>i{
+.sub-nav>.list-group-item:hover>i,
+.sub-nav>.list-group-item:focus>i{
     background-color: #5DF4B1;
 }
-.sub-nav>.list-group-item.active>a{
+.sub-nav>.list-group-item.active{
     color: #5DF4B1;
 }
-.sub-nav>.list-group-item.active>a>i{
+.sub-nav>.list-group-item.active>i{
     background-color: #5DF4B1;
 }
-.sub-nav>.list-group-item>a{
+.sub-nav>.list-group-item{
     color: #A9C2DD;
     font-size: 13px;
     transition: all 0.3s;
 }
-.sub-nav>.list-group-item>a:hover,
-.sub-nav>.list-group-item>a:focus{
+.sub-nav>.list-group-item:hover,
+.sub-nav>.list-group-item:focus{
     text-decoration: none;
 }
-.sub-nav>.list-group-item>a>i{
+.sub-nav>.list-group-item>i{
     position: absolute;
     left: 73px;
     top: 17px;
@@ -332,7 +332,7 @@ $(document).ready(function(){
 
     });
     $('.sub-nav>.list-group-item').on('click', function(e){
-        $(this).children()[0].click();
+        // $(this).children()[0].click();
     });
 
     $('.sub-nav>.list-group-item.active').parents('li').addClass('active');
@@ -391,85 +391,85 @@ $(document).ready(function(){
             <li class="list-group-item">
                 <a><i class="fa fa-user pr-3" style="left: 33px;"></i>用户管理</a>
                 <ul class="list-group sub-nav">
-                    <li class="list-group-item {% if '/admin/user' = request.path %}active{% endif %}">
-                        <a href="/admin/user"><i class="point"></i>注册用户管理</a>
-                    </li>
-                    <li class="list-group-item {% if '/admin/sale_man' = request.path %}active{% endif %}">
-                        <a href="/admin/sale_man"><i class="point"></i>销售人员管理</a>
-                    </li>
+                    <a href="/admin/user" class="list-group-item {% if '/admin/user' = request.path %}active{% endif %}">
+                        <i class="point"></i>注册用户管理
+                    </a>
+                    <a href="/admin/sale_man" class="list-group-item {% if '/admin/sale_man' = request.path %}active{% endif %}">
+                        <i class="point"></i>销售人员管理
+                    </a>
                 </ul>
             </li>
             <li class="list-group-item">
                 <a><i class="fa fa-building pr-3" style="left: 33px;"></i>公司管理</a>
                 <ul class="list-group sub-nav">
-                    <li class="list-group-item {% if '/admin/company' = request.path %}active{% endif %}">
-                        <a href="/admin/company"><i class="point"></i>公司信息管理</a>
-                    </li>
-                    <li class="list-group-item {% if '/company_manager' in request.path %}active{% endif %}">
-                        <a href="/admin/company_manager"><i class="point"></i>公司管理员管理</a>
-                    </li>
-                    <li class="list-group-item {% if '/cash_account' in request.path %}active{% endif %}">
-                        <a href="/admin/cash_account"><i class="point"></i>公司现金账户</a>
-                    </li>
-                    <li class="list-group-item {% if '/cash_record' in request.path %}active{% endif %}">
-                        <a href="/admin/cash_record"><i class="point"></i>公司现金流水</a>
-                    </li>
+                    <a href="/admin/company" class="list-group-item {% if '/admin/company' = request.path %}active{% endif %}">
+                        <i class="point"></i>公司信息管理
+                    </a>
+                    <a href="/admin/company_manager" class="list-group-item {% if '/company_manager' in request.path %}active{% endif %}">
+                        <i class="point"></i>公司管理员管理
+                    </a>
+                    <a href="/admin/cash_account" class="list-group-item {% if '/cash_account' in request.path %}active{% endif %}">
+                        <i class="point"></i>公司现金账户
+                    </a>
+                    <a href="/admin/cash_record" class="list-group-item {% if '/cash_record' in request.path %}active{% endif %}">
+                        <i class="point"></i>公司现金流水
+                    </a>
                 </ul>
             </li>
             <li class="list-group-item">
                 <a><i class="fa fa-truck pr-3"></i>供货商管理</a>
                 <ul class="list-group sub-nav">
-                    <li class="list-group-item {% if '/admin/supplier' = request.path %}active{% endif %}">
-                        <a href="/admin/supplier"><i class="point"></i>供货商信息管理</a>
-                    </li>
-                    <li class="list-group-item {% if '/supplier_cash_account' in request.path %}active{% endif %}">
-                        <a href="/admin/supplier_cash_account"><i class="point"></i>供货商现金账户</a>
-                    </li>
-                    <li class="list-group-item {% if '/supplier_cash_record' in request.path %}active{% endif %}">
-                        <a href="/admin/supplier_cash_record"><i class="point"></i>供货商现金流水</a>
-                    </li>
+                    <a href="/admin/supplier" class="list-group-item {% if '/admin/supplier' = request.path %}active{% endif %}">
+                        <i class="point"></i>供货商信息管理
+                    </a>
+                    <a href="/admin/supplier_cash_account" class="list-group-item {% if '/supplier_cash_account' in request.path %}active{% endif %}">
+                        <i class="point"></i>供货商现金账户
+                    </a>
+                    <a href="/admin/supplier_cash_record" class="list-group-item {% if '/supplier_cash_record' in request.path %}active{% endif %}">
+                        <i class="point"></i>供货商现金流水
+                    </a>
                 </ul>
             </li>
             <li class="list-group-item">
                 <a><i class="fa fa-archive pr-3"></i>产品管理</a>
                 <ul class="list-group sub-nav">
-                    <li class="list-group-item {% if '/item' in request.path %}active{% endif %}">
-                        <a href="/admin/item"><i class="point"></i>茶点产品管理</a>
-                    </li>
-                    <li class="list-group-item {% if '/meal' in request.path %}active{% endif %}">
-                        <a href="/admin/meal"><i class="point"></i>套餐管理</a>
-                    </li>
-                    <li class="list-group-item {% if '/fruit_price' in request.path %}active{% endif %}">
-                        <a href="/admin/fruit_price"><i class="point"></i>水果价格管理</a>
-                    </li>
-                    <li class="list-group-item">
-                        <a href="/fruit_price" target="_blank"><i class="point"></i>水果报价</a>
-                    </li>
+                    <a href="/admin/item" class="list-group-item {% if '/item' in request.path %}active{% endif %}">
+                        <i class="point"></i>茶点产品管理
+                    </a>
+                    <a href="/admin/meal" class="list-group-item {% if '/meal' in request.path %}active{% endif %}">
+                        <i class="point"></i>套餐管理
+                    </a>
+                    <a href="/admin/fruit_price" class="list-group-item {% if '/fruit_price' in request.path %}active{% endif %}">
+                        <i class="point"></i>水果价格管理
+                    </a>
+                    <a class="list-group-item" href="/fruit_price" target="_blank">
+                        <i class="point"></i>水果报价
+                    </a>
                 </ul>
             </li>
             <li class="list-group-item">
                 <a><i class="fa fa-list-alt pr-3"></i>订单管理</a>
                 <ul class="list-group sub-nav">
-                    <li class="list-group-item {% if '/create_order' in request.path %}active{% endif %}">
-                        <a href="/admin/create_order"><i class="point"></i>生成订单</a>
-                    </li>
-                    <li class="list-group-item {% if '/order' in request.path %}active{% endif %}">
-                        <a href="/admin/order"><i class="point"></i>订单列表</a>
-                    </li>
+                    <a href="/admin/create_order" class="list-group-item {% if '/create_order' in request.path %}active{% endif %}">
+                        <i class="point"></i>生成订单
+                    </a>
+                    <a href="/admin/order" class="list-group-item {% if '/order' in request.path %}active{% endif %}">
+                        <i class="point"></i>订单列表
+                    </a>
                 </ul>
             </li>
             <li class="list-group-item">
                 <a><i class="fa fa-shopping-cart pr-3"></i>采购管理</a>
                 <ul class="list-group sub-nav">
-                    <li class="list-group-item {% if '/admin/purchase' == request.path %}active{% endif %}">
-                        <a href="/admin/purchase"><i class="point"></i>采购汇总</a>
-                    </li>
-                    <li class="list-group-item {% if '/purchase_record' in request.path %}active{% endif %}">
-                        <a href="/admin/purchase_record"><i class="point"></i>采购流水</a>
-                    </li>
-                    <li class="list-group-item {% if '/purchase_statement' in request.path %}active{% endif %}">
-                        <a href="/admin/purchase_statement"><i class="point"></i>采购对账</a>
-                    </li>
+                    <a href="/admin/purchase" class="list-group-item {% if '/admin/purchase' == request.path %}active{% endif %}">
+                        <i class="point"></i>采购汇总
+                    </a>
+                    <a  href="/admin/purchase_record" class="list-group-item {% if '/purchase_record' in request.path %}active{% endif %}">
+                        <i class="point"></i>采购流水
+                    </a>
+                    <a href="/admin/purchase_statement" class="list-group-item {% if '/purchase_statement' in request.path %}active{% endif %}">
+                        <i class="point"></i>采购对账
+                    </a>
                 </ul>
             </li>
             <li class="list-group-item {% if '/booking' in request.path %}active{% endif %}">
@@ -478,85 +478,85 @@ $(document).ready(function(){
             <li class="list-group-item">
                 <a><i class="fa fa-credit-card pr-3"></i>发票管理</a>
                 <ul class="list-group sub-nav">
-                    <li class="list-group-item {% if '/admin/invoice_record' == request.path %}active{% endif %}">
-                        <a href="/admin/invoice_record"><i class="point"></i>发票列表</a>
-                    </li>
-                    <li class="list-group-item {% if '/admin/invoice' == request.path %}active{% endif %}">
-                        <a href="/admin/invoice"><i class="point"></i>发票信息管理</a>
-                    </li>
-                    <li class="list-group-item {% if '/invoice_statement' in request.path %}active{% endif %}">
-                        <a href="/admin/invoice_statement"><i class="point"></i>发票对账</a>
-                    </li>
+                    <a href="/admin/invoice_record" class="list-group-item {% if '/admin/invoice_record' == request.path %}active{% endif %}">
+                        <i class="point"></i>发票列表
+                    </a>
+                    <a href="/admin/invoice" class="list-group-item {% if '/admin/invoice' == request.path %}active{% endif %}">
+                        <i class="point"></i>发票信息管理
+                    </a>
+                    <a href="/admin/invoice_statement" class="list-group-item {% if '/invoice_statement' in request.path %}active{% endif %}">
+                        <i class="point"></i>发票对账
+                    </a>
                 </ul>
             </li>
             <li class="list-group-item">
                 <a><i class="fa fa-cubes pr-3"></i>库存管理</a>
                 <ul class="list-group sub-nav">
-                    <li class="list-group-item {% if '/admin/inventory' == request.path %}active{% endif %}">
-                        <a href="/admin/inventory"><i class="point"></i>库存产品列表</a>
-                    </li>
-                    <li class="list-group-item {% if '/admin/inventory_record' == request.path %}active{% endif %}">
-                        <a href="/admin/inventory_record"><i class="point"></i>产品出入库记录</a>
-                    </li>
-                    <li class="list-group-item {% if '/inventory_to_item' in request.path %}active{% endif %}">
-                        <a href="/admin/inventory_to_item"><i class="point"></i>库存产品关联</a>
-                    </li>
+                    <a href="/admin/inventory" class="list-group-item {% if '/admin/inventory' == request.path %}active{% endif %}">
+                        <i class="point"></i>库存产品列表
+                    </a>
+                    <a href="/admin/inventory_record" class="list-group-item {% if '/admin/inventory_record' == request.path %}active{% endif %}">
+                        <i class="point"></i>产品出入库记录
+                    </a>
+                    <a href="/admin/inventory_to_item" class="list-group-item {% if '/inventory_to_item' in request.path %}active{% endif %}">
+                        <i class="point"></i>库存产品关联
+                    </a>
                 </ul>
             </li>
             <li class="list-group-item">
                 <a><i class="fa fa-clock-o pr-3" style="font-size: 21px; top: 13px"></i>兼职管理</a>
                 <ul class="list-group sub-nav">
-                    <li class="list-group-item {% if '/admin/parttime_person' == request.path %}active{% endif %}">
-                        <a href="/admin/parttime_person"><i class="point"></i>兼职人员管理</a>
-                    </li>
-                    <li class="list-group-item {% if '/admin/parttime_record' == request.path %}active{% endif %}">
-                        <a href="/admin/parttime_record"><i class="point"></i>兼职工作记录</a>
-                    </li>
+                    <a href="/admin/parttime_person" class="list-group-item {% if '/admin/parttime_person' == request.path %}active{% endif %}">
+                        <i class="point"></i>兼职人员管理
+                    </a>
+                    <a href="/admin/parttime_record" class="list-group-item {% if '/admin/parttime_record' == request.path %}active{% endif %}">
+                        <i class="point"></i>兼职工作记录
+                    </a>
                 </ul>
             </li>
             <li class="list-group-item">
                 <a><i class="fa fa-bar-chart pr-3"></i>统计管理</a>
                 <ul class="list-group sub-nav">
-                    <li class="list-group-item {% if '/admin/statistics_summary' == request.path %}active{% endif %}">
-                        <a href="/admin/statistics_summary"><i class="point"></i>综合统计</a>
-                    </li>
-                    <li class="list-group-item {% if '/admin/statistics_orders' == request.path %}active{% endif %}">
-                        <a href="/admin/statistics_orders"><i class="point"></i>订单统计</a>
-                    </li>
-                    <li class="list-group-item {% if '/admin/statistics_order_cost' == request.path %}active{% endif %}">
-                        <a href="/admin/statistics_order_cost"><i class="point"></i>成本统计</a>
-                    </li>
-                    <li class="list-group-item {% if '/admin/statistics_sale_top' == request.path %}active{% endif %}">
-                        <a href="/admin/statistics_sale_top"><i class="point"></i>销售排行</a>
-                    </li>
-                    <li class="list-group-item {% if '/admin/statistics_commission' == request.path %}active{% endif %}">
-                        <a href="/admin/statistics_commission"><i class="point"></i>邀请人返佣</a>
-                    </li>
+                    <a href="/admin/statistics_summary" class="list-group-item {% if '/admin/statistics_summary' == request.path %}active{% endif %}">
+                        <i class="point"></i>综合统计
+                    </a>
+                    <a href="/admin/statistics_orders" class="list-group-item {% if '/admin/statistics_orders' == request.path %}active{% endif %}">
+                        <i class="point"></i>订单统计
+                    </a>
+                    <a href="/admin/statistics_order_cost" class="list-group-item {% if '/admin/statistics_order_cost' == request.path %}active{% endif %}">
+                        <i class="point"></i>成本统计
+                    </a>
+                    <a href="/admin/statistics_sale_top" class="list-group-item {% if '/admin/statistics_sale_top' == request.path %}active{% endif %}">
+                        <i class="point"></i>销售排行
+                    </a>
+                    <a href="/admin/statistics_commission" class="list-group-item {% if '/admin/statistics_commission' == request.path %}active{% endif %}">
+                        <i class="point"></i>邀请人返佣
+                    </a>
                 </ul>
             </li>
             <li class="list-group-item">
                 <a><i class="fa fa-map-o pr-3"></i>城市区域管理</a>
                 <ul class="list-group sub-nav">
-                    <li class="list-group-item {% if '/city' in request.path %}active{% endif %}">
-                        <a href="/admin/city"><i class="point"></i>城市管理</a>
-                    </li>
-                    <li class="list-group-item {% if '/district' in request.path %}active{% endif %}">
-                        <a href="/admin/district"><i class="point"></i>区管理</a>
-                    </li>
+                    <a href="/admin/city" class="list-group-item {% if '/city' in request.path %}active{% endif %}">
+                        <i class="point"></i>城市管理
+                    </a>
+                    <a href="/admin/district" class="list-group-item {% if '/district' in request.path %}active{% endif %}">
+                        <i class="point"></i>区管理
+                    </a>
                 </ul>
             </li>
             <li class="list-group-item">
                 <a><i class="fa fa-cogs pr-3"></i>系统设置</a>
                 <ul class="list-group sub-nav">
-                    <li class="list-group-item {% if '/caches' in request.path %}active{% endif %}">
-                        <a href="/admin/caches"><i class="point"></i>缓存管理</a>
-                    </li>
-                    <li class="list-group-item {% if '/sensitive_operation_log' in request.path %}active{% endif %}">
-                        <a href="/admin/sensitive_operation_log"><i class="point"></i>敏感操作日志管理</a>
-                    </li>
-                    <li class="list-group-item {% if '/permission' in request.path %}active{% endif %}">
-                        <a href="/admin/permission"><i class="point"></i>权限管理</a>
-                    </li>
+                    <a href="/admin/caches" class="list-group-item {% if '/caches' in request.path %}active{% endif %}">
+                        <i class="point"></i>缓存管理
+                    </a>
+                    <a href="/admin/sensitive_operation_log" class="list-group-item {% if '/sensitive_operation_log' in request.path %}active{% endif %}">
+                        <i class="point"></i>敏感操作日志管理
+                    </a>
+                    <a href="/admin/permission" class="list-group-item {% if '/permission' in request.path %}active{% endif %}">
+                        <i class="point"></i>权限管理
+                    </a>
                 </ul>
             </li>
         </ul>
