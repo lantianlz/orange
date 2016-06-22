@@ -172,7 +172,6 @@ class Item(models.Model):
     gross_profit_rate = models.DecimalField(verbose_name=u"毛利率", max_digits=6, decimal_places=3, default=0.6)
     wash_floating_rate = models.DecimalField(verbose_name=u"洗切上浮比", max_digits=6, decimal_places=3, default=1.15)
     update_time = models.DateTimeField(verbose_name=u"最后更新时间", auto_now=True, db_index=True)
-    # note = models.CharField(verbose_name=u"规格", max_length=256, null=True, default="")
 
     def get_img(self):
         '''
@@ -181,7 +180,10 @@ class Item(models.Model):
         return self.img if self.img else '%simg/logo.png' % settings.MEDIA_URL
 
     def smart_des(self):
-        return ('(%s)' % self.des) if self.des else ''
+        if self.item_type != 1:
+            return ('(%s)' % self.des) if self.des else ''
+        else:
+            return ''
 
     def smart_price(self):
         return round(self.price, 1)

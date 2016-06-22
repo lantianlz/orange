@@ -76,7 +76,7 @@
                             <img src="{{ item.get_img }}" class="w250 big-img" />
                         </td>
                         <td>{{ item.name }}</td>
-                        <td class="hidden-xs">{{ item.smart_des }}</td>
+                        <td class="hidden-xs">{% if item.des %}{{item.des}}{% else %}{% endif %}</td>
                         <td>{{ item.get_spec_display }}</td>
                         <td class="fb">{{ item.get_smart_sale_price }}</td>
                         <td>{{ item.smart_wash_floating_price }}</td>

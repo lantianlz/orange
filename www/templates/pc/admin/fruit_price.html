@@ -48,6 +48,11 @@ $(document).ready(function(){
                 washFloatingRate = parent.find('.wash_floating_rate'),
                 washFloatingPrice = parent.find('.wash_floating_price');
 
+            // 如果数值没变不要触发后台
+            if(target.data('v') == target.val()){
+                return;
+            }
+
             ajaxSend(
                 "/admin/fruit_price/modify_fruit_price", 
                 {
@@ -143,7 +148,22 @@ $(document).ready(function(){
         update_price($(this));
     });
 
-
+    //
+    $('.price').on('focus', function(){
+        $(this).data('v', $(this).val());
+    });
+    $('.net_weight_rate').on('focus', function(){
+        $(this).data('v', $(this).val());
+    });
+    $('.flesh_rate').on('focus', function(){
+        $(this).data('v', $(this).val());
+    });
+    $('.gross_profit_rate').on('focus', function(){
+        $(this).data('v', $(this).val());
+    });
+    $('.wash_floating_rate').on('focus', function(){
+        $(this).data('v', $(this).val());
+    });
 })
 </script>
 {% endblock %}
