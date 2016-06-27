@@ -4,7 +4,7 @@ import redis
 from cPickle import dumps, loads
 
 
-CACHE_WORKER = ('cache0', 6379, 2, 'worker')
+CACHE_WORKER = ('cache0', 6379, 1, 'worker')
 CACHE_TMP = ('cache0', 6379, 10, 'tmp')
 CACHE_STATIC = ('cache0', 6379, 11, 'static')
 CACHE_USER = ('cache0', 6379, 12, 'user')
