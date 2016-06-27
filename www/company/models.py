@@ -186,7 +186,7 @@ class Item(models.Model):
             return ''
 
     def smart_price(self):
-        return round(self.price, 1)
+        return round(self.price, 2)
 
     def net_weight_price(self):
         '''
@@ -194,7 +194,7 @@ class Item(models.Model):
         '''
         return decimal.Decimal(self.price) / decimal.Decimal(self.net_weight_rate)
     def smart_net_weight_price(self):
-        return round(self.net_weight_price(), 1)
+        return round(self.net_weight_price(), 2)
 
     def flesh_price(self):
         '''
@@ -202,7 +202,7 @@ class Item(models.Model):
         '''
         return self.net_weight_price() / decimal.Decimal(self.flesh_rate)
     def smart_flesh_price(self):
-        return round(self.flesh_price(), 1)
+        return round(self.flesh_price(), 2)
 
     def get_sale_price(self):
         '''
@@ -210,7 +210,7 @@ class Item(models.Model):
         '''
         return self.net_weight_price() / (1 - decimal.Decimal(self.gross_profit_rate))
     def get_smart_sale_price(self):
-        return round(self.get_sale_price(), 1)
+        return round(self.get_sale_price(), 2)
 
     def wash_floating_price(self):
         '''
@@ -218,7 +218,7 @@ class Item(models.Model):
         '''
         return self.get_sale_price() * decimal.Decimal(self.wash_floating_rate)
     def smart_wash_floating_price(self):
-        return round(self.wash_floating_price(), 1)
+        return round(self.wash_floating_price(), 2)
 
     def last_update_days(self):
         '''

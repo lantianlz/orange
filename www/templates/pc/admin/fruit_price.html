@@ -88,19 +88,19 @@ $(document).ready(function(){
 
             netWeightPrice.text($.Global.Utils.formatPrice(
                 parseFloat(price) / parseFloat(netWeightRate.val()),
-                1
+                2
             ));
             fleshPrice.text($.Global.Utils.formatPrice(
                 parseFloat(netWeightPrice.text()) / parseFloat(fleshRate.val()),
-                1
+                2
             ));
             salePrice.text($.Global.Utils.formatPrice(
                 parseFloat(netWeightPrice.text()) / (1 - parseFloat(grossProfitRate.val())),
-                1
+                2
             ));
             washFloatingPrice.text($.Global.Utils.formatPrice(
                 parseFloat(salePrice.text()) * parseFloat(washFloatingRate.val()),
-                1
+                2
             ));
         };
 

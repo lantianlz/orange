@@ -923,6 +923,7 @@ class OrderBase(object):
         获取未完成的订单
         '''
         yesterday = datetime.datetime.now() - datetime.timedelta(days=1)
+        yesterday = datetime.datetime(yesterday.year, yesterday.month, yesterday.day, yesterday.hour, yesterday.minute, yesterday.second)
         return Order.objects.filter(state__in=[1,2], create_time__lt=yesterday)
 
 

@@ -44,7 +44,35 @@
 </style>
 {% endblock %}
 
-{% block js %}
+{% block base_js %}
+<script type="text/javascript">
+$(document).ready(function(){
+    var formatPrice = function(price, num){
+        var _num = num || 2;
+        return parseFloat(price).toFixed(_num);
+    };
+
+    var temp;
+
+    $.map($('.wash_floating_price'), function(per){
+        temp = $(per);
+
+        temp.text(formatPrice(
+            temp.text(),
+            1
+        ));
+    });
+    $.map($('.sale_price'), function(per){
+        temp = $(per);
+
+        temp.text(formatPrice(
+            temp.text(),
+            1
+        ));
+    });
+
+});
+</script>
 {% endblock %}
 
 {% block base_container %}
@@ -78,8 +106,8 @@
                         <td>{{ item.name }}</td>
                         <td class="hidden-xs">{% if item.des %}{{item.des}}{% else %}{% endif %}</td>
                         <td>{{ item.get_spec_display }}</td>
-                        <td class="fb">{{ item.get_smart_sale_price }}</td>
-                        <td>{{ item.smart_wash_floating_price }}</td>
+                        <td class="fb sale_price">{{ item.get_smart_sale_price }}</td>
+                        <td class="wash_floating_price">{{ item.smart_wash_floating_price }}</td>
                         <td class="hidden-xs">{{ item.update_time|date:'Y-m-d H:i' }}</td>
                     </tr>
                     {% endfor %}

@@ -63,7 +63,7 @@ $(document).ready(function(){
                     '<td class="hidden-xs">{5}</td>',
                     '<td>{6}</td>',
                 '</tr>'
-            ].join(''), '', code, name+(des?('('+des+')'):''), amount, specs[spec], types[itemType], supplierName))
+            ].join(''), '', code, name, amount, specs[spec], types[itemType], supplierName))
             .insertAfter($('#order_list .item_type_' + itemType));
 
             DATA[code] = orders;
