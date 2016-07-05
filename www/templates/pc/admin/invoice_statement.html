@@ -231,7 +231,7 @@ $(document).ready(function(){
         <td>
             <a href="#" data-company-name="<%= record.name %>" class="go-invoice-record"><%= record.invoiceAmount %></a>
         </td>
-        <td class="<% if(record.needNotice){ %>co-FF0000 fb fi<% } %>"><%= record.latestDate %></td>
+        <td class="<% if(record.needNotice && record.offset < 0){ %>co-FF0000 fb fi<% } %>"><%= record.latestDate %></td>
         <td><%= record.account %></td>
     </tr>
 <% }) %>
