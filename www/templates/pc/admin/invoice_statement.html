@@ -26,6 +26,7 @@ $(document).ready(function(){
             'account': 'account',
             'recharge': 'recharge',
             'offset': 'offset',
+            'latestDate': 'latest_date',
             'invoiceAmount': 'invoice_amount'
         },
 
@@ -202,6 +203,7 @@ $(document).ready(function(){
                     <th>差额</th>
                     <th>总充值流水</th>
                     <th>总开票金额</th>
+                    <th>最后开票日期</th>
                     <th>现金账户</th>
                 </tr>
             </thead>
@@ -228,6 +230,7 @@ $(document).ready(function(){
         <td>
             <a href="#" data-company-name="<%= record.name %>" class="go-invoice-record"><%= record.invoiceAmount %></a>
         </td>
+        <td><%= record.latestDate %></td>
         <td><%= record.account %></td>
     </tr>
 <% }) %>

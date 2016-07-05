@@ -6,7 +6,7 @@ import time
 import random
 import decimal
 from django.db import transaction
-from django.db.models import Sum, Count
+from django.db.models import Sum, Count, Max
 from django.utils.encoding import smart_unicode
 from django.conf import settings
 
@@ -1983,6 +1983,20 @@ class InvoiceRecordBase(object):
 
         return objs.values('company_id').annotate(invoice_amount=Sum('invoice_amount'))
 
+    def get_latest_invoice_group_by_company(self, company_name, start_date, end_date):
+        '''
+        根据公司分组获取最后开票日期
+        '''
+        objs = InvoiceRecord.objects.filter(
+            state__in=[1, 2],
+            create_time__range=(start_date, end_date)
+        )
+
+        if company_name:
+            objs = objs.filter(company__name__contains=company_name)
+
+        return objs.values('company_id').annotate(invoice_date=Max('invoice_date'))
+
     def send_invoice_notice(self, companys):
         # 发送催发票提醒
         from www.tasks import async_send_email
@@ -2000,7 +2014,11 @@ class InvoiceRecordBase(object):
         data = {}
 
         # 发票金额数据
-        invoice_record_data = InvoiceRecordBase().get_invoice_amount_group_by_company(company_name, start_date, end_date)
+        invoice_record_data = self.get_invoice_amount_group_by_company(company_name, start_date, end_date)
+
+        # 最后开票金额
+        latest_invoice_data = self.get_latest_invoice_group_by_company(company_name, start_date, end_date)
+        latest_invoice_dict = dict([[x['company_id'], x['invoice_date']] for x in latest_invoice_data])
 
         # 充值金额数据
         recharge_data = CashRecordBase().get_records_group_by_company(start_date, end_date, 0, 1)
@@ -2029,7 +2047,8 @@ class InvoiceRecordBase(object):
                 'recharge': recharge_dict.get(key, 0),
                 'invoice_amount': str(x['invoice_amount']),
                 'offset_abs': abs(float(recharge_dict.get(key, 0)) - float(x['invoice_amount'])),
-                'offset': float(recharge_dict.get(key, 0)) - float(x['invoice_amount'])
+                'offset': float(recharge_dict.get(key, 0)) - float(x['invoice_amount']),
+                'latest_date': str(latest_invoice_dict[key])
             }
 
         data = data.values()
