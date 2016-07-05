@@ -2048,7 +2048,8 @@ class InvoiceRecordBase(object):
                 'invoice_amount': str(x['invoice_amount']),
                 'offset_abs': abs(float(recharge_dict.get(key, 0)) - float(x['invoice_amount'])),
                 'offset': float(recharge_dict.get(key, 0)) - float(x['invoice_amount']),
-                'latest_date': str(latest_invoice_dict[key])
+                'latest_date': str(latest_invoice_dict[key]),
+                'need_notice': True if (datetime.datetime.now().date() - latest_invoice_dict[key]).days > 15 else False
             }
 
         data = data.values()

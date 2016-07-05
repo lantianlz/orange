@@ -27,7 +27,8 @@ $(document).ready(function(){
             'recharge': 'recharge',
             'offset': 'offset',
             'latestDate': 'latest_date',
-            'invoiceAmount': 'invoice_amount'
+            'invoiceAmount': 'invoice_amount',
+            'needNotice': 'need_notice'
         },
 
         search: function(start_date, end_date, name){
@@ -230,7 +231,7 @@ $(document).ready(function(){
         <td>
             <a href="#" data-company-name="<%= record.name %>" class="go-invoice-record"><%= record.invoiceAmount %></a>
         </td>
-        <td><%= record.latestDate %></td>
+        <td class="<% if(record.needNotice){ %>co-FF0000 fb fi<% } %>"><%= record.latestDate %></td>
         <td><%= record.account %></td>
     </tr>
 <% }) %>
