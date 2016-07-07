@@ -7,13 +7,20 @@
 .container{
     width: 900px;
 }
+.seal{
+    position: absolute;
+    bottom: 2px;
+    right: 25px;
+    z-index: 99;
+    width: 150px;
+}
 </style>
 {% endblock %}
 
 {% block base_container %}
 <div class="container pt-20">
     <div class="row">
-        <div class="col-md-12 f25 text-center">{{request.company.name}} {{start_date|date:"Y"}}年{{start_date|date:"m"}}月下午茶订单列表</div>
+        <div class="col-md-12 f25 text-center">{{request.company.name}} 下午茶订单列表</div>
     </div>
     <table class="table table-hover mt-20">
         <thead>
@@ -47,7 +54,7 @@
             {% endfor %}
         </tbody>
     </table>
-    <div class="row pt-30">
+    <div class="row pt-30 pr">
         <div class="col-md-12 text-right">
             <div class="col-md-12 text-right bdc-dddddd border-top-2 pb-10"></div>
             <span>订单时间：{{start_date|date:"Y-m-d"}} 至 {{end_date|date:"Y-m-d"}}</span>
@@ -56,6 +63,7 @@
         <div class="col-md-12 text-right pt-10">
             提供方：三点十分
         </div>
+        <img src="http://static.3-10.cc/img/seal.png" class="seal">
     </div>
 </div>
 {% endblock %}
