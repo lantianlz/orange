@@ -728,6 +728,14 @@ class OrderBase(object):
         except Order.DoesNotExist:
             return ""
 
+    def get_order_by_order_no(self, order_no):
+        try:
+            ps = dict(order_no=order_no)
+
+            return Order.objects.get(**ps)
+        except Order.DoesNotExist:
+            return ""
+
     def distribute_order(self, order_id, distribute_operator):
         '''
         配送订单

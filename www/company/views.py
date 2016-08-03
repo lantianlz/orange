@@ -330,3 +330,11 @@ def anonymous_fruit_price(request):
     today = datetime.datetime.now()
 
     return render_to_response('static_templates/fruit_price.html', locals(), context_instance=RequestContext(request))
+
+@member_required
+@company_manager_required_for_request
+def print_order(request, company_id, order_no, template_name='pc/admin/print_order.html'):
+
+    order = OrderBase().get_order_by_order_no(order_no)
+
+    return render_to_response(template_name, locals(), context_instance=RequestContext(request))

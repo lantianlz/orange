@@ -58,7 +58,7 @@ $(document).ready(function(){
     };
 
     $('.show-detail').on('click', function(){
-        showOrderDetail($(this).data('order_id'), $(this).data('date'), $(this).data('price'));
+        // showOrderDetail($(this).data('order_id'), $(this).data('date'), $(this).data('price'));
     });
 
     $('.list-orders').on('click', function(){
@@ -117,7 +117,7 @@ $(document).ready(function(){
                 <tr>
                     <td>{{ order.num }}</td>
                     <td class="show-detail pointer" data-order_id="{{order.order_id}}" data-date="{{order.create_time}}" data-price="{{order.total_price}}" title="点击查看详情">
-                        <a>{{ order.order_no }}</a>
+                        <a target="_blank" href="/company/{{request.company.id}}/print_order/{{order.order_no}}">{{ order.order_no }}</a>
                     </td>
                     <td class="hidden-xs">{{ order.create_time }}</td>
                     <td class="hidden-xs">{{ order.distribute_operator_name }}</td>
