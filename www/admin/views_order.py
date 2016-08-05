@@ -303,7 +303,7 @@ def get_items_of_order(request):
 
         data.append({
             'item_id': i.item.id,
-            'name': i.item.name + (' (69003101001)' if show_code else ''),
+            'name': i.item.name + (' (%s)' % i.item.des if show_code else ''),
             'price': str(i.item.price),
             'net_weight_price': str(i.item.smart_net_weight_price()),
             'sale_price': str(i.item.get_smart_sale_price()),
