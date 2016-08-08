@@ -12,6 +12,8 @@ sys.path.extend([os.path.abspath(os.path.join(SITE_ROOT, '../')),
 os.environ['DJANGO_SETTINGS_MODULE'] = 'www.settings'
 
 from common.utils import send_email
+from www.weixin.interface import WeixinBase
+from www.account.interface import ExternalTokenBase
 
 def confirm_tomorrow_order():
 
