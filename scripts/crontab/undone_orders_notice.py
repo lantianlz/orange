@@ -33,6 +33,7 @@ def undone_orders_notice():
         persons.append('541798fc416311e5a8ba00163e001bb1') # 李聪
         persons.append('de918ec6dfb911e5bb1d00163e001bb1') # 刘磊
         persons.append('6ceca02e07ac11e69a9800163e001bb1') # 何翔
+        persons.append('cbd396fc589111e6bd8200163e001bb1') # 任吉尧
 
         for person in persons:
             to_user_openid = ExternalTokenBase().get_weixin_openid_by_user_id(person)
