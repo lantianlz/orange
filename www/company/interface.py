@@ -703,9 +703,7 @@ class OrderBase(object):
 
     def search_uncreate_orders_for_admin(self, start_date, end_date):
         # 查询出日期需要配送的套餐
-        objs = MealBase().get_all_meal(state=1).filter(
-            end_date__gt=end_date
-        )
+        objs = MealBase().get_all_meal(state=1)
         meal_ids = [x.id for x in objs]
 
         # 查询日期已经配送的订单
