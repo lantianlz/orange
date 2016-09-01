@@ -97,6 +97,7 @@ def format_order(objs, num):
             'confirm_operator_name': confirm_operator.nick if confirm_operator else '',
             'confirm_time': x.confirm_time.strftime('%Y-%m-%d %H:%M') if x.confirm_time else '',
             'total_price': str(x.total_price),
+            'person_count': x.person_count,
             'note': x.note,
             'is_test': x.is_test,
             'state': x.state,
