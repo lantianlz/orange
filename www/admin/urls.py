@@ -193,6 +193,7 @@ urlpatterns += patterns('www.admin.views_invoice',
 # 发票记录
 urlpatterns += patterns('www.admin.views_invoice_record',
 
+    url(r'^invoice_record/print_invoice_record$', 'print_invoice_record'),
     url(r'^invoice_record/modify_record$', 'modify_record'),
     url(r'^invoice_record/add_record$', 'add_record'),
     url(r'^invoice_record/get_record_by_id$', 'get_record_by_id'),

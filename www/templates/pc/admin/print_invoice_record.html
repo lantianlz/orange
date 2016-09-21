@@ -1,0 +1,48 @@
+{% extends "pc/base/base_company.html" %}
+
+{% block title %}发票列表{% endblock title %}
+
+{% block base_css %}
+<style type="text/css">
+@media (min-width: 768px){
+    .container{
+        width: 900px;
+    }
+
+    .form-inline .input-group>.form-control {
+        width: 110px;
+    }
+}
+</style>
+{% endblock %}
+
+{% block base_container %}
+<div class="container pt-20">
+    <table class="table table-hover mt-20">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>公司名称</th>
+                <th>发票金额</th>
+                <th>开票日期</th>
+                <th>开票内容</th>
+                <th>签收人</th>
+                <th>签收时间</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for obj in objs %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ obj.company.name }}</td>
+                <td>{{ obj.invoice_amount }}</td>
+                <td>{{ obj.invoice_date }}</td>
+                <td>{{ obj.content }}</td>
+                <td></td>
+                <td></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

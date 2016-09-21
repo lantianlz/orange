@@ -6,6 +6,13 @@
 {% block admin_title_m %}发票列表{% endblock %}
 
 {% block css %}
+<style type="text/css">
+@media (min-width: 768px){
+    .form-inline .input-group>.form-control {
+        width: 125px;
+    }
+}
+</style>
 {% endblock %}
 
 {% block javascript %}
@@ -141,7 +148,8 @@ $(document).ready(function(){
 
         events: {
             'click .search': 'search',
-            'click .pointer': 'modifyRecord'
+            'click .pointer': 'modifyRecord',
+            'click .print-record': 'printRecord'
         },
 
         // 渲染函数
@@ -194,7 +202,26 @@ $(document).ready(function(){
                 recordId = target.data('record_id');
 
             router.navigate('/modify/' + recordId, {trigger: true});
+        },
+
+        printRecord: function(){
+            var name = this.$('.name').val(),
+                startDate = this.$('#start_date_search').val(),
+                endDate = this.$('#end_date_search').val(),
+                state = this.$('.state').val(),
+                url = String.format(
+                    '/admin/invoice_record/print_invoice_record?name={0}&start_date={1}&end_date={2}&state={3}',
+                    name,
+                    startDate,
+                    endDate,
+                    state
+                );
+
+            window.open(url);
+
+
         }
+
     });
 
     // modifyView
@@ -534,6 +561,9 @@ $(document).ready(function(){
                 <span class="input-group-btn">
                     <button class="btn btn-default search bgc-eeeeee" type="submit">查询</button>
                 </span>
+            </div>
+            <div class="input-group input-group-sm pb-10">
+                <button class="btn btn-info print-record btn-sm" type="submit">打印发票列表</button>
             </div>
         </form>
         <table class="table table-hover">

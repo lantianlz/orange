@@ -147,4 +147,15 @@ def modify_record(request):
 
     return HttpResponseRedirect(url)
 
+@verify_permission('query_invoice_record')
+def print_invoice_record(request, template_name='pc/admin/print_invoice_record.html'):
+    name = request.REQUEST.get('name')
+    state = request.REQUEST.get('state')
+    state = None if state == "0" else state
+    start_date = request.REQUEST.get('start_date')
+    end_date = request.REQUEST.get('end_date')
+    start_date, end_date = utils.get_date_range(start_date, end_date)
 
+    objs, sum_price = InvoiceRecordBase().search_records_for_admin(name, state, start_date, end_date)
+
+    return render_to_response(template_name, locals(), context_instance=RequestContext(request))
