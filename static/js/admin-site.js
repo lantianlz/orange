@@ -775,7 +775,7 @@ if (!String.format) {
                     me.$('tbody').append(
                         me._itemTypeTemplate({'types': data})
                     );
-                    me._loadItems(me._items);
+                    // me._loadItems(me._items);
                 }
             );
         },
@@ -800,9 +800,7 @@ if (!String.format) {
             });
             
             me._setIndex();
-            setTimeout(function(){
-                me._hideItemType();
-            }, 100);
+            me._hideItemType();
             
         },
 
