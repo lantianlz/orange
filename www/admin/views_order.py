@@ -46,6 +46,7 @@ def format_order(objs, num, show_items=False):
 
         meal = MealBase().get_meal_by_id(x.meal_id)
         company = CompanyBase().get_company_by_id(x.company_id)
+        owner = UserBase().get_user_by_id(x.owner) if x.owner else None
         create_operator = UserBase().get_user_by_id(x.create_operator)
         distribute_operator = UserBase().get_user_by_id(x.distribute_operator) if x.distribute_operator else ''
         confirm_operator = UserBase().get_user_by_id(x.confirm_operator) if x.confirm_operator else ''
@@ -100,6 +101,8 @@ def format_order(objs, num, show_items=False):
             'rate': x.rate(),
             'is_test': x.is_test,
             'items': items,
+            'owner_id': owner.id if owner else '',
+            'owner_nick': owner.nick if owner else '',
             'state': x.state
         })
     
@@ -249,13 +252,14 @@ def modify_order(request):
     is_test = True if is_test == "1" else False
     note = request.POST.get('note')
     person_count = request.POST.get('person_count')
+    owner = request.POST.get('owner')
     
     # 套餐项目
     item_ids = request.POST.getlist('item-ids')
     item_amounts = request.POST.getlist('item-amounts')
 
     return OrderBase().modify_order(
-        order_id, _get_items(item_ids, item_amounts), total_price, note, is_test, person_count
+        order_id, _get_items(item_ids, item_amounts), total_price, note, is_test, person_count, owner
     )
 
 @verify_permission('add_order')
@@ -268,6 +272,7 @@ def add_order(request):
     note = request.POST.get('note')
     person_count = request.POST.get('person_count')
     create_operator = request.user.id
+    owner = request.POST.get('owner')
 
     # 套餐项目
     item_ids = request.POST.getlist('item-ids')
@@ -275,7 +280,7 @@ def add_order(request):
 
     flag, msg = OrderBase().add_order(
         meal_id, create_operator, total_price, 
-        _get_items(item_ids, item_amounts), person_count, is_test, note
+        _get_items(item_ids, item_amounts), person_count, owner, is_test, note
     )
 
     return flag, msg.id if flag == 0 else msg

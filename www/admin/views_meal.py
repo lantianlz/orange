@@ -9,6 +9,7 @@ from common import utils, page
 from misc.decorators import staff_required, common_ajax_response, verify_permission, member_required
 
 from www.company.interface import MealBase, CompanyBase, ItemBase, SupplierBase
+from www.account.interface import UserBase
 
 @verify_permission('')
 def meal(request, template_name='pc/admin/meal.html'):
@@ -35,6 +36,8 @@ def format_meal(objs, num, show_items=False):
         num += 1
 
         company = CompanyBase().get_company_by_id(x.company_id)
+        owner = UserBase().get_user_by_id(x.company.sale_by) if x.company.sale_by else None
+        
         items = []
         # 显示子项
         if show_items:
@@ -60,6 +63,8 @@ def format_meal(objs, num, show_items=False):
             'meal_id': x.id,
             'company_id': company.id if company else '',
             'company_name': u'%s [%s人]' % (company.name, company.person_count) if company else '',
+            'owner_id': owner.id if owner else '',
+            'owner_nick': owner.nick if owner else '',
             'person_count': company.person_count,
             'name': x.name,
             'des': x.des,

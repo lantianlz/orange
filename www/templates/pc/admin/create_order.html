@@ -51,6 +51,8 @@ $(document).ready(function(){
             'cycle': 'cycle',
             'tType': 't_type',
             'needNotice': 'need_notice',
+            'owner_id': 'owner_id',
+            'owner_nick': 'owner_nick',
             'state': 'state'
         },
 
@@ -187,6 +189,24 @@ $(document).ready(function(){
             }
         },
 
+        ownerTextBox: null,
+        initOwnerTextBox: function(name, value){
+            var me = this;
+
+            this.ownerTextBox = $.Global.TextboxList.create('#owner_add', {
+                max: 1,
+                placeholder: '选择归属人',
+                url: '/admin/user/get_user_by_nick',
+                param: 'nick',
+                loadPlaceholder: '正在加载...'
+            });
+
+            if(value){
+                this.ownerTextBox.add(name, value);
+            }
+            
+        },
+
         // 加载套餐下的项目
         loadMealItems: function(meal_id){
             
@@ -202,6 +222,10 @@ $(document).ready(function(){
                 // 计算毛利
                 me.itemsView.totalSalePrice = parseFloat(me.$('.total-price').val());
                 me.itemsView.calculatePrice();
+
+                // 初始化归属人
+                // me.initOwnerTextBox(data.owner_nick, data.owner_id);
+                me.ownerTextBox.add(data.owner_nick, data.owner_id);
             });
         },
 
@@ -232,6 +256,7 @@ $(document).ready(function(){
             $('#add_order_modal').modal({'show': true, 'backdrop': 'static'});
 
             me.initMealTextBox(mealName, mealId);
+            me.initOwnerTextBox();
             // me.initOrderItems();
             
         },
@@ -419,7 +444,7 @@ $(document).ready(function(){
                             <textarea name="note" rows="6" class="form-control" placeholder=""></textarea>
                         </div>
                     </div>
-                    <div class="form-group pt-20 pb-20 mb-0">
+                    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
                         <label class="col-sm-2 control-label">是否试吃</label>
                         <div class="col-sm-10">
                             <label class="radio-inline">
@@ -428,6 +453,12 @@ $(document).ready(function(){
                             <label class="radio-inline">
                                 <input type="radio" name="is_test" value="1"> 是
                             </label>
+                        </div>
+                    </div>
+                    <div class="form-group pt-20 pb-20 mb-0">
+                        <label class="col-sm-2 control-label">归属人</label>
+                        <div class="col-sm-5">
+                            <input type="text" required id="owner_add" class="form-control" name='owner' value=''>
                         </div>
                     </div>
                 </form>

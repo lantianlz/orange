@@ -93,6 +93,8 @@ $(document).ready(function(){
             'rate': 'rate',
             'isTest': 'is_test',
             'items': 'items',
+            'owner_id': 'owner_id',
+            'owner_nick': 'owner_nick',
             'state': 'state'
         },
 
@@ -347,6 +349,24 @@ $(document).ready(function(){
             $('.orange-nav-pills a[href="#modify_order"]').tab('show');
         },
 
+        ownerTextBox: null,
+        initOwnerTextBox: function(name, value){
+            var me = this;
+
+            this.ownerTextBox = $.Global.TextboxList.create('#owner_modify', {
+                max: 1,
+                placeholder: '选择归属人',
+                url: '/admin/user/get_user_by_nick',
+                param: 'nick',
+                loadPlaceholder: '正在加载...'
+            });
+
+            if(value){
+                this.ownerTextBox.add(name, value);
+            }
+            
+        },
+
         initMealItems: function(items){
             this.itemsView = new $.Global.ComponentView.ItemsView({el: "#items_view_modify"});
             this.itemsView.render();
@@ -364,6 +384,7 @@ $(document).ready(function(){
             if(data.state==1){
                 this.$el.html(this.template(data));
                 this.initMealItems(data.items);
+                this.initOwnerTextBox(data.owner_nick, data.owner_id);
             } else {
                 this.$el.html(this.detail_template(data));
             }
@@ -871,6 +892,12 @@ $(document).ready(function(){
             <label class="radio-inline">
                 <input type="radio" name="is_test" value="1" <% if(isTest){ %>checked<% } %> > 是
             </label>
+        </div>
+    </div>
+    <div class="form-group pt-20 pb-20 mb-0">
+        <label class="col-sm-2 control-label">归属人</label>
+        <div class="col-sm-4">
+            <input type="text" required id="owner_modify" class="form-control" name='owner' value=''>
         </div>
     </div>
     <div class="form-group pt-20 pb-20 mb-0">
