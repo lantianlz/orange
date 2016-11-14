@@ -8,6 +8,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.conf import settings
+from django.db.models import Sum, Count, Max
 
 from www.misc.decorators import staff_required, common_ajax_response, verify_permission
 from www.misc import qiniu_client
@@ -15,7 +16,7 @@ from common import utils, page, cache
 from www.custom_tags.templatetags.custom_filters import str_display
 
 from www.account.interface import UserBase, ExternalTokenBase
-from www.company.interface import StatisticsBase, SaleManBase
+from www.company.interface import StatisticsBase, SaleManBase, OrderBase
 
 @verify_permission('')
 def statistics_order_cost(request, template_name='pc/admin/statistics_order_cost.html'):
@@ -52,6 +53,13 @@ def statistics_orders(request, template_name='pc/admin/statistics_orders.html'):
 
 @verify_permission('')
 def statistics_commission(request, template_name='pc/admin/statistics_commission.html'):
+    today = datetime.datetime.now()
+    start_date = today.replace(day=1).strftime('%Y-%m-%d')
+    end_date = today.strftime('%Y-%m-%d')
+    return render_to_response(template_name, locals(), context_instance=RequestContext(request))
+
+@verify_permission('')
+def statistics_percentage(request, template_name='pc/admin/statistics_percentage.html'):
     today = datetime.datetime.now()
     start_date = today.replace(day=1).strftime('%Y-%m-%d')
     end_date = today.strftime('%Y-%m-%d')
@@ -342,3 +350,59 @@ def get_statistics_order_cost_data(request):
         json.dumps(statistics_order_cost_data),
         mimetype='application/json'
     )
+
+@verify_permission('statistics_percentage')
+def get_statistics_percentage_data(request):
+
+    start_date = request.POST.get('start_date')
+    end_date = request.POST.get('end_date')
+    start_date, end_date = utils.get_date_range(start_date, end_date)
+    
+    statistics_percentage_data = StatisticsBase().statistics_percentage(start_date, end_date)
+
+    x_data = []
+    y_data = []
+    total = decimal.Decimal(0)
+    for x in statistics_percentage_data:
+        user = UserBase().get_user_by_id(x[0])
+        x_data.append(user.nick)
+        y_data.append({'value': str(x[1]), 'name': user.nick})
+        total += x[1]
+
+    table_data = []
+    rate = cache.Cache(cache.CACHE_STATIC).get('commission_rate') or 0.01
+    total_percentage = 0
+    total_order_count = 0
+    for x in statistics_percentage_data:
+        user = UserBase().get_user_by_id(x[0])
+        percent = round(x[1] / total * 100, 2)
+        percentage = total * decimal.Decimal(rate) * x[1] / total
+        total_percentage += percentage
+        total_order_count += x[2]
+
+        table_data.append({
+            'name': user.nick, 
+            'count': x[2], 
+            'total': str(x[1]), 
+            'percent': percent, 
+            'percentage': str(round(percentage, 2))
+        })
+    
+    sum_price = OrderBase().get_orders_by_date(start_date, end_date).aggregate(Sum('total_price'))['total_price__sum']
+
+    return HttpResponse(
+        json.dumps({
+            'x_data': x_data, 
+            'y_data': y_data, 
+            'table_data': table_data, 
+            'sum_price': str(sum_price),
+            'total_order_count': total_order_count,
+            'total': str(total),
+            'total_percentage': str(round(total_percentage, 2))
+        }),
+        mimetype='application/json'
+    )
+
+
+
+

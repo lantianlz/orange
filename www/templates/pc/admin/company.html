@@ -518,7 +518,7 @@ $(document).ready(function(){
                     <th class="hidden-xs">联系人</th>
                     <th class="hidden-xs">联系人手机</th>
                     <th class="hidden-xs">所属城市</th>
-                    <th class="hidden-xs">邀请人</th>
+                    <th class="hidden-xs">归属人</th>
                     <th class="hidden-xs">状态</th>
                 </tr>
             </thead>
@@ -551,7 +551,7 @@ $(document).ready(function(){
             <td class="hidden-xs"><%= company.staffName %></td>
             <td class="hidden-xs"><%= company.mobile %></td>
             <td class="hidden-xs"><%= company.cityName %></td>
-            <td class="hidden-xs"><%= company.inviteName %></td>
+            <td class="hidden-xs"><%= company.saleByNick %></td>
             <td class="hidden-xs">
                 <% if(company.state){ %>
                     <span class="fa fa-check co-3B99FC"></span>

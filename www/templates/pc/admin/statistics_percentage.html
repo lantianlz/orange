@@ -1,0 +1,179 @@
+{% extends "pc/admin/home.html" %}
+{% load custom_tags %}
+{% load custom_filters %}
+{% block title %}销售分布统计{% endblock %}
+{% block admin_title %}销售分布统计{% endblock %}
+{% block admin_title_m %}销售分布统计{% endblock %}
+
+{% block css %}
+<style type="text/css">
+</style>
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript" src="{{MEDIA_URL}}js/echarts/echarts.common.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+    $('#start_date_search').datetimepicker({
+        format: 'yyyy-mm-dd',
+        language: 'zh-CN',
+        minView: 2,
+        autoclose: true
+    });
+    $('#end_date_search').datetimepicker({
+        format: 'yyyy-mm-dd',
+        language: 'zh-CN',
+        minView: 2,
+        autoclose: true
+    });
+
+    var percentageChart = function(xData, yData){
+        var main = echarts.init(document.getElementById('percentage_chart'));
+
+        main.setOption({
+
+            title: {
+                text: '销售业绩占比',
+                left: 'center',
+                top: 20,
+                textStyle: {
+                    color: '#555'
+                }
+            },
+
+            tooltip : {
+                trigger: 'item',
+                formatter: "{a} <br/>{b}: {c}({d}%)"
+            },
+            legend: {
+                orient: 'vertical',
+                x: 'right',
+                data: xData
+            },
+            series: [{
+                name: '销售业绩占比',
+                type: 'pie',
+                radius : '55%',
+                center: ['50%', '50%'],
+                data: yData,
+                itemStyle: {
+                    emphasis: {
+                        shadowBlur: 10,
+                        shadowOffsetX: 0,
+                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                    }
+                },
+                itemStyle: {
+                    normal: {
+                        label:{ 
+                            show: true, 
+                            formatter: '{b}: {c} ({d}%)' 
+                        }
+                    },
+                    labelLine :{show:true}
+                }
+            }]
+        });
+
+    },
+    updateTable = function(tableData){
+        var html = [];
+        
+        $.map(tableData, function(per, i){
+            html.push([
+                '<tr class="pointer">',
+                    '<td>'+(i+1)+'</td>',
+                    '<td>'+per['name']+'</td>',
+                    '<td><a>'+per['count']+'</a></td>',
+                    '<td>'+per['total']+'</td>',
+                    '<td>'+per['percent']+'%</td>',
+                    '<td>'+per['percentage']+'</td>',
+                '</tr>'
+            ].join(''));
+        });
+
+        $('.table tbody').html(html.join(''));
+
+        // 页面跳转
+        $('.table .pointer').live('click', function(){
+            var start_date = $('#start_date_search').val(),
+                start_date = $.Global.Utils.formatDate(new Date(new Date(start_date) - 24*60*60*1000), 'y-m-d'),
+                end_date = $('#end_date_search').val(),
+                end_date = $.Global.Utils.formatDate(new Date(new Date(end_date) - 24*60*60*1000), 'y-m-d'),
+                name = $(this).children('td').eq(1).text();
+
+            window.open('/admin/order#search/'+start_date+'/'+end_date+'/-2//0/'+name+'/1');
+        });
+    };
+
+
+    $('.search').on('click', function(){
+
+        ajaxSend(
+            "/admin/statistics_percentage/get_statistics_percentage_data", 
+            {'start_date': $('#start_date_search').val(), 'end_date': $('#end_date_search').val()}, 
+            function(data){
+                
+                percentageChart(data.x_data, data.y_data);
+                updateTable(data.table_data);
+
+                $('.sum-price').text(data.sum_price);
+                $('.total-order-count').text(data.total_order_count);
+                $('.total').text(data.total);
+                $('.total-percentage').text(data.total_percentage);
+            }
+        );
+
+    });
+
+    $('.search').click();
+
+});
+</script>
+{% endblock %}
+
+{% block admin_main %}
+<div class="row pt-15">
+    <div class="col-md-12 pb-10">
+        <form action="." class="form-inline" onsubmit="javascript: return false;">
+            <div class="input-group input-group-sm pb-10">
+                <span class="input-group-addon">开始日期</span>
+                <input type="text" class="form-control" id="start_date_search" value="{{start_date}}"  />
+            </div>
+            <div class="input-group input-group-sm pb-10">
+                <span class="input-group-addon">结束日期</span>
+                <input type="text" class="form-control" id="end_date_search" value="{{end_date}}"  />
+                <span class="input-group-btn">
+                    <button class="btn btn-default search bgc-eeeeee" type="submit">查询</button>
+                </span>
+            </div>
+        </form>
+    </div>
+
+    <div class="col-md-12">
+        <div id="percentage_chart" style="height: 500px;"></div>
+    </div>
+    <div class="col-md-12">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>姓名</th>
+                    <th>订单数</th>
+                    <th>销售额</th>
+                    <th>占比</th>
+                    <th>提成</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+            </tbody>
+        </table>
+        <div class="text-right border-top-2 bdc-dddddd mt-25 pb-30">
+            订单总数 <span class="fb total-order-count">0</span> 次，
+            销售总金额 <span class="fb total">0.00</span> 元，
+            提成总金额 <span class="fb f18 co-1DABD9 total-percentage">0.00</span> 元
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -225,7 +225,10 @@ $(document).ready(function(){
 
                 // 初始化归属人
                 // me.initOwnerTextBox(data.owner_nick, data.owner_id);
-                me.ownerTextBox.add(data.owner_nick, data.owner_id);
+                if(data.owner_nick){
+                    me.ownerTextBox.add(data.owner_nick, data.owner_id);
+                }
+                
             });
         },
 

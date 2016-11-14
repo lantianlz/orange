@@ -10,7 +10,7 @@
 <style type="text/css">
 @media (min-width: 768px){
     .form-inline .input-group>.form-control {
-        width: 110px;
+        /*width: 110px;*/
     }
 
     .modal-dialog {
@@ -98,18 +98,19 @@ $(document).ready(function(){
             'state': 'state'
         },
 
-        search: function(startDate, endDate, state, company, isTest, pageIndex, callback){
+        search: function(startDate, endDate, state, company, isTest, owner, pageIndex, callback){
             var me = this,
                 startDate = startDate || '{{start_date}}',
                 endDate = endDate || '{{today_str}}',
                 state = state || '-2',
                 company = company || '',
                 isTest = isTest || '0',
+                owner = owner || '',
                 pageIndex = pageIndex || 1;
 
             ajaxSend(
                 "/admin/order/search", 
-                {'state': state, 'start_date': startDate, 'end_date': endDate, 'company': company, 'is_test': isTest, 'page_index': pageIndex}, 
+                {'state': state, 'start_date': startDate, 'end_date': endDate, 'company': company, 'is_test': isTest, 'owner': owner, 'page_index': pageIndex}, 
                 function(data){
                     
                     me.pageIndex = pageIndex;
@@ -119,6 +120,7 @@ $(document).ready(function(){
                     me.state = state;
                     me.company = company;
                     me.isTest = isTest;
+                    me.owner = owner;
                     me.sumPrice = data.sum_price;
 
                     me.reset($.Global.Utils.dictMapParse(data.data, me._modelMaps));
@@ -253,12 +255,13 @@ $(document).ready(function(){
                 this.collection.pageIndex||1, 
                 this.collection.pageCount, 
                 String.format(
-                    'search/{0}/{1}/{2}/{3}/{4}', 
+                    'search/{0}/{1}/{2}/{3}/{4}/{5}', 
                     this.collection.startDate, 
                     this.collection.endDate, 
                     this.collection.state, 
                     this.collection.company, 
-                    this.collection.isTest
+                    this.collection.isTest,
+                    this.collection.owner
                 )
             );
 
@@ -267,7 +270,8 @@ $(document).ready(function(){
             this.$('#end_date_search').val(this.collection.endDate);
             this.$('.state').val(this.collection.state);
             this.$('.company').val(this.collection.company);
-            this.$('.is-test').attr('checked', this.collection.isTest==1 ? true : false)
+            this.$('.is-test').attr('checked', this.collection.isTest==1 ? true : false);
+            this.$('.owner').val(this.collection.owner);
         },
 
         // 显示面板
@@ -281,7 +285,8 @@ $(document).ready(function(){
                 endDate: this.$('#end_date_search').val(),
                 state: this.$('.state').val(),
                 company: this.$('.company').val(),
-                isTest: this.$('.is-test').attr('checked') ? 1 : 0
+                isTest: this.$('.is-test').attr('checked') ? 1 : 0,
+                owner: this.$('.owner').val()
             }
         },
 
@@ -290,12 +295,13 @@ $(document).ready(function(){
 
             router.navigate(
                 String.format(
-                    '/search/{0}/{1}/{2}/{3}/{4}/1', 
+                    '/search/{0}/{1}/{2}/{3}/{4}/{5}/1', 
                     param.startDate, 
                     param.endDate, 
                     param.state, 
                     param.company, 
-                    param.isTest
+                    param.isTest,
+                    param.owner
                 ), 
                 {trigger: true}
             );
@@ -661,6 +667,7 @@ $(document).ready(function(){
                 param.state, 
                 param.company, 
                 param.isTest,
+                param.owner,
                 1,
                 function(data){
                     
@@ -677,14 +684,14 @@ $(document).ready(function(){
     var Router = Backbone.Router.extend({
         routes: {
             "":                             "search",
-            "search/(:startDate)/(:endDate)/(:state)/(:company)/(:isTest)/:pageIndex":    "search",
+            "search/(:startDate)/(:endDate)/(:state)/(:company)/(:isTest)/(:owner)/:pageIndex":    "search",
             "modify/:orderId":              "modify",
             "map_order":                          "map"
         },
 
         // 获取推荐用户
-        search: function(startDate, endDate, state, company, isTest ,pageIndex){
-            orders.search(startDate, endDate, state, company, isTest, pageIndex);
+        search: function(startDate, endDate, state, company, isTest, owner, pageIndex){
+            orders.search(startDate, endDate, state, company, isTest, owner, pageIndex);
         },
 
         modify: function(orderId){
@@ -772,15 +779,19 @@ $(document).ready(function(){
                 <span class="input-group-addon">公司名称</span>
                 <input type="text" class="form-control company" placeholder="" />
             </div>
+            <div class="input-group input-group-sm pb-10">
+                <span class="input-group-addon">订单归属人</span>
+                <input type="text" class="form-control owner" placeholder="" />
+            </div>
             <div class="input-group input-group-sm pb-10 pl-10 pr-10">
                 <div class="checkbox">
                     <label>
-                        <input class="is-test" type="checkbox"> 试吃
+                        <input class="is-test" type="checkbox"> 是否试吃
                     </label>
                 </div>
             </div>
             <div class="input-group input-group-sm pb-10">
-                <button class="btn btn-default btn-sm search bgc-eeeeee" type="submit">查询</button>
+                <button class="btn btn-default btn-sm search bgc-eeeeee" type="submit">查  询</button>
             </div>
             <div class="input-group input-group-sm pb-10">
                 <button class="btn btn-info btn-sm batch-print" type="submit">批量打印</button>
@@ -796,6 +807,7 @@ $(document).ready(function(){
                     <th class="hidden-xs">创建时间</th>
                     <th>价格</th>
                     <th>试吃</th>
+                    <th>归属人</th>
                     <th>状态</th>
                 </tr>
             </thead>
@@ -833,6 +845,9 @@ $(document).ready(function(){
             <% } else { %>
                 <!-- <span class="fa fa-times co-C33333"></span> -->
             <% } %>
+        </td>
+        <td>
+            <%= order.owner_nick %>
         </td>
         <td>
         {% for state in all_states %}
@@ -883,7 +898,7 @@ $(document).ready(function(){
             <textarea name="note" rows="6" class="form-control" placeholder=""><%= note %></textarea>
         </div>
     </div>
-    <div class="form-group pt-20 pb-20 mb-0">
+    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
         <label class="col-sm-2 control-label">是否试吃</label>
         <div class="col-sm-10">
             <label class="radio-inline">
@@ -894,7 +909,7 @@ $(document).ready(function(){
             </label>
         </div>
     </div>
-    <div class="form-group pt-20 pb-20 mb-0">
+    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
         <label class="col-sm-2 control-label">归属人</label>
         <div class="col-sm-4">
             <input type="text" required id="owner_modify" class="form-control" name='owner' value=''>
@@ -1002,6 +1017,12 @@ $(document).ready(function(){
         <label class="col-sm-2 control-label">备注</label>
         <div class="col-sm-5">
             <p class="form-control-static"><%= note %></p>
+        </div>
+    </div>
+    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+        <label class="col-sm-2 control-label">订单归属人</label>
+        <div class="col-sm-5">
+            <p class="form-control-static"><%= owner_nick %></p>
         </div>
     </div>
     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">

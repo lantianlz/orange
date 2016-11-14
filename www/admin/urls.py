@@ -261,6 +261,10 @@ urlpatterns += patterns('www.admin.views_parttime_record',
 
 # 统计管理
 urlpatterns += patterns('www.admin.views_statistics',
+    
+    url(r'^statistics_percentage$', 'statistics_percentage'),
+    url(r'^statistics_percentage/get_statistics_percentage_data$', 'get_statistics_percentage_data'),
+
     url(r'^statistics_commission$', 'statistics_commission'),
     url(r'^statistics_commission/get_statistics_commission_data$', 'get_statistics_commission_data'),
     

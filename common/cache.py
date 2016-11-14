@@ -23,9 +23,10 @@ CACHE_INDEX = {
     'CACHE_TIMELINE': [u'timeline库', CACHE_TIMELINE],
 }
 CACHE_KEYS_DESC = {
-    'media_version': u'静态文件版本号',
-    'weixin_access_token_for_orange': u'微信公众号token',
-    'statistics_chart': u'图表统计增量 [总用户，今日用户，今日订单，今日总额]',
+    'commission_rate': u'(无过期时间库)提成比例',
+    'media_version': u'(无过期时间库)静态文件版本号',
+    'weixin_access_token_for_orange': u'(临时库)微信公众号token',
+    'statistics_chart': u'(临时库)图表统计增量 [总用户，今日用户，今日订单，今日总额]',
 }
 
 

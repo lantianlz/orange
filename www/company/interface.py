@@ -686,7 +686,7 @@ class OrderBase(object):
 
         return objs
 
-    def search_orders_for_admin(self, start_date, end_date, state, company, is_test):
+    def search_orders_for_admin(self, start_date, end_date, state, company, is_test, owner=None):
         
         # 是否查询所有有效订单
         if state == -2:
@@ -698,6 +698,11 @@ class OrderBase(object):
 
         if is_test:
             objs = objs.filter(is_test=True)
+
+        if owner:
+            user = UserBase().get_user_by_nick(owner)
+            if user:
+                objs = objs.filter(owner=user.id)
 
         objs = objs.select_related('company').filter(
             create_time__range=(start_date, end_date),
@@ -909,7 +914,7 @@ class OrderBase(object):
             AND b.item_id = c.id 
             AND a.state = 3 
             AND a.company_id = e.id
-            AND d.name like %s 
+            AND d.name LIKE %s 
             AND a.confirm_time > %s 
             AND a.confirm_time < %s 
             GROUP BY c.supplier_id, a.order_no
@@ -937,6 +942,13 @@ class OrderBase(object):
         yesterday = datetime.datetime(yesterday.year, yesterday.month, yesterday.day, yesterday.hour, yesterday.minute, yesterday.second)
         return Order.objects.filter(state__in=[1,2], create_time__lt=yesterday)
 
+    def get_orders_by_date(self, start_date, end_date, state=3, is_test=False):
+        
+        return Order.objects.filter(
+            state=state, 
+            is_test=is_test,
+            confirm_time__range=(start_date, end_date)
+        )
 
 class BookingBase(object):
 
@@ -1888,6 +1900,26 @@ class StatisticsBase(object):
             'purchase': str(purchase),
             'balance': str(balance)
         }
+
+    def statistics_percentage(self, start_date, end_date):
+        '''
+        提成统计
+        查询月订单总金额,订单数 按归属人分组
+        数据格式：
+        ['归属人', 12345, 4], ['归属人', 12345, 4]
+        '''
+        sql = """
+            SELECT owner, SUM(total_price) AS total, COUNT(owner)
+            FROM company_order 
+            WHERE %s <= confirm_time 
+            AND confirm_time <= %s
+            AND state = 3 AND is_test = 0
+            AND owner <> ''
+            GROUP BY owner
+            ORDER BY total DESC
+        """
+
+        return raw_sql.exec_sql(sql, [start_date, end_date])
 
 
 class InvoiceRecordBase(object):

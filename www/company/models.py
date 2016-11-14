@@ -332,7 +332,7 @@ class Order(models.Model):
     is_test = models.BooleanField(verbose_name=u"是否试吃", default=False)
     cost_price = models.DecimalField(verbose_name=u"成本价", max_digits=10, decimal_places=2, default=0)
     state = models.IntegerField(verbose_name=u"状态", default=1, choices=state_choices, db_index=True)
-    owner = models.CharField(verbose_name=u"订单创建人", max_length=32, null=True)
+    owner = models.CharField(verbose_name=u"归属人", max_length=32, null=True)
 
     # 毛利
     def rate(self):

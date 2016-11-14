@@ -179,6 +179,7 @@ def search(request):
     company = request.POST.get('company')
     is_test = request.POST.get('is_test', '0')
     is_test = True if is_test == "1" else False
+    owner = request.POST.get('owner')
     
     page_index = int(request.REQUEST.get('page_index'))
     sum_price = 0
@@ -188,7 +189,7 @@ def search(request):
         end_date = datetime.datetime.strptime(end_date, '%Y-%m-%d %H:%M:%S')
         objs = OrderBase().search_uncreate_orders_for_admin(start_date, end_date)
     else:
-        objs, sum_price = OrderBase().search_orders_for_admin(start_date, end_date, state, company, is_test)
+        objs, sum_price = OrderBase().search_orders_for_admin(start_date, end_date, state, company, is_test, owner)
 
     page_objs = page.Cpt(objs, count=1000, page=page_index).info
 
