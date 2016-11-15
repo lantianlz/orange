@@ -950,6 +950,30 @@ class OrderBase(object):
             confirm_time__range=(start_date, end_date)
         )
 
+    def modify_owner(self, order_id, owner):
+
+        if not (order_id and owner):
+            return 99800, dict_err.get(99800)
+
+        order = OrderBase().get_order_by_id(order_id)
+        if not order:
+            return 21301, dict_err.get(21301)
+
+        user = UserBase().get_user_by_id(owner)
+        if not user:
+            return 21001, dict_err.get(21001)
+
+        try:
+            order.owner = owner
+            order.save()
+        except Exception, e:
+            debug.get_debug_detail_and_send_email(e)
+            return 99900, dict_err.get(99900)
+
+        return 0, dict_err.get(0)
+
+
+
 class BookingBase(object):
 
     def get_booking_by_id(self, booking_id):

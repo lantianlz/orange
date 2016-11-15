@@ -335,3 +335,13 @@ def order_state(request, template_name='pc/admin/order_state.html'):
     order = OrderBase().get_order_by_id(order_id)
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
 
+
+@verify_permission('modify_order')
+@common_ajax_response
+def modify_owner(request):
+    order_id = request.POST.get('order_id')
+    owner = request.POST.get('owner')
+
+    return OrderBase().modify_owner(order_id, owner)
+
+

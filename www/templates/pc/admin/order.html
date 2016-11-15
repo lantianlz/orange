@@ -225,6 +225,18 @@ $(document).ready(function(){
                     }
                 }
             );
+        },
+
+        modifyOwner: function(orderId, owner, callback){
+            ajaxSend(
+                "/admin/order/modify_owner", 
+                {'order_id': orderId, 'owner': owner},
+                function(response){
+                    if(callback){
+                        callback(response);
+                    }
+                }
+            );
         }
 
     });
@@ -348,7 +360,8 @@ $(document).ready(function(){
             'click .distribute': 'distributeOrder',
             'click .confirm': 'confirmOrder',
             'click .drop': 'dropOrder',
-            'input .order-total-price': 'calculateRate'
+            'input .order-total-price': 'calculateRate',
+            'click .modify-owner': 'modifyOwner'
         },
 
         showPanel: function(){
@@ -393,6 +406,7 @@ $(document).ready(function(){
                 this.initOwnerTextBox(data.owner_nick, data.owner_id);
             } else {
                 this.$el.html(this.detail_template(data));
+                this.initOwnerTextBox(data.owner_nick, data.owner_id);
             }
         },
 
@@ -490,6 +504,25 @@ $(document).ready(function(){
                     $.Global.Notice.ErrorTopNotice(data.errmsg);
                 }
             });
+        },
+
+        // 修改订单归属人
+        modifyOwner: function(sender){
+            var me = this,
+                orderId = me.$('form').data('order_id'),
+                temp = me.ownerTextBox.getValues();
+
+            if(temp){
+                me.collection.modifyOwner(orderId, temp[0], function(data){
+                    if(data.errcode == "0"){
+                        $.Global.Notice.SuccessTopNotice('操作成功');
+                        me.modifyOrder(orderId);
+                    } else {
+                        $.Global.Notice.ErrorTopNotice(data.errmsg);
+                    }
+                });
+            }
+            
         }
 
     });
@@ -1019,10 +1052,19 @@ $(document).ready(function(){
             <p class="form-control-static"><%= note %></p>
         </div>
     </div>
-    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+    <!-- <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
         <label class="col-sm-2 control-label">订单归属人</label>
         <div class="col-sm-5">
             <p class="form-control-static"><%= owner_nick %></p>
+        </div>
+    </div> -->
+    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+        <label class="col-sm-2 control-label">归属人</label>
+        <div class="col-sm-3">
+            <input type="text" required id="owner_modify" class="form-control" name='owner' value=''>
+        </div>
+        <div class="col-sm-3">
+            <button type="button" class="btn btn-info modify-owner">修改归属人</button>
         </div>
     </div>
     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">

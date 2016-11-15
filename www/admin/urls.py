@@ -131,6 +131,7 @@ urlpatterns += patterns('www.admin.views_fruit_price',
 # 订单管理
 urlpatterns += patterns('www.admin.views_order',
 
+    url(r'^order/modify_owner$', 'modify_owner'),
     url(r'^order/order_state$', 'order_state'),
     url(r'^order/get_items_of_order', 'get_items_of_order'),
     url(r'^order/print_order$', 'print_order'),
