@@ -1,6 +1,6 @@
 {% extends "mobile/base.html" %}
 
-{% block title %}2015 年终抽奖{% endblock title %}
+{% block title %}2016 年终抽奖{% endblock title %}
 
 {% block base_css %}
 <style type="text/css">
@@ -64,6 +64,7 @@ html,body{
     color: #A31755;
     border-radius: 10px;
     cursor: pointer;
+    padding: 5px;
 }
 .modal-dialog{
     margin: 13%;
@@ -132,6 +133,14 @@ html,body{
   }
 }
 
+.box-start{
+    line-height: 62px;
+}
+.txt-start{
+    font-size: 35px;
+    letter-spacing: 15px;
+    padding-left: 15px;
+}
 </style>
 {% endblock %}
 
@@ -280,63 +289,80 @@ $(document).ready(function(){
 {% block body %}
 <div class="container">
     <div class="col-xs-12 title">
-        三点十分<br>2015 年终抽奖
+        三点十分<br>2016 年终抽奖
     </div>
     <div class="col-xs-12 box-container">
         <div class="col-xs-12 box-border">
             <div class="col-xs-3 box">
                 <div class="box-content person-1" data-index="1">
-                    政哥
+                    西瓜
                 </div>
             </div>
             <div class="col-xs-3 box">
                 <div class="box-content person-2" data-index="2">
-                    老雷
+                    奇异果
                 </div>
             </div>
             <div class="col-xs-3 box">
                 <div class="box-content person-3" data-index="3">
-                    葱哥
+                    榴莲
                 </div>
             </div>
             <div class="col-xs-3 box">
                 <div class="box-content person-4" data-index="4">
-                    小雪
+                    蓝莓
                 </div>
             </div>
+
+            <div class="col-xs-3 pl-0 pr-0">
+                <div class="col-xs-12 box">
+                    <div class="box-content person-12" data-index="12">
+                        丑柑
+                    </div>
+                </div>
+                <div class="col-xs-12 box">
+                    <div class="box-content person-11" data-index="11">
+                        砂糖橘
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-6 box box-start">
+                <div class="start">
+                    <div class="txt-start">猛击</div>
+                    <div class="txt-start">抽奖</div>
+                </div>
+            </div>
+            <div class="col-xs-3 pl-0 pr-0">
+                <div class="col-xs-12 box">
+                    <div class="box-content person-5" data-index="5">
+                        白玉龙
+                    </div>
+                </div>
+                <div class="col-xs-12 box">
+                    <div class="box-content person-6" data-index="6">
+                        火龙果
+                    </div>
+                </div>
+            </div>
+
             <div class="col-xs-3 box">
                 <div class="box-content person-10" data-index="10">
-                    兔子
-                </div>
-            </div>
-            <div class="col-xs-6 box">
-                <div class="start">
-                    猛击抽奖
-                </div>
-            </div>
-            <div class="col-xs-3 box">
-                <div class="box-content person-5" data-index="5">
-                    凡达
+                    山竹
                 </div>
             </div>
             <div class="col-xs-3 box">
                 <div class="box-content person-9" data-index="9">
-                    杰哥
+                    巨丰
                 </div>
             </div>
             <div class="col-xs-3 box">
                 <div class="box-content person-8" data-index="8">
-                    老瑶
+                    草莓
                 </div>
             </div>
             <div class="col-xs-3 box">
                 <div class="box-content person-7" data-index="7">
-                    小周
-                </div>
-            </div>
-            <div class="col-xs-3 box">
-                <div class="box-content person-6" data-index="6">
-                    小洛
+                    水蜜桃
                 </div>
             </div>
         </div>
