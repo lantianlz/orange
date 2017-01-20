@@ -249,6 +249,11 @@ $(document).ready(function(){
         }
         isPlaying = true;
 
+        if($('.box-content.used').length + $('.box-content.active').length >= 12){
+            alert('本轮抽奖已经结束！');
+            return;
+        }
+
         // 去掉已经领奖的人
         if(stopIndex != -1){
             $('.person-'+stopIndex).addClass('used').removeClass('active');
