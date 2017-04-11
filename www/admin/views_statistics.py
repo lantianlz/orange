@@ -65,6 +65,16 @@ def statistics_percentage(request, template_name='pc/admin/statistics_percentage
     end_date = today.strftime('%Y-%m-%d')
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
 
+@verify_permission('')
+def statistics_item_price(request, template_name='pc/admin/statistics_item_price.html'):
+    today = datetime.datetime.now()
+    start_date = "2015-08-11"
+    end_date = today.strftime('%Y-%m-%d')
+    return render_to_response(template_name, locals(), context_instance=RequestContext(request))
+
+
+
+
 
 @verify_permission('')
 def get_chart_data(request):
@@ -404,5 +414,24 @@ def get_statistics_percentage_data(request):
     )
 
 
+@verify_permission('')
+def get_statistics_item_price_data(request):
 
+    item_id = request.POST.get('item_id')
+    start_date = request.POST.get('start_date')
+    end_date = request.POST.get('end_date')
+
+    x_data = []
+    y_data = []
+    for x in StatisticsBase().statistics_item_price(start_date, end_date, item_id):
+        x_data.append(str(x[0]))
+        y_data.append(str(x[1]))
+
+    return HttpResponse(
+        json.dumps({
+            'x_data': x_data, 
+            'y_data': y_data
+        }),
+        mimetype='application/json'
+    )
 

@@ -263,6 +263,9 @@ urlpatterns += patterns('www.admin.views_parttime_record',
 # 统计管理
 urlpatterns += patterns('www.admin.views_statistics',
     
+    url(r'^statistics_item_price$', 'statistics_item_price'),
+    url(r'^statistics_item_price/get_statistics_item_price_data$', 'get_statistics_item_price_data'),
+
     url(r'^statistics_percentage$', 'statistics_percentage'),
     url(r'^statistics_percentage/get_statistics_percentage_data$', 'get_statistics_percentage_data'),
 

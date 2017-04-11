@@ -1,0 +1,197 @@
+{% extends "pc/admin/home.html" %}
+{% load custom_tags %}
+{% load custom_filters %}
+{% block title %}产品价格波动{% endblock %}
+{% block admin_title %}产品价格波动{% endblock %}
+{% block admin_title_m %}产品价格波动{% endblock %}
+
+{% block css %}
+<style type="text/css">
+.textboxlist-bit-editable-input{
+    height: 18px;
+}
+.textboxlist-bit{
+    margin: 0;
+}
+.textboxlist-bits{
+    padding: 4px;
+}
+@media (min-width: 768px){
+    .form-inline .input-group .input-group-addon{
+        width: inherit;
+    }
+}
+</style>
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript" src="{{MEDIA_URL}}js/echarts/echarts.common.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+    $('#start_date_search').datetimepicker({
+        format: 'yyyy-mm-dd',
+        language: 'zh-CN',
+        minView: 2,
+        autoclose: true
+    });
+    $('#end_date_search').datetimepicker({
+        format: 'yyyy-mm-dd',
+        language: 'zh-CN',
+        minView: 2,
+        autoclose: true
+    });
+
+    $.Global.TextboxList.create('#item_id', {
+        max: 1,
+        placeholder: '选择产品',
+        url: '/admin/item/get_items_by_name_for_combox',
+        param: 'name',
+        loadPlaceholder: '正在加载...'
+    });
+
+    var calculatePercent = function(length){
+            if(length <= 90){
+                return 0;
+            } else if(90 < length && length <= 180){
+                return 25;
+            } else if(180 < length && length <= 270){
+                return 50;
+            } else if(270 < length && length <= 360){
+                return 75;
+            }
+        },
+        itemPriceChart = function(xData, yData){
+        var main = echarts.init(document.getElementById('item_price_chart'));
+        
+            main.setOption({
+                title: {
+                    text: '产品价格波动'
+                },
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {
+                        type: 'line',
+                        lineStyle: {
+                          color: '#ddd',
+                          width: 1,
+                          type: 'solid'
+                        }
+                    },
+                    formatter: '{b}<br />{a}: {c} '
+                },
+                legend: {
+                    data:['产品价格波动']
+                },
+                toolbox: {
+                    show: false
+                },
+                dataZoom : {
+                    show : true,
+                    realtime : true,
+                    start : calculatePercent(xData.length),
+                    end : 100,
+                    handleColor: 'rgba(29, 171, 217, 0.8)',
+                    fillerColor: 'rgba(29, 171, 217, 0.2)',
+                },
+                calculable: false,
+                xAxis: [{
+                    type: 'category',
+                    boundaryGap: false,
+                    data: xData,
+                    splitLine: {
+                        show: true,
+                        lineStyle: {
+                            color: ['#e2e2e2'],
+                            width: 1,
+                            type: 'solid'
+                        }
+                    },
+                    axisLine: {
+                        show: true,
+                        lineStyle: {
+                            color: '#888',
+                            width: 2,
+                            type: 'solid'
+                        }
+                    }
+                }],
+                yAxis: [{
+                    type : 'value',
+                    splitLine: {
+                        show: true,
+                        lineStyle: {
+                            color: ['#e2e2e2'],
+                            width: 1,
+                            type: 'solid'
+                        }
+                    },
+                    axisLine: {
+                        show: true,
+                        lineStyle: {
+                            color: '#888',
+                            width: 2,
+                            type: 'solid'
+                        }
+                    }
+                }],
+                color: ['#1DABD9'],
+                series : [{
+                    name:'价格',
+                    type:'line',
+                    smooth: true,
+                    data: yData
+                }]
+            });
+       
+        },
+        search = function(){
+            ajaxSend(
+                "/admin/statistics_item_price/get_statistics_item_price_data", 
+                {
+                    'start_date': $('#start_date_search').val(), 
+                    'end_date': $('#end_date_search').val(),
+                    'item_id': $('#item_id').val()
+                }, 
+                function(data){
+                    itemPriceChart(data.x_data, data.y_data)
+                }
+            );
+        };
+
+    $('.search').on('click', function(){
+        search();
+    });
+
+
+
+});
+</script>
+{% endblock %}
+
+{% block admin_main %}
+<div class="row pt-15">
+    <div class="col-md-12 pb-10">
+        <form action="." class="form-inline" onsubmit="javascript: return false;">
+            <div class="input-group input-group-sm pb-10">
+                <span class="input-group-addon">开始日期</span>
+                <input type="text" class="form-control" id="start_date_search" value="{{start_date}}"  />
+            </div>
+            <div class="input-group input-group-sm pb-10">
+                <span class="input-group-addon">结束日期</span>
+                <input type="text" class="form-control" id="end_date_search" value="{{end_date}}"  />
+            </div>
+            <div class="input-group input-group-sm pb-10"  style="width: 29%;">
+                <span class="input-group-addon">产品名称</span>
+                <input type="text" class="form-control" id="item_id" required name="item_id" value=''>
+            </div>
+            <div class="input-group input-group-sm pb-10">
+                <button class="btn btn-default btn-sm search bgc-eeeeee" type="submit">查询</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="col-md-12">
+        <div id="item_price_chart" style="height: 500px;"></div>
+    </div>
+</div>
+{% endblock %}

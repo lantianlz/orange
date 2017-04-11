@@ -1945,6 +1945,24 @@ class StatisticsBase(object):
 
         return raw_sql.exec_sql(sql, [start_date, end_date])
 
+    def statistics_item_price(self, start_date, end_date, item_id):
+        '''
+        统计时间段产品价格
+        ['2016-01-01', '8.8'], ['2016-01-02', '9.9']
+        '''
+
+        sql = """
+            SELECT DATE_FORMAT(b.confirm_time, "%%Y-%%m-%%d"), a.price
+            FROM company_orderitem a, company_order b
+            WHERE a.item_id = %s
+            AND a.order_id = b.id 
+            AND b.state = 3
+            AND %s <= b.confirm_time 
+            AND b.confirm_time <= %s
+        """
+
+        return raw_sql.exec_sql(sql, [item_id, start_date, end_date])
+
 
 class InvoiceRecordBase(object):
 
