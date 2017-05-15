@@ -241,6 +241,36 @@ class ItemBase(object):
         '''
         return self.get_all_item(state).filter(item_type=item_type)
 
+    def get_top_used_items(self, item_type=1, days=180, top=20):
+        '''
+        获取历史订单中使用频率最高的项目
+        item_type: 项目类型
+        days: 时间长度
+        top: 取前几
+        '''
+        end_date = datetime.datetime.now()
+        start_date = end_date - datetime.timedelta(days=days)
+
+        start_date = start_date.strftime('%Y-%m-%d') + ' 00:00:00'
+        end_date = end_date.strftime('%Y-%m-%d') + ' 23:59:59'
+
+        sql = """
+            SELECT b.name, count(b.id) AS count, b.id 
+            FROM company_orderitem a, company_item b, company_order c 
+            WHERE a.item_id = b.id 
+            AND b.item_type = %s
+            AND b.state = 1
+            AND c.id = a.order_id 
+            AND c.state = 3 
+            AND c.confirm_time > %s 
+            AND c.confirm_time < %s 
+            GROUP BY b.id 
+            ORDER BY count DESC
+            LIMIT 0, %s
+        """
+        
+        return raw_sql.exec_sql(sql, [item_type, str(start_date), str(end_date), top])
+
 
 class CompanyBase(object):
 

@@ -200,3 +200,25 @@ def get_item_types(request):
     types = [{'name': x[1], 'value': x[0]} for x in Item.type_choices]
 
     return HttpResponse(json.dumps(types), mimetype='application/json')
+
+
+def get_used_items(request):
+    item_type = request.REQUEST.get('item_type', 1)
+    days = request.REQUEST.get('days', 180)
+    top = request.REQUEST.get('top', 20)
+    data = ItemBase().get_top_used_items(item_type, int(days), int(top))
+
+    return HttpResponse(json.dumps(data), mimetype='application/json')
+
+
+
+
+
+
+
+
+
+
+
+
+    

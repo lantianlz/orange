@@ -99,6 +99,7 @@ urlpatterns += patterns('www.admin.views_supplier_cash_record',
 # 产品管理
 urlpatterns += patterns('www.admin.views_item',
     
+    url(r'^item/get_used_items$', 'get_used_items'),
     url(r'^item/get_item_types$', 'get_item_types'),
     url(r'^item/get_items_by_name$', 'get_items_by_name'),
     url(r'^item/get_items_by_name_for_combox$', 'get_items_by_name_for_combox'),

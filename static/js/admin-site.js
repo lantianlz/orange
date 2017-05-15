@@ -455,6 +455,7 @@ if (!String.format) {
                 '<div class="pb-15 border-bottom-1 bdc-e4e4e4 mb-15 pr item-header">',
                     '<input type="text" class="form-control search-item" placeholder="输入茶点项目名字" value="">',
                     '<span class="btn-search-item"><i class="fa fa-search"></i></span>',
+                    '<span class="btn-search-used-items"><i class="fa fa-clock-o"></i></span>',
                 '</div>',
                 
                 '<div class="border-top-1 bdc-e4e4e4 text-right mt-5 pt-10 item-footer">',
@@ -566,18 +567,7 @@ if (!String.format) {
             var me = this;
 
             $.map(initItemIds, function(itemId){
-                ajaxSend(
-                    "/admin/item/get_item_by_id", 
-                    {'item_id': itemId},
-                    function(data){
-                        // 添加项目
-                        me.addItem(
-                            $.Global.Utils.dictMap(data, me._modelMaps)
-                        );
-                        
-                        // me._loadItems(me._items, true);
-                    }
-                );
+                me._ajax_add_item(itemId);
             });
         },
 
@@ -637,10 +627,28 @@ if (!String.format) {
             
         },
 
+        // 后台查询添加项目
+        _ajax_add_item: function(itemId){
+            var me = this;
+            ajaxSend(
+                "/admin/item/get_item_by_id", 
+                {'item_id': itemId},
+                function(data){
+                    // 添加项目
+                    me.addItem(
+                        $.Global.Utils.dictMap(data, me._modelMaps)
+                    );
+                    
+                    // me._loadItems(me._items, true);
+                }
+            );
+        },
+
         events: {
             'click .btn-remove-item': '_removeItem',
             'click .item': '_focusItem',
-            'input .item': '_changeAmount'
+            'input .item': '_changeAmount',
+            'click .btn-search-used-items': 'searchUsedItems'
         },
 
         // 添加项目
@@ -697,10 +705,116 @@ if (!String.format) {
             this._initItemIds = initItemIds;
         },
 
+        // 查询历史项目
+        searchUsedItems: function(){
+
+            var me = this,
+                usedItemView = new $.Global.ComponentView.UsedItemView();
+
+            usedItemView.render();
+            usedItemView.chooseItem = function(itemId){
+                me._ajax_add_item(itemId);
+            };
+        },
+
         render: function(){
             this.$el.html(this._html);
             this._initItemAutocomplete();
             this._initItemTypes();
+        }
+    });
+    
+    /*
+        历史常用项目组件
+        用于显示最近常用项目
+    */
+    $.Global.ComponentView.UsedItemView = Backbone.View.extend({
+        el: 'body',
+
+        template: _.template([
+            '<div class="modal fade" id="used_items_modal" tabindex="-1" role="dialog">',
+                '<div class="modal-dialog">',
+                    '<div class="modal-content">',
+                        '<div class="modal-header pb-5">',
+                            '<h4 class="modal-title">近期常用品类</h4>',
+                        '</div>',
+                        '<div class="modal-body pt-0">',
+                            '<ul class="nav nav-pills orange-nav-pills">',
+                                '<li class="active">',
+                                    '<a href="#used-item-panel-1" data-toggle="pill">',
+                                        '<i class="fa fa-apple pr-5"></i>',
+                                        '<span class="hidden-sm hidden-md hidden-lg">水果</span>',
+                                        '<span class="hidden-xs">水果</span>',
+                                    '</a>',
+                                '</li>',
+                                '<li>',
+                                    '<a href="#used-item-panel-2" data-toggle="pill">',
+                                        '<i class="fa fa-coffee pr-5"></i>',
+                                        '<span class="hidden-sm hidden-md hidden-lg">点心</span>',
+                                        '<span class="hidden-xs">点心</span>',
+                                    '</a>',
+                                '</li>',
+                            '</ul>',
+
+                            '<div class="tab-content">',
+                                '<div class="tab-pane fade in active pt-8" id="used-item-panel-1">',
+                                    '<ul class="list-inline">',
+                                        
+                                    '</ul>',
+                                '</div>',
+                                '<div class="tab-pane fade pt-8" id="used-item-panel-2">',
+                                    '<ul class="list-inline">',
+                                        
+                                    '</ul>',
+                                '</div>',
+                            '</div>',
+                        '</div>',
+                    '</div>',
+                '</div>',
+            '</div>'
+        ].join('')),
+
+        // 按类型加载历史项目
+        _loadUsedItems: function(item_type, days, top){
+            ajaxSend(
+                "/admin/item/get_used_items", 
+                {'item_type': item_type||1, 'days': days||180, 'top': top||20},
+                function(data){
+                    var str = "";
+
+                    $.map(data, function(per){
+                        str += '<li class="used-item" data-item_id="'+per[2]+'"><span>'+per[0]+'('+per[1]+')</span></li>';
+                    });
+
+                    $('#used-item-panel-' + item_type).find('ul').html(str);
+                }
+            );
+        },
+
+        render: function(){
+            var me = this;
+
+            $('#used_items_modal').remove();
+
+            $("body").append(me.template());
+
+            $('#used_items_modal').modal({'show': true});
+
+            me._loadUsedItems(1);
+            me._loadUsedItems(2, 180, 30);
+
+            // 绑定常用项目点击事件
+            $('#used_items_modal .used-item').live('click', function(){
+                var itemId = $(this).data('item_id');
+                
+                me.chooseItem(itemId);
+
+            });
+        },
+
+        // 提供给外部调用
+        chooseItem: function(){
+
         }
     });
 
