@@ -743,7 +743,7 @@ class OrderBase(object):
 
         # 期望时间排序
         if expected_time_sort:
-            objs = objs.order_by('expected_time')
+            objs = objs.order_by('-expected_time')
 
         return objs, objs.aggregate(Sum('total_price'))['total_price__sum']
 
