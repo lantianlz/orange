@@ -103,6 +103,7 @@ def format_order(objs, num, show_items=False):
             'items': items,
             'owner_id': owner.id if owner else '',
             'owner_nick': owner.nick if owner else '',
+            'expected_time': str(x.expected_time)[11:16],
             'state': x.state
         })
     
@@ -180,6 +181,8 @@ def search(request):
     is_test = request.POST.get('is_test', '0')
     is_test = True if is_test == "1" else False
     owner = request.POST.get('owner')
+    expected_time_sort = request.POST.get('expected_time_sort')
+    expected_time_sort = True if expected_time_sort == "1" else False
     
     page_index = int(request.REQUEST.get('page_index'))
     sum_price = 0
@@ -189,7 +192,7 @@ def search(request):
         end_date = datetime.datetime.strptime(end_date, '%Y-%m-%d %H:%M:%S')
         objs = OrderBase().search_uncreate_orders_for_admin(start_date, end_date)
     else:
-        objs, sum_price = OrderBase().search_orders_for_admin(start_date, end_date, state, company, is_test, owner)
+        objs, sum_price = OrderBase().search_orders_for_admin(start_date, end_date, state, company, is_test, owner, expected_time_sort)
 
     page_objs = page.Cpt(objs, count=1000, page=page_index).info
 
@@ -254,13 +257,18 @@ def modify_order(request):
     note = request.POST.get('note')
     person_count = request.POST.get('person_count')
     owner = request.POST.get('owner')
+    expected_time = request.POST.get('expected_time')
+    if expected_time:
+        expected_time = datetime.datetime.now().strftime('%Y-%m-%d') + ' ' + expected_time
+        expected_time = datetime.datetime.strptime(expected_time, '%Y-%m-%d %H:%M')
     
     # 套餐项目
     item_ids = request.POST.getlist('item-ids')
     item_amounts = request.POST.getlist('item-amounts')
 
     return OrderBase().modify_order(
-        order_id, _get_items(item_ids, item_amounts), total_price, note, is_test, person_count, owner
+        order_id, _get_items(item_ids, item_amounts), total_price, 
+        note, is_test, person_count, owner, expected_time
     )
 
 @verify_permission('add_order')
@@ -274,6 +282,10 @@ def add_order(request):
     person_count = request.POST.get('person_count')
     create_operator = request.user.id
     owner = request.POST.get('owner')
+    expected_time = request.POST.get('expected_time')
+    if expected_time:
+        expected_time = datetime.datetime.now().strftime('%Y-%m-%d') + ' ' + expected_time
+        expected_time = datetime.datetime.strptime(expected_time, '%Y-%m-%d %H:%M')
 
     # 套餐项目
     item_ids = request.POST.getlist('item-ids')
@@ -281,7 +293,8 @@ def add_order(request):
 
     flag, msg = OrderBase().add_order(
         meal_id, create_operator, total_price, 
-        _get_items(item_ids, item_amounts), person_count, owner, is_test, note
+        _get_items(item_ids, item_amounts), person_count, 
+        owner, expected_time, is_test, note
     )
 
     return flag, msg.id if flag == 0 else msg

@@ -595,7 +595,7 @@ class OrderBase(object):
         return postfix
 
     @transaction.commit_manually(using=DEFAULT_DB)
-    def add_order(self, meal_id, create_operator, total_price, order_items, person_count, owner, is_test=False, note=''):
+    def add_order(self, meal_id, create_operator, total_price, order_items, person_count, owner, expected_time, is_test=False, note=''):
 
         if not (meal_id and create_operator and total_price and order_items and person_count and owner):
             return 99800, dict_err.get(99800)
@@ -621,7 +621,8 @@ class OrderBase(object):
                 is_test=is_test,
                 person_count=person_count,
                 note=note,
-                owner=owner
+                owner=owner,
+                expected_time=expected_time
             )
 
             temp = decimal.Decimal(0)
@@ -658,7 +659,7 @@ class OrderBase(object):
         return 0, obj
 
     @transaction.commit_manually(using=DEFAULT_DB)
-    def modify_order(self, order_id, order_items, total_price, note, is_test, person_count, owner):
+    def modify_order(self, order_id, order_items, total_price, note, is_test, person_count, owner, expected_time=None):
 
         if not (order_id and total_price and order_items and person_count and owner):
             return 99800, dict_err.get(99800)
@@ -674,6 +675,7 @@ class OrderBase(object):
             obj.is_test = is_test
             obj.person_count = person_count
             obj.owner = owner
+            obj.expected_time = expected_time
 
             temp = decimal.Decimal(0)
 
@@ -716,7 +718,7 @@ class OrderBase(object):
 
         return objs
 
-    def search_orders_for_admin(self, start_date, end_date, state, company, is_test, owner=None):
+    def search_orders_for_admin(self, start_date, end_date, state, company, is_test, owner=None, expected_time_sort=False):
         
         # 是否查询所有有效订单
         if state == -2:
@@ -738,6 +740,10 @@ class OrderBase(object):
             create_time__range=(start_date, end_date),
             company__name__contains=company
         )
+
+        # 期望时间排序
+        if expected_time_sort:
+            objs = objs.order_by('expected_time')
 
         return objs, objs.aggregate(Sum('total_price'))['total_price__sum']
 

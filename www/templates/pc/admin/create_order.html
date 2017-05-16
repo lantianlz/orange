@@ -237,6 +237,16 @@ $(document).ready(function(){
             this.itemsView.render();
         },
 
+        // 初始化预期送达日期框
+        initExpectedDate: function(){
+            $('#expected_time_add').datetimepicker({
+                format: 'hh:ii',
+                language: 'zh-CN',
+                startView: 0,
+                autoclose: true
+            });
+        },
+
         render: function(mealId, mealName){
             var me = this;
 
@@ -261,6 +271,7 @@ $(document).ready(function(){
             me.initMealTextBox(mealName, mealId);
             me.initOwnerTextBox();
             // me.initOrderItems();
+            me.initExpectedDate();
             
         },
 
@@ -439,6 +450,12 @@ $(document).ready(function(){
                         <label class="col-sm-2 control-label">人数</label>
                         <div class="col-sm-3">
                             <input type="text" required class="form-control person-count" name='person_count' value='0'>
+                        </div>
+                    </div>
+                    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+                        <label class="col-sm-2 control-label">期望时间</label>
+                        <div class="col-sm-3">
+                            <input type="text" id='expected_time_add' class="form-control" name='expected_time' value=''>
                         </div>
                     </div>
                     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
