@@ -188,7 +188,7 @@ $(document).ready(function(){
             <thead>
                 <tr>
                     <th>#</th>
-                    <th>公司名称</th>
+                    <th class="hidden-xs">公司名称</th>
                     <th>公司简称</th>
                     <th>订单号</th>
                     <th>采购成本</th>
@@ -213,7 +213,7 @@ $(document).ready(function(){
 <% _.each(records, function(record, index){ %>
     <tr>
         <td><%= index+1 %></td>
-        <td><%= record.name %></td>
+        <td class="hidden-xs"><%= record.name %></td>
         <td><%= record.shortName %></td>
         <td><a target="_blank" href="/admin/order/print_order?order_id=<%= record.orderId %>"><%= record.orderNo %></a></td>
         <td><%= record.costPrice %></td>

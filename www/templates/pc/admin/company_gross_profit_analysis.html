@@ -206,7 +206,7 @@ $(document).ready(function(){
             <thead>
                 <tr>
                     <th>#</th>
-                    <th>公司名称</th>
+                    <th class="hidden-xs">公司名称</th>
                     <th>公司简称</th>
                     <th>采购成本</th>
                     <th>销售额</th>
@@ -230,7 +230,7 @@ $(document).ready(function(){
 <% _.each(records, function(record, index){ %>
     <tr class="go-order-record pointer">
         <td><%= index+1 %></td>
-        <td><%= record.name %></td>
+        <td class="hidden-xs"><%= record.name %></td>
         <td><%= record.shortName %></td>
         <td><%= record.costPrice %></td>
         <td><%= record.totalPrice %></td>
