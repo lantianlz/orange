@@ -25,7 +25,7 @@ def month_gross_profit_analysis(request, template_name='pc/admin/month_gross_pro
 
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
 
-@verify_permission('')
+@verify_permission('month_gross_profit_analysis')
 def get_month_gross_profit_analysis_data(request):
     start_date = request.REQUEST.get('start_date')
     end_date = request.REQUEST.get('end_date')
@@ -68,7 +68,7 @@ def company_gross_profit_analysis(request, template_name='pc/admin/company_gross
 
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
 
-@verify_permission('')
+@verify_permission('company_gross_profit_analysis')
 def get_company_gross_profit_analysis_data(request):
     start_date = request.REQUEST.get('start_date')
     end_date = request.REQUEST.get('end_date')
@@ -115,7 +115,7 @@ def order_gross_profit_analysis(request, template_name='pc/admin/order_gross_pro
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
 
 
-@verify_permission('')
+@verify_permission('order_gross_profit_analysis')
 def get_order_gross_profit_analysis_data(request):
     start_date = request.REQUEST.get('start_date')
     end_date = request.REQUEST.get('end_date')

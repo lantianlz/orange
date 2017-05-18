@@ -131,6 +131,10 @@ PERMISSIONS = [
     {'code': 'statistics_order_cost', 'name': u'成本统计', 'parent': 'statistics_manage'},
     {'code': 'statistics_percentage', 'name': u'销售分布统计', 'parent': 'statistics_manage'},
     
+    {'code': 'gross_profit_analysis_manage', 'name': u'毛利分析管理', 'parent': None},
+    {'code': 'month_gross_profit_analysis', 'name': u'月毛利分析', 'parent': 'gross_profit_analysis_manage'},
+    {'code': 'company_gross_profit_analysis', 'name': u'公司毛利分析', 'parent': 'gross_profit_analysis_manage'},
+    {'code': 'order_gross_profit_analysis', 'name': u'订单利分析', 'parent': 'gross_profit_analysis_manage'},
 
     {'code': 'city_manage', 'name': u'城市管理', 'parent': None},
     #{'code': 'add_city', 'name': u'添加城市', 'parent': 'city_manage'},
