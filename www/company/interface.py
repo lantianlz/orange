@@ -991,7 +991,7 @@ class OrderBase(object):
         if not (order_id and owner):
             return 99800, dict_err.get(99800)
 
-        order = OrderBase().get_order_by_id(order_id)
+        order = self.get_order_by_id(order_id)
         if not order:
             return 21301, dict_err.get(21301)
 
@@ -1007,6 +1007,79 @@ class OrderBase(object):
             return 99900, dict_err.get(99900)
 
         return 0, dict_err.get(0)
+
+    def get_month_gross_profit_analysis_data(self, start_date, end_date):
+        '''
+        获取月毛利
+        '''
+        sql = """
+            SELECT DATE_FORMAT(confirm_time, "%%Y-%%m") AS month, 
+                SUM(cost_price) AS cost_price,
+                SUM(total_price) AS total_price,
+                1 - SUM(cost_price) / SUM(total_price)  AS gross_profit_rate
+            FROM company_order
+            WHERE confirm_time > %s
+            AND confirm_time <= %s
+            AND state = 3
+            GROUP BY month
+        """
+        
+        return raw_sql.exec_sql(sql, [start_date, end_date])
+
+    def get_company_gross_profit_analysis_data(self, start_date, end_date, name, rate=0):
+        '''
+        获取公司毛利分析数据
+        '''
+        
+        condition = ""
+        if name:
+            condition += " AND name LIKE '%%"+name+"%%' "
+        if rate:
+            condition += " AND 1 - cost_price / total_price < " + str(rate/100.0)
+
+        sql = """
+            SELECT name, short_name,
+                SUM(cost_price) AS cost_price,
+                SUM(total_price) AS total_price,
+                1 - SUM(cost_price) / SUM(total_price)  AS gross_profit_rate
+            FROM company_order a, company_company b
+            WHERE confirm_time > %s
+            AND confirm_time <= %s
+            AND a.company_id = b.id
+            AND a.state = 3
+        """ + condition + """
+            GROUP BY name
+            ORDER BY gross_profit_rate
+        """
+        
+        return raw_sql.exec_sql(sql, [start_date, end_date])
+
+    def get_order_gross_profit_analysis_data(self, start_date, end_date, name, rate=0):
+        '''
+        获取订单毛利分析数据
+        '''
+        
+        condition = ""
+        if name:
+            condition += " AND b.name LIKE '%%"+name+"%%' "
+        if rate:
+            condition += " AND 1 - cost_price / total_price < " + str(rate/100.0)
+        
+        sql = """
+            SELECT b.name, b.short_name, a.id, a.order_no,
+                cost_price,
+                total_price,
+                1 - cost_price / total_price  AS gross_profit_rate
+            FROM company_order a, company_company b
+            WHERE confirm_time > %s
+            AND confirm_time <= %s
+            AND a.company_id = b.id
+            AND a.state = 3
+        """ + condition + """
+            ORDER BY gross_profit_rate
+        """
+        
+        return raw_sql.exec_sql(sql, [start_date, end_date])
 
 
 

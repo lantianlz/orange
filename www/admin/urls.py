@@ -289,6 +289,19 @@ urlpatterns += patterns('www.admin.views_statistics',
     url(r'^statistics_chart/get_chart_data$', 'get_chart_data'),
 )
 
+# 统计管理
+urlpatterns += patterns('www.admin.views_gross_profit_analysis',
+    
+    url(r'^month_gross_profit_analysis$', 'month_gross_profit_analysis'),
+    url(r'^month_gross_profit_analysis/get_month_gross_profit_analysis_data$', 'get_month_gross_profit_analysis_data'),
+
+    url(r'^company_gross_profit_analysis$', 'company_gross_profit_analysis'),
+    url(r'^company_gross_profit_analysis/get_company_gross_profit_analysis_data$', 'get_company_gross_profit_analysis_data'),
+
+    url(r'^order_gross_profit_analysis$', 'order_gross_profit_analysis'),
+    url(r'^order_gross_profit_analysis/get_order_gross_profit_analysis_data$', 'get_order_gross_profit_analysis_data'),
+)
+
 # 城市
 urlpatterns += patterns('www.admin.views_city',
 

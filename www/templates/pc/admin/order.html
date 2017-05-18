@@ -464,6 +464,13 @@ $(document).ready(function(){
                 return;
             }
 
+            // 订单毛利异常提醒
+            if(parseFloat($('.item-footer .rate').text()) < 0){
+                if(!confirm('订单毛利异常，确认要保存吗？')){
+                    return;
+                }
+            }
+
             g_ajax_processing_obj_id = target.setUUID().attr('id');
             me.collection.modifyOrder($.Global.Utils.formToDict(this.$('form')), function(data){
                 if(data.errcode == "0"){
