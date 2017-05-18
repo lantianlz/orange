@@ -476,7 +476,7 @@ $(document).ready(function(){
                     <a href="/admin/create_order" class="list-group-item {% if '/create_order' in request.path %}active{% endif %}">
                         <i class="point"></i>生成订单
                     </a>
-                    <a href="/admin/order" class="list-group-item {% if '/order' in request.path %}active{% endif %}">
+                    <a href="/admin/order" class="list-group-item {% if '/admin/order' == request.path %}active{% endif %}">
                         <i class="point"></i>订单列表
                     </a>
                 </ul>
@@ -560,6 +560,20 @@ $(document).ready(function(){
                     </a>
                     <a href="/admin/statistics_commission" class="list-group-item {% if '/admin/statistics_commission' == request.path %}active{% endif %}">
                         <i class="point"></i>邀请人返佣
+                    </a>
+                </ul>
+            </li>
+            <li class="list-group-item">
+                <a><i class="fa fa-google-wallet pr-3"></i>毛利分析</a>
+                <ul class="list-group sub-nav">
+                    <a href="/admin/month_gross_profit_analysis" class="list-group-item {% if '/month_gross_profit_analysis' in request.path %}active{% endif %}">
+                        <i class="point"></i>月毛利分析
+                    </a>
+                    <a href="/admin/company_gross_profit_analysis" class="list-group-item {% if '/company_gross_profit_analysis' in request.path %}active{% endif %}">
+                        <i class="point"></i>公司毛利分析
+                    </a>
+                    <a href="/admin/order_gross_profit_analysis" class="list-group-item {% if '/order_gross_profit_analysis' in request.path %}active{% endif %}">
+                        <i class="point"></i>订单毛利分析
                     </a>
                 </ul>
             </li>
