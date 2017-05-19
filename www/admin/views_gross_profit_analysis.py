@@ -74,6 +74,7 @@ def get_company_gross_profit_analysis_data(request):
     end_date = request.REQUEST.get('end_date')
     name = request.REQUEST.get('name', '')
     rate = request.REQUEST.get('rate', 0)
+    rate = int(rate)
 
     start_date, end_date = utils.get_date_range(start_date, end_date)
 
@@ -81,16 +82,18 @@ def get_company_gross_profit_analysis_data(request):
     all_total_price = 0
     gross_profit_rate = 0
     data = []
-    for x in OrderBase().get_company_gross_profit_analysis_data(start_date, end_date, name, int(rate)):
-        data.append({
-            'name': x[0], 
-            'short_name': x[1],
-            'cost_price': round(x[2], 2), 
-            'total_price': round(x[3], 2), 
-            'gross_profit_rate': round(x[4]*100, 2)
-        })
-        all_cost_price += x[2]
-        all_total_price += x[3]
+    for x in OrderBase().get_company_gross_profit_analysis_data(start_date, end_date, name):
+        temp_rate = round(x[4]*100, 2)
+        if rate==0 or rate >= temp_rate:
+            data.append({
+                'name': x[0], 
+                'short_name': x[1],
+                'cost_price': round(x[2], 2), 
+                'total_price': round(x[3], 2), 
+                'gross_profit_rate': round(x[4]*100, 2)
+            })
+            all_cost_price += x[2]
+            all_total_price += x[3]
 
     gross_profit_rate = round((1 - all_cost_price / all_total_price) * 100, 2) if all_total_price>0 else 0
 

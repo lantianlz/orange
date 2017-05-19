@@ -1026,7 +1026,7 @@ class OrderBase(object):
         
         return raw_sql.exec_sql(sql, [start_date, end_date])
 
-    def get_company_gross_profit_analysis_data(self, start_date, end_date, name, rate=0):
+    def get_company_gross_profit_analysis_data(self, start_date, end_date, name):
         '''
         获取公司毛利分析数据
         '''
@@ -1034,8 +1034,6 @@ class OrderBase(object):
         condition = ""
         if name:
             condition += " AND name LIKE '%%"+name+"%%' "
-        if rate:
-            condition += " AND 1 - cost_price / total_price < " + str(rate/100.0)
 
         sql = """
             SELECT name, short_name,
