@@ -20,7 +20,7 @@ def confirm_tomorrow_order():
     persons = []
     persons.append('074618b2419211e5ae3000163e001bb1') # 曹艳珺
     persons.append('fba5a110794211e5948e00163e001bb1') # 罗杰
-    persons.append('b88b7ec660fc11e5bf2700163e001bb1') # 肖仁凡
+    # persons.append('b88b7ec660fc11e5bf2700163e001bb1') # 肖仁凡
 
     for person in persons:
         to_user_openid = ExternalTokenBase().get_weixin_openid_by_user_id(person)

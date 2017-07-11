@@ -1021,6 +1021,7 @@ class OrderBase(object):
             WHERE confirm_time > %s
             AND confirm_time <= %s
             AND state = 3
+            AND is_test = 0
             GROUP BY month
         """
         
@@ -2683,7 +2684,7 @@ class InventoryRecordBase(object):
             obj.save()
 
             #是否需要提醒
-            InventoryBase().check_need_notice(obj.inventory.id)
+            # InventoryBase().check_need_notice(obj.inventory.id)
 
         except Exception, e:
             debug.get_debug_detail_and_send_email(e)
