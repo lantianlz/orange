@@ -64,16 +64,17 @@ def check_inventory_notice():
         if obj.amount <= obj.warning_value:
             notice_msg.append('%s(%s)' % (obj.item.name, obj.amount))
 
-    for person in persons:
-        to_user_openid = ExternalTokenBase().get_weixin_openid_by_user_id(person)
+    if notice_msg:
+        for person in persons:
+            to_user_openid = ExternalTokenBase().get_weixin_openid_by_user_id(person)
 
-        WeixinBase().send_todo_list_template_msg(
-            to_user_openid, 
-            u"库存产品 %s 不足，需要补货" % u"，".join(notice_msg), 
-            u'库存产品告警', 
-            u'高', 
-            u"补货完成后，请及时更新线上系统"
-        )
+            WeixinBase().send_todo_list_template_msg(
+                to_user_openid, 
+                u"库存产品 %s 不足，需要补货" % u"，".join(notice_msg), 
+                u'库存产品告警', 
+                u'高', 
+                u"补货完成后，请及时更新线上系统"
+            )
 
 if __name__ == '__main__':
     undone_orders_notice()

@@ -1125,6 +1125,22 @@ class BookingBase(object):
                 content = u'「%s」的「%s」通过「%s」申请预订，联系电话「%s」' % (company_name, staff_name, sources.get(int(source), u'未知'), mobile)
             async_send_email("vip@3-10.cc", title, content)
 
+            # 发送微信提醒
+            from www.weixin.interface import WeixinBase
+            
+            for sale_man in SaleManBase().get_all_sale_man(True):
+
+                to_user_openid = ExternalTokenBase().get_weixin_openid_by_user_id(sale_man.user_id)
+
+                if to_user_openid:
+                    WeixinBase().send_todo_list_template_msg(
+                        to_user_openid, 
+                        content, 
+                        u'新客户预约', 
+                        u'高', 
+                        u"嗨生意来了！请及时跟进"
+                    )
+
         except Exception, e:
             debug.get_debug_detail_and_send_email(e)
             return 99900, dict_err.get(99900)
@@ -1276,10 +1292,10 @@ class CashRecordBase(object):
 
     def send_balance_insufficient_notice(self, company, balance, max_overdraft):
         # 发送邮件提醒
-        from www.tasks import async_send_email
-        title = u'账户已达最高透支额'
-        content = u'账户「%s」当前余额「%.2f」元，已达「%.2f」元最高透支额，请联系充值' % (company.name, balance, max_overdraft)
-        async_send_email("vip@3-10.cc", title, content)
+        # from www.tasks import async_send_email
+        # title = u'账户已达最高透支额'
+        # content = u'账户「%s」当前余额「%.2f」元，已达「%.2f」元最高透支额，请联系充值' % (company.name, balance, max_overdraft)
+        # async_send_email("vip@3-10.cc", title, content)
 
         # 发送微信提醒
         from weixin.interface import WeixinBase
