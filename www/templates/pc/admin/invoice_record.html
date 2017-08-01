@@ -9,7 +9,7 @@
 <style type="text/css">
 @media (min-width: 768px){
     .form-inline .input-group>.form-control {
-        width: 125px;
+        width: 110px;
     }
 }
 </style>
@@ -49,21 +49,26 @@ $(document).ready(function(){
             'operatorId': 'operator_id',
             'operatorName': 'operator_name',
             'img': 'img',
+            'invoiceType': 'invoice_type',
+            'rate': 'rate',
+            'tax': 'tax',
             'createTime': 'create_time'
         },
 
         // 查询
-        search: function(name, state, startDate, endDate, pageIndex){
+        search: function(name, state, startDate, endDate, invoiceType, pageIndex){
             var me = this,
                 name = name||'',
                 state = state||0,
                 startDate = startDate||'{{start_date}}',
                 endDate = endDate||'{{end_date}}',
+                invoiceType = invoiceType||'-1',
                 pageIndex = pageIndex||1;
 
             ajaxSend(
                 "/admin/invoice_record/search", 
-                {'name': name, 'state': state, 'start_date': startDate, 'end_date': endDate, 'page_index': pageIndex}, 
+                {'name': name, 'state': state, 'start_date': startDate, 
+                'end_date': endDate,  'invoice_type': invoiceType, 'page_index': pageIndex}, 
                 function(data){
                     me.pageIndex = pageIndex;
                     me.pageCount = data.page_count;
@@ -72,6 +77,8 @@ $(document).ready(function(){
                     me.startDate = startDate;
                     me.endDate = endDate;
                     me.sumPrice = data.sum_price;
+                    me.sumTax = data.sum_tax;
+                    me.invoiceType = invoiceType;
 
                     me.reset($.Global.Utils.dictMapParse(data.data, me._modelMaps));
                 }
@@ -164,15 +171,17 @@ $(document).ready(function(){
                 this.collection.pageIndex||1, 
                 this.collection.pageCount, 
                 String.format(
-                    'search/{0}/{1}/{2}/{3}', 
+                    'search/{0}/{1}/{2}/{3}/{4}', 
                     this.collection.name,
                     this.collection.state,
                     this.collection.startDate,
-                    this.collection.endDate
+                    this.collection.endDate,
+                    this.collection.invoiceType
                 )
             );
 
             this.$('.sum-price').html(this.collection.sumPrice);
+            this.$('.sum-tax').html(this.collection.sumTax);
             
             this.$('.state').val(this.collection.state);
             this.$('#start_date_search').val(this.collection.startDate);
@@ -189,10 +198,11 @@ $(document).ready(function(){
             var name = this.$('.name').val(),
                 startDate = this.$('#start_date_search').val(),
                 endDate = this.$('#end_date_search').val(),
-                state = this.$('.state').val();
+                state = this.$('.state').val(),
+                invoiceType = this.$('.invoice-type').val();
 
             router.navigate(
-                String.format('/search/{0}/{1}/{2}/{3}/1', name, state, startDate, endDate), 
+                String.format('/search/{0}/{1}/{2}/{3}/{4}/1', name, state, startDate, endDate, invoiceType), 
                 {trigger: true}
             );
         },
@@ -209,12 +219,14 @@ $(document).ready(function(){
                 startDate = this.$('#start_date_search').val(),
                 endDate = this.$('#end_date_search').val(),
                 state = this.$('.state').val(),
+                invoiceType = this.$('.invoice-type').val(),
                 url = String.format(
-                    '/admin/invoice_record/print_invoice_record?name={0}&start_date={1}&end_date={2}&state={3}',
+                    '/admin/invoice_record/print_invoice_record?name={0}&start_date={1}&end_date={2}&state={3}&invoice_type={4}',
                     name,
                     startDate,
                     endDate,
-                    state
+                    state,
+                    invoiceType
                 );
 
             window.open(url);
@@ -392,6 +404,10 @@ $(document).ready(function(){
             records.getInvoiceInfo(company_id, function(data){
                 $('#add_record_modal .title').val(data.title);
                 $('#add_record_modal .content').val(data.content);
+                $('#add_record_modal .invoice_types input').filter(
+                    function(){return $(this).val() == data.invoice_type}
+                ).attr('checked', true);
+                $('#add_record_modal .rate').val(data.rate);
             });
         },
 
@@ -459,13 +475,13 @@ $(document).ready(function(){
         routes: {
             "":                     "search",
             "modify/:recordId":       "modify",
-            "search/(:name)/(:state)/(:startDate)/(:endDate)/:pageIndex":    "search",
+            "search/(:name)/(:state)/(:startDate)/(:endDate)/(:invoiceType)/:pageIndex":    "search",
             "add":                   "add"
         },
 
         // 查询
-        search: function(name, state, startDate, endDate, pageIndex){
-            records.search(name, state, startDate, endDate, pageIndex);
+        search: function(name, state, startDate, endDate, invoiceType, pageIndex){
+            records.search(name, state, startDate, endDate, invoiceType, pageIndex);
         },
 
         // 显示修改界面
@@ -548,6 +564,14 @@ $(document).ready(function(){
                 </select>
             </div>
             <div class="input-group input-group-sm pb-10">
+                <span class="input-group-addon">状态</span>
+                <select class="form-control invoice-type">
+                    <option value="-1" selected>全部</option>
+                    <option value="1">普票</option>
+                    <option value="2">专票</option>
+                </select>
+            </div>
+            <div class="input-group input-group-sm pb-10">
                 <span class="input-group-addon">开始日期</span>
                 <input type="text" class="form-control" id="start_date_search" value="{{start_date}}"  />
             </div>
@@ -572,10 +596,12 @@ $(document).ready(function(){
                     <th>#</th>
                     <th>公司名称</th>
                     <th>发票金额</th>
+                    <th>发票类型</th>
+                    <th>税点</th>
+                    <th>税费</th>
                     <th>开票日期</th>
                     <th>开票内容</th>
                     <th class="hidden-xs">操作时间</th>
-                    <th>状态</th>
                 </tr>
             </thead>
             <tbody>
@@ -588,7 +614,7 @@ $(document).ready(function(){
                 
             </ul>
         </div>
-        <div class="text-right border-top-2 bdc-dddddd mt-25">开票总金额 <span class="fb f18 co-1DABD9 sum-price">0</span> 元</div>
+        <div class="text-right border-top-2 bdc-dddddd mt-25">开票总金额 <span class="fb f18 co-1DABD9 sum-price">0</span> 元，总税费 <span class="fb f18 co-1DABD9 sum-tax">0</span> 元</div>
     </div>
 
     <!-- 修改客户经理信息 -->
@@ -604,10 +630,18 @@ $(document).ready(function(){
             <td><%= record.num %></td>
             <td><%= record.companyCombineName %></td>
             <td><%= record.invoiceAmount %></td>
+            <td>
+                <% if(record.invoiceType == 1){ %>
+                增值税普通发票
+                <% } else { %>
+                <span class="co-3B99FC">增值税专用发票</span>
+                <% } %>
+            </td>
+            <td><%= record.rate %>%</td>
+            <td><%= record.tax %></td>
             <td><%= record.invoiceDate %></td>
             <td><%= record.content %></td>
             <td class="hidden-xs"><%= record.createTime %></td>
-            <td><%= record.stateStr %></td>
         </tr>
     <% }) %>
 </script>
@@ -646,13 +680,36 @@ $(document).ready(function(){
                 <input type="text" class="form-control" required name="content" value='<%= content %>'>
             </div>
         </div>
-        <div class="form-group pt-20 pb-20 mb-0">
+        <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+            <label class="col-sm-2 control-label">发票类型</label>
+            <div class="col-sm-4">
+                <label class="radio-inline">
+                    <input type="radio" name="invoice_type" value="1" <% if(invoiceType==1){ %>checked="checked"<% } %> > 增值税普通发票
+                </label>
+                <label class="radio-inline">
+                    <input type="radio" name="invoice_type" value="2" <% if(invoiceType==2){ %>checked="checked"<% } %> > 增值税专用发票
+                </label>
+            </div>
+        </div>
+        <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+            <label class="col-sm-2 control-label">发票税点</label>
+            <div class="col-sm-2">
+                <input type="text" required class="form-control" name='rate' value='<%= rate %>'>
+            </div>
+        </div>
+        <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+            <label class="col-sm-2 control-label">税费</label>
+            <div class="col-sm-5">
+                <p class="form-control-static"><%= tax %></p>
+            </div>
+        </div>
+        <div class="hide form-group pt-20 pb-20 mb-0">
             <label class="col-sm-2 control-label">配送人</label>
             <div class="col-sm-3">
                 <input type="text" class="form-control" id="transporter_modify" required name="transporter" value=''>
             </div>
         </div>
-        <div class="form-group pt-20 pb-20 mb-0">
+        <div class="hide form-group pt-20 pb-20 mb-0">
             <label class="col-sm-2 control-label">流水图片</label>
             <div class="col-sm-6">
                 <img src="<%= img %>" >
@@ -721,24 +778,41 @@ $(document).ready(function(){
                         </div>
                     </div>
                     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
-                        <label class="col-sm-2 control-label">开票金额</label>
-                        <div class="col-sm-4">
-                            <input type="text" class="form-control number" required name="invoice_amount" value='0'>
+                        <label class="col-sm-2 control-label">发票类型</label>
+                        <div class="col-sm-9 invoice_types">
+                            <label class="radio-inline">
+                                <input type="radio" name="invoice_type" value="1" checked="checked"> 增值税普通发票
+                            </label>
+                            <label class="radio-inline">
+                                <input type="radio" name="invoice_type" value="2"> 增值税专用发票
+                            </label>
                         </div>
                     </div>
                     <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
-                        <label class="col-sm-2 control-label">开票日期</label>
-                        <div class="col-sm-4">
-                            <input type="text" id="invoice_date_add" required class="form-control date" name='invoice_date' value='{{end_date}}'>
+                        <label class="col-sm-2 control-label">发票税点</label>
+                        <div class="col-sm-3">
+                            <input type="text" required class="form-control rate" name='rate' value=''>
+                        </div>
+                    </div>
+                    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+                        <label class="col-sm-2 control-label">开票金额</label>
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control number" required name="invoice_amount" value='0'>
                         </div>
                     </div>
                     <div class="form-group pt-20 pb-20 mb-0">
+                        <label class="col-sm-2 control-label">开票日期</label>
+                        <div class="col-sm-3">
+                            <input type="text" id="invoice_date_add" required class="form-control date" name='invoice_date' value='{{end_date}}'>
+                        </div>
+                    </div>
+                    <div class="hide form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
                         <label class="col-sm-2 control-label">配送人</label>
                         <div class="col-sm-4">
                             <input type="text" class="form-control" id="transporter_add" required name="transporter" value=''>
                         </div>
                     </div>
-                    <div class="form-group pt-20 pb-20 mb-0">
+                    <div class="hide form-group pt-20 pb-20 mb-0">
                         <label class="col-sm-2 control-label">流水图片</label>
                         <div class="col-sm-6">
                             <input name="img" type="file" />

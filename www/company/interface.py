@@ -119,7 +119,7 @@ class ItemBase(object):
                 price=price,
                 sort=sort,
                 integer=integer,
-                net_weight_rate = net_weight_rate,
+                net_weight_rate=net_weight_rate,
                 gross_profit_rate=gross_profit_rate,
                 init_add=init_add,
                 supplier_id=supplier_id,
@@ -158,7 +158,7 @@ class ItemBase(object):
 
         return obj
 
-    def modify_item(self, item_id, name, item_type, spec, price, sort,\
+    def modify_item(self, item_id, name, item_type, spec, price, sort,
                     state, integer, net_weight_rate, gross_profit_rate, init_add, supplier_id, des, img):
 
         if not (name and item_type and price and supplier_id and gross_profit_rate and net_weight_rate):
@@ -175,12 +175,12 @@ class ItemBase(object):
         temp = Item.objects.filter(name=name)
         if temp and temp[0].id != obj.id:
             return 20103, dict_err.get(20103)
-        
+
         try:
             # 如果换了类别需要重新计算货号
             if obj.item_type != int(item_type):
                 obj.code = self.generate_item_code(item_type)
-                
+
             obj.name = name
             obj.item_type = item_type
             obj.spec = spec
@@ -213,7 +213,7 @@ class ItemBase(object):
     def modify_fruit_price(self, item_id, price, net_weight_rate, flesh_rate, gross_profit_rate, wash_floating_rate):
         if not (item_id and price and net_weight_rate and flesh_rate and gross_profit_rate and wash_floating_rate):
             return 99800, dict_err.get(99800)
-        
+
         obj = Item.objects.filter(id=item_id)
         if not obj:
             return 20102, dict_err.get(20102)
@@ -268,7 +268,7 @@ class ItemBase(object):
             ORDER BY count DESC
             LIMIT 0, %s
         """
-        
+
         return raw_sql.exec_sql(sql, [item_type, str(start_date), str(end_date), top])
 
 
@@ -301,9 +301,9 @@ class CompanyBase(object):
         except Company.DoesNotExist:
             return ""
 
-    def add_company(self, name, staff_name, mobile, tel, addr, city_id, \
-        sort, des, person_count, invite_by, is_show, logo, short_name, \
-        sale_date, sale_by, longitude, latitude):
+    def add_company(self, name, staff_name, mobile, tel, addr, city_id,
+                    sort, des, person_count, invite_by, is_show, logo, short_name,
+                    sale_date, sale_by, longitude, latitude):
 
         if not (name and staff_name and mobile and addr and city_id):
             return 99800, dict_err.get(99800)
@@ -339,8 +339,8 @@ class CompanyBase(object):
                 longitude=longitude,
                 latitude=latitude,
                 short_name=short_name,
-                sale_date = sale_date,
-                sale_by = sale_by
+                sale_date=sale_date,
+                sale_by=sale_by
             )
 
             # 创建公司对应的账户
@@ -352,9 +352,9 @@ class CompanyBase(object):
 
         return 0, obj
 
-    def modify_company(self, company_id, name, staff_name, mobile, tel, \
-        addr, city_id, sort, des, state, person_count, invite_by, \
-        is_show, logo, short_name, sale_date, sale_by, longitude, latitude):
+    def modify_company(self, company_id, name, staff_name, mobile, tel,
+                       addr, city_id, sort, des, state, person_count, invite_by,
+                       is_show, logo, short_name, sale_date, sale_by, longitude, latitude):
         if not (name and staff_name and mobile and addr and city_id):
             return 99800, dict_err.get(99800)
 
@@ -388,8 +388,8 @@ class CompanyBase(object):
             obj.state = state
             obj.person_count = person_count
             obj.invite_by = invite.id if invite else None
-            obj.is_show = is_show 
-            obj.logo = logo 
+            obj.is_show = is_show
+            obj.logo = logo
             obj.longitude = longitude
             obj.latitude = latitude
             obj.short_name = short_name
@@ -421,7 +421,7 @@ class CompanyBase(object):
         '''
         获取已经服务过的公司
         '''
-        return Order.objects.select_related('company').filter(state=3).values('company__id').annotate(Count('company__id')).count() 
+        return Order.objects.select_related('company').filter(state=3).values('company__id').annotate(Count('company__id')).count()
 
 
 class MealBase(object):
@@ -430,7 +430,7 @@ class MealBase(object):
         temp = []
         for x in range(1, 8):
             temp.append(str(x)) if str(x) in cycle else temp.append('0')
-        
+
         return "-".join(temp)
 
     @transaction.commit_manually(using=DEFAULT_DB)
@@ -719,7 +719,7 @@ class OrderBase(object):
         return objs
 
     def search_orders_for_admin(self, start_date, end_date, state, company, is_test, owner=None, expected_time_sort=False):
-        
+
         # 是否查询所有有效订单
         if state == -2:
             objs = Order.objects.filter(
@@ -755,7 +755,7 @@ class OrderBase(object):
         # 查询日期已经配送的订单
         orders = Order.objects.filter(
             create_time__range=(start_date, end_date),
-            meal_id__in = meal_ids
+            meal_id__in=meal_ids
         ).exclude(state=0)
         except_meal_ids = [x.meal_id for x in orders]
 
@@ -826,11 +826,11 @@ class OrderBase(object):
 
             # 库存产品消耗
             code, msg = InventoryBase().calculate_inventory_cost_by_order(obj.id)
-            
+
             if code != 0:
                 transaction.rollback(using=DEFAULT_DB)
                 return code, dict_err.get(code)
-                
+
             # 试吃订单不操作账户
             if obj.is_test:
                 transaction.commit(using=DEFAULT_DB)
@@ -902,13 +902,12 @@ class OrderBase(object):
 
         return objs
 
-
     def search_orders_by_company(self, company_id, start_date, end_date, order_no, search_by_confirm_time=False):
         '''
         公司平台查询订单
         '''
         objs = Order.objects.filter(
-            company_id = company_id,
+            company_id=company_id,
             state__in=(1, 2, 3)
         )
 
@@ -955,7 +954,7 @@ class OrderBase(object):
             AND a.confirm_time < %s 
             GROUP BY c.supplier_id, a.order_no
         """
-        
+
         return raw_sql.exec_sql(sql, ['%%%s%%' % name, str(start_date), str(end_date)])
 
     def get_latest_order_of_company(self, company_id):
@@ -976,12 +975,12 @@ class OrderBase(object):
         '''
         yesterday = datetime.datetime.now() - datetime.timedelta(days=1)
         yesterday = datetime.datetime(yesterday.year, yesterday.month, yesterday.day, yesterday.hour, yesterday.minute, yesterday.second)
-        return Order.objects.filter(state__in=[1,2], create_time__lt=yesterday)
+        return Order.objects.filter(state__in=[1, 2], create_time__lt=yesterday)
 
     def get_orders_by_date(self, start_date, end_date, state=3, is_test=False):
-        
+
         return Order.objects.filter(
-            state=state, 
+            state=state,
             is_test=is_test,
             confirm_time__range=(start_date, end_date)
         )
@@ -1024,17 +1023,17 @@ class OrderBase(object):
             AND is_test = 0
             GROUP BY month
         """
-        
+
         return raw_sql.exec_sql(sql, [start_date, end_date])
 
     def get_company_gross_profit_analysis_data(self, start_date, end_date, name):
         '''
         获取公司毛利分析数据
         '''
-        
+
         condition = ""
         if name:
-            condition += " AND name LIKE '%%"+name+"%%' "
+            condition += " AND name LIKE '%%" + name + "%%' "
 
         sql = """
             SELECT name, short_name,
@@ -1050,20 +1049,20 @@ class OrderBase(object):
             GROUP BY name
             ORDER BY gross_profit_rate
         """
-        
+
         return raw_sql.exec_sql(sql, [start_date, end_date])
 
     def get_order_gross_profit_analysis_data(self, start_date, end_date, name, rate=0):
         '''
         获取订单毛利分析数据
         '''
-        
+
         condition = ""
         if name:
-            condition += " AND b.name LIKE '%%"+name+"%%' "
+            condition += " AND b.name LIKE '%%" + name + "%%' "
         if rate:
-            condition += " AND 1 - cost_price / total_price < " + str(rate/100.0)
-        
+            condition += " AND 1 - cost_price / total_price < " + str(rate / 100.0)
+
         sql = """
             SELECT b.name, b.short_name, a.id, a.order_no,
                 cost_price,
@@ -1077,9 +1076,8 @@ class OrderBase(object):
         """ + condition + """
             ORDER BY gross_profit_rate
         """
-        
-        return raw_sql.exec_sql(sql, [start_date, end_date])
 
+        return raw_sql.exec_sql(sql, [start_date, end_date])
 
 
 class BookingBase(object):
@@ -1127,17 +1125,17 @@ class BookingBase(object):
 
             # 发送微信提醒
             from www.weixin.interface import WeixinBase
-            
+
             for sale_man in SaleManBase().get_all_sale_man(True):
 
                 to_user_openid = ExternalTokenBase().get_weixin_openid_by_user_id(sale_man.user_id)
 
                 if to_user_openid:
                     WeixinBase().send_todo_list_template_msg(
-                        to_user_openid, 
-                        content, 
-                        u'新客户预约', 
-                        u'高', 
+                        to_user_openid,
+                        content,
+                        u'新客户预约',
+                        u'高',
                         u"嗨生意来了！请及时跟进"
                     )
 
@@ -1243,7 +1241,7 @@ class CompanyManagerBase(object):
         return 0, dict_err.get(0)
 
     def get_managers_by_company(self, company_id):
-        return CompanyManager.objects.filter(company_id = company_id)
+        return CompanyManager.objects.filter(company_id=company_id)
 
 
 class CashAccountBase(object):
@@ -1288,6 +1286,7 @@ class CashAccountBase(object):
         except CashAccount.DoesNotExist:
             return ''
 
+
 class CashRecordBase(object):
 
     def send_balance_insufficient_notice(self, company, balance, max_overdraft):
@@ -1300,13 +1299,13 @@ class CashRecordBase(object):
         # 发送微信提醒
         from weixin.interface import WeixinBase
         for manager in CompanyManagerBase().get_managers_by_company(company.id):
-            
+
             to_user_openid = ExternalTokenBase().get_weixin_openid_by_user_id(manager.user_id)
 
             if to_user_openid:
                 WeixinBase().send_balance_insufficient_template_msg(
-                    to_user_openid, u"账户已达「%.2f」元最高透支额，请联系充值" % max_overdraft, 
-                    company.name, u"%.2f 元" % balance, 
+                    to_user_openid, u"账户已达「%.2f」元最高透支额，请联系充值" % max_overdraft,
+                    company.name, u"%.2f 元" % balance,
                     u"感谢您的支持，祝工作愉快"
                 )
 
@@ -1324,15 +1323,15 @@ class CashRecordBase(object):
         # 发送微信提醒
         from weixin.interface import WeixinBase
         for manager in CompanyManagerBase().get_managers_by_company(company.id):
-            
+
             to_user_openid = ExternalTokenBase().get_weixin_openid_by_user_id(manager.user_id)
 
             if to_user_openid:
                 WeixinBase().send_recharge_success_template_msg(
-                    to_user_openid, 
+                    to_user_openid,
                     u"%s，您已成功充值" % company.name,
-                    datetime.datetime.now().strftime("%Y-%m-%d %H:%M"), 
-                    u"%.2f 元" % amount, 
+                    datetime.datetime.now().strftime("%Y-%m-%d %H:%M"),
+                    u"%.2f 元" % amount,
                     u"账户余额：%.2f 元" % balance
                 )
 
@@ -1419,8 +1418,8 @@ class CashRecordBase(object):
             # 转出时判断是否超过透支额  发送提醒
             if operation == 1 and account.balance < 0 and abs(account.balance) >= account.max_overdraft:
                 self.send_balance_insufficient_notice(
-                    account.company, 
-                    account.balance, 
+                    account.company,
+                    account.balance,
                     account.max_overdraft
                 )
 
@@ -1438,10 +1437,9 @@ class CashRecordBase(object):
             debug.get_debug_detail_and_send_email(e)
             return 99900, dict_err.get(99900)
 
-
     def get_records_by_company(self, company_id, start_date, end_date):
         objs = self.get_all_records().filter(
-            cash_account__company__id = company_id,
+            cash_account__company__id=company_id,
             create_time__range=(start_date, end_date)
         )
 
@@ -1465,7 +1463,7 @@ class CashRecordBase(object):
 
     def change_is_invoice(self, record_id):
         try:
-            obj = CashRecord.objects.get(id = record_id)
+            obj = CashRecord.objects.get(id=record_id)
             if obj.is_invoice == 1:
                 obj.is_invoice = 0
             else:
@@ -1505,8 +1503,8 @@ class SupplierBase(object):
         except Supplier.DoesNotExist:
             return ""
 
-    def add_supplier(self, name, contact, tel, addr, bank_name='', account_name='', \
-            account_num='', sort=0, des='', remittance_des=''):
+    def add_supplier(self, name, contact, tel, addr, bank_name='', account_name='',
+                     account_num='', sort=0, des='', remittance_des=''):
 
         if not (name and contact and tel and addr):
             return 99800, dict_err.get(99800)
@@ -1516,16 +1514,16 @@ class SupplierBase(object):
 
         try:
             obj = Supplier.objects.create(
-                name = name,
-                contact = contact,
-                tel = tel,
-                addr = addr,
-                sort = sort,
-                des = des,
-                bank_name = bank_name,
-                account_name = account_name,
-                account_num = account_num,
-                remittance_des = remittance_des
+                name=name,
+                contact=contact,
+                tel=tel,
+                addr=addr,
+                sort=sort,
+                des=des,
+                bank_name=bank_name,
+                account_name=account_name,
+                account_num=account_num,
+                remittance_des=remittance_des
             )
 
             # 创建供货商对应的账户
@@ -1537,8 +1535,8 @@ class SupplierBase(object):
 
         return 0, obj
 
-    def modify_supplier(self, supplier_id, name, contact, tel, addr, bank_name='', \
-            account_name='', account_num='', state=1, sort=0, des='', remittance_des=''):
+    def modify_supplier(self, supplier_id, name, contact, tel, addr, bank_name='',
+                        account_name='', account_num='', state=1, sort=0, des='', remittance_des=''):
 
         if not (name and contact and tel and addr):
             return 99800, dict_err.get(99800)
@@ -1699,7 +1697,7 @@ class PurchaseRecordBase(object):
 
     def search_records_for_admin(self, name, state, start_date, end_date):
         objs = self.get_all_records(state).filter(
-            create_time__range = (start_date, end_date)
+            create_time__range=(start_date, end_date)
         )
 
         if name:
@@ -1711,7 +1709,7 @@ class PurchaseRecordBase(object):
 
     @transaction.commit_manually(using=DEFAULT_DB)
     def add_record(self, supplier_id, des, price, img, operator, ip):
-        
+
         if not (supplier_id and des and price and operator):
             return 99800, dict_err.get(99800)
 
@@ -1724,13 +1722,13 @@ class PurchaseRecordBase(object):
             assert price > 0
 
             record = PurchaseRecord.objects.create(
-                supplier_id = supplier_id,
-                des = des,
-                price = price,
-                img = img,
-                operator = operator
+                supplier_id=supplier_id,
+                des=des,
+                price=price,
+                img=img,
+                operator=operator
             )
-            
+
             errcode, errmsg = SupplierCashRecordBase().add_cash_record(
                 supplier_id, price, 0, u'来自采购流水', ip, record.id
             )
@@ -1746,7 +1744,6 @@ class PurchaseRecordBase(object):
             debug.get_debug_detail_and_send_email(e)
             transaction.rollback(using=DEFAULT_DB)
             return 99900, dict_err.get(99900)
-
 
     def get_record_by_id(self, record_id):
         try:
@@ -1768,7 +1765,7 @@ class PurchaseRecordBase(object):
         try:
             obj.state = 0
             obj.save()
-            
+
             errcode, errmsg = SupplierCashRecordBase().add_cash_record(
                 obj.supplier_id, obj.price, 1, u'采购流水作废', ip, obj.id
             )
@@ -1789,9 +1786,9 @@ class PurchaseRecordBase(object):
         根据流水按供货商查询汇总信息
         '''
         return PurchaseRecord.objects.select_related('supplier').filter(
-            state = 1,
-            supplier__name__contains = name,
-            create_time__range = (start_date, end_date)
+            state=1,
+            supplier__name__contains=name,
+            create_time__range=(start_date, end_date)
         ).values('supplier_id').annotate(Sum('price'))
 
 
@@ -1809,15 +1806,15 @@ class SaleManBase(object):
         return self.get_all_sale_man(state)
 
     def add_sale_man(self, user_id, employee_date, state=True):
-        
+
         user = UserBase().get_user_by_id(user_id)
         if not user:
             return 99800, dict_err.get(99800)
 
         try:
             obj = SaleMan.objects.create(
-                user_id = user_id,
-                employee_date = employee_date
+                user_id=user_id,
+                employee_date=employee_date
             )
         except Exception, e:
             debug.get_debug_detail_and_send_email(e)
@@ -1832,7 +1829,7 @@ class SaleManBase(object):
             return ''
 
     def modify_sale_man(self, sale_man_id, user_id, employee_date, state=True):
-        
+
         if not (sale_man_id and user_id):
             return 99800, dict_err.get(99800)
 
@@ -1864,9 +1861,8 @@ class StatisticsBase(object):
 
         return Meal.objects.select_related('company').filter(
             company__sale_date__range=(start_date, end_date),
-            state = 1
+            state=1
         )
-
 
     @cache_required(cache_key='statistics_summary_data', expire=43200, cache_config=cache.CACHE_TMP)
     def statistics_summary(self):
@@ -1906,7 +1902,7 @@ class StatisticsBase(object):
 
         # 根据订单汇总的总服务人次
         temp_person_time_count = Order.objects.filter(state=3, is_test=0).aggregate(Sum('person_count'))['person_count__sum']
-        
+
         # 平均客单价
         per_customer_transaction = round(sale / temp_person_time_count, 1)
 
@@ -2006,15 +2002,15 @@ class StatisticsBase(object):
 
         # 总销售额
         sale = Order.objects.filter(
-            state=3, 
+            state=3,
             is_test=0,
             confirm_time__range=(start_date, end_date)
         ).aggregate(Sum('total_price'))['total_price__sum']
         sale = sale if sale else 0
-        
+
         # 总订单成本
         cost = Order.objects.filter(
-            state=3, 
+            state=3,
             is_test=0,
             confirm_time__range=(start_date, end_date)
         ).aggregate(Sum('cost_price'))['cost_price__sum']
@@ -2022,7 +2018,7 @@ class StatisticsBase(object):
 
         # 总试吃订单成本
         test_cost = Order.objects.filter(
-            state=3, 
+            state=3,
             is_test=1,
             confirm_time__range=(start_date, end_date)
         ).aggregate(Sum('cost_price'))['cost_price__sum']
@@ -2030,7 +2026,7 @@ class StatisticsBase(object):
 
         # 总采购金额
         purchase = PurchaseRecordBase().get_all_records(True).filter(
-            create_time__range = (start_date, end_date)
+            create_time__range=(start_date, end_date)
         ).aggregate(Sum('price'))['price__sum']
         purchase = purchase if purchase else 0
 
@@ -2038,7 +2034,7 @@ class StatisticsBase(object):
         gross_profit = sale - cost - test_cost
 
         # 订单成本与采购差额
-        balance =  cost + test_cost - purchase
+        balance = cost + test_cost - purchase
 
         return {
             'sale': str(sale),
@@ -2090,6 +2086,11 @@ class StatisticsBase(object):
 
 class InvoiceRecordBase(object):
 
+    def get_tax(self, total, rate):
+        if not rate:
+            return 0
+        return total / decimal.Decimal((100.0 + rate) / 100.0) * decimal.Decimal((rate / 100.0))
+
     def get_all_records(self, state=None):
         objs = InvoiceRecord.objects.all()
 
@@ -2098,17 +2099,20 @@ class InvoiceRecordBase(object):
 
         return objs
 
-    def search_records_for_admin(self, name, state, start_date, end_date):
+    def search_records_for_admin(self, name, state, start_date, end_date, invoice_type=None):
         objs = self.get_all_records(state).filter(
-            create_time__range = (start_date, end_date)
+            create_time__range=(start_date, end_date)
         )
+
+        if invoice_type:
+            objs = objs.filter(invoice_type=invoice_type)
 
         if name:
             objs = objs.select_related('company').filter(
                 company__name__contains=name
             )
 
-        return objs, objs.aggregate(Sum('invoice_amount'))['invoice_amount__sum']
+        return objs, objs.aggregate(Sum('invoice_amount'))['invoice_amount__sum'], objs.aggregate(Sum('tax'))['tax__sum']
 
     def get_record_by_id(self, record_id):
         try:
@@ -2116,8 +2120,8 @@ class InvoiceRecordBase(object):
         except InvoiceRecord.DoesNotExist:
             return ''
 
-    def add_record(self, company_id, title, invoice_amount, content, invoice_date, operator, transporter=None, img=None):
-        
+    def add_record(self, company_id, title, invoice_amount, content, invoice_date, operator, transporter=None, img=None, invoice_type=1, rate=0):
+
         if not (company_id and title and invoice_amount and content and invoice_date and operator):
             return 99800, dict_err.get(99800)
 
@@ -2129,14 +2133,17 @@ class InvoiceRecordBase(object):
             assert invoice_amount > 0
 
             record = InvoiceRecord.objects.create(
-                company_id = company_id,
-                title = title,
-                invoice_amount = invoice_amount,
-                content = content,
-                invoice_date = invoice_date,
-                operator = operator,
-                transporter = transporter,
-                img = img
+                company_id=company_id,
+                title=title,
+                invoice_amount=invoice_amount,
+                content=content,
+                invoice_date=invoice_date,
+                operator=operator,
+                transporter=transporter,
+                img=img,
+                invoice_type=invoice_type,
+                rate=rate,
+                tax=self.get_tax(decimal.Decimal(invoice_amount), int(rate))
             )
 
         except Exception, e:
@@ -2145,11 +2152,11 @@ class InvoiceRecordBase(object):
 
         return 0, record
 
-    def modify_record(self, record_id, company_id, title, invoice_amount, content, invoice_date, operator, state, transporter=None, img=None):
-        
+    def modify_record(self, record_id, company_id, title, invoice_amount, content, invoice_date, operator, state, transporter=None, img=None, invoice_type=1, rate=0):
+
         if not (record_id and company_id and title and invoice_amount and content and invoice_date and operator):
             return 99800, dict_err.get(99800)
-        
+
         company = CompanyBase().get_company_by_id(company_id)
         if not company:
             return 20802, dict_err.get(20802)
@@ -2170,6 +2177,9 @@ class InvoiceRecordBase(object):
             obj.state = state
             obj.transporter = transporter
             obj.img = img
+            obj.invoice_type = invoice_type
+            obj.rate = rate
+            obj.tax = self.get_tax(decimal.Decimal(invoice_amount), int(rate))
             obj.save()
 
         except Exception, e:
@@ -2214,7 +2224,7 @@ class InvoiceRecordBase(object):
         content = u"以下公司开票金额与充值金额不符，请及时跟进：\n%s" % (companys)
 
         async_send_email("vip@3-10.cc", title, content)
-    
+
     def get_invoice_statement(self, company_name, start_date, end_date):
         '''
         发票对账
@@ -2263,18 +2273,19 @@ class InvoiceRecordBase(object):
 
         data = data.values()
         # 排序 需要提醒的排列在前面
-        data.sort(key=lambda x:x['offset_abs'], reverse=True)
+        data.sort(key=lambda x: x['offset_abs'], reverse=True)
 
         return data, sum([x['offset'] for x in data if x['offset'] < 0])
 
+
 class InvoiceBase(object):
-    
+
     def search_invoices_for_admin(self, name):
         objs = Invoice.objects.all()
         if name:
             objs = objs.filter(company__name__contains=name)
 
-        return objs 
+        return objs
 
     def get_invoice_by_id(self, invoice_id):
         try:
@@ -2288,8 +2299,8 @@ class InvoiceBase(object):
         except Invoice.DoesNotExist:
             return ''
 
-    def add_invoice(self, company_id, title, content):
-        
+    def add_invoice(self, company_id, title, content, invoice_type, rate):
+
         if not (company_id, title, content):
             return 99800, dict_err.get(99800)
 
@@ -2300,9 +2311,11 @@ class InvoiceBase(object):
         try:
 
             record = Invoice.objects.create(
-                company_id = company_id,
-                title = title,
-                content = content
+                company_id=company_id,
+                title=title,
+                content=content,
+                invoice_type=invoice_type,
+                rate=rate
             )
 
         except Exception, e:
@@ -2311,8 +2324,8 @@ class InvoiceBase(object):
 
         return 0, record
 
-    def modify_invoice(self, invoice_id, company_id, title, content):
-        
+    def modify_invoice(self, invoice_id, company_id, title, content, invoice_type, rate):
+
         if not (invoice_id and company_id and title and content):
             return 99800, dict_err.get(99800)
 
@@ -2328,6 +2341,8 @@ class InvoiceBase(object):
 
             obj.title = title
             obj.content = content
+            obj.invoice_type = invoice_type
+            obj.rate = rate
             obj.save()
 
         except Exception, e:
@@ -2335,6 +2350,7 @@ class InvoiceBase(object):
             return 99900, dict_err.get(99900)
 
         return 0, obj
+
 
 class RechargeOrderBase(object):
 
@@ -2360,10 +2376,10 @@ class RechargeOrderBase(object):
     def create_order(self, company_id, total_fee, pay_type, ip):
 
         try:
-            
+
             if not (company_id and total_fee and pay_type and ip):
                 return 99800, dict_err.get(99800)
-            
+
             try:
                 total_fee = decimal.Decimal(total_fee)
                 pay_type = int(pay_type)
@@ -2376,12 +2392,12 @@ class RechargeOrderBase(object):
                 return 20202, dict_err.get(20202)
 
             order = RechargeOrder.objects.create(
-                trade_id = self.generate_order_trade_id("CZ"),
-                company_id = company_id,
-                total_fee = total_fee,
-                discount_fee = 0,
-                pay_fee = total_fee,
-                pay_type = pay_type
+                trade_id=self.generate_order_trade_id("CZ"),
+                company_id=company_id,
+                total_fee=total_fee,
+                discount_fee=0,
+                pay_fee=total_fee,
+                pay_type=pay_type
             )
 
         except Exception, e:
@@ -2396,7 +2412,7 @@ class RechargeOrderBase(object):
         try:
             # 订单是否存在
             order = self.get_order_by_trade_id(trade_id)
-            
+
             if not order:
                 transaction.rollback(using=DEFAULT_DB)
                 return 21301, dict_err.get(21301)
@@ -2435,7 +2451,7 @@ class InventoryBase(object):
     '''
     库存产品
     '''
-    
+
     def get_all_inventory(self, state):
         objs = Inventory.objects.all()
 
@@ -2471,10 +2487,10 @@ class InventoryBase(object):
 
         try:
             obj = Inventory.objects.create(
-                item_id = item_id,
-                amount = amount,
-                warning_value = warning_value,
-                state = state
+                item_id=item_id,
+                amount=amount,
+                warning_value=warning_value,
+                state=state
             )
         except Exception, e:
             debug.get_debug_detail_and_send_email(e)
@@ -2524,7 +2540,7 @@ class InventoryBase(object):
 
         except Exception, e:
             debug.get_debug_detail_and_send_email(e)
-    
+
     def calculate_inventory_cost_by_order(self, order_id):
         '''
         根据订单计算消耗产品
@@ -2575,7 +2591,7 @@ class InventoryBase(object):
                 continue
 
             code, msg = InventoryRecordBase().add_record(k, 1, v, order.confirm_operator, u"订单「%s」确认" % order.order_no)
-            
+
             if code > 0:
                 break
 
@@ -2611,9 +2627,9 @@ class InventoryToItemBase(object):
 
         try:
             obj = InventoryToItem.objects.create(
-                inventory_id = inventory_id,
-                item_id = item_id,
-                amount = amount
+                inventory_id=inventory_id,
+                item_id=item_id,
+                amount=amount
             )
         except Exception, e:
             debug.get_debug_detail_and_send_email(e)
@@ -2654,7 +2670,7 @@ class InventoryRecordBase(object):
 
     def search_records_for_admin(self, start_date, end_date, name, operation=None):
         objs = self.get_all_records(operation).filter(
-            create_time__range = (start_date, end_date)
+            create_time__range=(start_date, end_date)
         )
 
         if name:
@@ -2663,7 +2679,6 @@ class InventoryRecordBase(object):
             )
 
         return objs
-
 
     def add_record(self, inventory_id, operation, value, operator, notes):
         '''
@@ -2682,11 +2697,11 @@ class InventoryRecordBase(object):
 
         try:
             obj = InventoryRecord.objects.create(
-                inventory_id = inventory_id,
-                operation = operation,
-                operator = operator,
-                notes = notes,
-                value = value
+                inventory_id=inventory_id,
+                operation=operation,
+                operator=operator,
+                notes=notes,
+                value=value
             )
 
             # 更新库存产品数量
@@ -2699,7 +2714,7 @@ class InventoryRecordBase(object):
             obj.current_value = obj.inventory.amount
             obj.save()
 
-            #是否需要提醒
+            # 是否需要提醒
             # InventoryBase().check_need_notice(obj.inventory.id)
 
         except Exception, e:
@@ -2708,14 +2723,13 @@ class InventoryRecordBase(object):
 
         return 0, obj
 
-
     @transaction.commit_manually(using=DEFAULT_DB)
     def add_record_with_transaction(self, inventory_id, operation, value, operator, notes):
         '''
         '''
         try:
             errcode, errmsg = self.add_record(inventory_id, operation, value, operator, notes)
-            
+
             if errcode == 0:
                 transaction.commit(using=DEFAULT_DB)
             else:
@@ -2762,19 +2776,19 @@ class ParttimePersonBase(object):
             return ''
 
     def add_person(self, name, gender, age, tel, hourly_pay=10, state=1, note=''):
-        
+
         if not (name, gender, age, tel, hourly_pay):
             return 99800, dict_err.get(99800)
 
         try:
 
             person = ParttimePerson.objects.create(
-                name = name,
-                gender = gender,
-                age = age,
-                tel = tel,
-                hourly_pay = hourly_pay,
-                note = note
+                name=name,
+                gender=gender,
+                age=age,
+                tel=tel,
+                hourly_pay=hourly_pay,
+                note=note
             )
 
         except Exception, e:
@@ -2816,6 +2830,7 @@ class ParttimeRecordBase(object):
 
     '''
     '''
+
     def search_records_for_admin(self, start_date, end_date, name):
         objs = ParttimeRecord.objects.filter(start_time__range=(start_date, end_date))
 
@@ -2824,9 +2839,8 @@ class ParttimeRecordBase(object):
 
         return objs, objs.aggregate(Sum('pay'))['pay__sum']
 
-
     def add_record(self, person_id, start_date, end_date, note):
-        
+
         if not (person_id, start_date, end_date):
             return 99800, dict_err.get(99800)
 
@@ -2835,22 +2849,22 @@ class ParttimeRecordBase(object):
             return 21501, dict_err.get(21501)
 
         try:
-            s = datetime.datetime.strptime(start_date, '%Y-%m-%d %H:%M') 
+            s = datetime.datetime.strptime(start_date, '%Y-%m-%d %H:%M')
             e = datetime.datetime.strptime(end_date, '%Y-%m-%d %H:%M')
-            hour = round((e - s).seconds/60/60.0, 1)
+            hour = round((e - s).seconds / 60 / 60.0, 1)
 
             # 一个人一天只能有一条记录
             if ParttimeRecord.objects.filter(person_id=person_id, start_time__gt=start_date[:10] + " 00:00:00", start_time__lt=start_date[:10] + " 23:59:59"):
                 return 21502, dict_err.get(21502)
 
             record = ParttimeRecord.objects.create(
-                person_id = person_id,
-                start_time = start_date,
-                end_time = end_date,
-                hour = hour,
-                hourly_pay = person.hourly_pay,
-                pay = round(hour * person.hourly_pay, 1),
-                note = note
+                person_id=person_id,
+                start_time=start_date,
+                end_time=end_date,
+                hour=hour,
+                hourly_pay=person.hourly_pay,
+                pay=round(hour * person.hourly_pay, 1),
+                note=note
             )
 
         except Exception, e:
@@ -2858,7 +2872,6 @@ class ParttimeRecordBase(object):
             return 99900, dict_err.get(99900)
 
         return 0, record
-
 
     def remove_record(self, record_id):
 
@@ -2872,15 +2885,3 @@ class ParttimeRecordBase(object):
             return 99900, dict_err.get(99900)
 
         return 0, dict_err.get(0)
-
-
-
-
-
-
-
-
-
-
-
-

@@ -5,6 +5,7 @@ from django.conf import settings
 import datetime
 import decimal
 
+
 class Company(models.Model):
 
     '''
@@ -48,6 +49,7 @@ class Company(models.Model):
     class Meta:
         ordering = ["sort", "-create_time"]
 
+
 class CompanyManager(models.Model):
     company = models.ForeignKey("Company")
     user_id = models.CharField(verbose_name=u"管理员id", max_length=32, db_index=True)
@@ -56,6 +58,7 @@ class CompanyManager(models.Model):
     class Meta:
         unique_together = [("company", "user_id"), ]
         ordering = ["company"]
+
 
 class CashAccount(models.Model):
 
@@ -68,6 +71,7 @@ class CashAccount(models.Model):
 
     class Meta:
         ordering = ['balance', 'id']
+
 
 class CashRecord(models.Model):
 
@@ -83,7 +87,7 @@ class CashRecord(models.Model):
     notes = models.CharField(verbose_name=u"备注", max_length=256)
     is_invoice = models.IntegerField(verbose_name=u"是否记录开票金额", default=1, null=True, db_index=True)
     ip = models.CharField(verbose_name=u"ip", max_length=32, null=True)
-    create_time = models.DateTimeField(verbose_name=u"流水时间", auto_now_add=True, db_index=True) 
+    create_time = models.DateTimeField(verbose_name=u"流水时间", auto_now_add=True, db_index=True)
 
     class Meta:
         ordering = ['-id']
@@ -139,6 +143,7 @@ class Booking(models.Model):
     class Meta:
         ordering = ["-create_time"]
 
+
 class Item(models.Model):
 
     '''
@@ -193,6 +198,7 @@ class Item(models.Model):
         净重成本价格
         '''
         return decimal.Decimal(self.price) / decimal.Decimal(self.net_weight_rate)
+
     def smart_net_weight_price(self):
         return round(self.net_weight_price(), 2)
 
@@ -201,6 +207,7 @@ class Item(models.Model):
         果肉成本价格
         '''
         return self.net_weight_price() / decimal.Decimal(self.flesh_rate)
+
     def smart_flesh_price(self):
         return round(self.flesh_price(), 2)
 
@@ -209,6 +216,7 @@ class Item(models.Model):
         获取卖价
         '''
         return self.net_weight_price() / (1 - decimal.Decimal(self.gross_profit_rate))
+
     def get_smart_sale_price(self):
         return round(self.get_sale_price(), 2)
 
@@ -217,6 +225,7 @@ class Item(models.Model):
         洗切后价格
         '''
         return self.get_sale_price() * decimal.Decimal(self.wash_floating_rate)
+
     def smart_wash_floating_price(self):
         return round(self.wash_floating_price(), 2)
 
@@ -258,7 +267,7 @@ class Meal(models.Model):
         dict_map = [u'一', u'二', u'三', u'四', u'五', u'六', u'日']
         for x in self.cycle.split('-'):
             if x != '0':
-                temp.append(dict_map[int(x)-1])
+                temp.append(dict_map[int(x) - 1])
             else:
                 temp.append(u"  ")
 
@@ -296,6 +305,7 @@ class Meal(models.Model):
 
     class Meta:
         ordering = ["-create_time"]
+
 
 class MealItem(models.Model):
 
@@ -342,6 +352,7 @@ class Order(models.Model):
     class Meta:
         ordering = ["-create_time"]
 
+
 class OrderItem(models.Model):
 
     '''
@@ -359,20 +370,23 @@ class OrderItem(models.Model):
         unique_together = [("order", "item"), ]
 
 
+invoice_type_choices = ((1, u"增值税普通发票"), (2, u"增值税专用发票"))
+
+
 class Invoice(models.Model):
     '''
     @note: 发票
     '''
-    invoice_type_choices = ((1, u"增值税普通发票"),)
-
     company = models.ForeignKey("Company", unique=True)
     title = models.CharField(verbose_name=u"发票抬头", max_length=128)
     content = models.CharField(verbose_name=u"发票内容", max_length=256)
     invoice_type = models.IntegerField(verbose_name=u"发票类型", default=1, choices=invoice_type_choices)
+    rate = models.IntegerField(verbose_name=u"税点", default=0, null=True)
     create_time = models.DateTimeField(verbose_name=u"创建时间", auto_now_add=True, db_index=True)
-    
+
     class Meta:
         ordering = ["-create_time"]
+
 
 class InvoiceRecord(models.Model):
     '''
@@ -384,6 +398,9 @@ class InvoiceRecord(models.Model):
     title = models.CharField(verbose_name=u"发票抬头", max_length=128)
     invoice_amount = models.DecimalField(verbose_name=u"发票金额", max_digits=10, decimal_places=2, default=0)
     content = models.CharField(verbose_name=u"发票内容", max_length=256)
+    invoice_type = models.IntegerField(verbose_name=u"发票类型", default=1, choices=invoice_type_choices)
+    rate = models.IntegerField(verbose_name=u"税点", default=0, null=True)
+    tax = models.DecimalField(verbose_name=u"税费", max_digits=10, decimal_places=2, default=0)
     transporter = models.CharField(verbose_name=u"配送人", max_length=32, null=True)
     state = models.IntegerField(verbose_name=u"状态", default=1, choices=state_choices)
     invoice_date = models.DateField(verbose_name=u"开票日期")
@@ -393,6 +410,7 @@ class InvoiceRecord(models.Model):
 
     class Meta:
         ordering = ["-invoice_date", "-create_time"]
+
 
 class Supplier(models.Model):
     '''
@@ -417,6 +435,7 @@ class Supplier(models.Model):
     class Meta:
         ordering = ["sort", "-create_time"]
 
+
 class SupplierCashAccount(models.Model):
 
     '''
@@ -427,6 +446,7 @@ class SupplierCashAccount(models.Model):
 
     class Meta:
         ordering = ['-balance', 'id']
+
 
 class SupplierCashRecord(models.Model):
 
@@ -446,6 +466,7 @@ class SupplierCashRecord(models.Model):
 
     class Meta:
         ordering = ['-id']
+
 
 class PurchaseRecord(models.Model):
 
@@ -481,7 +502,6 @@ class SaleMan(models.Model):
         ordering = ["-id"]
 
 
-
 class Inventory(models.Model):
 
     '''
@@ -500,7 +520,7 @@ class Inventory(models.Model):
 
 
 class InventoryRecord(models.Model):
-    
+
     '''
     库存出入库记录表
     '''
@@ -523,7 +543,7 @@ class InventoryToItem(models.Model):
     '''
     库存与项目对照表
     '''
-    
+
     inventory = models.ForeignKey('Inventory')
     item = models.ForeignKey('Item')
     amount = models.IntegerField(verbose_name=u"数量", default=0)
@@ -574,7 +594,3 @@ class ParttimeRecord(models.Model):
 
     class Meta:
         ordering = ['-id']
-
-
-
-

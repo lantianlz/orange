@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-import json, datetime
+import json
+import datetime
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext
 from django.shortcuts import render_to_response
@@ -11,6 +12,7 @@ from www.misc import qiniu_client
 from common import utils, page
 
 from www.company.interface import InvoiceRecordBase, UserBase
+
 
 @verify_permission('')
 def invoice_record(request, template_name='pc/admin/invoice_record.html'):
@@ -23,6 +25,7 @@ def invoice_record(request, template_name='pc/admin/invoice_record.html'):
     start_date = (today.replace(day=1)).strftime('%Y-%m-%d')
     end_date = today.strftime('%Y-%m-%d')
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
+
 
 def format_record(objs, num):
     data = []
@@ -50,10 +53,14 @@ def format_record(objs, num):
             'state': x.state,
             'state_str': x.get_state_display(),
             'img': x.img,
+            'invoice_type': x.invoice_type,
+            'rate': x.rate,
+            'tax': float(x.tax or 0),
             'create_time': str(x.create_time)
         })
 
     return data
+
 
 @verify_permission('query_invoice_record')
 def search(request):
@@ -62,12 +69,14 @@ def search(request):
     name = request.REQUEST.get('name')
     state = request.REQUEST.get('state')
     state = None if state == "0" else state
+    invoice_type = request.REQUEST.get('invoice_type')
+    invoice_type = None if invoice_type == "-1" else invoice_type
     start_date = request.POST.get('start_date')
     end_date = request.POST.get('end_date')
     start_date, end_date = utils.get_date_range(start_date, end_date)
     page_index = int(request.REQUEST.get('page_index'))
 
-    objs, sum_price = InvoiceRecordBase().search_records_for_admin(name, state, start_date, end_date)
+    objs, sum_price, sum_tax = InvoiceRecordBase().search_records_for_admin(name, state, start_date, end_date, invoice_type)
 
     page_objs = page.Cpt(objs, count=10, page=page_index).info
 
@@ -76,9 +85,16 @@ def search(request):
     data = format_record(page_objs[0], num)
 
     return HttpResponse(
-        json.dumps({'data': data, 'sum_price': str(sum_price or 0), 'page_count': page_objs[4], 'total_count': page_objs[5]}),
+        json.dumps({
+            'data': data,
+            'sum_price': str(sum_price or 0),
+            'sum_tax': str(sum_tax or 0),
+            'page_count': page_objs[4],
+            'total_count': page_objs[5]
+        }),
         mimetype='application/json'
     )
+
 
 @verify_permission('query_invoice_record')
 def get_record_by_id(request):
@@ -88,6 +104,7 @@ def get_record_by_id(request):
 
     return HttpResponse(json.dumps(data), mimetype='application/json')
 
+
 @verify_permission('add_invoice_record')
 def add_record(request):
     company_id = request.POST.get('company_id')
@@ -96,6 +113,8 @@ def add_record(request):
     content = request.POST.get('content')
     invoice_date = request.POST.get('invoice_date')
     transporter = request.POST.get('transporter')
+    invoice_type = request.POST.get('invoice_type')
+    rate = request.POST.get('rate')
 
     img_name = ''
     img = request.FILES.get('img')
@@ -104,7 +123,8 @@ def add_record(request):
         img_name = '%s/%s' % (settings.IMG0_DOMAIN, img_name)
 
     flag, msg = InvoiceRecordBase().add_record(
-        company_id, title, invoice_amount, content, invoice_date, request.user.id, transporter, img_name
+        company_id, title, invoice_amount, content, invoice_date,
+        request.user.id, transporter, img_name, invoice_type, rate
     )
 
     if flag == 0:
@@ -126,6 +146,8 @@ def modify_record(request):
     invoice_date = request.POST.get('invoice_date')
     transporter = request.POST.get('transporter')
     state = request.POST.get('state')
+    invoice_type = request.POST.get('invoice_type')
+    rate = request.POST.get('rate')
 
     obj = InvoiceRecordBase().get_record_by_id(record_id)
     img_name = obj.img
@@ -136,8 +158,8 @@ def modify_record(request):
         img_name = '%s/%s' % (settings.IMG0_DOMAIN, img_name)
 
     flag, msg = InvoiceRecordBase().modify_record(
-    	record_id, company_id, title, invoice_amount, content, 
-    	invoice_date, request.user.id, state, transporter, img_name
+        record_id, company_id, title, invoice_amount, content,
+        invoice_date, request.user.id, state, transporter, img_name, invoice_type, rate
     )
 
     if flag == 0:
@@ -146,6 +168,7 @@ def modify_record(request):
         url = "/admin/invoice_record?%s#modify/%s" % (msg, obj.id)
 
     return HttpResponseRedirect(url)
+
 
 @verify_permission('query_invoice_record')
 def print_invoice_record(request, template_name='pc/admin/print_invoice_record.html'):

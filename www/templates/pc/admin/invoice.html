@@ -34,7 +34,8 @@ $(document).ready(function(){
             'companyCombineName': 'company_combine_name',
             'title': 'title',
             'content': 'content',
-            'invoiceType': 'invoice_type'
+            'invoiceType': 'invoice_type',
+            'rate': 'rate'
         },
 
         search: function(name, pageIndex){
@@ -411,6 +412,8 @@ $(document).ready(function(){
                     <th>所属公司</th>
                     <th>发票抬头</th>
                     <th>发票内容</th>
+                    <th>类型</th>
+                    <th>税点</th>
                 </tr>
             </thead>
             <tbody>
@@ -438,6 +441,14 @@ $(document).ready(function(){
         <td><%= invoice.companyCombineName %></td>
         <td><%= invoice.title %></td>
         <td><%= invoice.content %></td>
+        <td>
+            <% if(invoice.invoiceType == 1){ %>
+            增值税普通发票
+            <% } else { %>
+            <span class="co-3B99FC">增值税专用发票</span>
+            <% } %>
+        </td>
+        <td><%= invoice.rate %>%</td>
     </tr>
 <% }) %>
 </script>
@@ -461,6 +472,23 @@ $(document).ready(function(){
         <label class="col-sm-2 control-label">发票内容</label>
         <div class="col-sm-8">
             <input type="text" required class="form-control" name='content' value='<%= content %>'>
+        </div>
+    </div>
+    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+        <label class="col-sm-2 control-label">发票类型</label>
+        <div class="col-sm-4">
+            <label class="radio-inline">
+                <input type="radio" name="invoice_type" value="1" <% if(invoiceType==1){ %>checked="checked"<% } %> > 增值税普通发票
+            </label>
+            <label class="radio-inline">
+                <input type="radio" name="invoice_type" value="2" <% if(invoiceType==2){ %>checked="checked"<% } %> > 增值税专用发票
+            </label>
+        </div>
+    </div>
+    <div class="form-group pt-20 pb-20 mb-0">
+        <label class="col-sm-2 control-label">发票税点</label>
+        <div class="col-sm-2">
+            <input type="text" required class="form-control" name='rate' value='<%= rate %>'>
         </div>
     </div>
     <div class="form-group pt-20 pb-20 mb-0">
@@ -496,6 +524,23 @@ $(document).ready(function(){
                         <label class="col-sm-2 control-label">发票内容</label>
                         <div class="col-sm-9">
                             <input type="text" required class="form-control" name='content' value=''>
+                        </div>
+                    </div>
+                    <div class="form-group pt-20 pb-20 mb-0 border-bottom-1 bdc-e4e4e4">
+                        <label class="col-sm-2 control-label">发票类型</label>
+                        <div class="col-sm-4">
+                            <label class="radio-inline">
+                                <input type="radio" name="invoice_type" value="1" checked="checked"> 增值税普通发票
+                            </label>
+                            <label class="radio-inline">
+                                <input type="radio" name="invoice_type" value="2"> 增值税专用发票
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group pt-20 pb-20 mb-0">
+                        <label class="col-sm-2 control-label">发票税点</label>
+                        <div class="col-sm-2">
+                            <input type="text" required class="form-control" name='rate' value=''>
                         </div>
                     </div>
                 </form>

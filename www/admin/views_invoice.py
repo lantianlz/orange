@@ -12,10 +12,12 @@ from misc.decorators import staff_required, common_ajax_response, verify_permiss
 
 from www.company.interface import InvoiceBase, CompanyBase
 
+
 @verify_permission('')
 def invoice(request, template_name='pc/admin/invoice.html'):
 
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
+
 
 def format_invoice(objs, num):
     data = []
@@ -33,9 +35,12 @@ def format_invoice(objs, num):
             'company_combine_name': company.combine_name(),
             'title': x.title,
             'content': x.content,
+            'invoice_type': x.invoice_type,
+            'rate': x.rate or 0
         })
 
     return data
+
 
 @verify_permission('query_invoice')
 def search(request):
@@ -56,6 +61,7 @@ def search(request):
         json.dumps({'data': data, 'page_count': page_objs[4], 'total_count': page_objs[5]}),
         mimetype='application/json'
     )
+
 
 @verify_permission('query_invoice')
 def get_invoice_by_id(request):
@@ -84,7 +90,11 @@ def get_invoice_by_company_id(request):
     if result and result.content:
         data['content'] = result.content
 
+    data['invoice_type'] = result.invoice_type
+    data['rate'] = result.rate
+
     return HttpResponse(json.dumps(data), mimetype='application/json')
+
 
 @verify_permission('add_invoice')
 @common_ajax_response
@@ -92,9 +102,11 @@ def add_invoice(request):
     company = request.POST.get('company')
     title = request.POST.get('title')
     content = request.POST.get('content')
+    invoice_type = request.POST.get('invoice_type')
+    rate = request.POST.get('rate')
 
     flag, msg = InvoiceBase().add_invoice(
-        company, title, content
+        company, title, content, invoice_type, rate
     )
     return flag, msg.id if flag == 0 else msg
 
@@ -106,7 +118,9 @@ def modify_invoice(request):
     company = request.POST.get('company')
     title = request.POST.get('title')
     content = request.POST.get('content')
+    invoice_type = request.POST.get('invoice_type')
+    rate = request.POST.get('rate')
 
     return InvoiceBase().modify_invoice(
-        invoice_id, company, title, content
+        invoice_id, company, title, content, invoice_type, rate
     )
