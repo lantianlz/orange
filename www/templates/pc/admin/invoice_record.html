@@ -632,9 +632,9 @@ $(document).ready(function(){
             <td><%= record.invoiceAmount %></td>
             <td>
                 <% if(record.invoiceType == 1){ %>
-                增值税普通发票
+                普票
                 <% } else { %>
-                <span class="co-3B99FC">增值税专用发票</span>
+                <span class="co-3B99FC">专票</span>
                 <% } %>
             </td>
             <td><%= record.rate %>%</td>
