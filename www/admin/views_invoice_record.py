@@ -53,8 +53,8 @@ def format_record(objs, num):
             'state': x.state,
             'state_str': x.get_state_display(),
             'img': x.img,
-            'invoice_type': x.invoice_type,
-            'rate': x.rate,
+            'invoice_type': x.invoice_type or 1,
+            'rate': x.rate or 0,
             'tax': float(x.tax or 0),
             'create_time': str(x.create_time)
         })
