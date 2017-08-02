@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-import json, datetime
+import json
+import datetime
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext
 from django.shortcuts import render_to_response
@@ -12,12 +13,13 @@ from common import utils, page
 
 from www.company.interface import ParttimeRecordBase, ParttimePersonBase
 
+
 @verify_permission('')
 def parttime_record(request, template_name='pc/admin/parttime_record.html'):
     from www.company.models import ParttimeRecord
 
     dates = utils.get_range_date_of_week()
-    start_date= dates[0]
+    start_date = dates[0]
     end_date = dates[6]
 
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
@@ -86,6 +88,7 @@ def add_record(request):
 
     return flag, msg.id if flag == 0 else msg
 
+
 @verify_permission('remove_parttime_record')
 @common_ajax_response
 def remove_record(request):
@@ -107,15 +110,15 @@ def file_import(request):
         try:
             temp_file.write(parttime_record_file.read())
             temp_file.flush()
-            
+
             data = utils.get_excel_data(temp_file.name, 3)
-            dates = utils.get_range_date_of_week()
+            # dates = utils.get_range_date_of_week()
 
             for x in data:
                 # 首先判断日期
-                if x[3] not in dates:
-                    continue
-                
+                # if x[3] not in dates:
+                #     continue
+
                 # 是否两次打卡
                 if not (x[4] and x[5]):
                     continue
@@ -125,16 +128,15 @@ def file_import(request):
                     continue
 
                 ParttimeRecordBase().add_record(
-                    person.id, 
+                    person.id,
                     '%s %s' % (x[3], x[4]),
                     '%s %s' % (x[3], x[5]),
                     u'批量导入'
                 )
-            
+        except Exception, e:
+            print e
+
         finally:
             temp_file.close()
 
     return HttpResponseRedirect("/admin/parttime_record")
-
-
-
