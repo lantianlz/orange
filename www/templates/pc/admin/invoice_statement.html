@@ -82,7 +82,7 @@ $(document).ready(function(){
                 endDate = this.$('#end_date_search').val(),
                 companyName = target.data('company-name'),
                 url = String.format(
-                    '/admin/invoice_record#search/{0}/0/{1}/{2}/1',
+                    '/admin/invoice_record#search/{0}/0/{1}/{2}/-1/1',
                     companyName,
                     startDate,
                     endDate
