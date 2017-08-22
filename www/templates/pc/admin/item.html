@@ -258,11 +258,11 @@ $(document).ready(function(){
             });
         },
 
-        verifyPrice: function(target){
+        verifyPrice: function(target, max){
             var temp = target.val();
             try{
                 temp = parseFloat(temp);
-                if (temp > 0 && temp < 1) {
+                if (temp > 0 && temp < max) {
                     return true;
                 } else {
                     return false;
@@ -296,8 +296,8 @@ $(document).ready(function(){
                 return;
             }
 
-            if (!this.verifyPrice(this.$('.net-weight-rate')) || 
-                !this.verifyPrice(this.$('.gross-profit-rate'))){
+            if (!this.verifyPrice(this.$('.net-weight-rate'), 1.01) || 
+                !this.verifyPrice(this.$('.gross-profit-rate'), 1)){
                 $.Global.Notice.WarningTopNotice('净重比、毛利率的值必须大于0, 小于1');
                 return;
             }
@@ -360,11 +360,11 @@ $(document).ready(function(){
            
         },
 
-        verifyPrice: function(target){
+        verifyPrice: function(target, max){
             var temp = target.val();
             try{
                 temp = parseFloat(temp);
-                if (temp > 0 && temp < 1) {
+                if (temp > 0 && temp < max) {
                     return true;
                 } else {
                     return false;
@@ -411,8 +411,8 @@ $(document).ready(function(){
                 return;
             }
 
-            if (!this.verifyPrice($('#add_item_modal .net-weight-rate')) || 
-                !this.verifyPrice($('#add_item_modal .gross-profit-rate'))){
+            if (!this.verifyPrice($('#add_item_modal .net-weight-rate'), 1.01) || 
+                !this.verifyPrice($('#add_item_modal .gross-profit-rate'), 1)){
                 $.Global.Notice.WarningTopNotice('净重比、毛利率的值必须大于0, 小于1');
                 return;
             }
