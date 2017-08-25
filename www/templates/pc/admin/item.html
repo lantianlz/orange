@@ -296,10 +296,10 @@ $(document).ready(function(){
                 return;
             }
 
-            if (!this.verifyPrice(this.$('.gross-profit-rate'), 1)){
-                $.Global.Notice.WarningTopNotice('毛利率的值必须大于0, 小于1');
-                return;
-            }
+            // if (!this.verifyPrice(this.$('.gross-profit-rate'), 1)){
+            //     $.Global.Notice.WarningTopNotice('毛利率的值必须大于0, 小于1');
+            //     return;
+            // }
             
             this.$('form').submit();
 
@@ -410,10 +410,10 @@ $(document).ready(function(){
                 return;
             }
 
-            if (!this.verifyPrice($('#add_item_modal .gross-profit-rate'), 1)){
-                $.Global.Notice.WarningTopNotice('毛利率的值必须大于0, 小于1');
-                return;
-            }
+            // if (!this.verifyPrice($('#add_item_modal .gross-profit-rate'), 1)){
+            //     $.Global.Notice.WarningTopNotice('毛利率的值必须大于0, 小于1');
+            //     return;
+            // }
 
             // g_ajax_processing_obj_id = $("#add_item_modal .ok").setUUID().attr('id');
             // items.addItem($.Global.Utils.formToDict($('#add_item_modal form')), function(data){
