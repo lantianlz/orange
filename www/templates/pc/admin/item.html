@@ -296,9 +296,8 @@ $(document).ready(function(){
                 return;
             }
 
-            if (!this.verifyPrice(this.$('.net-weight-rate'), 1.01) || 
-                !this.verifyPrice(this.$('.gross-profit-rate'), 1)){
-                $.Global.Notice.WarningTopNotice('净重比、毛利率的值必须大于0, 小于1');
+            if (!this.verifyPrice(this.$('.gross-profit-rate'), 1)){
+                $.Global.Notice.WarningTopNotice('毛利率的值必须大于0, 小于1');
                 return;
             }
             
@@ -411,9 +410,8 @@ $(document).ready(function(){
                 return;
             }
 
-            if (!this.verifyPrice($('#add_item_modal .net-weight-rate'), 1.01) || 
-                !this.verifyPrice($('#add_item_modal .gross-profit-rate'), 1)){
-                $.Global.Notice.WarningTopNotice('净重比、毛利率的值必须大于0, 小于1');
+            if (!this.verifyPrice($('#add_item_modal .gross-profit-rate'), 1)){
+                $.Global.Notice.WarningTopNotice('毛利率的值必须大于0, 小于1');
                 return;
             }
 
