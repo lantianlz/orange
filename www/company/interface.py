@@ -67,6 +67,8 @@ dict_err = {
 
     21501: u'没有找到对应的兼职人员信息',
     21502: u"同一天只能有一条记录",
+
+    21601: u"订单已结，无法重复操作",
 }
 dict_err.update(consts.G_DICT_ERROR)
 
@@ -1405,6 +1407,10 @@ class CashRecordBase(object):
                 account.balance -= value
             account.save()
 
+            # 判断是否重复提交
+            if notes.find(u"订单「") > 0:
+                if CashRecord.objects.filter(notes=notes).count() > 0:
+                    return 21601, dict_err.get(21601)
             CashRecord.objects.create(
                 cash_account=account,
                 value=value,
