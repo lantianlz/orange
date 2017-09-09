@@ -601,6 +601,7 @@ $(document).ready(function(){
                     <th>税费</th>
                     <th>开票日期</th>
                     <th>开票内容</th>
+                    <th>状态</th>
                     <th class="hidden-xs">操作时间</th>
                 </tr>
             </thead>
@@ -641,6 +642,13 @@ $(document).ready(function(){
             <td><%= record.tax %></td>
             <td><%= record.invoiceDate %></td>
             <td><%= record.content %></td>
+            <td>
+            {% for state in states %}
+                <% if("{{state.value}}" == record.state){ %>
+                    <%= "{{state.name}}" %>
+                <% } %>
+            {% endfor %}   
+            </td>
             <td class="hidden-xs"><%= record.createTime %></td>
         </tr>
     <% }) %>
