@@ -406,7 +406,7 @@ $(document).ready(function(){
 <!-- 客户经理列表 -->
 <script type="text/template" id="inventory_template">
     <% _.each(inventorys, function(inventory){ %>
-        <tr class="pointer" data-inventory_id="<%= inventory.inventoryId %>">
+        <tr class="pointer <% if(inventory.amount<=inventory.warningValue){ %>co-C33333<% } %> " data-inventory_id="<%= inventory.inventoryId %>">
             <td><%= inventory.num %></td>
             <td><%= inventory.itemName %></td>
             <td><%= inventory.amount %></td>
