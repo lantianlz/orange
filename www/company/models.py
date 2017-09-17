@@ -200,7 +200,7 @@ class Item(models.Model):
         try:
             return decimal.Decimal(self.price) / decimal.Decimal(self.net_weight_rate)
         except:
-            return return decimal.Decimal(self.price) / 1
+            return decimal.Decimal(self.price) / 1
 
     def smart_net_weight_price(self):
         return round(self.net_weight_price(), 2)
