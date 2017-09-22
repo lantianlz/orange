@@ -531,11 +531,11 @@ $(document).ready(function(){
                     <th class="hidden-xs">图片</th>
                     <th class="hidden-xs">货号</th>
                     <th>名称</th>
-                    <th class="hidden-xs">供货商</th>
                     <th>类型</th>
-                    <th>净重成本价</th>
-                    <th>卖价</th>
                     <th class="hidden-xs">规格</th>
+                    <th>卖价</th>
+                    <th class="hidden-xs">供货商</th>
+                    <th>净重成本价</th>
                     <th>状态</th>
                 </tr>
             </thead>
@@ -567,7 +567,6 @@ $(document).ready(function(){
         </td>
         <td class="hidden-xs"><%= item.code %></td>
         <td><%= item.name %><%= item.des?'('+item.des+')':'' %></td>
-        <td class="hidden-xs"><%= item.supplierName %></td>
         <td>
         {% for type in all_types %}
             <% if(item.itemType == '{{type.value}}'){ %>
@@ -575,8 +574,6 @@ $(document).ready(function(){
             <% } %>
         {% endfor %}
         </td>
-        <td><%= item.netWeightPrice %></td>
-        <td><%= item.salePrice %></td>
         <td class="hidden-xs">
         {% for spec in specs %}
             <% if(item.spec == '{{spec.value}}'){ %>
@@ -584,6 +581,9 @@ $(document).ready(function(){
             <% } %>
         {% endfor %}
         </td>
+        <td><%= item.salePrice %></td>
+        <td class="hidden-xs"><%= item.supplierName %></td>
+        <td><%= item.netWeightPrice %></td>
         <td>
         <% if(item.state){ %>
             <span class="fa fa-check co-3B99FC"></span>
