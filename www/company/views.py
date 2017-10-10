@@ -158,16 +158,16 @@ def deposit(request, company_id, template_name='pc/company/deposit.html'):
         from common.alipay import alipay_pc
         total_fee = request.POST.get('total_fee')
         pay_type = request.POST.get('pay_type')
-        
+
         flag, msg = RechargeOrderBase().create_order(company_id, total_fee, pay_type, utils.get_clientip(request))
-        
+
         if flag == 0:
             order = msg
 
             return HttpResponseRedirect(
                 alipay_pc.create_direct_pay_by_user(
-                    order.trade_id, 
-                    u"三点十分下午茶", 
+                    order.trade_id,
+                    u"三点十分下午茶",
                     u"水果，点心，热饮",
                     total_fee
                 )
@@ -282,6 +282,7 @@ def anonymous_product_list(request):
 
     return render_to_response('static_templates/product_list.html', locals(), context_instance=RequestContext(request))
 
+
 @member_required
 def success(request, template_name='pc/company/success.html'):
     '''
@@ -290,13 +291,15 @@ def success(request, template_name='pc/company/success.html'):
 
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
 
+
 @member_required
 def error(request, template_name='pc/company/error.html'):
     '''
     失败页面
     '''
-    
+
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
+
 
 @company_manager_required_for_request
 def list_orders(request, company_id, template_name='pc/company/list_orders.html'):
@@ -322,6 +325,21 @@ def list_orders(request, company_id, template_name='pc/company/list_orders.html'
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
 
 
+def concat_order_item(request):
+    '''
+    将订单下项目名称拼装成一个字符串
+    '''
+    from company.models import OrderItem
+
+    order_no = request.REQUEST.get('order_no')
+
+    items = []
+    for x in OrderItem.objects.filter(order__order_no=order_no):
+        items.append(x.item.name)
+    names = u'，'.join(items) if items else order_no
+    return HttpResponse(json.dumps({'names': names}), mimetype='application/json')
+
+
 def anonymous_fruit_price(request):
     '''
     匿名产品目录
@@ -331,6 +349,7 @@ def anonymous_fruit_price(request):
     today = datetime.datetime.now()
 
     return render_to_response('static_templates/fruit_price.html', locals(), context_instance=RequestContext(request))
+
 
 @member_required
 @company_manager_required_for_request

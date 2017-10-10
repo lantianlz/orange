@@ -19,6 +19,45 @@
 </style>
 {% endblock %}
 
+{% block base_js %}
+<script type="text/javascript">
+function getQueryString(name){
+    var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+    var r = window.location.search.substr(1).match(reg);
+    if (r != null){
+        return  unescape(r[2]);
+    }
+    return null;
+}
+
+function get_concat_order_item(order_no, tr){
+    ajaxSend(
+        "/company/concat_order_item", 
+        {'order_no': $.trim(order_no)}, 
+        function(data){
+            tr.find('td').eq(1).text(data.names);
+            var price = parseInt(tr.find('td').eq(4).text()) / parseInt(tr.find('td').eq(3).text());
+            $('<td>'+price+'</td>').insertAfter(tr.find('td').eq(2));
+        }
+    );
+}
+
+$(document).ready(function(){
+
+    if(getQueryString('detail')){
+        // 修改表头
+        $('thead tr th').eq(1).html('产品名称');
+        $('<th>单价</th>').insertAfter($('thead tr th').eq(2));
+
+        $.map($('tbody tr'), function(per){
+            get_concat_order_item($(per).find('td').eq(1).text(), $(per));
+        });
+        
+    }
+});
+</script>
+{% endblock %}
+
 {% block base_container %}
 <div class="container pt-20">
     <div class="row">
