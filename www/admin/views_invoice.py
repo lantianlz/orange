@@ -92,8 +92,9 @@ def get_invoice_by_company_id(request):
     if result and result.content:
         data['content'] = result.content
 
-    data['invoice_type'] = result.invoice_type or 1
-    data['rate'] = result.rate or 11
+    if result:
+        data['invoice_type'] = result.invoice_type
+        data['rate'] = result.rate
 
     return HttpResponse(json.dumps(data), mimetype='application/json')
 
