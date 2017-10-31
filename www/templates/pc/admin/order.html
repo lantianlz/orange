@@ -911,7 +911,7 @@ $(document).ready(function(){
 
 <script type="text/template" id="order_list_template">
 <% _.each(orders, function(order){ %>
-    <tr class="pointer <% if(order.createTime.substring(0,10) == '{{today_str}}'){ %>co-1DABD9<% } %>" data-order_id="<%= order.orderId %>" data-meal_id="<%= order.mealId %>" data-meal_name="<%= order.mealName %>">
+    <tr class="pointer <% if(order.createTime.substring(0,10) == '{{today_str}}'){ %>co-1DABD9<% } else { if(order.state != 3){ %> co-C33333 <% }} %>" data-order_id="<%= order.orderId %>" data-meal_id="<%= order.mealId %>" data-meal_name="<%= order.mealName %>">
         <td><%= order.num %></td>
         <td><%= order.mealName %></td>
         <td class="hidden-xs"><%= order.companyName %></td>
