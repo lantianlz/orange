@@ -50,7 +50,7 @@ def alipaycallback(request):
     if flag:
         timeinterval = 3
         # 成功跳转url控制
-        next_url = "/company/"  
+        next_url = "/company/"
         success_msg = u'支付成功，页面即将跳转'
         return render_to_response('success.html', locals(), context_instance=RequestContext(request))
     else:
@@ -118,14 +118,12 @@ def alipaynotify(request):
             # logging.error(u"errcode, errmsg, result ======> %s,%s,%s" % (errcode, errmsg, result))
             if result != u"success":
                 async_send_email(
-                    "vip@3-10.cc", 
-                    u"在线支付失败", 
+                    "vip@3-10.cc",
+                    u"在线支付失败",
                     u"errcode==>%s \n errmsg==>%s \n result==>%s \n trade_id==>%s \n total_fee==>%s \n pay_info==>%s \n" % (errcode, errmsg, result, trade_id, total_fee, pay_info)
                 )
 
     return HttpResponse(result)
-
-
 
 
 # def weixinnotify(request):

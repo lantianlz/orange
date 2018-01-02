@@ -2107,7 +2107,7 @@ class InvoiceRecordBase(object):
 
     def search_records_for_admin(self, name, state, start_date, end_date, invoice_type=None):
         objs = self.get_all_records(state).filter(
-            create_time__range=(start_date, end_date)
+            invoice_date__range=(start_date, end_date)
         )
 
         if invoice_type:
