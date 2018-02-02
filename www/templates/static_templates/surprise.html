@@ -243,16 +243,18 @@ $(document).ready(function(){
         // console.log(stopIndex);
     
     $('.start').on('click', function(){
+        
+        // 是否已经抽完
+        if($('.box-content.used').length + $('.box-content.active').length >= $('.box-content').length){
+            alert('本轮抽奖已经结束！');
+            return;
+        }
+
         // 防止重复点击
         if(isPlaying){
             return;
         }
         isPlaying = true;
-
-        if($('.box-content.used').length + $('.box-content.active').length >= 12){
-            alert('本轮抽奖已经结束！');
-            return;
-        }
 
         // 去掉已经领奖的人
         if(stopIndex != -1){
