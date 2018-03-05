@@ -2252,7 +2252,7 @@ class InvoiceRecordBase(object):
             recharge_dict[x['cash_account__company_id']] = str(x['recharge'])
 
         # 公司数据
-        company_data = CompanyBase().get_all_company(1).values('id', 'name', 'short_name')
+        company_data = CompanyBase().get_all_company(None).values('id', 'name', 'short_name')
         company_dict = {}
         for x in company_data:
             company_dict[x['id']] = [x['name'], '%s [ %s ]' % (x['name'], x['short_name'] or '-')]
