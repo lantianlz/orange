@@ -352,6 +352,12 @@ class Order(models.Model):
     def rate(self):
         return round((1 - (self.cost_price / self.total_price)) * 100, 2) if self.total_price else 0
 
+    def expected_date(self):
+        '''
+        预计配送日期
+        '''
+        return self.create_time + datetime.timedelta(days=1)
+
     class Meta:
         ordering = ["-create_time"]
 

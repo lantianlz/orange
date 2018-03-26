@@ -65,7 +65,7 @@ $(document).ready(function(){
             收货人: {{order.company.staff_name}} ( {{order.company.mobile}} )
         </div>
         <div class="col-md-6 col-xs-6 pt-5 text-right">
-            订单创建日期: {{order.create_time}}
+            配送日期: {{order.expected_date|date:"Y-m-d"}}
         </div>
 
         <div class="col-md-8 col-xs-8 pt-5">
