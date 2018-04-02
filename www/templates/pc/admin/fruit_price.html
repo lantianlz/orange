@@ -196,26 +196,26 @@ $(document).ready(function(){
                 <!-- <td class="hidden-xs"><img src="{{ item.get_img }}" style="width: 50px;"></td> -->
                 <td>{{ item.name }}</td>
                 <td class="">
-                    <input value="{{ item.smart_price }}" type="tel" class="form-control price" >
+                    <input value="{{ item.smart_price }}" type="text" class="form-control price" >
                 </td>
 
                 <td class="fi hidden-xs">
-                    <input value="{{ item.net_weight_rate }}" type="tel" class="form-control no-border-input net_weight_rate" >
+                    <input value="{{ item.net_weight_rate }}" type="text" class="form-control no-border-input net_weight_rate" >
                 </td>
                 <td class="fb net_weight_price">{{ item.smart_net_weight_price }}</td>
 
                 <td class="fi hidden-xs">
-                    <input value="{{ item.flesh_rate }}" type="tel" class="form-control no-border-input flesh_rate" >
+                    <input value="{{ item.flesh_rate }}" type="text" class="form-control no-border-input flesh_rate" >
                 </td>
                 <td class="fb hidden-xs flesh_price">{{ item.smart_flesh_price }}</td>
 
                 <td class="fi hidden-xs">
-                    <input value="{{ item.gross_profit_rate }}" type="tel" class="form-control no-border-input gross_profit_rate" >
+                    <input value="{{ item.gross_profit_rate }}" type="text" class="form-control no-border-input gross_profit_rate" >
                 </td>
                 <td class="fb sale_price">{{ item.get_smart_sale_price }}</td>
 
                 <td class="fi hidden-xs">
-                    <input value="{{ item.wash_floating_rate }}" type="tel" class="form-control no-border-input wash_floating_rate" >
+                    <input value="{{ item.wash_floating_rate }}" type="text" class="form-control no-border-input wash_floating_rate" >
                 </td>
                 <td class="fb hidden-xs wash_floating_price">{{ item.smart_wash_floating_price }}</td>
 
