@@ -150,12 +150,12 @@ class Item(models.Model):
     @note: 单项
     '''
     state_choices = ((0, u"停用"), (1, u"正常"), (2, u"正常,目录不显示"))
-    type_choices = ((1, u"水果"), (2, u"点心"), (3, u"饮料"), (4, u"卤味"), (90, u"一次性耗材"), (91, u"盛装容器"), )
-    spec_choices = ((1, u"斤"), (2, u"个"), (3, u"盒"), (4, u"袋"), (5, u"桶"), (6, u"杯"), (7, u"套"), (8, u"升"), (9, u"瓶"))
+    type_choices = ((1, u"水果"), (2, u"点心"), (3, u"饮料"), (4, u"卤味"), (89, u"其他"), (90, u"一次性耗材"), (91, u"盛装容器"), )
+    spec_choices = ((1, u"斤"), (2, u"个"), (3, u"盒"), (4, u"袋"), (5, u"桶"), (6, u"杯"), (7, u"套"), (8, u"升"), (9, u"瓶"), (10, u"束"))
     integer_choices = ((1, u"整数"), (2, u"保留小数"))
     add_choices = ((1, u"添加"), (2, u"不添加"))
 
-    code_dict = {1: 'F', 2: 'C', 3: 'D', 4: 'L', 90: 'S', 91: 'R'}
+    code_dict = {1: 'F', 2: 'C', 3: 'D', 4: 'L', 89: 'O', 90: 'S', 91: 'R'}
 
     code = models.CharField(verbose_name=u"货号", max_length=32, unique=True)
     name = models.CharField(verbose_name=u"名称", max_length=128, unique=True)
