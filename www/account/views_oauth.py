@@ -130,11 +130,12 @@ def oauth_weixin(request):
                 async_change_profile_from_weixin.delay(user, app_key, openid)
 
             dict_next = {
-                "introduction": "/company/introduction_m", 
+                "introduction": "/company/introduction_m",
                 "booking": "/company/booking",
                 "recommend": "/company/invite",
                 "contact": "/s/contact_us_m",
-                "admin": "/admin/nav"
+                "admin": "/admin/nav",
+                "weidian": "https://weidian.com/?userid=166839700&wfr=wx&ifr=itemdetail&source=home_shop&sfr=app&code=0333aZtW1sEgO01Z7EsW1jtVtW13aZtC&state=H5WXshare"
             }
             next_url = dict_next.get(weixin_state, dict_next["recommend"])
 
