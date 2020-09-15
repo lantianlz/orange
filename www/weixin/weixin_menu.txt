@@ -9,17 +9,17 @@
         }, 
         {
             "type": "view", 
-            "name": "员工团购", 
-            "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxd6922b078dff1607&redirect_uri=http%3A%2F%2Fwww.3-10.cc%2Faccount%2Foauth%2Fweixin&response_type=code&scope=snsapi_base&state=weidian#wechat_redirect"
-        }, 
+            "name": "立即预约", 
+            "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxd6922b078dff1607&redirect_uri=http%3A%2F%2Fwww.3-10.cc%2Faccount%2Foauth%2Fweixin&response_type=code&scope=snsapi_base&state=booking#wechat_redirect"
+        },
         {
             "name": "联系我们", 
             "sub_button": [
                 {
                     "type": "view", 
-                    "name": "企业预约", 
-                    "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxd6922b078dff1607&redirect_uri=http%3A%2F%2Fwww.3-10.cc%2Faccount%2Foauth%2Fweixin&response_type=code&scope=snsapi_base&state=booking#wechat_redirect"
-                },
+                    "name": "员工团购", 
+                    "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxd6922b078dff1607&redirect_uri=http%3A%2F%2Fwww.3-10.cc%2Faccount%2Foauth%2Fweixin&response_type=code&scope=snsapi_base&state=weidian#wechat_redirect"
+                }, 
                 {
                     "type": "view", 
                     "name": "联系我们", 
