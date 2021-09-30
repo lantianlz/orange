@@ -77,9 +77,9 @@ def get_invoice_by_company_id(request):
 
     data = {
         'title': '',
-        'content': u'水果',
+        'content': u'茶歇服务',
         'invoice_type': 1,
-        'rate': 11
+        'rate': 6
     }
 
     result = InvoiceBase().get_invoice_by_company_id(company_id)
